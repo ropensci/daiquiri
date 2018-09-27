@@ -1,0 +1,20 @@
+Package: changedetection
+Type: Package
+Title: Automatic Change-point Detection for Large Datasets
+Version: 0.0.0.9000
+Author: T. Phuong Quan
+Maintainer: T. Phuong Quan <phuong.quan@ndm.ox.ac.uk>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: readr (>= 1.1.1),
+    ggplot2 (>= 3.0.0),
+    tibble (>= 1.4.2),
+    changepoint (>= 2.2.2)
+RoxygenNote: 6.1.0
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
