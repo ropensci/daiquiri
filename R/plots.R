@@ -17,97 +17,221 @@
 #' @return A \code{cpdaggregate} object
 #' @export
 plot_aggregated_data <- function(cpdaggregate, save_plot = TRUE, save_directory = NULL, save_filetype = "png", showprogress = FALSE){
-	# TODO: decide whether to set a class on the aggregated data and use the generic plot method instead - need to distinguish bettween wanting overall summary or individual plots
+	# TODO: decide whether to set a class on the aggregated data and use the generic plot method instead - need to distinguish between wanting overall summary or individual plots
 	# TODO: put some of the repeated ggplot2::ggplot calls into functions
 	# TODO: provide option to plot changepoints or not?
 	# TODO: currently, save_plot = FALSE is a bit pointless. Do we want to allow this to be used interactively and open plots in device?
 	#temp assignment
   # cpdaggregate<-testcpddata_byday
   # save_plot = TRUE
-  # save_directory = ".\\testoutput\\"
+  # save_directory = ".\\devtesting\\testoutput\\"
   # save_filetype = "png"
   # showprogress = TRUE
 
   aggfields <- cpdaggregate$aggregatefields
 
+  ### OVERALL DATASET
+  # SUMMARY PLOT
   if(showprogress) cat("Plotting changepoint summary...","\n")
   plot_changepoint_summary(cpdaggregate, changepoint_methods = "all", save_plot = save_plot, save_directory = save_directory, save_filetype = save_filetype, showprogress = showprogress)
 
+  # INDIVIDUAL PLOTS PER AGGFIELD
+  if(showprogress) cat("Plotting overall counts per field:","\n")
   for(i in 1:length(aggfields)){
     #    i = 5
     if(showprogress) cat(i, ":", names(aggfields[i]),"\n")
-    # use timepoint column to reflect overall counts
-    if( is.fieldtype_timepoint(aggfields[[i]]$fieldtype)){
-      if(showprogress) cat("Plotting overall counts...","\n")
-      timepointcolname <- names(aggfields[[i]]$values[1])
-      aggtype <- "n"
-      g <- ggplot2::ggplot(aggfields[[i]]$values[c(timepointcolname, aggtype)], ggplot2::aes_string(timepointcolname, aggtype)) +
-      	ggplot2::scale_x_date(date_breaks = "1 month") +
-      	ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
-      	ggplot2::xlab(timepointcolname) +
-      	ggplot2::ylab("Number of records") +
-      	ggplot2::ggtitle("Overall records") +
-      	ggplot2::geom_col()
-      # specify y axis scale
-      aggbreaks <- yscale_breaks(aggtype, max(aggfields[[i]]$values[[aggtype]], na.rm = TRUE), min(aggfields[[i]]$values[[aggtype]], na.rm = TRUE), aggfields[[i]]$fieldtype)
-      if( !is.na(aggbreaks[1]) ){
-        g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(max(aggfields[[i]]$values[[aggtype]], na.rm = TRUE), aggbreaks[length(aggbreaks)])))
-      }
+  	# OVERALL COUNTS
+  	plot_aggregatefield_overall(aggfields[[i]], save_plot = save_plot, save_directory = save_directory, save_filetype = save_filetype, showprogress = showprogress)
 
-      # add changepoint lines if available
-      cpts <- aggfields[[i]]$changepoints[[aggtype]]
-      # TODO: add multiple sets of lines if more than one method used
-      for(k in 1:length(cpts)){
-        # TODO: different colour per method
-        g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
-      }
-
-      if(save_plot){
-        ggplot2::ggsave(paste0(save_directory, "Overall_n.", save_filetype))
-      }
-    } else{
-      # plot counts for this field against overall counts in that timepoint
-      if(showprogress) cat("Plotting values present out of total records...","\n")
-      timepointcolname <- names(aggfields[[i]]$values[1])
-      totalrecords <- rowSums(aggfields[[i]]$values[c("n","missing_n")], na.rm = TRUE)
-      aggbreaks <- yscale_breaks("n", max(totalrecords, na.rm = TRUE), min(totalrecords, na.rm = TRUE))
-      # TODO: consider reshaping dataset to long so can use stack option (which might make the legending easier)
-      g <- ggplot2::ggplot(data.frame(aggfields[[i]]$values[c(timepointcolname,"n","missing_n")], totalrecords)) +
-      	ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "totalrecords"), fill = "red4") +
-      	ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "n")) +
-      	ggplot2::scale_x_date(date_breaks = "1 month") +
-      	ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
-      	ggplot2::xlab(names(aggfields[[i]]$values[1])) +
-      	ggplot2::ylab("Number of records") +
-      	ggplot2::ggtitle(names(aggfields[i])) +
-      	ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(max(totalrecords, na.rm = TRUE), aggbreaks[length(aggbreaks)])))
-
-      if(save_plot){
-        ggplot2::ggsave(paste0(save_directory, names(aggfields[i]), "_", "overall",  ".", save_filetype))
-      }
-
-      # individual plots per aggtype
-      if(showprogress) cat("Plotting individual aggregatetypes:","\n")
-      for(j in 2:length(aggfields[[i]]$values)){
-        #j=5
-        if(showprogress) cat("  ", names(aggfields[[i]]$values[j]),"\n")
-        plot_aggregatefield(aggfields[[i]], names(aggfields[[i]]$values[j]), changepoint_methods = "all", save_plot = save_plot, save_directory = save_directory, save_filetype = save_filetype)
-      }
+    # INDIVIDUAL PLOTS PER AGGFIELD PER AGGTYPE
+    if(showprogress) cat("Plotting individual aggregatetypes per field:","\n")
+    for(j in 2:length(aggfields[[i]]$values)){
+      #j=5
+      if(showprogress) cat("  ", names(aggfields[[i]]$values[j]),"\n")
+    	plot_aggregatefield_byaggtype(aggfields[[i]], names(aggfields[[i]]$values[j]), changepoint_methods = "all", save_plot = save_plot, save_directory = save_directory, save_filetype = save_filetype)
+#
+#   	  # individual plots per aggtype, split by sourcetype (subaggregates)
+#       # LOOPING BASED ON WHEN SUBAGGREGATES ARE STORED AS CHILDREN OF EACH OVERRALL AGGFIELD
+#       # assume there is at most one sourcetype for now
+#       if (length(aggfields[[i]]$subaggregates) > 0){
+#       	if(showprogress) cat("Splitting by sourcetype:","\n")
+#       	numlevels <- length(aggfields[[i]]$subaggregates[[1]])
+#       	subplots <- vector("list", numlevels)
+#       	for (p in 1:numlevels){
+#       		subplots[[p]] <- plot_aggregatefield_byaggtype(aggfields[[i]]$subaggregates[[1]][[p]], names(aggfields[[i]]$values[j]), changepoint_methods = "all", save_plot = FALSE)
+#       		# blank out individual titles/labels to avoid repetition
+#       		# TODO: make this prettier
+#       		if (p == 1){
+#       			subplots[[p]] <- subplots[[p]] + ggplot2::ggtitle(names(aggfields[[i]]$subaggregates[1]))
+#       		}
+#       		# set ylabel to sourcefield level and aggtype
+#       		subplots[[p]] <- subplots[[p]] + ggplot2::ylab(paste0(aggfields[[i]]$subaggregates[[1]][[p]]$sourcefieldvalue, "\n", names(aggfields[[i]]$values[j])))
+#       		if (p > 1){
+#       			subplots[[p]] <- subplots[[p]] + ggplot2::theme(plot.title = ggplot2::element_blank())
+#       		}
+#       		if (p < numlevels){
+#       			subplots[[p]] <- subplots[[p]] + ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+#       																						 axis.text.x = ggplot2::element_blank())
+#       		}
+#       	}
+#       	# TODO: allocate extra space to bottom plot to allow for axis labels
+#       	gsub <- cowplot::plot_grid(plotlist = subplots, ncol = 1, align = "v")
+#       	if(save_plot){
+#       		cowplot::save_plot(paste0(save_directory, names(aggfields[[i]]$subaggregates[1]), "_", names(aggfields[[i]]$values[j]), ".", save_filetype), gsub, nrow = numlevels)
+#       	} else{
+#       		gsub
+#       	}
+#       }
     }
+  }
+
+  ### BY SOURCEFIELD (SUBAGGREGATES)
+  # assume there is at most one sourcetype for now
+  if (length(cpdaggregate$subaggregates) > 0){
+  	if(showprogress) cat("Splitting by sourcetype [", names(cpdaggregate$subaggregates), "]...","\n")
+  	numlevels <- length(cpdaggregate$subaggregates[[1]])
+  	# SUMMARY PLOTS
+  	for(p in 1:numlevels){
+  		if(showprogress) cat("Plotting changepoint summary [", names(cpdaggregate$subaggregates[[1]][p]), "]...","\n")
+  		plot_changepoint_summary(cpdaggregate$subaggregates[[1]][[p]], changepoint_methods = "all", save_plot = save_plot, save_directory = save_directory, save_filetype = save_filetype, showprogress = showprogress)
+  	}
+  	# PANEL PLOTS PER AGGFIELD
+  	if(showprogress) cat("Plotting overall counts per field...","\n")
+  	for(i in 1:length(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields)){
+  		if(showprogress) cat(i, ":", names(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields[i]),"\n")
+  		# OVERALL COUNTS
+    	subplots <- vector("list", numlevels)
+    	for (p in 1:numlevels){
+    		if(showprogress) cat("  By", names(cpdaggregate$subaggregates), "[", names(cpdaggregate$subaggregates[[1]][p]), "]:","\n")
+    		subplots[[p]] <- plot_aggregatefield_overall(cpdaggregate$subaggregates[[1]][[p]]$aggregatefields[[i]], save_plot = FALSE, showprogress = showprogress)
+    	}
+    	# TODO: blank out individual titles/labels to avoid repetition, and allocate extra space to bottom plot to allow for axis labels
+    	gsub <- cowplot::plot_grid(plotlist = subplots, ncol = 1, align = "v")
+    	if(save_plot){
+    		cowplot::save_plot(paste0(save_directory,
+    															ifelse(is.fieldtype_timepoint(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields[[i]]$fieldtype),
+    																		 "Overall_n",
+    																		 paste0(names(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields[i]), "_overall")),
+    															"_by_", names(cpdaggregate$subaggregates),
+    															"_", names(cpdaggregate$subaggregates[[1]][p]),
+    															".", save_filetype),
+    											 gsub,
+    											 nrow = numlevels)
+    	} else{
+    		gsub
+    	}
+
+    	# PANEL PLOTS PER AGGFIELD PER AGGTYPE
+    	if(showprogress) cat("Plotting individual aggregatetypes per field:","\n")
+    	for(j in 2:length(aggfields[[i]]$values)){
+    		#j=5
+    		if(showprogress) cat("  ", names(aggfields[[i]]$values[j]),"\n")
+    		subplots <- vector("list", numlevels)
+    		for (p in 1:numlevels){
+    			if(showprogress) cat("    ", "By", names(cpdaggregate$subaggregates), "[", names(cpdaggregate$subaggregates[[1]][p]), "]:","\n")
+    			subplots[[p]] <- plot_aggregatefield_byaggtype(cpdaggregate$subaggregates[[1]][[p]]$aggregatefields[[i]], aggtype = names(cpdaggregate$subaggregates[[1]][[p]]$aggregatefields[[i]]$values[j]), changepoint_methods = "all", save_plot = FALSE)
+    		}
+    		# TODO: blank out individual titles/labels to avoid repetition, and allocate extra space to bottom plot to allow for axis labels
+    		gsub <- cowplot::plot_grid(plotlist = subplots, ncol = 1, align = "v")
+    		if(save_plot){
+    			cowplot::save_plot(paste0(save_directory,
+    																names(aggfields[i]),
+    																"_", names(aggfields[[i]]$values[j]),
+    																"_by_", names(cpdaggregate$subaggregates),
+    																"_", names(cpdaggregate$subaggregates[[1]][p]),
+    																".", save_filetype),
+    												 gsub,
+    												 nrow = numlevels)
+    		} else{
+    			gsub
+    		}
+    	}
+  	}
   }
 }
 
 # -----------------------------------------------------------------------------
 # create an individual plot according to aggregatetype
 # optionally plot changepoints - "all"/"none"/vectorofmethodnames
-plot_aggregatefield <- function(aggfield, aggtype, changepoint_methods = "all", save_plot = TRUE, save_directory = NULL, save_filetype = "png"){
+plot_aggregatefield_overall <- function(aggfield, save_plot = TRUE, save_directory = NULL, save_filetype = "png", showprogress = FALSE){
+	#temp assignment
+	# aggfield<-testcpddata_byday$aggregatefields[[1]]
+	# aggfield<-testcpddata_byday$aggregatefields[[8]]$subaggregates[[1]][[1]]
+	#   aggtype = "min"
+	#   save_plot = TRUE
+	# 	save_plot=FALSE
+	# save_directory = ".\\devtesting\\testoutput\\"
+	# save_filetype = "png"
+	# changepoint_methods = "all"
+
+	# use timepoint column to reflect overall counts
+	if(showprogress) cat("Column [", aggfield$columnname, "]:  ")
+	if( is.fieldtype_timepoint(aggfield$fieldtype)){
+		if(showprogress) cat("Plotting overall counts...","\n")
+		timepointcolname <- names(aggfield$values[1])
+		aggtype <- "n"
+		g <- ggplot2::ggplot(aggfield$values[c(timepointcolname, aggtype)], ggplot2::aes_string(timepointcolname, aggtype)) +
+			ggplot2::scale_x_date(date_breaks = "1 month") +
+			ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
+			ggplot2::xlab(timepointcolname) +
+			ggplot2::ylab("Number of records") +
+			ggplot2::ggtitle(paste0("Overall records", ifelse(is.null(aggfield$sourcefieldname), "", paste0(" - by ", aggfield$sourcefieldname, " (", aggfield$sourcefieldvalue, ")")))) +
+			ggplot2::geom_col()
+		# specify y axis scale
+		aggbreaks <- yscale_breaks(aggtype, max(aggfield$values[[aggtype]], na.rm = TRUE), min(aggfield$values[[aggtype]], na.rm = TRUE), aggfield$fieldtype)
+		if( !is.na(aggbreaks[1]) ){
+			g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(max(aggfield$values[[aggtype]], na.rm = TRUE), aggbreaks[length(aggbreaks)])))
+		}
+
+		# add changepoint lines if available
+		cpts <- aggfield$changepoints[[aggtype]]
+		# TODO: add multiple sets of lines if more than one method used
+		for(k in 1:length(cpts)){
+			# TODO: different colour per method
+			g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
+		}
+
+		if(save_plot){
+			ggplot2::ggsave(paste0(save_directory, "Overall_n", ifelse(is.null(aggfield$sourcefieldname), "", paste0("_by_", aggfield$sourcefieldname, "_", aggfield$sourcefieldvalue)), ".", save_filetype))
+		}
+	} else{
+		# plot counts for this field against overall counts in that timepoint
+		if(showprogress) cat("Plotting values present out of total records...","\n")
+		timepointcolname <- names(aggfield$values[1])
+		totalrecords <- rowSums(aggfield$values[c("n","missing_n")], na.rm = TRUE)
+		aggbreaks <- yscale_breaks("n", max(totalrecords, na.rm = TRUE), min(totalrecords, na.rm = TRUE))
+		# TODO: consider reshaping dataset to long so can use stack option (which might make the legending easier)
+		g <- ggplot2::ggplot(data.frame(aggfield$values[c(timepointcolname,"n","missing_n")], totalrecords)) +
+			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "totalrecords"), fill = "red4") +
+			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "n")) +
+			ggplot2::scale_x_date(date_breaks = "1 month") +
+			ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
+			ggplot2::xlab(names(aggfield$values[1])) +
+			ggplot2::ylab("Number of records") +
+			ggplot2::ggtitle(paste0(aggfield$columnname, ifelse(is.null(aggfield$sourcefieldname), "", paste0(" - by ", aggfield$sourcefieldname, " (", aggfield$sourcefieldvalue, ")")))) +
+			ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(max(totalrecords, na.rm = TRUE), aggbreaks[length(aggbreaks)])))
+
+		if(save_plot){
+			ggplot2::ggsave(paste0(save_directory, aggfield$columnname, "_", "overall", ifelse(is.null(aggfield$sourcefieldname), "", paste0("_by_", aggfield$sourcefieldname, "_", aggfield$sourcefieldvalue)), ".", save_filetype))
+		} else{
+			g
+		}
+	}
+}
+
+# -----------------------------------------------------------------------------
+# create an individual plot according to aggregatetype
+# optionally plot changepoints - "all"/"none"/vectorofmethodnames
+plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods = "all", save_plot = TRUE, save_directory = NULL, save_filetype = "png"){
   #temp assignment
-  #  aggfield<-testcpddata_byday$aggregatefields[[1]]
-  # aggtype = "n"
-  # save_plot = TRUE
-  # save_directory = ".\\testoutput\\"
-  # save_filetype = "png"
-  #changepoint_methods = "all"
+    # aggfield<-testcpddata_byday$aggregatefields[[3]]
+    # aggfield<-testcpddata_byday$aggregatefields[[8]]$subaggregates[[1]][[1]]
+    #   aggtype = "min"
+#   save_plot = TRUE
+# 	save_plot=FALSE
+# save_directory = ".\\devtesting\\testoutput\\"
+# save_filetype = "png"
+# changepoint_methods = "all"
 
   # TODO: validate/reformat save parameters
 
@@ -118,36 +242,52 @@ plot_aggregatefield <- function(aggfield, aggtype, changepoint_methods = "all", 
   	ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
   	ggplot2::xlab(timepointcolname) +
   	ggplot2::ylab(aggtype) +
-  	ggplot2::ggtitle(aggfield$columnname)
+  	ggplot2::ggtitle(paste0(aggfield$columnname, ifelse(is.null(aggfield$sourcefieldname), "", paste0(" - by ", aggfield$sourcefieldname, " (", aggfield$sourcefieldvalue, ")"))))
 
   # specify type of plot
-  if( aggtype %in% c("n","missing_n","missing_perc","distinct") ){
-    g <- g + ggplot2::geom_col()
-  } else if( aggtype %in% c("min","max") ){
-    g <- g + ggplot2::geom_point()
-  } else {
-    stop(paste("Unknown aggregate type:", aggtype))
-  }
+  # if all values are NA, maxval will be infinite, so show a blank plot. So far only happens for min/max aggtypes
+  maxval <- suppressWarnings(max(aggfield$values[[aggtype]], na.rm = TRUE))
+  minval <- suppressWarnings(min(aggfield$values[[aggtype]], na.rm = TRUE))
+  if( is.infinite(maxval) ){
+  	if( is.fieldtype_datetime(aggfield$fieldtype) ){
+	  	g <- g + ggplot2::geom_blank(ggplot2::aes_string(x = timepointcolname, y = timepointcolname))
+  	} else if ( is.fieldtype_number(aggfield$fieldtype) ){
+  		# TODO: this isn't working yet
+  		  g <- g + ggplot2::geom_blank(mapping = ggplot2::aes_string(x=timepointcolname, y="blankaggtype"), data = data.frame(aggfield$values[timepointcolname], blankaggtype=1))
+  	}
+  } else{
+	  if( aggtype %in% c("n","missing_n","missing_perc","distinct") ){
+	    g <- g + ggplot2::geom_col()
+	  } else if( aggtype %in% c("min","max") ){
+	    g <- g + ggplot2::geom_point()
+	  } else {
+	    stop(paste("Unknown aggregate type:", aggtype))
+	  }
 
-  # specify y axis scale
-  aggbreaks <- yscale_breaks(aggtype, max(aggfield$values[[aggtype]], na.rm = TRUE), min(aggfield$values[[aggtype]], na.rm = TRUE), aggfield$fieldtype)
-  if( !is.na(aggbreaks[1]) ){
-    g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(max(aggfield$values[[aggtype]], na.rm = TRUE), aggbreaks[length(aggbreaks)])))
-  }
 
-  # add changepoint lines if requested
-  if( changepoint_methods != "none"){
-    cpts <- aggfield$changepoints[[aggtype]]
-    for(k in 1:length(cpts)){
-      if( names(cpts[k]) %in% changepoint_methods || changepoint_methods == "all" ){
-        g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
-      }
-    }
+	  # specify y axis scale
+	  aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
+	  if( !is.na(aggbreaks[1]) ){
+	    g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
+	  }
+
+	  # add changepoint lines if requested
+	  if( changepoint_methods != "none"){
+	    cpts <- aggfield$changepoints[[aggtype]]
+	    for(k in 1:length(cpts)){
+	      if( names(cpts[k]) %in% changepoint_methods || changepoint_methods == "all" ){
+	        g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
+	      }
+	    }
+	  }
   }
 
   if(save_plot){
-    ggplot2::ggsave(paste0(save_directory, aggfield$columnname, "_", aggtype,  ".", save_filetype))
+    ggplot2::ggsave(paste0(save_directory, aggfield$columnname, "_", aggtype, ifelse(is.null(aggfield$sourcefieldname), "", paste0("_by_", aggfield$sourcefieldname, "_", aggfield$sourcefieldvalue)), ".", save_filetype))
+  } else{
+  	g
   }
+
 
 }
 
@@ -179,10 +319,11 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
   #changepoint_methods = c("cpt.var")
   #changepoint_methods = c("-is_na", "-is_zero")
   #changepoint_methods = c("-is_na")
+	#cpdaggregate <- testcpddata_byday$subaggregates[[1]][[1]]
 
   # TODO: validate/reformat save parameters
 
-  aggfields<-cpdaggregate$aggregatefields
+	aggfields <- cpdaggregate$aggregatefields
 
   # filter changepoints by chosen methods
   # can't have a mixture of positives and negatives
@@ -232,7 +373,7 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
   	ggplot2::theme(legend.position = "none") +
   	ggplot2::xlab(timepointcolname) +
   	ggplot2::ylab("") +
-  	ggplot2::ggtitle("Changepoint summary")
+	  ggplot2::ggtitle(paste0("Changepoint summary", ifelse(is.null(aggfields[[1]]$sourcefieldname), "", paste0(" - by ", aggfields[[1]]$sourcefieldname, " (", aggfields[[1]]$sourcefieldvalue, ")"))))
 
   # block out sections with no records
   # TODO: not sure if should allow non-plotting of zeros
@@ -256,12 +397,15 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
 
 
   if(save_plot){
-    ggplot2::ggsave(paste0(save_directory, save_filename, ".", save_filetype))
+  	ggplot2::ggsave(paste0(save_directory, save_filename, ifelse(is.null(aggfields[[1]]$sourcefieldname), "", paste0("_by_", aggfields[[1]]$sourcefieldname, "_", aggfields[[1]]$sourcefieldvalue)), ".", save_filetype))
   } else{
   	g
   }
 
 }
+
+# -----------------------------------------------------------------------------
+# HELPER FUNCTIONS
 
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
   breaks <- NA
@@ -296,7 +440,7 @@ yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
         breaks <- seq(ymin, ymax, by = 10^rangesize)
       }
     } else if( is.fieldtype_datetime(fieldtype) ){
-
+    		# date axis seems to magically render itself
     }
   }
   breaks

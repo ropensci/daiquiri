@@ -21,7 +21,6 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 # constructor for cpdsourcedata object
 # takes in a data frame, fieldtypes specification, and (string) sourcename
-# TODO: consider changing class name to cpdsourcedata or cpdimport
 cpdsourcedata <- function(data, fieldtypes, sourcename) {
 # temp assignments
 # data<-testdata

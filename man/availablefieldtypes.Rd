@@ -45,6 +45,7 @@ It does not need to be unique within the dataset.
 
 
 \code{ft_source} - identifies data fields which indicate that different data rows originated from distinct source systems.
+There should be at most one of these specified.
 
 
 \code{ft_categorical} - identifies data fields which should be treated as categorical.

@@ -11,6 +11,7 @@ Encoding: UTF-8
 LazyData: true
 Imports: readr (>= 1.1.1),
     ggplot2 (>= 3.0.0),
+    cowplot (>= 0.9.3),
     tibble (>= 1.4.2),
     changepoint (>= 2.2.2)
 RoxygenNote: 6.1.0

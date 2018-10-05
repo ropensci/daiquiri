@@ -34,6 +34,8 @@ is.fieldtype_datetime <- function(x) inherits(x, "fieldtype_datetime")
 
 is.fieldtype_number <- function(x) inherits(x, "fieldtype_number")
 
+is.fieldtype_source <- function(x) inherits(x, "fieldtype_source")
+
 #' @export
 print.fieldtype <- function(x, ...) {
   cat("<", class(x)[1], ">\n", sep = "")
@@ -73,6 +75,7 @@ ft_uniqueidentifier <- function() {
 
 #' @section Details:
 #' \code{ft_source} - identifies data fields which indicate that different data rows originated from distinct source systems.
+#' There should be at most one of these specified.
 #' @rdname availablefieldtypes
 #' @export
 ft_source <- function() {
@@ -184,6 +187,11 @@ fieldtypes <- function(...) {
   if (sum(is_timepoint) != 1) {
     # TODO: better to return names rather than indices
     err_validation[length(err_validation)+1] <- paste("Must contain one and only one timepoint field. Relevant fields [", paste(which(is_timepoint), collapse = ", "), "]")
+  }
+  is_source <- vapply(fts, is.fieldtype_source, logical(1))
+  if (sum(is_source) > 1) {
+  	# TODO: better to return names rather than indices
+  	err_validation[length(err_validation)+1] <- paste("Must contain a maximum of one source field. Relevant fields [", paste(which(is_source), collapse = ", "), "]")
   }
   if (length(err_validation) > 0) {
     stop("Invalid `fieldtypes' specification. ",

@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 # individual aggregatefields
 # uses stats::aggregate function, consider trying the aggregate.ts function instead, or group_by tibble function
-aggregatefield <- function(datafield, alltimepoints, groupbylist, showprogress = FALSE) {
+aggregatefield <- function(datafield, alltimepoints, groupbylist, sourcefieldname = NULL, sourcefieldvalue = NULL, showprogress = FALSE) {
   #temp assignment
    #datafield = testcpddata$datafields[[3]]
    # groupbylist = list(groupby_day[[1]])
@@ -135,7 +135,13 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, showprogress =
 
   if(showprogress) cat("Finished","\n")
 
-  structure(list(values = aggfield, functionlist = functionlist, changepoints = cpts, fieldtype = datafield$fieldtype, columnname = datafield$columnname),
+  structure(list(values = aggfield,
+  							 functionlist = functionlist,
+  							 changepoints = cpts,
+  							 fieldtype = datafield$fieldtype,
+  							 columnname = datafield$columnname,
+  							 sourcefieldname = sourcefieldname,
+  							 sourcefieldvalue = sourcefieldvalue),
             class = "aggregatefield")
 }
 
@@ -207,38 +213,107 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 #' @export
 aggregate_data <- function(data, showprogress = FALSE){
   #temp assignment
-  # data<-testcpddata
-  #showprogress = TRUE
+  # data<-testcpdsourcedata
+  # showprogress = TRUE
 
   # create column to group by - default to per Day, allow option to change later
+	timepoint_unit <- "DAY"
   if(showprogress) cat("Preparing grouping column...")
   # need to ensure have all possible timepoint values, even if they are missing in the dataset
-  timepoint_byday = list(seq(as.Date(get_datafield_min(data$datafields[[data$timepoint_fieldname]])), as.Date(get_datafield_max(data$datafields[[data$timepoint_fieldname]])), by="days"))
+  timepoint_byday <- list(seq(as.Date(get_datafield_min(data$datafields[[data$timepoint_fieldname]])), as.Date(get_datafield_max(data$datafields[[data$timepoint_fieldname]])), by="days"))
   names(timepoint_byday) <- paste0(data$timepoint_fieldname, "_byday")
   # stats::aggregate function requires the grouping vector to be passed in as a list so do this once first
   # TODO: if data is e.g. monthly then need to take this into account
-  groupby_day = list(as.Date(get_datafield_vector(data$datafields[[data$timepoint_fieldname]])))
+  groupby_day <- list(as.Date(get_datafield_vector(data$datafields[[data$timepoint_fieldname]])))
 
+  ### AGGREGATE OVERALL DATASET
+  if(showprogress) cat("Aggregating overall dataset...","\n")
   # load aggregated data into new vector
   if(showprogress) cat("Aggregating each datafield in turn...","\n")
   agg <- vector("list", data$ncols_imported)
   for (i in 1:data$ncols_imported){
     if(showprogress) cat(i, ":", names(data$cols_imported_indexes)[i],"\n")
-    fieldindex = data$cols_imported_indexes[[i]]
-    agg[[i]] <- aggregatefield(data$datafields[[fieldindex]], timepoint_byday, groupby_day, showprogress)
+    fieldindex <- data$cols_imported_indexes[[i]]
+#  Preparation for placing subaggregates as children on each overall aggfield
+#    agg[[i]] <- c(aggregatefield(data$datafields[[fieldindex]], timepoint_byday, groupby_day, showprogress = showprogress), subaggregates=vector("list", 0))
+#    agg[[i]] <- c(aggregatefield(data$datafields[[fieldindex]], timepoint_byday, groupby_day, showprogress = showprogress), subaggregates=NA)
+    agg[[i]] <- aggregatefield(data$datafields[[fieldindex]], timepoint_byday, groupby_day, showprogress = showprogress)
   }
   names(agg) <- names(data$cols_imported_indexes)
 
-  # TODO: create flat dataframe for all changepoints
   if(showprogress) cat("Creating changepoint dataframe...","\n")
   changepoints_df <- all_changepoints(agg)
+
+
+  ### AGGREGATE BY EACH SOURCEFIELD SUBGROUP
+  # set up lists of correct size first
+  if(showprogress) cat("Checking for fields of type 'source'...","\n")
+  sourcefield_fieldname <- NA
+  sourcefield_indexes <- numeric()
+  # NOTE: could probably just loop through all datafields here, not sure of value of only checking the imported ones
+  for (i in 1:data$ncols_imported){
+  	fieldindex = data$cols_imported_indexes[[i]]
+  	if (is.fieldtype_source(data$datafields[[fieldindex]]$fieldtype)){
+  		sourcefield_indexes <- c(sourcefield_indexes, fieldindex)
+  		sourcefield_fieldname <- data$datafields[[fieldindex]]$columnname
+  	}
+  }
+  subaggregate <- vector("list", length(sourcefield_indexes))
+  for (i in 1:length(sourcefield_indexes)){
+  	if(showprogress) cat("Aggregating by ", data$datafields[[sourcefield_indexes[[i]]]]$columnname, "...","\n", sep = "")
+  	# create factor of sourcefield subgroups
+  	sourcefield_levels <- unlist(unique(data$datafields[[sourcefield_indexes[[i]]]]$values))
+  	subaggregate[[i]] <- vector("list", length(sourcefield_levels))
+  	for (j in 1:length(sourcefield_levels)){
+  		if(showprogress) cat("  Filter on ", data$datafields[[sourcefield_indexes[[i]]]]$columnname, "=", sourcefield_levels[j], ":\n", sep = "")
+  		# set groupby vector to ignore other levels
+  		sourcefield_levelindicator <- which(data$datafields[[sourcefield_indexes[[i]]]]$values != sourcefield_levels[j])
+  		sourcefield_groupby_day <- groupby_day
+  		sourcefield_groupby_day[[1]][sourcefield_levelindicator] <- NA
+  		if(showprogress) cat("    Aggregating each datafield in turn...","\n")
+  		subaggregate[[i]][[j]]$aggregatefields <- vector("list", data$ncols_imported - 1)
+  		for (k in 1:data$ncols_imported){
+  			if(showprogress) cat("      ", k, ":", names(data$cols_imported_indexes)[k],"\n")
+  			fieldindex = data$cols_imported_indexes[[k]]
+  			if (fieldindex != sourcefield_indexes[[i]]){
+  				subaggregate[[i]][[j]]$aggregatefields[[k]] <- aggregatefield(data$datafields[[fieldindex]], timepoint_byday, sourcefield_groupby_day, sourcefieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], sourcefieldvalue = sourcefield_levels[[j]], showprogress = showprogress)
+  			}
+  		}
+  		names(subaggregate[[i]][[j]]$aggregatefields) <- names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==sourcefield_indexes[[i]])]
+  		if(showprogress) cat("Creating changepoint dataframe...","\n")
+  		subaggregate[[i]][[j]]$changepoints_df <- all_changepoints(subaggregate[[i]][[j]]$aggregatefields)
+  		subaggregate[[i]][[j]]$timepoint_fieldname <- data$timepoint_fieldname
+  		subaggregate[[i]][[j]]$timepoint_unit <- timepoint_unit
+  	}
+  	names(subaggregate[[i]]) <- sourcefield_levels
+  }
+  names(subaggregate) <- names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% sourcefield_indexes)]
+
+
+#   # Place subaggregates as children on each overall aggfield
+#   # TODO: This doesn't yet work if you have >1 source fieldtype
+#   for (k in 1:length(agg)){
+#   	if (names(agg[k]) != names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[1]])]){
+#   		agg[[k]]$subaggregates <- vector("list", length(sourcefield_indexes))
+# 	  	for (i in 1:length(sourcefield_indexes)){
+# 	  			agg[[k]]$subaggregates[[i]] <- vector("list", length(sourcefield_levels))
+# 	  			for (j in 1:length(sourcefield_levels)){
+# 	  				agg[[k]]$subaggregates[[i]][[j]] <- subaggregate[[i]][[j]][[1]][[k]]
+# 	  			}
+# 	  			names(agg[[k]]$subaggregates[[i]]) <- paste0(names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], "_", sourcefield_levels)
+# 	  	}
+# 	  	names(agg[[k]]$subaggregates) <- paste0(names(agg[k]), "_by_", names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% sourcefield_indexes)])
+#   	}
+#   }
 
   structure(
     list(
       aggregatefields = agg,
       changepoints_df = changepoints_df,
       timepoint_fieldname = data$timepoint_fieldname,
-      timepoint_unit = "DAY" # not sure if this should be set at overall object level or allow it to differ per aggregatefield
+      timepoint_unit = timepoint_unit, # not sure if this should be set at overall object level or allow it to differ per aggregatefield
+      sourcefield_fieldname = sourcefield_fieldname,
+      subaggregates = subaggregate
     ),
     class = "cpdaggregate"
   )
@@ -259,15 +334,31 @@ is.cpdaggregate <- function(x) inherits(x, "cpdaggregate")
 export_aggregated_data <- function(cpdaggregate, save_directory, save_filetype = "csv"){
 	#temp assignment
 	# cpdaggregate<-testcpddata_byday
-	# save_directory = ".\\testoutput\\"
+	# save_directory = ".\\devtesting\\testoutput\\"
 	# save_filetype = "csv"
 
 	# TODO: validation checks on params
 
 	# export a file for each source field in dataset
 	for( i in 1:length(cpdaggregate$aggregatefields) ){
-		readr::write_csv(cpdaggregate$aggregatefields[[i]]$values, paste0(save_directory, names(cpdaggregate$aggregatefields[i]), ".csv") )
+		readr::write_csv(cpdaggregate$aggregatefields[[i]]$values,
+										 paste0(save_directory, names(cpdaggregate$aggregatefields[i]), ".csv") )
 	}
+
+	if (length(cpdaggregate$subaggregates) > 0){
+		numlevels <- length(cpdaggregate$subaggregates[[1]])
+		for( p in 1:numlevels ){
+			for( i in 1:length(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields) ){
+				readr::write_csv(cpdaggregate$subaggregates[[1]][[p]]$aggregatefields[[i]]$values,
+												 paste0(save_directory,
+												 			 names(cpdaggregate$aggregatefields[i]),
+												 			 "_by_", names(cpdaggregate$subaggregates),
+												 			 "_", names(cpdaggregate$subaggregates[[1]][p]),
+												 			 ".csv"))
+			}
+		}
+	}
+
 }
 
 #' @export
@@ -284,6 +375,7 @@ print.cpdaggregate <- function(x, ...){
 	cat("Max timepoint value:", aggsummary$overall["timepoint_max"], "\n")
 	cat("Total number of timepoints:", aggsummary$overall["n_timepoints"], "\n")
 	cat("Number of empty timepoints:", aggsummary$overall["n_empty_timepoints"], "\n")
+	cat("Column used as sourcefield:", aggsummary$overall["sourcefield_fieldname"], "\n")
 	cat("\n")
 	cat("By field:\n")
 	print(aggsummary$byfield)
@@ -294,7 +386,7 @@ print.cpdaggregate <- function(x, ...){
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 summarise_aggregated_data <- function(cpdaggregate){
 	#temp assignment
-	# cpdaggregate<-testcpddata_byday
+#	 cpdaggregate<-testcpddata_byday
 
 	aggfields <- cpdaggregate$aggregatefields
 
@@ -306,7 +398,8 @@ summarise_aggregated_data <- function(cpdaggregate){
 							 timepoint_min = format(min(aggfields[[cpdaggregate$timepoint_fieldname]]$values[[1]])),
 							 timepoint_max = format(max(aggfields[[cpdaggregate$timepoint_fieldname]]$values[[1]])),
 							 n_timepoints = length(aggfields[[cpdaggregate$timepoint_fieldname]]$values[[1]]),
-							 n_empty_timepoints = length(aggfields[[cpdaggregate$timepoint_fieldname]]$changepoints[["n"]][["is_zero"]]$istrue_indexes)
+							 n_empty_timepoints = length(aggfields[[cpdaggregate$timepoint_fieldname]]$changepoints[["n"]][["is_zero"]]$istrue_indexes),
+							 sourcefield_fieldname = cpdaggregate$sourcefield_fieldname
 	)
 
 	# summary info for each column in dataset
@@ -342,9 +435,20 @@ summarise_aggregated_data <- function(cpdaggregate){
 	#                       FUN = sum,
 	#                       drop = TRUE)
 
+	if( length(cpdaggregate$subaggregates) > 0 ){
+		numlevels <- length(cpdaggregate$subaggregates[[1]])
+		subaggs <- vector("list", numlevels)
+		for(p in 1:numlevels){
+			subaggs[[p]] <- summarise_aggregated_data(cpdaggregate$subaggregates[[1]][[p]])
+			subaggs[[p]]$overall <- c(subaggs[[p]]$overall, sourcefield_fieldname=cpdaggregate$sourcefield_fieldname, sourcefield_fieldvalue=names(cpdaggregate$subaggregates[[1]][p]))
+		}
+	} else{
+		subaggs <- NA
+	}
+
 	structure(
 		list(
-			overall = overall, byfield = byfield
+			overall = overall, byfield = byfield, bysourcefield = subaggs
 		),
 		class = "summary_aggregated_data"
 	)
