@@ -1,7 +1,7 @@
 ﻿PrescriptionID,TimepointDate,PrescriptionDate,PrescriptionType,AdmissionDate,Drug,Formulation,Dose,DoseUnit,FirstAdministrationDateTime,Clusterid,AntibioticsSource
 I283887,2014-01-01 00:00:00.000,NULL,Inhospital,2013-12-31,Meropenem,Meropenem IV,1000,mg,2014-01-01 00:00:00.000,4993679,ITU
-I283744,2014-01-01 01:00:00.000,NULL,Inhospital,2013-12-31,Co-amoxiclav (Penicillin Base),Co-amoxiclav (Penicillin Base) Oral,625,mg,2014-01-01 01:00:00.000,819452,ITU
-I283809,2014-01-01 01:00:00.000,NULL,Inhospital,2013-12-30,Flucloxacillin,NULL,1000,mg,2014-01-01 01:00:00.000,275597,ITU
+I283744,NULL,NULL,Inhospital,2013-12-31,Co-amoxiclav (Penicillin Base),Co-amoxiclav (Penicillin Base) Oral,625,mg,2014-01-01 01:00:00.000,819452,ITU
+I283809,NULL,NULL,Inhospital,2013-12-30,Flucloxacillin,NULL,1000,mg,2014-01-01 01:00:00.000,275597,ITU
 I283747,2014-01-01 01:00:00.000,NULL,Inhospital,2013-12-31,Clarithromycin,NULL,500,mg,2014-01-01 01:00:00.000,819452,ITU
 I283894,2014-01-01 02:00:00.000,NULL,Inhospital,2013-12-20,Tazocin (Piperacillin/Tazobactam),NULL,4.5,g,2014-01-01 02:00:00.000,528071,ITU
 I283901,2014-01-01 03:00:00.000,NULL,Inhospital,2013-12-30,Metronidazole,Metronidazole IV,500,mg,2014-01-01 03:00:00.000,1001434,ITU

@@ -1,5 +1,5 @@
 context("loading data")
-library(changedetection)
+library(ehrchangepoints)
 
 
 test_that("Creation of fieldtypes object", {

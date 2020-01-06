@@ -5,69 +5,77 @@
 
 # -----------------------------------------------------------------------------
 # all changepointresults for an individual aggregatefield
-find_changepoints <- function(aggfieldvalues, method = "all"){
+find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FALSE){
   #temp assignment
   #   aggfieldvalues<-testcpddata_byday$aggregatefields[[2]]$values
   # method = "all"
 
-  aggtypes = names(aggfieldvalues[-1])
+	if( method == "none" ){
+		log_message(paste0("Skipping changepoints calculation"), showprogress)
+		changepoints <- vector("list", 0)
+	}
+	else{
+		log_message(paste0("Calculating changepoints..."), showprogress)
+		aggtypes = names(aggfieldvalues[-1])
 
-  # # flat list
-  # # initialise list to bigger than needed
-  # changepoints <- vector("list", length(aggtypes)*4)
-  # index <- 1
-  # for(i in 1:length(aggtypes) ){
-  #   #    i = 1
-  #   # zeros are not meaningful for dates
-  #   if( aggtypes[i] %in% c("n","missing_n","missing_perc","distinct","min","max") &&
-  #       (!(inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") || inherits(aggfieldvalues[[aggtypes[i]]], "Date"))) ){
-  #     changepoints[[index]] <- changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore")
-  #     names(changepoints)[index] <- paste0(aggtypes[i], "__is_zero")
-  #     index <- index + 1
-  #     }
-  #   if( aggtypes[i] != "n" ){
-  #     changepoints[[index]] <- changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
-  #     names(changepoints)[index] <- paste0(aggtypes[i], "__is_na")
-  #     index <- index + 1
-  #   }
-  #   if( 1==1 ){
-  #     changepoints[[index]] <- changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i])
-  #     names(changepoints)[index] <- paste0(aggtypes[i], "__cptvar")
-  #     index <- index + 1
-  #   }
-  # }
-  # # truncate to last non-NULL element
-  # changepoints <- changepoints[1:index-1]
+	  # # flat list
+	  # # initialise list to bigger than needed
+	  # changepoints <- vector("list", length(aggtypes)*4)
+	  # index <- 1
+	  # for(i in seq_along(aggtypes) ){
+	  #   #    i = 1
+	  #   # zeros are not meaningful for dates
+	  #   if( aggtypes[i] %in% c("n","missing_n","missing_perc","distinct","min","max") &&
+	  #       (!(inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") || inherits(aggfieldvalues[[aggtypes[i]]], "Date"))) ){
+	  #     changepoints[[index]] <- changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore")
+	  #     names(changepoints)[index] <- paste0(aggtypes[i], "__is_zero")
+	  #     index <- index + 1
+	  #     }
+	  #   if( aggtypes[i] != "n" ){
+	  #     changepoints[[index]] <- changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
+	  #     names(changepoints)[index] <- paste0(aggtypes[i], "__is_na")
+	  #     index <- index + 1
+	  #   }
+	  #   if( 1==1 ){
+	  #     changepoints[[index]] <- changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i])
+	  #     names(changepoints)[index] <- paste0(aggtypes[i], "__cptvar")
+	  #     index <- index + 1
+	  #   }
+	  # }
+	  # # truncate to last non-NULL element
+	  # changepoints <- changepoints[1:index-1]
 
-  changepoints <- vector("list", length(aggtypes))
-  for(i in 1:length(aggtypes) ){
-    #    i = 1
-    if( aggtypes[i] == "n"){
-      # TODO: timepoint field should only do is_zero
-      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i])
-      )
-    } else if( aggtypes[i] %in% c("missing_n","missing_perc","distinct") ){
-      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
-                                is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
-      )
-    } else if( aggtypes[i] %in% c("min","max") ){
-      if( inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") | inherits(aggfieldvalues[[aggtypes[i]]], "Date") ) {
-        # zeros are not meaningful for dates
-        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
-        )
-      } else{
-        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-                                  is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
-                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
-        )
-      }
-    }
-  }
-  names(changepoints) <- aggtypes
+	  changepoints <- vector("list", length(aggtypes))
+	  for(i in seq_along(aggtypes) ){
+	  	log_message(paste0("  By ", aggtypes[i]), showprogress)
 
+	    #    i = 1
+	    if( aggtypes[i] == "n"){
+	      # TODO: timepoint field should only do is_zero
+	      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
+	                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i])
+	      )
+	    } else if( aggtypes[i] %in% c("missing_n","missing_perc","distinct") ){
+	      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
+	                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
+	                                is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
+	      )
+	    } else if( aggtypes[i] %in% c("min","max") ){
+	      if( inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") | inherits(aggfieldvalues[[aggtypes[i]]], "Date") ) {
+	        # zeros are not meaningful for dates
+	        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
+	                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
+	        )
+	      } else{
+	        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
+	                                  is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
+	                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
+	        )
+	      }
+	    }
+	  }
+	  names(changepoints) <- aggtypes
+	}
   structure(
     list(
       changepoints = changepoints
@@ -94,7 +102,7 @@ all_changepoints <- function(aggfields, showprogress = FALSE){
                        stringsAsFactors = FALSE)
 
   # add changepoints to dataframe
-  for(i in 1:length(aggfields)){
+  for(i in seq_along(aggfields)){
     #    i = 5
     if(showprogress) cat(i, ":", names(aggfields[i]),"\n")
     # use timepoint column to reflect overall counts
@@ -104,9 +112,9 @@ all_changepoints <- function(aggfields, showprogress = FALSE){
     }
     # populate data frame
     cpts <- aggfields[[i]]$changepoints
-    for(j in 1:length(cpts)){
+    for(j in seq_along(cpts)){
       if(showprogress) cat(" ",names(cpts[j]),": ")
-      for(k in 1:length(cpts[[j]])){
+      for(k in seq_along(cpts[[j]])){
         if(showprogress) cat(names(cpts[[j]][k]),", ")
         if( cpts[[j]][[k]]$n_changepoints > 0 ){
           cptall <- rbind(cptall,
@@ -161,28 +169,34 @@ changepoints_cptvar <- function(aggfieldvalues, aggtype){
   # aggtype = "missing_n"
   #aggtype = "min"
 
-  valuevector <- aggfieldvalues[[aggtype]]
+	log_message(paste0("    ", match.call()[[1]]))
+	valuevector <- aggfieldvalues[[aggtype]]
 
-  # replace NAs with a value well outside the range
-  if( is.numeric(valuevector)){
-    valuevector[is.na(valuevector)] <- (abs(max(valuevector, na.rm = TRUE))+100)*2
-  } else{
-      if( inherits(valuevector, "POSIXct") ) {
-        # TODO: not sure if it is OK to set the origin like this
-        valuevector[is.na(valuevector)] <- as.POSIXct(0, tz = "UTC", origin = "1900-01-01")
-      } else if( inherits(valuevector, "Date") ) {
-        valuevector[is.na(valuevector)] <- as.Date("1900-01-01")
-      } else {
-        stop("cpt.var method can only be used on numeric data")
-      }
-    # convert data to numeric explicitly (cpt.var complains if data is double)
-    valuevector <- as.numeric(valuevector)
-  }
+	# if no values then nothing to do
+	if( all(is.na(valuevector)) ){
+		changepoint_indexes <- vector("numeric")
+		changepoint_timepoints <- vector("numeric")
+	} else{
+		# replace NAs with a value well outside the range
+		if( is.numeric(valuevector)){
+			valuevector[is.na(valuevector)] <- (abs(max(valuevector, na.rm = TRUE))+100)*2
+		} else{
+			if( inherits(valuevector, "POSIXct") ) {
+				# TODO: not sure if it is OK to set the origin like this
+				valuevector[is.na(valuevector)] <- as.POSIXct(0, tz = "UTC", origin = "1900-01-01")
+			} else if( inherits(valuevector, "Date") ) {
+				valuevector[is.na(valuevector)] <- as.Date("1900-01-01")
+			} else {
+				stop("cpt.var method can only be used on numeric data")
+			}
+			# convert data to numeric explicitly (cpt.var complains if data is double)
+			valuevector <- as.numeric(valuevector)
+		}
 
-
-  cpts <- changepoint::cpt.var(valuevector, method = "PELT", class = FALSE)
-  changepoint_indexes = cpts[-length(cpts)]
-  changepoint_timepoints = aggfieldvalues[[1]][changepoint_indexes]
+		cpts <- changepoint::cpt.var(valuevector, method = "PELT", class = FALSE)
+		changepoint_indexes = cpts[-length(cpts)]
+		changepoint_timepoints = aggfieldvalues[[1]][changepoint_indexes]
+	}
 
   structure(
     list(
@@ -210,6 +224,8 @@ changepoints_is_zero <- function(aggfieldvalues, aggtype, nainterpretation = "ig
   #  aggtype = "missing_n"
   # nainterpretation = "ignore"
   #nainterpretation = "zero"
+
+	log_message(paste0("    ", match.call()[[1]]))
 
   zerovector <- aggfieldvalues[[aggtype]] == 0
 
@@ -257,7 +273,9 @@ changepoints_is_na <- function(aggfieldvalues, aggtype){
   #  aggtype = "n"
   #returnallna = FALSE
 
-  navector <- is.na(aggfieldvalues[[aggtype]])
+	log_message(paste0("    ", match.call()[[1]]))
+
+	navector <- is.na(aggfieldvalues[[aggtype]])
 
   vectorshiftone <- c(navector[1], navector[1:length(navector)-1])
   changepoint_indexes = which(navector-vectorshiftone != 0)

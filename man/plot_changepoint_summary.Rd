@@ -4,9 +4,15 @@
 \alias{plot_changepoint_summary}
 \title{Plot overall changepoint summary}
 \usage{
-plot_changepoint_summary(cpdaggregate, changepoint_methods = "all",
-  save_plot = TRUE, save_directory = NULL, save_filetype = "png",
-  save_filename = "Changepoint_summary", showprogress = FALSE)
+plot_changepoint_summary(
+  cpdaggregate,
+  changepoint_methods = "all",
+  save_plot = TRUE,
+  save_directory = NULL,
+  save_filetype = "png",
+  save_filename = "Changepoint_summary",
+  showprogress = FALSE
+)
 }
 \arguments{
 \item{cpdaggregate}{A \code{cpdaggregate} object}
@@ -15,9 +21,9 @@ plot_changepoint_summary(cpdaggregate, changepoint_methods = "all",
 
 \item{save_plot}{Save plot to disk. If FALSE, opens plot in device instead}
 
-\item{save_directory}{String. Relative path for save folder, use double blackslashes for nested folders and end with double backslash}
+\item{save_directory}{String. Relative path for save folder}
 
-\item{save_filetype}{String. Filetype extension supported by \code{ggplot2}, e.g. tif, pdf}
+\item{save_filetype}{String. Filetype extension supported by \code{ggplot2}, i.e. "eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"}
 
 \item{save_filename}{String. Filename for plot, excluding extension}
 

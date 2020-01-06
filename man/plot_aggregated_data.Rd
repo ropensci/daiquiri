@@ -4,8 +4,13 @@
 \alias{plot_aggregated_data}
 \title{Plot data for all aggregated fields}
 \usage{
-plot_aggregated_data(cpdaggregate, save_plot = TRUE,
-  save_directory = NULL, save_filetype = "png", showprogress = FALSE)
+plot_aggregated_data(
+  cpdaggregate,
+  save_plot = TRUE,
+  save_directory = NULL,
+  save_filetype = "png",
+  showprogress = FALSE
+)
 }
 \arguments{
 \item{cpdaggregate}{A \code{cpdaggregate} object}

@@ -1,0 +1,328 @@
+# Code for creation of sourcedata object
+#   which contains both the (vector) data for the field and the relevant metadata
+
+# -----------------------------------------------------------------------------
+# individual datafields
+# allowable datafield types match field_types
+
+# datafield <- function(x, fieldtype) {
+#   structure(x, fieldtypename = get_fieldtype_name(fieldtype), class = c(paste0("datafield_", get_fieldtype_name(fieldtype)), "datafield"))
+# }
+
+# NOTE: not sure if better for object to be the data vector or a list
+# TODO: not sure if better to store the entire fieldtype or just its name or even as a separate list in the sourcedata
+datafield <- function(x, fieldtype, validation_warnings = NULL) {
+  structure(list(values = x,
+  							 fieldtype = fieldtype,
+  							 columnname = names(x[1]),
+  							 validation_warnings = validation_warnings),
+            class = c(paste0("datafield_", get_fieldtype_name(fieldtype)), "datafield"))
+}
+
+is.datafield <- function(x) inherits(x, "datafield")
+
+# -----------------------------------------------------------------------------
+# constructor for sourcedata object
+# takes in a data frame, fieldtypes specification, and (string) sourcename
+# TODO: add some progress indicator for large files
+sourcedata <- function(df, fieldtypes, sourcename) {
+# temp assignments
+# df<-source_df
+# fieldtypes<-testfile_fieldtypes
+
+	log_function_start(paste(match.call()[[1]], sourcename))
+
+	rows_source_n <- nrow(df)
+	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
+	timepoint_fieldname <- names(timepoint_index)
+
+	# Validate data against specification, store warnings instead of printing them
+	# use readr::type_convert for now.  Ideally want to store original values and describe action taken too
+	# TODO: deal with warnings about embedded quotes
+	# TODO: don't know what is causing the "length of NULL cannot be changed" warning
+	# NOTE: row/column indexes for warnings appear to be for original data file, and count the header as row 1
+	raw_warnings <- NULL
+	clean_df <- withCallingHandlers(
+		readr::type_convert(df, fieldtypes_to_cols(fieldtypes, readfunction = "readr")),
+		warning = function(w) {
+			raw_warnings <<- append(raw_warnings, conditionMessage(w))
+			invokeRestart("muffleWarning")
+		}
+	)
+	# extract items of interest from warnings
+	relevant_warnings <- grep("\\[[0-9]*?, [0-9]*?\\]:", raw_warnings, value = TRUE)
+	# list of warnings each with character vector containing row, column, message
+	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
+	warningsdf <- data.frame(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
+													 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
+													 message = as.character(sapply(warningslist, function(x){x[3]})))
+
+	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
+	# this seems much harder than it should be
+	warningcols <- unique(warningsdf[["colindex"]])
+	for(c in seq_along(warningcols)){
+		warningrows <- warningsdf[["rowindex"]][which(warningsdf[["colindex"]] == warningcols[c])]
+		clean_df[warningrows, names(fieldtypes)[warningcols[c]]] <- NaN
+	}
+
+	# check and remove rows where timepoint field is null
+	# TODO: should I remove them here or when aggregating?  Summary doesn't look right if remove them here. Rownumbers in warnings no longer matches either
+	# TODO: check don't duplicate any messages from above
+	if (anyNA(clean_df[, timepoint_fieldname])){
+		navector <- is.na(clean_df[, timepoint_fieldname])
+		# use as.integer to suppress warning about discarding rownames.  There may be a better way
+		timepointwarnings <- data.frame(colindex = as.integer(timepoint_index),
+																		rowindex = which(navector == TRUE),
+																		message = "Missing or invalid value in Timepoint field"
+																		)
+		warningsdf <- rbind(warningsdf, timepointwarnings)
+		clean_df <- clean_df[which(!navector),]
+		timepoint_missing_n <- sum(navector)
+	} else{
+		timepoint_missing_n <- 0
+	}
+
+	# check for duplicate rows and remove them here
+	# They may skew other agg stats if left in, but would still be useful to see if dups change over time
+	duprowsvector <- duplicated(clean_df)
+	rows_duplicates_n <- sum(duprowsvector)
+	# TODO: Record number of duplicates on the first instance rather than just the fact it is duplicated
+	duprowsindex <- duplicated(clean_df, fromLast = TRUE) & !duprowsvector
+	# and remove the rest
+	duprowsindex <- data.frame("DUPLICATES" = duprowsindex[which(!duprowsvector)])
+	clean_df <- clean_df[which(!duprowsvector),]
+
+	rows_imported_n <- nrow(clean_df)
+
+	# basic summary info - don't know if appropriate to call directly in structure statement
+  # number of columns in source
+  cols_source_n <- length(fieldtypes)
+  # number of columns imported
+  cols_imported_n <- length(clean_df)
+
+  # load data into datafield classes
+  dfs <- vector("list", cols_source_n + 1)
+  cols_imported_indexes <- vector("integer")
+
+  # TODO: can't add NULL to class structure and can't seem to add an empty vector either
+
+  # not sure this vectorisation is working correctly, do I need to rewrite datafield() in a vectorised way too?
+  # is_fieldtype_ignore <- vapply(fieldtypes, is.fieldtype_ignore, logical(1))
+  # dfs[[is_fieldtype_ignore]] <- datafield(as.vector("ignored"), fieldtypes[is_fieldtype_ignore])
+  # dfs[[!is_fieldtype_ignore]] <- datafield(clean_df[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
+
+  for (i in 1:cols_source_n){
+    if (is.fieldtype_ignore(fieldtypes[[i]])){
+      dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
+    }
+    else{
+  		dfs[[i]] <- datafield(clean_df[names(fieldtypes[i])],
+  													fieldtypes[[i]],
+  													warningsdf[which(warningsdf$colindex == i), c("rowindex","message")])
+      cols_imported_indexes <- c(cols_imported_indexes, i)
+      names(cols_imported_indexes)[length(cols_imported_indexes)] <- names(fieldtypes[i])
+    }
+  }
+  # Create new datafield to store numbers of dups. Need to use a reserved word to distinguish it from imported fields
+  dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
+  											ft_duplicates(),
+  											)
+
+  names(dfs) <- c(names(fieldtypes), "DUPLICATES")
+
+  log_function_end(match.call()[[1]])
+
+  structure(
+    list(
+      datafields = dfs,
+      timepoint_fieldname = timepoint_fieldname,
+      timepoint_missing_n = timepoint_missing_n,
+      rows_source_n = rows_source_n,
+      rows_imported_n = rows_imported_n,
+      rows_duplicates_n = rows_duplicates_n,
+      cols_source_n = cols_source_n,
+      cols_imported_n = cols_imported_n,
+      cols_imported_indexes = cols_imported_indexes,
+#      validation_warnings = warningsdf, # TODO: not sure whether to store all warnings here or hive them off to each datafield
+      sourcename = sourcename
+    ),
+    class = "sourcedata"
+  )
+}
+
+is.sourcedata <- function(x) inherits(x, "sourcedata")
+
+#' @export
+print.sourcedata <- function(x, ...){
+	# TODO: to finish
+	sourcesummary <- summarise_source_data(x)
+	cat("Class: sourcedata\n")
+  cat("Source:", x$sourcename, "\n")
+  cat("\n")
+  cat("Overall:\n")
+  cat("Columns in source:", sourcesummary$overall["cols_source_n"], "\n")
+  cat("Columns imported:", sourcesummary$overall["cols_imported_n"], "\n")
+  cat("Rows in source:", sourcesummary$overall["rows_source_n"], "\n")
+  cat("Duplicate rows removed:", sourcesummary$overall["rows_duplicate_n"], "\n")
+  cat("Rows imported:", sourcesummary$overall["rows_imported_n"], "\n")
+  cat("Column used for timepoint:", sourcesummary$overall["timepoint_fieldname"], "\n")
+  cat("Min timepoint value:", sourcesummary$overall["timepoint_min"], "\n")
+  cat("Max timepoint value:", sourcesummary$overall["timepoint_max"], "\n")
+  cat("Rows missing timepoint values removed:", sourcesummary$overall["timepoint_missing_n"], "\n")
+  cat("Total validation warnings:", nrow(sourcesummary$validation_warnings), "\n")
+  cat("\n")
+  cat("Datafields:\n")
+  print(sourcesummary$datafields)
+  cat("\n")
+  cat("Validation warnings:\n")
+  cat("\n")
+  if (nrow(sourcesummary$validation_warnings) > 0){
+  	print(sourcesummary$validation_warnings)
+  } else{
+  	cat("None")
+  }
+
+}
+
+# summarise data
+# TODO: consider making this a generic summary() method instead.
+#       Help file says summary() is for models but there are a bunch of other objects implementing it too
+# TODO: Distinguish between imported and calculated fields
+summarise_source_data <- function(sourcedata){
+	#temp assignment
+	#  sourcedata<-testcpddata
+	# str(sourcedata)
+
+	# summary info for overall dataset
+	overall <- c(cols_source_n = format(sourcedata$cols_source_n),
+							 cols_imported_n = format(sourcedata$cols_imported_n),
+							 rows_source_n = format(sourcedata$rows_source_n),
+							 rows_duplicates_n = format(sourcedata$rows_duplicates_n),
+							 rows_imported_n = format(sourcedata$rows_imported_n),
+							 timepoint_fieldname = sourcedata$timepoint_fieldname,
+							 timepoint_min = get_datafield_min(sourcedata$datafields[[sourcedata$timepoint_fieldname]], format_as_string = TRUE),
+							 timepoint_max = get_datafield_max(sourcedata$datafields[[sourcedata$timepoint_fieldname]], format_as_string = TRUE),
+							 timepoint_missing_n = format(sourcedata$timepoint_missing_n)
+	)
+
+	# summary info for each column in dataset
+	datafields <- data.frame(fieldname = names(sourcedata$datafields),
+													 fieldtype = sapply(sourcedata$datafields, get_fieldtype_name.datafield),
+													 datatype = sapply(sourcedata$datafields,get_datafield_basetype, format_as_string = TRUE),
+													 missing = sapply(sourcedata$datafields, get_datafield_missing, format_as_string = TRUE),
+													 min = sapply(sourcedata$datafields, get_datafield_min, format_as_string = TRUE),
+													 max = sapply(sourcedata$datafields, get_datafield_max, format_as_string = TRUE),
+													 validation_warnings = sapply(sourcedata$datafields, get_datafield_validation_warnings_n, format_as_string = TRUE),
+													 stringsAsFactors = FALSE)
+
+	# validation errors on loading dataset
+	validation_warnings <- do.call(rbind, c(sapply(sourcedata$datafields,
+																								 function(x){
+																								 	cbind("Datafield"= rep(x$columnname, ifelse(is.null(nrow(x$validation_warnings)), 0, nrow(x$validation_warnings))),
+																								 				x$validation_warnings) }),
+																					make.row.names = FALSE))
+	# strangely, when all validation_warnings data frames are empty the above creates a matrix with single make.row.names row instead of an empty data frame
+	# set to empty data frame here until find better way of doing it
+	if (!is.data.frame(validation_warnings)){
+		validation_warnings <- cbind("Datafield"=character(0), sourcedata$datafields[[1]]$validation_warnings)
+	}
+
+	# do.call(rbind, sapply(sourcedata$datafields,
+	# 												function(x){
+	# 													cbind("Datafield"= rep(x$columnname, nrow(x$validation_warnings)),
+	# 																x$validation_warnings) }))
+
+	list(overall = overall, datafields = datafields, validation_warnings = validation_warnings)
+}
+
+# TODO: really not sure about naming convention used here. Not sure if worth setting up a generic
+get_fieldtype_name.datafield <- function(datafield){
+    datafield$fieldtype$type
+}
+
+#####################################################################
+# functions to get info about each individual datafield
+
+get_datafield_vector <- function(datafield){
+  if (is.fieldtype_ignore(datafield$fieldtype)){
+    NA
+  }
+  else{
+    datafield$values[[1]]
+  }
+}
+
+get_datafield_basetype <- function(datafield, format_as_string = FALSE){
+  if (format_as_string){
+    format(get_datafield_basetype(datafield))
+  }
+  else{
+    if (is.fieldtype_ignore(datafield$fieldtype)){
+      NA
+    }
+    else{
+      typeof(datafield$values[[1]])
+    }
+  }
+}
+
+get_datafield_min <- function(datafield, format_as_string = FALSE){
+  if (format_as_string){
+    format(get_datafield_min(datafield))
+  }
+  else{
+    if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+      NA
+    }
+    else{
+      min(datafield$values[[1]], na.rm = TRUE)
+    }
+  }
+}
+
+get_datafield_max <- function(datafield, format_as_string = FALSE){
+  if (format_as_string){
+    format(get_datafield_max(datafield))
+  }
+  else{
+    if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+      NA
+    }
+    else{
+      max(datafield$values[[1]], na.rm = TRUE)
+    }
+  }
+}
+
+get_datafield_missing <- function(datafield, format_as_string = FALSE){
+  if (format_as_string){
+    if (is.fieldtype_ignore(datafield$fieldtype)){
+      format(NA)
+    }
+    else{
+      paste0(sum(is.na(datafield$values[[1]])), " (", format(sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]])*100, digits = 3), "%)")
+    }
+  }
+  else{
+    if (is.fieldtype_ignore(datafield$fieldtype)){
+      NA
+    }
+    else{
+      list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
+    }
+  }
+}
+
+get_datafield_validation_warnings_n <- function(datafield, format_as_string = FALSE){
+	if (format_as_string){
+		format(get_datafield_validation_warnings_n(datafield))
+	}
+	else{
+		if (is.fieldtype_ignore(datafield$fieldtype) | is.fieldtype_calculated(datafield$fieldtype)){
+			NA
+		}
+		else{
+			nrow(datafield$validation_warnings)
+		}
+	}
+}

@@ -1,6 +1,6 @@
 library(testthat)
-library(changedetection)
+library(ehrchangepoints)
 
-test_check("changedetection")
+test_check("ehrchangepoints")
 
 

@@ -21,6 +21,7 @@ plot_aggregated_data <- function(cpdaggregate, save_plot = TRUE, save_directory 
 	# TODO: put some of the repeated ggplot2::ggplot calls into functions
 	# TODO: provide option to plot changepoints or not?
 	# TODO: currently, save_plot = FALSE is a bit pointless. Do we want to allow this to be used interactively and open plots in device?
+	# TODO: validate save_directory
 	#temp assignment
   # cpdaggregate<-testcpddata_byday
   # save_plot = TRUE
@@ -113,7 +114,6 @@ plot_aggregated_data <- function(cpdaggregate, save_plot = TRUE, save_directory 
     																		 "Overall_n",
     																		 paste0(names(cpdaggregate$subaggregates[[1]][[1]]$aggregatefields[i]), "_overall")),
     															"_by_", names(cpdaggregate$subaggregates),
-    															"_", names(cpdaggregate$subaggregates[[1]][p]),
     															".", save_filetype),
     											 gsub,
     											 nrow = numlevels)
@@ -138,7 +138,6 @@ plot_aggregated_data <- function(cpdaggregate, save_plot = TRUE, save_directory 
     																names(aggfields[i]),
     																"_", names(aggfields[[i]]$values[j]),
     																"_by_", names(cpdaggregate$subaggregates),
-    																"_", names(cpdaggregate$subaggregates[[1]][p]),
     																".", save_filetype),
     												 gsub,
     												 nrow = numlevels)
@@ -171,12 +170,12 @@ plot_aggregatefield_overall <- function(aggfield, save_plot = TRUE, save_directo
 		timepointcolname <- names(aggfield$values[1])
 		aggtype <- "n"
 		g <- ggplot2::ggplot(aggfield$values[c(timepointcolname, aggtype)], ggplot2::aes_string(timepointcolname, aggtype)) +
-			ggplot2::scale_x_date(date_breaks = "1 month") +
+			ggplot2::scale_x_date(limits = c(aggfield$values[1, timepointcolname], utils::tail(aggfield$values[timepointcolname], n=1)), date_breaks = "1 month") +
 			ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
 			ggplot2::xlab(timepointcolname) +
 			ggplot2::ylab("Number of records") +
 			ggplot2::ggtitle(paste0("Overall records", ifelse(is.null(aggfield$sourcefieldname), "", paste0(" - by ", aggfield$sourcefieldname, " (", aggfield$sourcefieldvalue, ")")))) +
-			ggplot2::geom_col()
+			ggplot2::geom_col(na.rm = TRUE)
 		# specify y axis scale
 		aggbreaks <- yscale_breaks(aggtype, max(aggfield$values[[aggtype]], na.rm = TRUE), min(aggfield$values[[aggtype]], na.rm = TRUE), aggfield$fieldtype)
 		if( !is.na(aggbreaks[1]) ){
@@ -202,9 +201,9 @@ plot_aggregatefield_overall <- function(aggfield, save_plot = TRUE, save_directo
 		aggbreaks <- yscale_breaks("n", max(totalrecords, na.rm = TRUE), min(totalrecords, na.rm = TRUE))
 		# TODO: consider reshaping dataset to long so can use stack option (which might make the legending easier)
 		g <- ggplot2::ggplot(data.frame(aggfield$values[c(timepointcolname,"n","missing_n")], totalrecords)) +
-			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "totalrecords"), fill = "red4") +
-			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "n")) +
-			ggplot2::scale_x_date(date_breaks = "1 month") +
+			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "totalrecords"), fill = "red4", na.rm = TRUE) +
+			ggplot2::geom_col(ggplot2::aes_string(x = timepointcolname, y = "n"), na.rm = TRUE) +
+			ggplot2::scale_x_date(limits = c(aggfield$values[1, timepointcolname], utils::tail(aggfield$values[timepointcolname], n=1)), date_breaks = "1 month") +
 			ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
 			ggplot2::xlab(names(aggfield$values[1])) +
 			ggplot2::ylab("Number of records") +
@@ -238,7 +237,7 @@ plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods
   timepointcolname <- names(aggfield$values[1])
   # set up universal plot characteristics
   g <- ggplot2::ggplot(aggfield$values[c(timepointcolname, aggtype)], ggplot2::aes_string(timepointcolname, aggtype)) +
-  	ggplot2::scale_x_date(date_breaks = "1 month") +
+  	ggplot2::scale_x_date(limits = c(aggfield$values[1, timepointcolname], utils::tail(aggfield$values[timepointcolname], n=1)), date_breaks = "1 month") +
   	ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
   	ggplot2::xlab(timepointcolname) +
   	ggplot2::ylab(aggtype) +
@@ -257,9 +256,9 @@ plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods
   	}
   } else{
 	  if( aggtype %in% c("n","missing_n","missing_perc","distinct") ){
-	    g <- g + ggplot2::geom_col()
+	    g <- g + ggplot2::geom_col(na.rm = TRUE)
 	  } else if( aggtype %in% c("min","max") ){
-	    g <- g + ggplot2::geom_point()
+	    g <- g + ggplot2::geom_point(na.rm = TRUE)
 	  } else {
 	    stop(paste("Unknown aggregate type:", aggtype))
 	  }
@@ -299,8 +298,8 @@ plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods
 #' @param cpdaggregate A \code{cpdaggregate} object
 #' @param changepoint_methods Vector of shortnames of changepoint methods to include or exclude from plot
 #' @param save_plot Save plot to disk. If FALSE, opens plot in device instead
-#' @param save_directory String. Relative path for save folder, use double blackslashes for nested folders and end with double backslash
-#' @param save_filetype String. Filetype extension supported by \code{ggplot2}, e.g. tif, pdf
+#' @param save_directory String. Relative path for save folder
+#' @param save_filetype String. Filetype extension supported by \code{ggplot2}, i.e. "eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"
 #' @param save_filename String. Filename for plot, excluding extension
 #' @param showprogress Print progress to console. Default = FALSE
 #' @return A \code{cpdaggregate} object
@@ -322,6 +321,10 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
 	#cpdaggregate <- testcpddata_byday$subaggregates[[1]][[1]]
 
   # TODO: validate/reformat save parameters
+	if(save_plot == TRUE){
+		save_directory <- validate_param_dir(save_directory)
+		validate_param_filetype_plot(save_filetype)
+	}
 
 	aggfields <- cpdaggregate$aggregatefields
 
@@ -350,7 +353,8 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
   # aggregate by aggfield
   # TODO: consider scaling by total number of changepoint methods/aggtypes
   # TODO: consider adding an overall category which sums across all the fields
-  cptedges <- cptdf[cptdf$changepointtype == "edge", c("fieldname","timepoint")]
+	# exclude zero counts as these will be shown by red lines
+	cptedges <- cptdf[cptdf$changepointtype == "edge" & !(cptdf$changepoint_method=="is_zero {internal}"), c("fieldname","timepoint")]
   cptedgesagg <- stats::aggregate(cptedges, by = list(fieldname=cptedges$fieldname, timepoint=cptedges$timepoint), FUN = length)[,1:3]
   names(cptedgesagg)[3] <- "numchangepoints"
 
@@ -367,7 +371,7 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
                  linetype="solid",
                  size=0.1,
                  col="grey70") +
-  	ggplot2::scale_x_date(date_breaks = "1 month") +
+#  	ggplot2::scale_x_date(date_breaks = "1 month") +
   	ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
 #    theme(aspect.ratio = 0.5) +
   	ggplot2::theme(legend.position = "none") +
@@ -397,7 +401,7 @@ plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", 
 
 
   if(save_plot){
-  	ggplot2::ggsave(paste0(save_directory, save_filename, ifelse(is.null(aggfields[[1]]$sourcefieldname), "", paste0("_by_", aggfields[[1]]$sourcefieldname, "_", aggfields[[1]]$sourcefieldvalue)), ".", save_filetype))
+  	ggplot2::ggsave(file.path(save_directory, paste0(save_filename, ifelse(is.null(aggfields[[1]]$sourcefieldname), "", paste0("_by_", aggfields[[1]]$sourcefieldname, "_", aggfields[[1]]$sourcefieldvalue)), ".", save_filetype)))
   } else{
   	g
   }
