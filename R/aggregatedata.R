@@ -487,8 +487,12 @@ print.aggregatedata <- function(x, ...){
 	cat("Number of empty timepoints:", aggsummary$overall["n_empty_timepoints"], "\n")
 	cat("Column(s) used as sourcefield:", aggsummary$overall["sourcefield_fieldnames"], "\n")
 	cat("\n")
-	cat("By field:\n")
-	print(aggsummary$byfield)
+	cat("Change points by field:\n")
+	if( nrow(aggsummary$byfield) > 0){
+		print(aggsummary$byfield)
+	} else{
+		cat("Change points not calculated.\n")
+	}
 }
 
 # summarise aggregated data
@@ -552,7 +556,7 @@ summarise_aggregated_data <- function(aggregatedata){
 			subaggs[[p]] <- vector("list", numlevels)
 			for(q in 1:numlevels){
 				subaggs[[p]][[q]] <- summarise_aggregated_data(aggregatedata$subaggregates[[p]][[q]])
-				subaggs[[p]][[q]]$overall <- c(subaggs[[q]]$overall, sourcefield_fieldname=aggregatedata$sourcefield_fieldnames[[p]], sourcefield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
+				subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, sourcefield_fieldname=aggregatedata$sourcefield_fieldnames[[p]], sourcefield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
 			}
 		}
 	}
