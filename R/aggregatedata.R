@@ -147,20 +147,18 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
 	  	} else if( f == "distinct" ){
 	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){length(unique(x[!is.na(x)]))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
 	  	} else if( f %in% c("min","max","mean","median") ){
-	  		# min/max return Inf when all values are NA. Use NA instead as don't want to differentiate these from timepoints where there are no records
-	  		if( all(is.na(x)) ){
-	  			groupedvals <- cbind(groupedvals, NA)
-	  		} else{
-	  			if( f == "min" ){
-	  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){min(x, na.rm = TRUE)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  			} else if( f == "max" ){
-	  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){max(x, na.rm = TRUE)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  			} else if( f == "mean" ){
-	  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){mean(x, na.rm = TRUE)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  			} else if( f == "median" ){
-	  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){stats::median(x, na.rm = TRUE)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  			}
-	  		}
+	  		# min/max returns a warning when all values are NA. Can't find a good way to suppress only that specific warning
+  			if( f == "min" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(min(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "max" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(max(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "mean" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(mean(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "median" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(stats::median(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			}
+	  		# replace Inf with NA
+	  		groupedvals[[i+1]][which(is.infinite(groupedvals[[i+1]]))] <- NA
   			# min/max also drops datetime class
   			# preserve datatypes
   			if( inherits(x,"POSIXct") ){
