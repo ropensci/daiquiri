@@ -25,12 +25,13 @@ is.datafield <- function(x) inherits(x, "datafield")
 # constructor for sourcedata object
 # takes in a data frame, fieldtypes specification, and (string) sourcename
 # TODO: add some progress indicator for large files
-sourcedata <- function(df, fieldtypes, sourcename) {
+sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 # temp assignments
 # df<-source_df
 # fieldtypes<-testfile_fieldtypes
 
 	log_function_start(paste(match.call()[[1]], sourcename))
+	log_message(paste0("Processing source data..."), showprogress)
 
 	rows_source_n <- nrow(df)
 	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
@@ -41,6 +42,7 @@ sourcedata <- function(df, fieldtypes, sourcename) {
 	# TODO: deal with warnings about embedded quotes
 	# TODO: don't know what is causing the "length of NULL cannot be changed" warning
 	# NOTE: row/column indexes for warnings appear to be for original data file, and count the header as row 1
+	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
 	clean_df <- withCallingHandlers(
 		readr::type_convert(df, fieldtypes_to_cols(fieldtypes, readfunction = "readr")),
@@ -82,24 +84,30 @@ sourcedata <- function(df, fieldtypes, sourcename) {
 		timepoint_missing_n <- 0
 	}
 
+	log_message(paste0("Checking for duplicates..."), showprogress)
 	# check for duplicate rows and remove them here
 	# They may skew other agg stats if left in, but would still be useful to see if dups change over time
-	duprowsvector <- duplicated(clean_df)
-	rows_duplicates_n <- sum(duprowsvector)
+	# base::duplicated() is really slow and memory sapping, so use data.table version instead
+	clean_dt <- data.table::data.table(clean_df)
+	#	TODO: is there a way of doing this without calling duplicated() twice?
+	duprowsvector <- duplicated(clean_dt)
 	# TODO: Record number of duplicates on the first instance rather than just the fact it is duplicated
-	duprowsindex <- duplicated(clean_df, fromLast = TRUE) & !duprowsvector
+	duprowsindex <- duplicated(clean_dt, fromLast = TRUE) & !duprowsvector
+
 	# and remove the rest
 	duprowsindex <- data.frame("DUPLICATES" = duprowsindex[which(!duprowsvector)])
 	clean_df <- clean_df[which(!duprowsvector),]
 
+	# basic summary info
 	rows_imported_n <- nrow(clean_df)
+	# number of columns in source
+	cols_source_n <- length(fieldtypes)
+	# number of columns imported
+	cols_imported_n <- length(clean_df)
+	# number of duplicate rows removed
+	rows_duplicates_n <- sum(duprowsvector)
 
-	# basic summary info - don't know if appropriate to call directly in structure statement
-  # number of columns in source
-  cols_source_n <- length(fieldtypes)
-  # number of columns imported
-  cols_imported_n <- length(clean_df)
-
+	log_message(paste0("Loading into sourcedata struture..."), showprogress)
   # load data into datafield classes
   dfs <- vector("list", cols_source_n + 1)
   cols_imported_indexes <- vector("integer")
@@ -129,6 +137,7 @@ sourcedata <- function(df, fieldtypes, sourcename) {
   											)
 
   names(dfs) <- c(names(fieldtypes), "DUPLICATES")
+
 
   log_function_end(match.call()[[1]])
 

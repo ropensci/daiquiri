@@ -4,7 +4,13 @@
 \alias{load_dataset}
 \title{Load source data}
 \usage{
-load_dataset(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL)
+load_dataset(
+  x,
+  fieldtypes = NULL,
+  override_columnnames = FALSE,
+  na = NULL,
+  showprogress = FALSE
+)
 }
 \arguments{
 \item{x}{Either a data frame or a string containing full or relative path of file containing data to load}
@@ -14,6 +20,8 @@ load_dataset(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL)
 \item{override_columnnames}{If TRUE, replace column names in source with fieldtypes specification. If FALSE, column names must exist in data frame or header row of file and must match the names specified in fieldtypes exactly}
 
 \item{na}{vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}}
+
+\item{showprogress}{Print progress to console. Default = FALSE}
 }
 \value{
 A \code{sourcedata} object

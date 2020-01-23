@@ -26,9 +26,10 @@ NULL
 #' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
 #' @param override_columnnames If TRUE, replace column names in source with fieldtypes specification. If FALSE, column names must exist in data frame or header row of file and must match the names specified in fieldtypes exactly
 #' @param na vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}
+#' @param showprogress Print progress to console. Default = FALSE
 #' @return A \code{sourcedata} object
 #' @export
-load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL){
+load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL, showprogress = FALSE){
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
 	# TODO: add option to suppress output to console
@@ -38,10 +39,11 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 	# TODO: return a recommendation(s) for timepoint granularity?
 	# TODO: check validity of arguments, e.g. mismatch between fieldtypes names and column names
 	# temp assignments
-	#x <- testfile
-	#fieldtypes <- testfile_fieldtypes
-	#override_columnnames = FALSE
-	#na = na=c("","NULL")
+	# x <- testfile
+	# fieldtypes <- testfile_fieldtypes
+	# override_columnnames = FALSE
+	# na = na=c("","NULL")
+	# showprogress=TRUE
 
 	if( is.data.frame(x) ){
 		# check for mismatch between fieldtypes names and column names
@@ -55,6 +57,8 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 		ext <- tolower(substring(x, regexpr("\\.[^\\.]*$", x)))
 		# load data
 		if( ext == ".csv"){
+			log_message(paste0("Identified csv file..."), showprogress)
+			log_message(paste0("Checking column names against fieldtypes..."), showprogress)
 			# check for mismatch between fieldtypes names and column names before reading in whole file
 			# assumes first row has column names
 			check_df <- data.table::fread(file = x, nrows = 1, sep = "auto", na.strings = na, data.table = FALSE)
@@ -64,6 +68,7 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 			# TODO: doesn't recognise that a string that starts with a number is not a number (DurationEnteredByPrescriber)
 			# TODO: deal with parsing errors appropriately
 			# read all values as string, then check datatypes after
+			log_message(paste0("Reading file from disk..."), showprogress)
 			source_df <- readr::read_csv(x, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=na)
 
 			# return a dataframe instead of a data.table
@@ -86,7 +91,7 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 
 
   # create sourcedata object which includes "ignored" columns
-  sourcedata <- sourcedata(source_df, fieldtypes, source_name)
+  sourcedata <- sourcedata(source_df, fieldtypes, source_name, showprogress)
   # print summary to console
   print(summarise_source_data(sourcedata))
 
