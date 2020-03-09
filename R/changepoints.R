@@ -88,6 +88,7 @@ is.changepoints <- function(x) inherits(x, "changepoints")
 
 # return all changepoints in single dataframe
 # TODO: could probably do with a better name
+# TODO: Allow changepoints to be added to an existing aggregatedata object
 all_changepoints <- function(aggfields, showprogress = FALSE){
   #temp assignment
   #  aggfields<-testcpddata_byday$aggregatefields

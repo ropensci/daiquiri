@@ -27,9 +27,10 @@ NULL
 #' @param override_columnnames If TRUE, replace column names in source with fieldtypes specification. If FALSE, column names must exist in data frame or header row of file and must match the names specified in fieldtypes exactly
 #' @param na vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}
 #' @param showprogress Print progress to console. Default = FALSE
+#' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A \code{sourcedata} object
 #' @export
-load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL, showprogress = FALSE){
+load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
 	# TODO: add option to suppress output to console
@@ -38,18 +39,28 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 	#   maybe create a single top-level function too
 	# TODO: return a recommendation(s) for timepoint granularity?
 	# TODO: check validity of arguments, e.g. mismatch between fieldtypes names and column names
+	# TODO: distinguish between NULLs and empty strings? Probably useful to do so, though user could always treat empty strings as values (in na param)
 	# temp assignments
 	# x <- testfile
-	# fieldtypes <- testfile_fieldtypes
+	# (fieldtypes <- testfile_fieldtypes
 	# override_columnnames = FALSE
 	# na = na=c("","NULL")
 	# showprogress=TRUE
 
+	if( !is.null(log_directory) ){
+		log_initialise(log_directory)
+	}
+	log_function_start(match.call()[[1]])
+
+	# TODO: log all params
+	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)), showprogress)
+
 	if( is.data.frame(x) ){
+		source_name <- as.list(match.call())$x
+		log_message(paste0("Identified data frame [", source_name, "]"), showprogress)
 		# check for mismatch between fieldtypes names and column names
 		validate_columnnames(names(x), names(fieldtypes), check_length_only = override_columnnames)
 		source_df <- x
-		source_name <- as.list(match.call())$x
 	} else if( is.character(x) ){
 		# assume all strings are file paths for now
 		validate_param_file(x)
@@ -57,7 +68,7 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 		ext <- tolower(substring(x, regexpr("\\.[^\\.]*$", x)))
 		# load data
 		if( ext == ".csv"){
-			log_message(paste0("Identified csv file..."), showprogress)
+			log_message(paste0("Identified csv file [", source_name, "]"), showprogress)
 			log_message(paste0("Checking column names against fieldtypes..."), showprogress)
 			# check for mismatch between fieldtypes names and column names before reading in whole file
 			# assumes first row has column names
@@ -94,6 +105,8 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
   sourcedata <- sourcedata(source_df, fieldtypes, source_name, showprogress)
   # print summary to console
   print(summarise_source_data(sourcedata))
+
+  log_function_end(match.call()[[1]])
 
   # return sourcedata object
   sourcedata

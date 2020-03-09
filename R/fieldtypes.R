@@ -13,14 +13,14 @@
 # -----------------------------------------------------------------------------
 # SPECIFY ALLOWABLE TYPES
 
-# ... allows for optional params for specific types
 # `collector' is readr `collector'
 # TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones
-fieldtype <- function(type, collector, dataclass, aggfunctions = c("n", "missing_n", "missing_perc"), ...) {
-  structure(list(type = type,
-                 collector = collector,
-  							 dataclass = dataclass,
-                 aggfunctions = aggfunctions, ...),
+fieldtype <- function(type, collector, dataclass, aggfunctions = c("n", "missing_n", "missing_perc"), options = NULL) {
+	structure(list(type = type,
+								 collector = collector,
+								 dataclass = dataclass,
+								 aggfunctions = aggfunctions,
+  							 options = options),
             class = c(paste0("fieldtype_", type), "fieldtype")
             )
 }
@@ -35,15 +35,10 @@ is.fieldtype_datetime <- function(x) inherits(x, "fieldtype_datetime")
 
 is.fieldtype_number <- function(x) inherits(x, "fieldtype_number")
 
-is.fieldtype_source <- function(x) inherits(x, "fieldtype_source")
+is.fieldtype_partition <- function(x) inherits(x, "fieldtype_partition")
 
 is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fieldtype_duplicates"))
 
-
-#' @export
-print.fieldtype <- function(x, ...) {
-  cat("<", class(x)[1], ">\n", sep = "")
-}
 
 #' Available fieldtypes
 #'
@@ -53,8 +48,8 @@ print.fieldtype <- function(x, ...) {
 NULL
 
 #' @section Details:
-#' \code{ft_timepoint} - identifies the data field which should be used as the independent time variable. There should be
-#' one and only one of these specified.
+#' \code{ft_timepoint} - identifies the data field which should be used as the independent time variable.
+#'   There should be one and only one of these specified.
 #' @rdname availablefieldtypes
 #' @export
 ft_timepoint <- function() {
@@ -74,33 +69,44 @@ ft_uniqueidentifier <- function() {
   fieldtype("uniqueidentifier",
             readr::col_character(),
   					dataclass = "character",
-  					aggfunctions = c("n", "missing_n", "missing_perc")
+  					aggfunctions = c("n", "missing_n", "missing_perc", "minlength", "maxlength", "meanlength")
             )
 
 }
 
 #' @section Details:
-#' \code{ft_source} - identifies data fields which indicate that different data rows originated from distinct source systems.
-#' There should be at most one of these specified.
+#' \code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
+#'   should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
+#' The data will be aggregated overall as well as by each partition.
 #' @rdname availablefieldtypes
 #' @export
-ft_source <- function() {
-  fieldtype("source",
+ft_partition <- function() {
+  fieldtype("partition",
             readr::col_character(),
   					dataclass = "character",
-  					aggfunctions = c("n", "missing_n", "missing_perc", "distinct")
+  					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
             )
 }
 
 #' @section Details:
 #' \code{ft_categorical} - identifies data fields which should be treated as categorical.
+#' @param aggregate_by_each_category If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE
 #' @rdname availablefieldtypes
 #' @export
-ft_categorical <- function() {
+ft_categorical <- function( aggregate_by_each_category = FALSE ) {
+	# TODO: allow more options for aggregate_by_each_category, e.g. topx (bysize), or accept a vector of values
+	aggfn <- c("n", "missing_n", "missing_perc", "distinct")
+	options <- NULL
+	if( aggregate_by_each_category ){
+		aggfn <- c(aggfn, "subcat_n", "subcat_perc")
+		# TODO: can probably do something more sophisticated here with match.call()
+		options <- "aggregate_by_each_category"
+	}
   fieldtype("categorical",
             readr::col_character(),
   					dataclass = "character",
-  					aggfunctions = c("n", "missing_n", "missing_perc", "distinct")
+  					aggfunctions = aggfn,
+  					options = options
   )
 }
 
@@ -178,11 +184,12 @@ ft_allfields <- function() {
 }
 
 # this is an internal fieldtype for calculating duplicates and should not be set explicitly by user
+# TODO: rename aggfunctions now that values show number of dups (and not just whether or not there is a dup there)
 ft_duplicates <- function() {
 	fieldtype("duplicates",
 						readr::col_skip(),
 						dataclass = "NULL",
-						aggfunctions = c("nonzero_n", "nonzero_perc")
+						aggfunctions = c("n", "nonzero_perc")
 	)
 }
 
@@ -200,10 +207,10 @@ ft_duplicates <- function() {
 #' @return A \code{fieldtypes} object
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier()
 #'   ,TestDate = ft_timepoint()
-#'   ,TestName = ft_categorical()
+#'   ,TestName = ft_categorical(aggregate_by_each_category = FALSE)
 #'   ,TestResult = ft_number()
 #'   ,TestComment = ft_ignore()
-#'   ,Site = ft_source())
+#'   ,Site = ft_partition())
 #' @export
 fieldtypes <- function(...) {
   fts <- list(...)
@@ -221,10 +228,10 @@ fieldtypes <- function(...) {
     # TODO: better to return names rather than indices
     err_validation[length(err_validation)+1] <- paste("Must contain one and only one timepoint field. Relevant fields [", paste(which(is_timepoint), collapse = ", "), "]")
   }
-  is_source <- vapply(fts, is.fieldtype_source, logical(1))
-  # if (sum(is_source) > 1) {
+  is_partition <- vapply(fts, is.fieldtype_partition, logical(1))
+  # if (sum(is_partition) > 1) {
   # 	# TODO: better to return names rather than indices
-  # 	err_validation[length(err_validation)+1] <- paste("Must contain a maximum of one source field. Relevant fields [", paste(which(is_source), collapse = ", "), "]")
+  # 	err_validation[length(err_validation)+1] <- paste("Must contain a maximum of one partition field. Relevant fields [", paste(which(is_partition), collapse = ", "), "]")
   # }
   if (length(err_validation) > 0) {
     stop("Invalid `fieldtypes' specification. ",
@@ -236,6 +243,24 @@ fieldtypes <- function(...) {
 }
 
 is.fieldtypes <- function(x) inherits(x, "fieldtypes")
+
+fieldtypes_to_string <- function(fieldtypes){
+	s <- ""
+	for( ft in seq_along(fieldtypes) ){
+		s <- paste0(s, names(fieldtypes[ft]), "\t", "<", class(fieldtypes[[ft]])[1], ">")
+		if( !is.null(fieldtypes[[ft]]$options) ){
+			s <- paste0(s, "\t", "options: ", fieldtypes[[ft]]$options)
+		}
+		s <- paste0(s, "\n")
+	}
+	s
+}
+
+#' @export
+print.fieldtypes <- function(x, ...) {
+	cat(fieldtypes_to_string(x))
+}
+
 
 
 # -----------------------------------------------------------------------------

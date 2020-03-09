@@ -21,8 +21,8 @@ Helper function for users to specify the types of fields in the source data.  Th
 \examples{
 fts <- fieldtypes(PatientID = ft_uniqueidentifier()
   ,TestDate = ft_timepoint()
-  ,TestName = ft_categorical()
+  ,TestName = ft_categorical(aggregate_by_each_category = FALSE)
   ,TestResult = ft_number()
   ,TestComment = ft_ignore()
-  ,Site = ft_source())
+  ,Site = ft_partition())
 }

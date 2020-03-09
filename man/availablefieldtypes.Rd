@@ -4,7 +4,7 @@
 \alias{availablefieldtypes}
 \alias{ft_timepoint}
 \alias{ft_uniqueidentifier}
-\alias{ft_source}
+\alias{ft_partition}
 \alias{ft_categorical}
 \alias{ft_number}
 \alias{ft_datetime}
@@ -17,9 +17,9 @@ ft_timepoint()
 
 ft_uniqueidentifier()
 
-ft_source()
+ft_partition()
 
-ft_categorical()
+ft_categorical(aggregate_by_each_category = FALSE)
 
 ft_number()
 
@@ -31,21 +31,25 @@ ft_simple()
 
 ft_ignore()
 }
+\arguments{
+\item{aggregate_by_each_category}{If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE}
+}
 \description{
 Specify the type of data contained in each field of your dataset using a combination of the following
 }
 \section{Details}{
 
-\code{ft_timepoint} - identifies the data field which should be used as the independent time variable. There should be
-one and only one of these specified.
+\code{ft_timepoint} - identifies the data field which should be used as the independent time variable.
+  There should be one and only one of these specified.
 
 
 \code{ft_uniqueidentifier} - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient.
 It does not need to be unique within the dataset.
 
 
-\code{ft_source} - identifies data fields which indicate that different data rows originated from distinct source systems.
-There should be at most one of these specified.
+\code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
+  should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
+The data will be aggregated overall as well as by each partition.
 
 
 \code{ft_categorical} - identifies data fields which should be treated as categorical.

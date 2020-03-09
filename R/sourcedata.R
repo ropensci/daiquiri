@@ -24,13 +24,12 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 # constructor for sourcedata object
 # takes in a data frame, fieldtypes specification, and (string) sourcename
-# TODO: add some progress indicator for large files
 sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 # temp assignments
 # df<-source_df
 # fieldtypes<-testfile_fieldtypes
 
-	log_function_start(paste(match.call()[[1]], sourcename))
+	log_function_start(match.call()[[1]])
 	log_message(paste0("Processing source data..."), showprogress)
 
 	rows_source_n <- nrow(df)
@@ -85,18 +84,51 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 	}
 
 	log_message(paste0("Checking for duplicates..."), showprogress)
+	# sort by timepoint field then by everything else, so that we can batch the data
+	# TODO: change param to require dt instead of df to use less memory?
+	clean_dt <- data.table::data.table(clean_df)
+	log_message(paste0("  Sorting data..."), showprogress)
+	data.table::setorderv(clean_dt, c(timepoint_fieldname, names(clean_df)[-timepoint_index]))
+
 	# check for duplicate rows and remove them here
 	# They may skew other agg stats if left in, but would still be useful to see if dups change over time
 	# base::duplicated() is really slow and memory sapping, so use data.table version instead
-	clean_dt <- data.table::data.table(clean_df)
-	#	TODO: is there a way of doing this without calling duplicated() twice?
-	duprowsvector <- duplicated(clean_dt)
-	# TODO: Record number of duplicates on the first instance rather than just the fact it is duplicated
-	duprowsindex <- duplicated(clean_dt, fromLast = TRUE) & !duprowsvector
+	# also need to chunk up large datasets
+	# estimate total size and limit size of each chunk
+	dtsize <- utils::object.size(clean_dt)
+	if (dtsize > 200000000){
+		numrows <- nrow(clean_dt)
+		numchunks <- as.numeric(ceiling(dtsize/200000000))
+		chunkrows <- ceiling(numrows/numchunks)
+		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
+		timepoint_vector <- clean_dt[[timepoint_index]]
+		duprowsvector <- logical(0)
+		for (chunk in 1:numchunks){
+			log_message(paste0("  Batch ", chunk), showprogress)
+			chunkstart <- which.max(timepoint_vector >= timepoint_vector[((chunk-1)*chunkrows) + 1])
+			if( chunk < numchunks){
+				# end on the previous (unique) date that the chunk lands on
+				chunkend <- which.max(timepoint_vector >= timepoint_vector[chunk*chunkrows]) - 1
+			} else{
+				# or else to the end of the dataset
+				chunkend <- numrows
+			}
+			duprowsvector[chunkstart:chunkend] <- duplicated(clean_dt[chunkstart:chunkend, ])
+		}
+	}
+	else{
+		duprowsvector <- duplicated(clean_dt)
+	}
+	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
+	duprowsindex <- c(duprowsvector[-1], FALSE)
+	duprowsindex <- duprowsindex & !duprowsvector
+	# ...and record the no. of duplicates on it
+	dpruns <- rle(duprowsvector)
+	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
 
-	# and remove the rest
+	# and remove the duplicates from the final clean dataset
 	duprowsindex <- data.frame("DUPLICATES" = duprowsindex[which(!duprowsvector)])
-	clean_df <- clean_df[which(!duprowsvector),]
+	clean_df <- clean_dt[which(!duprowsvector),]
 
 	# basic summary info
 	rows_imported_n <- nrow(clean_df)
@@ -105,7 +137,7 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 	# number of columns imported
 	cols_imported_n <- length(clean_df)
 	# number of duplicate rows removed
-	rows_duplicates_n <- sum(duprowsvector)
+	rows_duplicates_n <- sum(duprowsvector, na.rm = TRUE)
 
 	log_message(paste0("Loading into sourcedata struture..."), showprogress)
   # load data into datafield classes
@@ -120,7 +152,8 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
   # dfs[[!is_fieldtype_ignore]] <- datafield(clean_df[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
 
   for (i in 1:cols_source_n){
-    if (is.fieldtype_ignore(fieldtypes[[i]])){
+  	log_message(paste0("  ", names(fieldtypes[i])), showprogress)
+  	if (is.fieldtype_ignore(fieldtypes[[i]])){
       dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
     }
     else{
@@ -131,11 +164,11 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
       names(cols_imported_indexes)[length(cols_imported_indexes)] <- names(fieldtypes[i])
     }
   }
-  # Create new datafield to store numbers of dups. Need to use a reserved word to distinguish it from imported fields
+  # Create new datafield to store numbers of dups.
   dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
   											ft_duplicates(),
   											)
-
+	# TODO: Need to use a reserved word to distinguish it from imported fields
   names(dfs) <- c(names(fieldtypes), "DUPLICATES")
 
 
@@ -197,6 +230,7 @@ print.sourcedata <- function(x, ...){
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Distinguish between imported and calculated fields
+# TODO: Consider adding a warning if a categorical field has "too many" different values
 summarise_source_data <- function(sourcedata){
 	#temp assignment
 	#  sourcedata<-testcpddata
@@ -305,7 +339,7 @@ get_datafield_max <- function(datafield, format_as_string = FALSE){
 
 get_datafield_missing <- function(datafield, format_as_string = FALSE){
   if (format_as_string){
-    if (is.fieldtype_ignore(datafield$fieldtype)){
+    if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
       format(NA)
     }
     else{

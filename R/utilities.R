@@ -38,11 +38,12 @@ log_initialise <- function(dirpath){
 	save_dir <- validate_param_dir(dirpath)
 	# TODO: use safer variable name and allow user to specify file location? See below
 	logname <<- file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	log_message(paste("Log file initialised.", "Package version", utils::packageVersion("ehrchangepoints"), R.Version()$version.string))
 }
 
 log_newfilename <- function(dirpath){
 	save_dir <- validate_param_dir(dirpath)
-	file.path(save_dir, paste0("changedetection_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
 }
 
 # TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )

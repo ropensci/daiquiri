@@ -9,7 +9,8 @@ load_dataset(
   fieldtypes = NULL,
   override_columnnames = FALSE,
   na = NULL,
-  showprogress = FALSE
+  showprogress = FALSE,
+  log_directory = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ load_dataset(
 \item{na}{vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}}
 
 \item{showprogress}{Print progress to console. Default = FALSE}
+
+\item{log_directory}{String specifying directory in which to save log file. If no directory is supplied, progress is not logged.}
 }
 \value{
 A \code{sourcedata} object

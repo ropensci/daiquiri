@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 # individual aggregatefields
 # uses stats::aggregate function, consider trying the aggregate.ts function instead, or group_by tibble function
-aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmethods = "all", sourcefieldname = NULL, sourcefieldvalue = NULL, showprogress = FALSE) {
+aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
   #temp assignment
    #datafield = testcpdsourcedata$datafields[[6]]
     # groupbylist = list(groupby_day[[1]])
@@ -19,7 +19,7 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
 
 
   # TODO: let each fieldtype determine what aggregate functions to use
-  # TODO: sourcetypes need to be dealt with differently
+  # TODO: partitiontypes need to be dealt with differently
 
   # # TODO: having trouble vectorising
   # do.call(data.frame, aggregate(x, by = groupbylist, FUN = function(x){c(n=length(x), min = min(x, na.rm = TRUE), missing_n = sum(is.na(x)), missing_perc = sum(is.na(x))/length(x))}, drop = FALSE))
@@ -124,12 +124,35 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
 
 
   groupedvals <- alltimepoints
+  # need a counter to allow for functions that create multiple columns
+  c <- 1
   for( i in seq_along(functionlist) ){
   	f <- functionlist[i]
   	log_message(paste0("  By ", f), showprogress)
   	if( all(is.na(x)) ){
   		groupedvals <- data.frame(groupedvals, x = NA)
+  		c <- c + 1
+  		colnames(groupedvals)[c] <- f
+  	} else if( f %in% c("subcat_n","subcat_perc") ){
+  		# create a separate column per category value. Missing values are already covered below
+  		distinctcategories <- sort(unique(x[!is.na(x)]))
+  		log_message(paste0("    ", length(distinctcategories), " categories found"), showprogress)
+  		# TODO: consider setting a max number of categories
+  		subvals <- alltimepoints
+  		for( j in seq_along(distinctcategories) ){
+  			log_message(paste0("    ", j, ": ", distinctcategories[j]), showprogress)
+  			catval <- distinctcategories[j]
+  			if( f == "subcat_n" ){
+  				subvals <- merge(subvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(x==catval, na.rm = TRUE)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "subcat_perc" ){
+  				subvals <- merge(subvals, stats::aggregate(x, by = groupbylist, FUN = function(x){100*sum(x==catval, na.rm = TRUE)/length(x)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			}
+  			colnames(subvals)[j+1] <- paste0(f, "_", j, "_", gsub('([[:punct:]])|\\s+', "_", catval))
+  			c <- c + 1
+  		}
+  		groupedvals <- merge(groupedvals, subvals, by = names(alltimepoints), all = TRUE)
   	} else {
+  		c <- c + 1
   		if( f == "n" ){
 	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(!(is.na(x) & !is.nan(x)))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
 	  	} else if( f == "missing_n" ){
@@ -140,13 +163,11 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
 	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(is.nan(x))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
 	  	} else if( f == "nonconformant_perc" ){
 	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){100*sum(is.nan(x))/length(x)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  	} else if( f == "nonzero_n" ){
-	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(x)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
 	  	} else if( f == "nonzero_perc" ){
-	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){100*sum(x)/length(x)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){100*length(which(x>0))/length(x)}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
 	  	} else if( f == "distinct" ){
 	  		groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){length(unique(x[!is.na(x)]))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
-	  	} else if( f %in% c("min","max","mean","median") ){
+	  	} else if( f %in% c("min","max","mean","median","minlength","maxlength","meanlength") ){
 	  		# min/max returns a warning when all values are NA. Can't find a good way to suppress only that specific warning
   			if( f == "min" ){
   				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(min(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
@@ -156,6 +177,12 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
   				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(mean(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
   			} else if( f == "median" ){
   				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(stats::median(x, na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "minlength" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(min(nchar(as.character(x), keepNA = TRUE), na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "maxlength" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(max(nchar(as.character(x), keepNA = TRUE), na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
+  			} else if( f == "meanlength" ){
+  				groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){suppressWarnings(mean(nchar(as.character(x), keepNA = TRUE), na.rm = TRUE))}, drop = FALSE), by.x = names(alltimepoints), by.y = "Group.1", all = TRUE)
   			}
 	  		# replace Inf with NA
 	  		groupedvals[[i+1]][which(is.infinite(groupedvals[[i+1]]))] <- NA
@@ -164,19 +191,25 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
   			if( inherits(x,"POSIXct") ){
   				groupedvals[[i+1]] <- as.POSIXct(groupedvals[[i+1]], tz = "UTC", origin = "1970-01-01")
   			}
-  		}
+	  	} else{
+	  		# TODO: Decide if this should stop everything or just raise a warning
+	  		# TODO: Putting it here means it doesn't get called if all values are NA
+	  		stop(paste("Unrecognised aggregation type:", f),
+	  				 call. = FALSE)
+	  	}
+  		colnames(groupedvals)[c] <- f
   	}
-  	colnames(groupedvals)[i+1] <- f
   }
 
   log_message(paste0("Tidying up..."), showprogress)
   aggfield <- groupedvals
-  # for dates with no records, replace n with 0, but leave other aggvalues as na
+  # for timepoints with no records, replace n with 0, but leave other aggvalues as na
   if( "n" %in% functionlist ){
-  	aggfield[["n"]][is.na(aggfield[["n"]])] <- 0
+  	# TODO: doesn't seem to work when all values are NA
+  	is.na(aggfield[["n"]]) <- 0
   }
-  # TODO: set individual min/max dates per aggfield? Probably shouldn't calculate changepoints in sections where there are no records for that aggfield
 
+  # TODO: set individual min/max dates per aggfield? Probably shouldn't calculate changepoints in sections where there are no records for that aggfield
   cpts <- find_changepoints(aggfield, method = changepointmethods, showprogress = showprogress)[[1]]
 
   log_message(paste0("Finished"), showprogress)
@@ -186,8 +219,8 @@ aggregatefield <- function(datafield, alltimepoints, groupbylist, changepointmet
   							 changepoints = cpts,
   							 fieldtype = datafield$fieldtype,
   							 columnname = datafield$columnname,
-  							 sourcefieldname = sourcefieldname,
-  							 sourcefieldvalue = sourcefieldvalue),
+  							 partitionfieldname = partitionfieldname,
+  							 partitionfieldvalue = partitionfieldvalue),
             class = "aggregatefield")
 }
 
@@ -250,7 +283,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # aggregatefield for all fields combined
 # uses results from already-aggregated individual fields
 # TODO: do we want to include duplicates in here too?
-aggregateallfields <- function(aggfields, alltimepoints, groupbylist, changepointmethods = "all", sourcefieldname = NULL, sourcefieldvalue = NULL, showprogress = FALSE) {
+aggregateallfields <- function(aggfields, alltimepoints, groupbylist, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	#aggfields = agg[1:(length(agg)-1)]
 	#groupbylist = list(groupby_day[[1]])
@@ -286,8 +319,8 @@ aggregateallfields <- function(aggfields, alltimepoints, groupbylist, changepoin
 								 changepoints = cpts,
 								 fieldtype = ft,
 								 columnname = "ALLFIELDSCOMBINED",
-								 sourcefieldname = sourcefieldname,
-								 sourcefieldvalue = sourcefieldvalue),
+								 partitionfieldname = partitionfieldname,
+								 partitionfieldvalue = partitionfieldvalue),
 						class = "aggregatefield")
 }
 
@@ -304,6 +337,7 @@ aggregateallfields <- function(aggfields, alltimepoints, groupbylist, changepoin
 #' @export
 aggregate_data <- function(data, changepointmethods = "all", showprogress = FALSE){
 	# TODO: move calculation of changepoints into separate function or add param to choose cpt methods here
+	# TODO: allow user to override existing aggfunctions?
   #temp assignment
   #data<-testcpdsourcedata
 	#changepointmethods = "none"
@@ -342,86 +376,86 @@ aggregate_data <- function(data, changepointmethods = "all", showprogress = FALS
   changepoints_df <- all_changepoints(agg)
 
 
-  ### AGGREGATE BY EACH SOURCEFIELD SUBGROUP
+  ### AGGREGATE BY EACH PARTITIONFIELD SUBGROUP
   # set up lists of correct size first
-  log_message(paste0("Checking for fields of type 'source'..."), showprogress)
-  sourcefield_fieldnames <- character()
-  sourcefield_indexes <- numeric()
+  log_message(paste0("Checking for fields of type 'partition'..."), showprogress)
+  partitionfield_fieldnames <- character()
+  partitionfield_indexes <- numeric()
   # NOTE: could probably just loop through all datafields here, not sure of value of only checking the imported ones
   for (i in 1:data$cols_imported_n){
   	fieldindex = data$cols_imported_indexes[[i]]
-  	if (is.fieldtype_source(data$datafields[[fieldindex]]$fieldtype)){
-  		sourcefield_indexes <- c(sourcefield_indexes, fieldindex)
-  		sourcefield_fieldnames <- c(sourcefield_fieldnames, data$datafields[[fieldindex]]$columnname)
+  	if (is.fieldtype_partition(data$datafields[[fieldindex]]$fieldtype)){
+  		partitionfield_indexes <- c(partitionfield_indexes, fieldindex)
+  		partitionfield_fieldnames <- c(partitionfield_fieldnames, data$datafields[[fieldindex]]$columnname)
   	}
   }
-  subaggregate <- vector("list", length(sourcefield_indexes))
-  if( length(sourcefield_indexes)==0 ){
+  subaggregate <- vector("list", length(partitionfield_indexes))
+  if( length(partitionfield_indexes)==0 ){
   	log_message(paste0("None found"), showprogress)
   } else{
-	  for (i in seq_along(sourcefield_indexes)){
-	  	log_message(paste0("Aggregating by ", data$datafields[[sourcefield_indexes[[i]]]]$columnname, "..."), showprogress)
-	  	# create factor of sourcefield subgroups
-	  	sourcefield_levels <- unlist(unique(data$datafields[[sourcefield_indexes[[i]]]]$values))
-	  	subaggregate[[i]] <- vector("list", length(sourcefield_levels))
-	  	for (j in seq_along(sourcefield_levels)){
-	  		log_message(paste0("  Filter on ", data$datafields[[sourcefield_indexes[[i]]]]$columnname, "=", sourcefield_levels[j], ":"), showprogress)
+	  for (i in seq_along(partitionfield_indexes)){
+	  	log_message(paste0("Aggregating by ", data$datafields[[partitionfield_indexes[[i]]]]$columnname, "..."), showprogress)
+	  	# create factor of partitionfield subgroups
+	  	partitionfield_levels <- unlist(unique(data$datafields[[partitionfield_indexes[[i]]]]$values))
+	  	subaggregate[[i]] <- vector("list", length(partitionfield_levels))
+	  	for (j in seq_along(partitionfield_levels)){
+	  		log_message(paste0("  Filter on ", data$datafields[[partitionfield_indexes[[i]]]]$columnname, "=", partitionfield_levels[j], ":"), showprogress)
 	  		# set groupby vector to ignore other levels
-	  		sourcefield_levelindicator <- which(data$datafields[[sourcefield_indexes[[i]]]]$values != sourcefield_levels[j])
-	  		sourcefield_groupby_day <- groupby_day
-	  		sourcefield_groupby_day[[1]][sourcefield_levelindicator] <- NA
+	  		partitionfield_levelindicator <- which(data$datafields[[partitionfield_indexes[[i]]]]$values != partitionfield_levels[j])
+	  		partitionfield_groupby_day <- groupby_day
+	  		partitionfield_groupby_day[[1]][partitionfield_levelindicator] <- NA
 	  		log_message(paste0("    Aggregating each datafield in turn..."), showprogress)
 	  		subaggregate[[i]][[j]]$aggregatefields <- vector("list", data$cols_imported_n + 1)
 	  		nextindex <- 1
 	  		for (k in 1:data$cols_imported_n){
 	  			log_message(paste0("      ", k, ": ", names(data$cols_imported_indexes)[k]), showprogress)
 	  			fieldindex = data$cols_imported_indexes[[k]]
-	  			if (fieldindex != sourcefield_indexes[[i]]){
-	  				subaggregate[[i]][[j]]$aggregatefields[[nextindex]] <- aggregatefield(data$datafields[[fieldindex]], timepoint_byday, sourcefield_groupby_day, changepointmethods = changepointmethods, sourcefieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], sourcefieldvalue = sourcefield_levels[[j]], showprogress = showprogress)
+	  			if (fieldindex != partitionfield_indexes[[i]]){
+	  				subaggregate[[i]][[j]]$aggregatefields[[nextindex]] <- aggregatefield(data$datafields[[fieldindex]], timepoint_byday, partitionfield_groupby_day, changepointmethods = changepointmethods, partitionfieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
 	  				nextindex <- nextindex + 1
 	  			}
 	  		}
 	  		log_message(paste0("Aggregating calculated datafields..."), showprogress)
-	  		subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n]] <- aggregatefield(data$datafields[[data$cols_source_n + 1]], timepoint_byday, groupby_day, changepointmethods = changepointmethods, sourcefieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], sourcefieldvalue = sourcefield_levels[[j]], showprogress = showprogress)
-	  		subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:data$cols_imported_n - 1], timepoint_byday, sourcefield_groupby_day, changepointmethods = changepointmethods, sourcefieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], sourcefieldvalue = sourcefield_levels[[j]], showprogress = showprogress)
-	  		names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==sourcefield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
+	  		subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n]] <- aggregatefield(data$datafields[[data$cols_source_n + 1]], timepoint_byday, groupby_day, changepointmethods = changepointmethods, partitionfieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+	  		subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:data$cols_imported_n - 1], timepoint_byday, partitionfield_groupby_day, changepointmethods = changepointmethods, partitionfieldname = names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+	  		names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
 
 	  		log_message(paste0("Creating changepoint dataframe..."), showprogress)
 	  		subaggregate[[i]][[j]]$changepoints_df <- all_changepoints(subaggregate[[i]][[j]]$aggregatefields)
 	  		subaggregate[[i]][[j]]$timepoint_fieldname <- data$timepoint_fieldname
 	  		subaggregate[[i]][[j]]$timepoint_unit <- timepoint_unit
 	  	}
-	  	names(subaggregate[[i]]) <- sourcefield_levels
+	  	names(subaggregate[[i]]) <- partitionfield_levels
 	  }
-	  names(subaggregate) <- names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% sourcefield_indexes)]
+	  names(subaggregate) <- names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)]
 
 
 #   # Place subaggregates as children on each overall aggfield
-#   # TODO: This doesn't yet work if you have >1 source fieldtype
+#   # TODO: This doesn't yet work if you have >1 partition fieldtype
 #   for (k in seq_along(agg)){
-#   	if (names(agg[k]) != names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[1]])]){
-#   		agg[[k]]$subaggregates <- vector("list", length(sourcefield_indexes))
-# 	  	for (i in seq_along(sourcefield_indexes)){
-# 	  			agg[[k]]$subaggregates[[i]] <- vector("list", length(sourcefield_levels))
-# 	  			for (j in seq_along(sourcefield_levels)){
+#   	if (names(agg[k]) != names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[1]])]){
+#   		agg[[k]]$subaggregates <- vector("list", length(partitionfield_indexes))
+# 	  	for (i in seq_along(partitionfield_indexes)){
+# 	  			agg[[k]]$subaggregates[[i]] <- vector("list", length(partitionfield_levels))
+# 	  			for (j in seq_along(partitionfield_levels)){
 # 	  				agg[[k]]$subaggregates[[i]][[j]] <- subaggregate[[i]][[j]][[1]][[k]]
 # 	  			}
-# 	  			names(agg[[k]]$subaggregates[[i]]) <- paste0(names(data$cols_imported_indexes)[which(data$cols_imported_indexes==sourcefield_indexes[[i]])], "_", sourcefield_levels)
+# 	  			names(agg[[k]]$subaggregates[[i]]) <- paste0(names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "_", partitionfield_levels)
 # 	  	}
-# 	  	names(agg[[k]]$subaggregates) <- paste0(names(agg[k]), "_by_", names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% sourcefield_indexes)])
+# 	  	names(agg[[k]]$subaggregates) <- paste0(names(agg[k]), "_by_", names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)])
 #   	}
 #   }
   }
 
   log_function_end(match.call()[[1]])
 
-    structure(
+  structure(
     list(
       aggregatefields = agg,
       changepoints_df = changepoints_df,
       timepoint_fieldname = data$timepoint_fieldname,
       timepoint_unit = timepoint_unit, # not sure if this should be set at overall object level or allow it to differ per aggregatefield
-      sourcefield_fieldnames = sourcefield_fieldnames,
+      partitionfield_fieldnames = partitionfield_fieldnames,
       subaggregates = subaggregate
     ),
     class = "aggregatedata"
@@ -448,7 +482,7 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 
 	# TODO: validation checks on params
 
-	# export a file for each source field in dataset
+	# export a file for each partition field in dataset
 	for( i in seq_along(aggregatedata$aggregatefields) ){
 		readr::write_csv(aggregatedata$aggregatefields[[i]]$values,
 										 paste0(save_directory, names(aggregatedata$aggregatefields[i]), ".csv") )
@@ -483,7 +517,7 @@ print.aggregatedata <- function(x, ...){
 	cat("Max timepoint value:", aggsummary$overall["timepoint_max"], "\n")
 	cat("Total number of timepoints:", aggsummary$overall["n_timepoints"], "\n")
 	cat("Number of empty timepoints:", aggsummary$overall["n_empty_timepoints"], "\n")
-	cat("Column(s) used as sourcefield:", aggsummary$overall["sourcefield_fieldnames"], "\n")
+	cat("Column(s) used as partitionfield:", aggsummary$overall["partitionfield_fieldnames"], "\n")
 	cat("\n")
 	cat("Change points by field:\n")
 	if( nrow(aggsummary$byfield) > 0){
@@ -511,7 +545,7 @@ summarise_aggregated_data <- function(aggregatedata){
 							 timepoint_max = format(max(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]])),
 							 n_timepoints = length(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]]),
 							 n_empty_timepoints = length(aggfields[[aggregatedata$timepoint_fieldname]]$changepoints[["n"]][["is_zero"]]$istrue_indexes),
-							 sourcefield_fieldnames = toString(aggregatedata$sourcefield_fieldnames)
+							 partitionfield_fieldnames = toString(aggregatedata$partitionfield_fieldnames)
 	)
 
 	# summary info for each column in dataset
@@ -554,7 +588,7 @@ summarise_aggregated_data <- function(aggregatedata){
 			subaggs[[p]] <- vector("list", numlevels)
 			for(q in 1:numlevels){
 				subaggs[[p]][[q]] <- summarise_aggregated_data(aggregatedata$subaggregates[[p]][[q]])
-				subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, sourcefield_fieldname=aggregatedata$sourcefield_fieldnames[[p]], sourcefield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
+				subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, partitionfield_fieldname=aggregatedata$partitionfield_fieldnames[[p]], partitionfield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
 			}
 		}
 	}
@@ -564,7 +598,7 @@ summarise_aggregated_data <- function(aggregatedata){
 
 	structure(
 		list(
-			overall = overall, byfield = byfield, bysourcefield = subaggs
+			overall = overall, byfield = byfield, bypartitionfield = subaggs
 		),
 		class = "summary_aggregated_data"
 	)
