@@ -14,6 +14,7 @@ NULL
 
 # main set of external functions
 # TODO: make example/test data available as a dataset in the package
+# TODO: add a top-level function that will do everything in one go,
 # TODO: Roxygenise internal functions too?
 
 
@@ -36,23 +37,24 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 	# TODO: add option to suppress output to console
 	# keep individual steps external for now (instead of bundling into a single function call) as
 	#   may be useful for user to be able to inspect the summary before proceeding with aggregation, or to do multiple different aggregations
-	#   maybe create a single top-level function too
 	# TODO: return a recommendation(s) for timepoint granularity?
 	# TODO: check validity of arguments, e.g. mismatch between fieldtypes names and column names
 	# TODO: distinguish between NULLs and empty strings? Probably useful to do so, though user could always treat empty strings as values (in na param)
 	# temp assignments
 	# x <- testfile
-	# (fieldtypes <- testfile_fieldtypes
+	# fieldtypes <- testfile_fieldtypes
 	# override_columnnames = FALSE
 	# na = na=c("","NULL")
 	# showprogress=TRUE
 
+	# if a log directory is supplied, start a new log. Otherwise, it will append to an existing log if one is still in memory
+	# TODO: should we start a new log every time?
 	if( !is.null(log_directory) ){
 		log_initialise(log_directory)
 	}
+
 	log_function_start(match.call()[[1]])
 
-	# TODO: log all params
 	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)), showprogress)
 
 	if( is.data.frame(x) ){
@@ -102,9 +104,9 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 
 
   # create sourcedata object which includes "ignored" columns
-  sourcedata <- sourcedata(source_df, fieldtypes, source_name, showprogress)
+  sourcedata <- sourcedata(data.table::setDT(source_df), fieldtypes, source_name, showprogress)
   # print summary to console
-  print(summarise_source_data(sourcedata))
+  if(showprogress){ print(summarise_source_data(sourcedata, showprogress)) }
 
   log_function_end(match.call()[[1]])
 

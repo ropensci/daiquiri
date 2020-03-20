@@ -5,10 +5,6 @@
 # individual datafields
 # allowable datafield types match field_types
 
-# datafield <- function(x, fieldtype) {
-#   structure(x, fieldtypename = get_fieldtype_name(fieldtype), class = c(paste0("datafield_", get_fieldtype_name(fieldtype)), "datafield"))
-# }
-
 # NOTE: not sure if better for object to be the data vector or a list
 # TODO: not sure if better to store the entire fieldtype or just its name or even as a separate list in the sourcedata
 datafield <- function(x, fieldtype, validation_warnings = NULL) {
@@ -24,15 +20,15 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 # constructor for sourcedata object
 # takes in a data frame, fieldtypes specification, and (string) sourcename
-sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
+sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 # temp assignments
-# df<-source_df
+# dt<-data.table::setDT(source_df)
 # fieldtypes<-testfile_fieldtypes
 
 	log_function_start(match.call()[[1]])
 	log_message(paste0("Processing source data..."), showprogress)
 
-	rows_source_n <- nrow(df)
+	rows_source_n <- nrow(dt)
 	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
 	timepoint_fieldname <- names(timepoint_index)
 
@@ -43,41 +39,56 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 	# NOTE: row/column indexes for warnings appear to be for original data file, and count the header as row 1
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
-	clean_df <- withCallingHandlers(
-		readr::type_convert(df, fieldtypes_to_cols(fieldtypes, readfunction = "readr")),
+	clean_dt <- withCallingHandlers(
+		readr::type_convert(dt, fieldtypes_to_cols(fieldtypes, readfunction = "readr")),
 		warning = function(w) {
 			raw_warnings <<- append(raw_warnings, conditionMessage(w))
 			invokeRestart("muffleWarning")
 		}
 	)
+	log_message(paste0("  Selecting relevant warnings..."), showprogress)
+	# TODO: consider removing dt at this point, to release memory
 	# extract items of interest from warnings
 	relevant_warnings <- grep("\\[[0-9]*?, [0-9]*?\\]:", raw_warnings, value = TRUE)
 	# list of warnings each with character vector containing row, column, message
 	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
-	warningsdf <- data.frame(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
+	warningsdt <- data.table::data.table(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
 													 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
 													 message = as.character(sapply(warningslist, function(x){x[3]})))
 
+	log_message(paste0("  Identifying nonconformant values..."), showprogress)
 	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
 	# this seems much harder than it should be
-	warningcols <- unique(warningsdf[["colindex"]])
-	for(c in seq_along(warningcols)){
-		warningrows <- warningsdf[["rowindex"]][which(warningsdf[["colindex"]] == warningcols[c])]
-		clean_df[warningrows, names(fieldtypes)[warningcols[c]]] <- NaN
+	warningcols <- unique(warningsdt[, "colindex"])
+	for(c in warningcols){
+		warningcolname <- names(fieldtypes)[c]
+		warningrows <- warningsdt[colindex == c, "rowindex"][[1]]
+		clean_dt[warningrows, (warningcolname) := NaN]
 	}
 
+	log_message(paste0("  Checking and removing missing timepoints..."), showprogress)
 	# check and remove rows where timepoint field is null
 	# TODO: should I remove them here or when aggregating?  Summary doesn't look right if remove them here. Rownumbers in warnings no longer matches either
 	# TODO: check don't duplicate any messages from above
-	if (anyNA(clean_df[, timepoint_fieldname])){
-		navector <- is.na(clean_df[, timepoint_fieldname])
-		# use as.integer to suppress warning about discarding rownames.  There may be a better way
-		timepointwarnings <- data.frame(colindex = as.integer(timepoint_index),
+	if (anyNA(clean_dt[, (timepoint_fieldname)])){
+		navector <- is.na(clean_dt[, (timepoint_fieldname)])
+		timepointwarnings <- data.table::data.table(colindex = timepoint_index,
 																		rowindex = which(navector == TRUE),
 																		message = "Missing or invalid value in Timepoint field"
 																		)
-		warningsdf <- rbind(warningsdf, timepointwarnings)
-		clean_df <- clean_df[which(!navector),]
+		warningsdt <- rbind(warningsdt, timepointwarnings)
+		# NOTE: Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
+		# NOTE: Set columnnames using fieldtypes as strangely, when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
+		cols <- names(fieldtypes)[vapply(fieldtypes, is.fieldtype_ignore, logical(1)) == FALSE]
+		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!navector])
+		names(clean_dt_temp)[1] <- cols[1]
+		clean_dt[, (cols[1]) := NULL]
+		for (col in cols[2:length(cols)]){
+			clean_dt_temp[, (col) := clean_dt[[col]][!navector]]
+			clean_dt[, (col) := NULL]
+		}
+		clean_dt <- clean_dt_temp
+		rm(clean_dt_temp)
 		timepoint_missing_n <- sum(navector)
 	} else{
 		timepoint_missing_n <- 0
@@ -85,15 +96,13 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 
 	log_message(paste0("Checking for duplicates..."), showprogress)
 	# sort by timepoint field then by everything else, so that we can batch the data
-	# TODO: change param to require dt instead of df to use less memory?
-	clean_dt <- data.table::data.table(clean_df)
+	# TODO: try using setkey as well to see if it makes a difference
 	log_message(paste0("  Sorting data..."), showprogress)
-	data.table::setorderv(clean_dt, c(timepoint_fieldname, names(clean_df)[-timepoint_index]))
+	data.table::setorderv(clean_dt, c(timepoint_fieldname, names(clean_dt)[-timepoint_index]))
 
 	# check for duplicate rows and remove them here
 	# They may skew other agg stats if left in, but would still be useful to see if dups change over time
-	# base::duplicated() is really slow and memory sapping, so use data.table version instead
-	# also need to chunk up large datasets
+	# Need to chunk up large datasets
 	# estimate total size and limit size of each chunk
 	dtsize <- utils::object.size(clean_dt)
 	if (dtsize > 200000000){
@@ -101,7 +110,7 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 		numchunks <- as.numeric(ceiling(dtsize/200000000))
 		chunkrows <- ceiling(numrows/numchunks)
 		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
-		timepoint_vector <- clean_dt[[timepoint_index]]
+		timepoint_vector <- clean_dt[[(timepoint_fieldname)]]
 		duprowsvector <- logical(0)
 		for (chunk in 1:numchunks){
 			log_message(paste0("  Batch ", chunk), showprogress)
@@ -115,8 +124,7 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 			}
 			duprowsvector[chunkstart:chunkend] <- duplicated(clean_dt[chunkstart:chunkend, ])
 		}
-	}
-	else{
+	}	else{
 		duprowsvector <- duplicated(clean_dt)
 	}
 	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
@@ -125,17 +133,31 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
 	# ...and record the no. of duplicates on it
 	dpruns <- rle(duprowsvector)
 	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
+	duprowsindex <- data.table::data.table("DUPLICATES" = duprowsindex[!duprowsvector])
 
 	# and remove the duplicates from the final clean dataset
-	duprowsindex <- data.frame("DUPLICATES" = duprowsindex[which(!duprowsvector)])
-	clean_df <- clean_dt[which(!duprowsvector),]
+	# TODO: see if can consolidate this with navector removal so only do it once
+	#clean_dt <- clean_dt[which(!duprowsvector),]
+	if( any(duprowsvector) ){
+		# NOTE: Set columnnames using fieldtypes as strangely, when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
+		cols <- names(fieldtypes)[vapply(fieldtypes, is.fieldtype_ignore, logical(1)) == FALSE]
+		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!duprowsvector])
+		names(clean_dt_temp)[1] <- cols[1]
+		clean_dt[, (cols[1]) := NULL]
+		for (col in cols[2:length(cols)]){
+			clean_dt_temp[, (col) := clean_dt[[col]][!duprowsvector]]
+			clean_dt[, (col) := NULL]
+		}
+		clean_dt <- clean_dt_temp
+		rm(clean_dt_temp)
+	}
 
 	# basic summary info
-	rows_imported_n <- nrow(clean_df)
+	rows_imported_n <- nrow(clean_dt)
 	# number of columns in source
 	cols_source_n <- length(fieldtypes)
 	# number of columns imported
-	cols_imported_n <- length(clean_df)
+	cols_imported_n <- length(clean_dt)
 	# number of duplicate rows removed
 	rows_duplicates_n <- sum(duprowsvector, na.rm = TRUE)
 
@@ -149,33 +171,33 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
   # not sure this vectorisation is working correctly, do I need to rewrite datafield() in a vectorised way too?
   # is_fieldtype_ignore <- vapply(fieldtypes, is.fieldtype_ignore, logical(1))
   # dfs[[is_fieldtype_ignore]] <- datafield(as.vector("ignored"), fieldtypes[is_fieldtype_ignore])
-  # dfs[[!is_fieldtype_ignore]] <- datafield(clean_df[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
+  # dfs[[!is_fieldtype_ignore]] <- datafield(clean_dt[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
 
   for (i in 1:cols_source_n){
-  	log_message(paste0("  ", names(fieldtypes[i])), showprogress)
+  	fieldname <- names(fieldtypes[i])
+  	log_message(paste0("  ", fieldname), showprogress)
   	if (is.fieldtype_ignore(fieldtypes[[i]])){
       dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
     }
     else{
-  		dfs[[i]] <- datafield(clean_df[names(fieldtypes[i])],
+  		dfs[[i]] <- datafield(clean_dt[, ..fieldname],
   													fieldtypes[[i]],
-  													warningsdf[which(warningsdf$colindex == i), c("rowindex","message")])
+  													warningsdt["colindex" == i, c("rowindex","message")])
       cols_imported_indexes <- c(cols_imported_indexes, i)
-      names(cols_imported_indexes)[length(cols_imported_indexes)] <- names(fieldtypes[i])
+      names(cols_imported_indexes)[length(cols_imported_indexes)] <- fieldname
     }
   }
   # Create new datafield to store numbers of dups.
   dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
   											ft_duplicates(),
-  											)
+  											warningsdt["colindex" == 0, c("rowindex","message")])
 	# TODO: Need to use a reserved word to distinguish it from imported fields
   names(dfs) <- c(names(fieldtypes), "DUPLICATES")
 
 
   log_function_end(match.call()[[1]])
 
-  structure(
-    list(
+  structure(list(
       datafields = dfs,
       timepoint_fieldname = timepoint_fieldname,
       timepoint_missing_n = timepoint_missing_n,
@@ -185,7 +207,7 @@ sourcedata <- function(df, fieldtypes, sourcename, showprogress = FALSE) {
       cols_source_n = cols_source_n,
       cols_imported_n = cols_imported_n,
       cols_imported_indexes = cols_imported_indexes,
-#      validation_warnings = warningsdf, # TODO: not sure whether to store all warnings here or hive them off to each datafield
+#      validation_warnings = warningsdt, # TODO: not sure whether to store all warnings here or hive them off to each datafield
       sourcename = sourcename
     ),
     class = "sourcedata"
@@ -231,12 +253,15 @@ print.sourcedata <- function(x, ...){
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Distinguish between imported and calculated fields
 # TODO: Consider adding a warning if a categorical field has "too many" different values
-summarise_source_data <- function(sourcedata){
+summarise_source_data <- function(sourcedata, showprogress = FALSE){
 	#temp assignment
 	#  sourcedata<-testcpddata
 	# str(sourcedata)
 
-	# summary info for overall dataset
+	log_function_start(match.call()[[1]])
+	log_message(paste0("Creating summary of source data..."), showprogress)
+
+	log_message(paste0("  For overall dataset..."), showprogress)
 	overall <- c(cols_source_n = format(sourcedata$cols_source_n),
 							 cols_imported_n = format(sourcedata$cols_imported_n),
 							 rows_source_n = format(sourcedata$rows_source_n),
@@ -248,7 +273,7 @@ summarise_source_data <- function(sourcedata){
 							 timepoint_missing_n = format(sourcedata$timepoint_missing_n)
 	)
 
-	# summary info for each column in dataset
+	log_message(paste0("  For each column in dataset..."), showprogress)
 	datafields <- data.frame(fieldname = names(sourcedata$datafields),
 													 fieldtype = sapply(sourcedata$datafields, get_fieldtype_name.datafield),
 													 datatype = sapply(sourcedata$datafields,get_datafield_basetype, format_as_string = TRUE),
@@ -258,7 +283,7 @@ summarise_source_data <- function(sourcedata){
 													 validation_warnings = sapply(sourcedata$datafields, get_datafield_validation_warnings_n, format_as_string = TRUE),
 													 stringsAsFactors = FALSE)
 
-	# validation errors on loading dataset
+	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
 	validation_warnings <- do.call(rbind, c(sapply(sourcedata$datafields,
 																								 function(x){
 																								 	cbind("Datafield"= rep(x$columnname, ifelse(is.null(nrow(x$validation_warnings)), 0, nrow(x$validation_warnings))),
@@ -275,7 +300,10 @@ summarise_source_data <- function(sourcedata){
 	# 													cbind("Datafield"= rep(x$columnname, nrow(x$validation_warnings)),
 	# 																x$validation_warnings) }))
 
+	log_function_end(match.call()[[1]])
+
 	list(overall = overall, datafields = datafields, validation_warnings = validation_warnings)
+
 }
 
 # TODO: really not sure about naming convention used here. Not sure if worth setting up a generic

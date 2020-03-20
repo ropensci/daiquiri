@@ -56,7 +56,7 @@ ft_timepoint <- function() {
   fieldtype("timepoint",
             collector = readr::col_datetime(),
   					dataclass = "POSIXct",
-            aggfunctions = c("n")
+            aggfunctions = c("n", "midnight_n", "midnight_perc")
             )
 }
 
@@ -66,6 +66,7 @@ ft_timepoint <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_uniqueidentifier <- function() {
+	# TODO: potential additional aggfunctions: proportion numeric; distinct first chars
   fieldtype("uniqueidentifier",
             readr::col_character(),
   					dataclass = "character",
@@ -124,14 +125,23 @@ ft_number <- function() {
 
 #' @section Details:
 #' \code{ft_datetime} - identifies data fields which contain date values that should be treated as continuous.
+#' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
 #' @rdname availablefieldtypes
 #' @export
-ft_datetime <- function() {
-  fieldtype("datetime",
+ft_datetime <- function( includes_time = TRUE ) {
+	aggfn <- c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max")
+	options <- NULL
+	if( includes_time ){
+		aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+		# TODO: can probably do something more sophisticated here with match.call()
+		options <- "includes_time"
+	}
+	fieldtype("datetime",
             readr::col_datetime(),
   					dataclass = "POSIXct",
-  					aggfunctions = c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max")
-  )
+						aggfunctions = aggfn,
+						options = options
+	)
 }
 
 #' @section Details:
@@ -184,12 +194,11 @@ ft_allfields <- function() {
 }
 
 # this is an internal fieldtype for calculating duplicates and should not be set explicitly by user
-# TODO: rename aggfunctions now that values show number of dups (and not just whether or not there is a dup there)
 ft_duplicates <- function() {
 	fieldtype("duplicates",
 						readr::col_skip(),
 						dataclass = "NULL",
-						aggfunctions = c("n", "nonzero_perc")
+						aggfunctions = c("sum", "nonzero_perc")
 	)
 }
 

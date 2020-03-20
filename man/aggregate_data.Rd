@@ -4,10 +4,17 @@
 \alias{aggregate_data}
 \title{Aggregate source data}
 \usage{
-aggregate_data(data, changepointmethods = "all", showprogress = FALSE)
+aggregate_data(
+  data,
+  aggregation_timeunit = "day",
+  changepointmethods = "all",
+  showprogress = FALSE
+)
 }
 \arguments{
 \item{data}{A \code{sourcedata} object}
+
+\item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
 
 \item{changepointmethods}{String vector of changepoint methods to apply, or "all" or "none". Defaults to "all".}
 
@@ -18,5 +25,5 @@ A \code{aggregatedata} object
 }
 \description{
 Aggregates sourcedata object based on fieldtypes specified at load time.
-Time period for aggregation is a calendar day.  Further options to be added at a later date.
+Default time period for aggregation is a calendar day
 }

@@ -35,10 +35,10 @@ validate_param_filetype_plot <- function(filetype){
 #' @param dirpath String containing directory to save log file
 #' @export
 log_initialise <- function(dirpath){
+	# TODO: allow user to specify a file name?
 	save_dir <- validate_param_dir(dirpath)
-	# TODO: use safer variable name and allow user to specify file location? See below
-	logname <<- file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
-	log_message(paste("Log file initialised.", "Package version", utils::packageVersion("ehrchangepoints"), R.Version()$version.string))
+	packageenvironment$logname <- file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	log_message(paste("Log file initialised.", "Package version", utils::packageVersion("ehrchangepoints"), ";", R.Version()$version.string))
 }
 
 log_newfilename <- function(dirpath){
@@ -47,10 +47,9 @@ log_newfilename <- function(dirpath){
 }
 
 # TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
-# TODO: figure out correct context for log_con and logname e.g. package environment ( new.env(parent = emptyenv()); pkg.env$logname <- "blah" ) )
 log_message <- function(message, showprogress = FALSE){
-	if( exists("logname") ){
-		log_con <- file(logname, open="a")
+	if( exists("logname", envir = packageenvironment) ){
+		log_con <- file(packageenvironment$logname, open="a")
 		writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message), con = log_con)
 		close(log_con)
 	}

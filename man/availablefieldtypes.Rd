@@ -23,7 +23,7 @@ ft_categorical(aggregate_by_each_category = FALSE)
 
 ft_number()
 
-ft_datetime()
+ft_datetime(includes_time = TRUE)
 
 ft_freetext()
 
@@ -33,6 +33,8 @@ ft_ignore()
 }
 \arguments{
 \item{aggregate_by_each_category}{If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE}
+
+\item{includes_time}{If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE}
 }
 \description{
 Specify the type of data contained in each field of your dataset using a combination of the following
