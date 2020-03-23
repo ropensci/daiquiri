@@ -50,14 +50,24 @@ NULL
 #' @section Details:
 #' \code{ft_timepoint} - identifies the data field which should be used as the independent time variable.
 #'   There should be one and only one of these specified.
+#' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
 #' @rdname availablefieldtypes
 #' @export
-ft_timepoint <- function() {
-  fieldtype("timepoint",
+ft_timepoint <- function( includes_time = TRUE ) {
+	# NOTE: nonconformant values appear in validation warnings
+	aggfn <- c("n")
+	options <- NULL
+	if( includes_time ){
+		aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+		# TODO: can probably do something more sophisticated here with match.call()
+		options <- "includes_time"
+	}
+	fieldtype(type = "timepoint",
             collector = readr::col_datetime(),
   					dataclass = "POSIXct",
-            aggfunctions = c("n", "midnight_n", "midnight_perc")
-            )
+						aggfunctions = aggfn,
+						options = options
+	)
 }
 
 #' @section Details:
@@ -67,8 +77,8 @@ ft_timepoint <- function() {
 #' @export
 ft_uniqueidentifier <- function() {
 	# TODO: potential additional aggfunctions: proportion numeric; distinct first chars
-  fieldtype("uniqueidentifier",
-            readr::col_character(),
+  fieldtype(type = "uniqueidentifier",
+  					collector = readr::col_character(),
   					dataclass = "character",
   					aggfunctions = c("n", "missing_n", "missing_perc", "minlength", "maxlength", "meanlength")
             )
@@ -82,8 +92,8 @@ ft_uniqueidentifier <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_partition <- function() {
-  fieldtype("partition",
-            readr::col_character(),
+  fieldtype(type = "partition",
+  					collector = readr::col_character(),
   					dataclass = "character",
   					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
             )
@@ -103,8 +113,8 @@ ft_categorical <- function( aggregate_by_each_category = FALSE ) {
 		# TODO: can probably do something more sophisticated here with match.call()
 		options <- "aggregate_by_each_category"
 	}
-  fieldtype("categorical",
-            readr::col_character(),
+  fieldtype(type = "categorical",
+  					collector = readr::col_character(),
   					dataclass = "character",
   					aggfunctions = aggfn,
   					options = options
@@ -116,8 +126,8 @@ ft_categorical <- function( aggregate_by_each_category = FALSE ) {
 #' @rdname availablefieldtypes
 #' @export
 ft_number <- function() {
-  fieldtype("number",
-            readr::col_number(),
+  fieldtype(type = "number",
+  					collector = readr::col_number(),
   					dataclass = "numeric",
   					aggfunctions = c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max", "mean", "median")
   )
@@ -136,8 +146,8 @@ ft_datetime <- function( includes_time = TRUE ) {
 		# TODO: can probably do something more sophisticated here with match.call()
 		options <- "includes_time"
 	}
-	fieldtype("datetime",
-            readr::col_datetime(),
+	fieldtype(type = "datetime",
+						collector = readr::col_datetime(),
   					dataclass = "POSIXct",
 						aggfunctions = aggfn,
 						options = options
@@ -149,8 +159,8 @@ ft_datetime <- function( includes_time = TRUE ) {
 #' @rdname availablefieldtypes
 #' @export
 ft_freetext <- function() {
-  fieldtype("freetext",
-            readr::col_character(),
+  fieldtype(type = "freetext",
+  					collector = readr::col_character(),
   					dataclass = "character",
   					aggfunctions = c("n", "missing_n", "missing_perc")
   )
@@ -166,8 +176,8 @@ ft_freetext <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_simple <- function() {
-  fieldtype("simple",
-            readr::col_character(),
+  fieldtype(type = "simple",
+  					collector = readr::col_character(),
   					dataclass = "character",
   					aggfunctions = c("n", "missing_n", "missing_perc")
   )
@@ -178,16 +188,16 @@ ft_simple <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_ignore <- function() {
-  fieldtype("ignore",
-  					readr::col_skip(),
+  fieldtype(type = "ignore",
+  					collector = readr::col_skip(),
   					dataclass = "NULL"
   )
 }
 
 # this is an internal fieldtype for calculating stats across all fields combined and should not be set explicitly by user
 ft_allfields <- function() {
-	fieldtype("allfields",
-						readr::col_skip(),
+	fieldtype(type = "allfields",
+						collector = readr::col_skip(),
 						dataclass = "NULL",
 						aggfunctions = c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc")
 	)
@@ -195,8 +205,8 @@ ft_allfields <- function() {
 
 # this is an internal fieldtype for calculating duplicates and should not be set explicitly by user
 ft_duplicates <- function() {
-	fieldtype("duplicates",
-						readr::col_skip(),
+	fieldtype(type = "duplicates",
+						collector = readr::col_skip(),
 						dataclass = "NULL",
 						aggfunctions = c("sum", "nonzero_perc")
 	)
