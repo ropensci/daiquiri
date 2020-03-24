@@ -7,8 +7,8 @@
 # NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
 aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
-	#datafield = testcpdsourcedata$datafields[[2]]
-	#timepointfieldvalues = testcpdsourcedata$datafields[[testcpdsourcedata$timepoint_fieldname]][["values"]]
+	#datafield = outpatsourcedata$datafields[[24]]
+	#timepointfieldvalues = get_datafield_vector(outpatsourcedata$datafields[[outpatsourcedata$timepoint_fieldname]])
 	#timepointfieldvalues = timepointsubvalues
 	#showprogress = TRUE
 	#aggregation_timeunit = "day"
@@ -102,7 +102,7 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "midnight_perc" ){
-				# TODO: if n is zero, should this be zero or NA?
+				# NOTE: if n is zero, this returns NaN. Update to NA when tidying up
 				groupedvals[datafield_dt[, .("value" = 100*sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)/length(values[!is.na(values)]))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
@@ -111,13 +111,11 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(min(values, na.rm = TRUE))))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
-				groupedvals[is.infinite(f), (f) := NA]
 			} else if( f == "max" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
 				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(max(values, na.rm = TRUE))))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
-				groupedvals[is.infinite(f), (f) := NA]
 			} else if( f == "mean" ){
 				groupedvals[datafield_dt[, .("value" = mean(values, na.rm = TRUE))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
@@ -131,13 +129,11 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(min(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
-				groupedvals[is.infinite(f), (f) := NA]
 			} else if( f == "maxlength" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
 				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(max(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
-				groupedvals[is.infinite(f), (f) := NA]
 			} else if( f == "meanlength" ){
 				groupedvals[datafield_dt[, .("value" = mean(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
@@ -147,6 +143,16 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 				# TODO: Putting it here means it doesn't get called if all values are NA
 				stop(paste("Unrecognised aggregation type:", f),
 						 call. = FALSE)
+			}
+			# min/max return Inf when all values are NA. Use NA instead as don't want to differentiate these from timepoints where there are no records
+			if( f %in% c("min","max","minlength","maxlength","midnight_perc") ){
+				groupedvals[is.na(get(f)), (f) := NA]
+				# min/max also drops datetime class
+				# preserve datatypes
+				if( inherits(datafield[["values"]][[1]],"POSIXct") ){
+					# TODO: make sure this is consistent with data format on loading
+					groupedvals[, (f) := as.POSIXct(get(f), tz = "UTC", origin = "1970-01-01")]
+				}
 			}
 		}
 	}
@@ -236,13 +242,13 @@ aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, c
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
 #' @param changepointmethods String vector of changepoint methods to apply, or "all" or "none". Defaults to "all".
 #' @param showprogress Print progress to console. Default = FALSE
-#' @return A \code{aggregatedata} object
+#' @return An \code{aggregatedata} object
 #' @export
 aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethods = "all", showprogress = FALSE){
 	# TODO: move calculation of changepoints into separate function and allow them to be calculated afterwards
 	# TODO: allow user to override existing aggfunctions?
 	#temp assignment
-	# data<-testcpdsourcedata
+	# data<-outpatsourcedata
 	# aggregation_timeunit = "day"
 	# changepointmethods = "none"
 	# showprogress = TRUE
