@@ -21,7 +21,7 @@ aggregate_data(
 \item{showprogress}{Print progress to console. Default = FALSE}
 }
 \value{
-A \code{aggregatedata} object
+An \code{aggregatedata} object
 }
 \description{
 Aggregates sourcedata object based on fieldtypes specified at load time.

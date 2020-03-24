@@ -7,7 +7,7 @@
 # all changepointresults for an individual aggregatefield
 find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FALSE){
   #temp assignment
-  #   aggfieldvalues<-testcpddata_byday$aggregatefields[[2]]$values
+  #   aggfieldvalues<-outpatdata_byday$aggregatefields[[4]]$values
   # method = "all"
 
 	if( method == "none" ){
@@ -16,7 +16,7 @@ find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FAL
 	}
 	else{
 		log_message(paste0("Calculating changepoints..."), showprogress)
-		aggtypes = names(aggfieldvalues[-1])
+		aggtypes = names(aggfieldvalues)[-1]
 
 	  # # flat list
 	  # # initialise list to bigger than needed
@@ -158,6 +158,61 @@ all_changepoints <- function(aggfields, showprogress = FALSE){
 }
 
 # -----------------------------------------------------------------------------
+#' Recalculate change points
+#'
+#' Calculates change points for an aggregatedata object, replacing any existing change points previously calculated.
+#'
+#' @param data An \code{aggregatedata} object
+#' @param method String vector of changepoint methods to apply, or "all" or "none". Defaults to "all".
+#' @param showprogress Print progress to console. Default = FALSE
+#' @return An \code{aggregatedata} object with the change points recalculated
+#' @export
+recalculate_changepoints <- function(data, method = "all", showprogress = FALSE){
+	# TODO: add option to append changepoints
+	#temp assignment
+	# data<-testcpddata2014_byweek
+	# method = "all"
+	# showprogress = TRUE
+
+	log_function_start(match.call()[[1]])
+
+	log_message(paste0("Recalculating changepoints for method(s): ", as.character(method), "..."), showprogress)
+	aggfieldnames <- names(data$aggregatefields)
+	for(i in seq_along(data$aggregatefields)){
+		#    i = 5
+		log_message(paste0(i, ": ", aggfieldnames[i], "\n"), showprogress)
+		data$aggregatefields[[i]]$changepoints <- find_changepoints(data$aggregatefields[[i]]$values, method = method, showprogress = showprogress)[[1]]
+	}
+	log_message(paste0("Reassembling changepoint dataframe..."), showprogress)
+	data$changepoints_df <- all_changepoints(data$aggregatefields)
+
+	log_message(paste0("Checking for fields of type 'partition'..."), showprogress)
+	partitionfield_fieldnames <- data$partitionfield_fieldnames
+	if( length(data$partitionfield_fieldnames) == 0 ){
+		log_message(paste0("None found"), showprogress)
+	} else{
+		for (i in seq_along(data$subaggregates)){
+			partitionfield_name <- names(data$subaggregates[i])
+				for (j in seq_along(data$subaggregates[[i]])){
+					log_message(paste0("  ", partitionfield_name, "=", names(data$subaggregates[[i]])[j], ":"), showprogress)
+					for (k in seq_along(data$subaggregates[[i]][[j]]$aggregatefields)){
+						subaggfieldnames <- names(data$subaggregates[[i]][[j]]$aggregatefields)
+						log_message(paste0("    ", k, ": ", subaggfieldnames[k], "\n"), showprogress)
+						data$subaggregates[[i]][[j]]$aggregatefields[[k]]$changepoints <- find_changepoints(data$subaggregates[[i]][[j]]$aggregatefields[[k]]$values, method = method, showprogress = showprogress)[[1]]
+					}
+					log_message(paste0("  Reassembling changepoint dataframe..."), showprogress)
+					data$subaggregates[[i]][[j]]$changepoints_df <- all_changepoints(data$subaggregates[[i]][[j]]$aggregatefields)
+				}
+			}
+	}
+
+	log_function_end(match.call()[[1]])
+
+	data
+}
+
+
+# -----------------------------------------------------------------------------
 # individual functions depending on changepoint method, all return same class
 
 # TODO: maybe should call this cptvar_plus since we're not just running it on the raw data
@@ -165,7 +220,7 @@ all_changepoints <- function(aggfields, showprogress = FALSE){
 #       (e.g. when converted values from proportions to percentages, it found changepoints only in the latter)
 changepoints_cptvar <- function(aggfieldvalues, aggtype){
   #temp assignment
-  #  aggfieldvalues<-testcpddata_byday$aggregatefields[[1]]$values
+  # aggfieldvalues<-outpatdata_byday$aggregatefields[[4]]$values
   # aggtype = "n"
   # aggtype = "missing_n"
   #aggtype = "min"
@@ -178,15 +233,13 @@ changepoints_cptvar <- function(aggfieldvalues, aggtype){
 		changepoint_indexes <- vector("numeric")
 		changepoint_timepoints <- vector("numeric")
 	} else{
-		# replace NAs with a value well outside the range
-		if( is.numeric(valuevector)){
+		# cpt.var can't deal with NAs so replace NAs with a value well outside the range
+		# TODO: what is the right way to deal with NAs? Should they actually be "ignored" instead? E.g. by setting to mean value?
+		if( is.numeric(valuevector) ){
 			valuevector[is.na(valuevector)] <- (abs(max(valuevector, na.rm = TRUE))+100)*2
 		} else{
-			if( inherits(valuevector, "POSIXct") ) {
-				# TODO: not sure if it is OK to set the origin like this
-				valuevector[is.na(valuevector)] <- as.POSIXct(0, tz = "UTC", origin = "1900-01-01")
-			} else if( inherits(valuevector, "Date") ) {
-				valuevector[is.na(valuevector)] <- as.Date("1900-01-01")
+			if( inherits(valuevector, "POSIXct") | inherits(valuevector, "Date") ) {
+				valuevector[is.na(valuevector)] <- max(valuevector, na.rm = TRUE) + 3600
 			} else {
 				stop("cpt.var method can only be used on numeric data")
 			}

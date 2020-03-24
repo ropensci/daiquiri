@@ -145,11 +145,11 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 						 call. = FALSE)
 			}
 			# min/max return Inf when all values are NA. Use NA instead as don't want to differentiate these from timepoints where there are no records
-			if( f %in% c("min","max","minlength","maxlength","midnight_perc") ){
-				groupedvals[is.na(get(f)), (f) := NA]
+			if( f %in% c("min","max","mean","minlength","maxlength","midnight_perc") ){
+				groupedvals[is.infinite(get(f)) | is.nan(get(f)), (f) := NA]
 				# min/max also drops datetime class
 				# preserve datatypes
-				if( inherits(datafield[["values"]][[1]],"POSIXct") ){
+				if( inherits(datafield[["values"]][[1]],"POSIXct") & f %in% c("min","max") ){
 					# TODO: make sure this is consistent with data format on loading
 					groupedvals[, (f) := as.POSIXct(get(f), tz = "UTC", origin = "1970-01-01")]
 				}

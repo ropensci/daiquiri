@@ -111,7 +111,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 		chunkrows <- ceiling(numrows/numchunks)
 		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
 		timepoint_vector <- clean_dt[[(timepoint_fieldname)]]
-		duprowsvector <- logical(0)
+		duprowsvector <- logical(numrows)
 		for (chunk in 1:numchunks){
 			log_message(paste0("  Batch ", chunk), showprogress)
 			chunkstart <- which.max(timepoint_vector >= timepoint_vector[((chunk-1)*chunkrows) + 1])

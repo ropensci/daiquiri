@@ -216,12 +216,12 @@ testcpdsourcedata2014 <- load_dataset(".\\devtesting\\testdata\\abx2014.csv", fi
 																																		,DoseUnit = ft_categorical()
 																																		,FirstAdministrationDateTime = ft_datetime()
 																																		,Clusterid = ft_ignore()
-																																		,AntibioticsSource = ft_categorical()), na=c("","NULL")
+																																		,AntibioticsSource = ft_partition()), na=c("","NULL")
 																			, log_directory = ".\\devtesting\\testoutput\\")
 
 #print(testcpdsourcedata)
 
-testcpddata2014_byweek <- aggregate_data(testcpdsourcedata2014, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE)
+testcpddata2014_byweek <- aggregate_data(testcpdsourcedata2014, aggregation_timeunit = "week", changepointmethods = "all", showprogress = TRUE)
 
 
 testcpddata_byday <- aggregate_data(testcpdsourcedata, changepointmethods = "none", showprogress = TRUE)
@@ -304,7 +304,7 @@ testfile_fieldtypes <- fieldtypes(EpisodeID = ft_uniqueidentifier()
 																	,FirstProcCode = ft_ignore()
 																	,FirstProcDate = ft_ignore()
 																	,ClinicCode = ft_ignore()
-																	,AppointmentDate = ft_timepoint()
+																	,AppointmentDate = ft_timepoint(includes_time = FALSE)
 																	,FirstAttendanceCode = ft_ignore()
 																	,AttendanceStatusCode = ft_ignore()
 																	,AttendanceOutcomeCode = ft_ignore()
@@ -315,7 +315,7 @@ testfile_fieldtypes <- fieldtypes(EpisodeID = ft_uniqueidentifier()
 																	,MedicalStaffType = ft_ignore()
 																	,CDSSubmissionStatus = ft_ignore()
 																	,ClusterID = ft_ignore()
-																	,Sex = ft_ignore()
+																	,Sex = ft_categorical(aggregate_by_each_category = TRUE)
 																	,BirthMonth = ft_ignore()
 																	,Deathdate = ft_ignore()
 																	,PostcodeStub = ft_ignore()
@@ -325,8 +325,11 @@ testfile_fieldtypes <- fieldtypes(EpisodeID = ft_uniqueidentifier()
 outpatsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress = TRUE, log_directory = ".\\devtesting\\testoutput\\")
 
 saveRDS(outpatsourcedata, ".\\devtesting\\testoutput\\outpatsourcedata.Rds")
+outpatsourcedata <- readRDS(".\\devtesting\\testoutput\\outpatsourcedata.Rds")
 
 outpatdata_byday <- aggregate_data(outpatsourcedata, changepointmethods = "none", showprogress = TRUE)
+
+outpatdata_byday <- recalculate_changepoints(outpatdata_byday, method = "all", showprogress = TRUE)
 
 saveRDS(outpatdata_byday, ".\\devtesting\\testoutput\\outpatdata_byday.Rds")
 
