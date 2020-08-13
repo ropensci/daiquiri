@@ -70,8 +70,8 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	# check and remove rows where timepoint field is null
 	# TODO: should I remove them here or when aggregating?  Summary doesn't look right if remove them here. Rownumbers in warnings no longer matches either
 	# TODO: check don't duplicate any messages from above
-	if (anyNA(clean_dt[, (timepoint_fieldname)])){
-		navector <- is.na(clean_dt[, (timepoint_fieldname)])
+	if (anyNA(clean_dt[[(timepoint_fieldname)]])){
+		navector <- is.na(clean_dt[[(timepoint_fieldname)]])
 		timepointwarnings <- data.table::data.table(colindex = timepoint_index,
 																		rowindex = which(navector == TRUE),
 																		message = "Missing or invalid value in Timepoint field"
