@@ -235,26 +235,22 @@ fieldtypes <- function(...) {
   fts <- list(...)
 
   # validate - collect all errors together and return only once
-  # TODO: can't have multiple items with same column name (or else we could append a numeric suffix to duplicated names)
   # TODO: replace spaces and special chars with _
   err_validation <- character()
   is_fieldtype <- vapply(fts, is.fieldtype, logical(1))
   if (any(!is_fieldtype)) {
-    err_validation[length(err_validation)+1] <- paste("Unrecognised fieldtype(s): [", paste(which(!is_fieldtype), collapse = ", "), "]")
+  	err_validation <- append(err_validation, paste("Unrecognised fieldtype(s) in positions: [", paste(which(!is_fieldtype), collapse = ", "), "]", "names: [", paste(names(fts)[which(!is_fieldtype)], collapse = ", "), "]"))
   }
   is_timepoint <- vapply(fts, is.fieldtype_timepoint, logical(1))
   if (sum(is_timepoint) != 1) {
-    # TODO: better to return names rather than indices
-    err_validation[length(err_validation)+1] <- paste("Must contain one and only one timepoint field. Relevant fields [", paste(which(is_timepoint), collapse = ", "), "]")
+  	err_validation <- append(err_validation, paste("Must specify one and only one timepoint field. Timepoints currently in positions: [", paste(which(is_timepoint), collapse = ", "), "]", "names: [", paste(names(fts)[which(is_timepoint)], collapse = ", "), "]"))
   }
-  is_partition <- vapply(fts, is.fieldtype_partition, logical(1))
-  # if (sum(is_partition) > 1) {
-  # 	# TODO: better to return names rather than indices
-  # 	err_validation[length(err_validation)+1] <- paste("Must contain a maximum of one partition field. Relevant fields [", paste(which(is_partition), collapse = ", "), "]")
-  # }
+  if (anyDuplicated(names(fts)) > 0){
+  	err_validation <- append(err_validation, paste("Duplicate column names not allowed: [", paste(names(fts)[duplicated(names(fts))], collapse = ", "), "]"))
+  }
   if (length(err_validation) > 0) {
-    stop("Invalid `fieldtypes' specification. ",
-       paste(err_validation, collapse = "; "),
+    stop("Invalid `fieldtypes' specification.\n",
+       paste(err_validation, collapse = "\n"),
        call. = FALSE)
   }
 

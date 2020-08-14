@@ -14,8 +14,7 @@ NULL
 
 # main set of external functions
 # TODO: make example/test data available as a dataset in the package
-# TODO: add a top-level function that will do everything in one go,
-# TODO: Roxygenise internal functions too?
+# TODO: add a top-level function that will do everything in one go?
 
 
 
@@ -25,20 +24,21 @@ NULL
 #'
 #' @param x Either a data frame or a string containing full or relative path of file containing data to load
 #' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
-#' @param override_columnnames If TRUE, replace column names in source with fieldtypes specification. If FALSE, column names must exist in data frame or header row of file and must match the names specified in fieldtypes exactly
+#' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
+#' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
+#' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
 #' @param na vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}
 #' @param showprogress Print progress to console. Default = FALSE
 #' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A \code{sourcedata} object
 #' @export
-load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
+load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
-	# TODO: add option to suppress output to console
+	# TODO: add option to suppress output to console (rather than just via param)
 	# keep individual steps external for now (instead of bundling into a single function call) as
 	#   may be useful for user to be able to inspect the summary before proceeding with aggregation, or to do multiple different aggregations
 	# TODO: return a recommendation(s) for timepoint granularity?
-	# TODO: check validity of arguments, e.g. mismatch between fieldtypes names and column names
 	# TODO: distinguish between NULLs and empty strings? Probably useful to do so, though user could always treat empty strings as values (in na param)
 	# temp assignments
 	# x <- testfile
@@ -63,7 +63,7 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 		# check for mismatch between fieldtypes names and column names
 		validate_columnnames(names(x), names(fieldtypes), check_length_only = override_columnnames)
 		source_df <- x
-	} else if( is.character(x) ){
+	} else if( is.character(x) & length(x) == 1 ){
 		# assume all strings are file paths for now
 		validate_param_file(x)
 		source_name <- normalizePath(x)
@@ -92,10 +92,10 @@ load_dataset <- function(x, fieldtypes = NULL, override_columnnames = FALSE, na 
 			#source_df <- data.table::fread(file = x, sep = "auto", na.strings = na, colClasses = fieldtypes_to_cols(fieldtypes, readfunction = "data.table", alltostring = TRUE), data.table = FALSE)
 		} else {
 			#TODO: read in rdata files
-			stop(paste("Unsupported file type:", ext, ". Files can be: csv"))
+			stop(paste("Unsupported file extension:", ext, ". Files can be: csv"))
 		}
 	} else{
-		stop(paste("Unsupported source type:", as.character(x), ". Source can be data frame or string file path"))
+		stop(paste("Unsupported data source: [ class = ", class(x), "; contents = ", substr(toString(x),1,100), "]. Source can be data frame or string file path"))
 	}
 
 	if (override_columnnames == TRUE){
@@ -126,19 +126,19 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 	if (check_length_only == TRUE){
 		if (length(source_names) != length(spec_names)){
-			err_validation <- append(err_validation, paste0("Different number of columns in source and specification: ", length(source_names), " in source, ", length(spec_names), " in specification"))
+			err_validation <- append(err_validation, paste0("Different number of columns in data vs fieldtypes specification: ", length(source_names), " in source, ", length(spec_names), " in specification"))
 		}
 	} else{
 		# check for duplicates (spec_names should already have been checked in fieldtypes constructor)
 		if (anyDuplicated(source_names) > 0){
-			err_validation <- append(err_validation, paste("Duplicate column names in source: [", paste(source_names[duplicated(source_names)], collapse = ", "), "]"))
+			err_validation <- append(err_validation, paste("Duplicate column names in data: [", paste(source_names[duplicated(source_names)], collapse = ", "), "]"))
 		}
 		# names must be identical (but can be in different order)
 		if (length(setdiff(source_names, spec_names)) > 0) {
-			err_validation <- append(err_validation, paste("Column names in source but not in specification: [", paste(setdiff(source_names, spec_names), collapse = ", "), "]"))
+			err_validation <- append(err_validation, paste("Column names in data but not in fieldtypes specification: [", paste(setdiff(source_names, spec_names), collapse = ", "), "]"))
 		}
 		if (length(setdiff(spec_names, source_names)) > 0) {
-			err_validation <- append(err_validation, paste("Column names in specification but not in source: [", paste(setdiff(spec_names, source_names), collapse = ", "), "]"))
+			err_validation <- append(err_validation, paste("Column names in fieldtypes specification but not in data: [", paste(setdiff(spec_names, source_names), collapse = ", "), "]"))
 		}
 	}
 

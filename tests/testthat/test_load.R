@@ -1,17 +1,85 @@
 context("loading data")
 library(ehrchangepoints)
 
+## TEST THAT FIELDTYPES SPECIFICATION AND COLUMNNAMES ARE VALID ##
 
-test_that("Creation of fieldtypes object", {
-	expect_is(fieldtypes(Col1 = ft_timepoint()
-											 ,Col2 = ft_uniqueidentifier()
-											 ,Col3 = ft_partition()
-											 ,Col4 = ft_categorical()
-											 ,Col5 = ft_categorical(aggregate_by_each_category = TRUE)
-											 ,Col6 = ft_number()
-											 ,Col7 = ft_datetime()
-											 ,Col8 = ft_freetext()
-											 ,Col9 = ft_simple()
-											 ,Col10 = ft_ignore())
+test_that("Valid fieldtypes can be specified", {
+	expect_is(fieldtypes(Col_tp = ft_timepoint()
+											 ,Col_uid = ft_uniqueidentifier()
+											 ,Col_part = ft_partition()
+											 ,Col_cat = ft_categorical()
+											 ,Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE)
+											 ,Col_num = ft_number()
+											 ,Col_dt = ft_datetime()
+											 ,Col_dt2 = ft_datetime(includes_time = FALSE)
+											 ,Col_ft = ft_freetext()
+											 ,Col_sim = ft_simple()
+											 ,Col_ign = ft_ignore())
 						, "fieldtypes")
+})
+
+test_that("Duplicate column names in fieldtypes specification not allowed", {
+	expect_error(fieldtypes(Col_tp = ft_timepoint()
+													,Col_tp = ft_uniqueidentifier())
+	)
+})
+
+test_that("Invalid fieldtypes cannot be specified", {
+	expect_error(fieldtypes(Col_bad = readr::col_character()))
+})
+
+test_that("Must include a timepoint field", {
+	expect_error(fieldtypes(Col_dt = ft_datetime()))
+})
+
+test_that("More than one timepoint field not allowed", {
+	expect_error(fieldtypes(Col_tp1 = ft_timepoint()
+													,Col_tp2 = ft_timepoint()))
+})
+
+
+test_that("Column names in data and fieldtypes match exactly", {
+	expect_silent(validate_columnnames(c("nonsense","set","of")
+																		 ,c("nonsense","set","of"), check_length_only = FALSE))
+})
+
+test_that("Column names in data and fieldtypes match in different order", {
+	expect_silent(validate_columnnames(c("nonsense","set","of")
+																		 ,c("nonsense","of","set"), check_length_only = FALSE))
+})
+
+test_that("Column names in data and fieldtypes match in length only", {
+	expect_silent(validate_columnnames(c("nonsense","set")
+																		 ,c("nonsense","names"), check_length_only = TRUE))
+})
+
+test_that("Column names in data and fieldtypes don't match in length only", {
+	expect_error(validate_columnnames(c("nonsense","set","of")
+																		 ,c("nonsense","set"), check_length_only = TRUE))
+})
+
+test_that("Duplicate column names in data not allowed", {
+	expect_error(validate_columnnames(c("nonsense","set","of","nonsense","names")
+																		,c("nonsense","set","of","names"), check_length_only = FALSE))
+})
+
+test_that("Column names in data not in fieldtypes not allowed", {
+	expect_error(validate_columnnames(c("nonsense","set","of","stuff","names")
+																		,c("nonsense","set","of","stuff"), check_length_only = FALSE))
+})
+
+test_that("Column names in fieldtypes not in data not allowed", {
+	expect_error(validate_columnnames(c("nonsense","set","of")
+																		,c("nonsense","set","of","stuff"), check_length_only = FALSE))
+})
+
+
+## TEST THAT DATA TYPE TO LOAD IS VALID ##
+
+test_that("Non-csv files not allowed", {
+	expect_error(load_dataset("./DESCRIPTION", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
+})
+
+test_that("Non-data frames not allowed", {
+	expect_error(load_dataset(c("Fieldname", 123), fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
 })
