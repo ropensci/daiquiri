@@ -1,10 +1,10 @@
 ---
-title: "Walkthrough for the changedetection package"
+title: "Walkthrough for the ehrchangepoints package"
 author: "T. Phuong Quan"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Walkthrough for the changedetection package}
+  %\VignetteIndexEntry{Walkthrough for the ehrchangepoints package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,7 +20,7 @@ An example csv data file has been included in this package, and this vignette wi
 
 system.file("extdata", "abx2014.csv", package = "changedetection")
 
-Maybe don't need additional unit tests beyond this.
+Use this vignette as a functional test.
 
 Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 

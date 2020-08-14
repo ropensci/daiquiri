@@ -1,7 +1,7 @@
 Package: ehrchangepoints
 Type: Package
 Title: Automatic Change-point Detection for Electronic Health Records
-Version: 0.5.0
+Version: 0.5.1
 Author: T. Phuong Quan
 Maintainer: T. Phuong Quan <phuong.quan@ndm.ox.ac.uk>
 Description: More about what it does (maybe more than one line)

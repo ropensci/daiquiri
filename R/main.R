@@ -133,7 +133,8 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 		if (anyDuplicated(source_names) > 0){
 			err_validation <- append(err_validation, paste("Duplicate column names in data: [", paste(source_names[duplicated(source_names)], collapse = ", "), "]"))
 		}
-		# names must be identical (but can be in different order)
+		# names must be identical
+		# TODO: do we want to allow names to be in a different order? Need to consider downstream effects.
 		if (length(setdiff(source_names, spec_names)) > 0) {
 			err_validation <- append(err_validation, paste("Column names in data but not in fieldtypes specification: [", paste(setdiff(source_names, spec_names), collapse = ", "), "]"))
 		}

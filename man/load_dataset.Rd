@@ -6,7 +6,7 @@
 \usage{
 load_dataset(
   x,
-  fieldtypes = NULL,
+  fieldtypes,
   override_columnnames = FALSE,
   na = NULL,
   showprogress = FALSE,
@@ -18,7 +18,9 @@ load_dataset(
 
 \item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.}
 
-\item{override_columnnames}{If TRUE, replace column names in source with fieldtypes specification. If FALSE, column names must exist in data frame or header row of file and must match the names specified in fieldtypes exactly}
+\item{override_columnnames}{If FALSE, column names must exist in data frame or header row of file and must match
+the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
+specification. The specification must therefore contain the columns in the correct order. Default = FALSE}
 
 \item{na}{vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}}
 
