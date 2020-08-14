@@ -127,7 +127,7 @@ ft_categorical <- function( aggregate_by_each_category = FALSE ) {
 #' @export
 ft_number <- function() {
   fieldtype(type = "number",
-  					collector = readr::col_number(),
+  					collector = readr::col_double(),
   					dataclass = "numeric",
   					aggfunctions = c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max", "mean", "median")
   )
