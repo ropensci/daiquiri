@@ -19,16 +19,21 @@ is.datafield <- function(x) inherits(x, "datafield")
 
 # -----------------------------------------------------------------------------
 # constructor for sourcedata object
-# takes in a data frame, fieldtypes specification, and (string) sourcename
+# takes in a data.table, fieldtypes specification, and (string) sourcename
 sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 # temp assignments
 # dt<-data.table::setDT(source_df)
+#	dt<-data.table(source_df)
 # fieldtypes<-testfile_fieldtypes
+#	showprogress = TRUE
 
 	log_function_start(match.call()[[1]])
 	log_message(paste0("Processing source data..."), showprogress)
 
+	# number of rows in source
 	rows_source_n <- nrow(dt)
+	# number of columns in source
+	cols_source_n <- length(dt)
 	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
 	timepoint_fieldname <- names(timepoint_index)
 
@@ -59,7 +64,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
 	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
 	# this seems much harder than it should be
-	warningcols <- unique(warningsdt[, "colindex"])
+	warningcols <- unique(warningsdt[, "colindex"])[[1]]
 	for(c in warningcols){
 		warningcolname <- names(fieldtypes)[c]
 		warningrows <- warningsdt[colindex == c, "rowindex"][[1]]
@@ -78,8 +83,8 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 																		)
 		warningsdt <- rbind(warningsdt, timepointwarnings)
 		# NOTE: Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
-		# NOTE: Set columnnames using fieldtypes as strangely, when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
-		cols <- names(fieldtypes)[vapply(fieldtypes, is.fieldtype_ignore, logical(1)) == FALSE]
+		# NOTE: Need copy() because otherwise when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
+		cols <- data.table::copy(names(clean_dt))
 		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!navector])
 		names(clean_dt_temp)[1] <- cols[1]
 		clean_dt[, (cols[1]) := NULL]
@@ -139,8 +144,8 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	# TODO: see if can consolidate this with navector removal so only do it once
 	#clean_dt <- clean_dt[which(!duprowsvector),]
 	if( any(duprowsvector) ){
-		# NOTE: Set columnnames using fieldtypes as strangely, when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
-		cols <- names(fieldtypes)[vapply(fieldtypes, is.fieldtype_ignore, logical(1)) == FALSE]
+		# NOTE: Need copy() because otherwise when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
+		cols <- data.table::copy(names(clean_dt))
 		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!duprowsvector])
 		names(clean_dt_temp)[1] <- cols[1]
 		clean_dt[, (cols[1]) := NULL]
@@ -154,8 +159,6 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 
 	# basic summary info
 	rows_imported_n <- nrow(clean_dt)
-	# number of columns in source
-	cols_source_n <- length(fieldtypes)
 	# number of columns imported
 	cols_imported_n <- length(clean_dt)
 	# number of duplicate rows removed
@@ -182,7 +185,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
     else{
   		dfs[[i]] <- datafield(clean_dt[, ..fieldname],
   													fieldtypes[[i]],
-  													warningsdt["colindex" == i, c("rowindex","message")])
+  													warningsdt[colindex == i, c("rowindex","message")])
       cols_imported_indexes <- c(cols_imported_indexes, i)
       names(cols_imported_indexes)[length(cols_imported_indexes)] <- fieldname
     }
@@ -190,7 +193,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
   # Create new datafield to store numbers of dups.
   dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
   											ft_duplicates(),
-  											warningsdt["colindex" == 0, c("rowindex","message")])
+  											warningsdt[colindex == 0, c("rowindex","message")])
 	# TODO: Need to use a reserved word to distinguish it from imported fields
   names(dfs) <- c(names(fieldtypes), "DUPLICATES")
 
@@ -207,7 +210,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
       cols_source_n = cols_source_n,
       cols_imported_n = cols_imported_n,
       cols_imported_indexes = cols_imported_indexes,
-#      validation_warnings = warningsdt, # TODO: not sure whether to store all warnings here or hive them off to each datafield
+      validation_warnings = warningsdt, # TODO: not sure whether to store all warnings here or hive them off to each datafield
       sourcename = sourcename
     ),
     class = "sourcedata"
