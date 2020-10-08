@@ -28,7 +28,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 #	showprogress = TRUE
 
 	log_function_start(match.call()[[1]])
-	log_message(paste0("Processing source data..."), showprogress)
+	log_message(paste0("Processing source data [", sourcename, "]..."), showprogress)
 
 	# number of rows in source
 	rows_source_n <- nrow(dt)
@@ -277,17 +277,17 @@ summarise_source_data <- function(sourcedata, showprogress = FALSE){
 	)
 
 	log_message(paste0("  For each column in dataset..."), showprogress)
-	datafields <- data.frame(fieldname = names(sourcedata$datafields),
-													 fieldtype = sapply(sourcedata$datafields, get_fieldtype_name.datafield),
-													 datatype = sapply(sourcedata$datafields,get_datafield_basetype, format_as_string = TRUE),
-													 missing = sapply(sourcedata$datafields, get_datafield_missing, format_as_string = TRUE),
-													 min = sapply(sourcedata$datafields, get_datafield_min, format_as_string = TRUE),
-													 max = sapply(sourcedata$datafields, get_datafield_max, format_as_string = TRUE),
-													 validation_warnings = sapply(sourcedata$datafields, get_datafield_validation_warnings_n, format_as_string = TRUE),
+	datafields <- data.frame(fieldname = names(sourcedata$datafields[1:sourcedata$cols_source_n]),
+													 fieldtype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_fieldtype_name.datafield),
+													 datatype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n],get_datafield_basetype, format_as_string = TRUE),
+													 missing = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_missing, format_as_string = TRUE),
+													 min = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_min, format_as_string = TRUE),
+													 max = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_max, format_as_string = TRUE),
+													 validation_warnings = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_validation_warnings_n, format_as_string = TRUE),
 													 stringsAsFactors = FALSE)
 
 	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
-	validation_warnings <- do.call(rbind, c(sapply(sourcedata$datafields,
+	validation_warnings <- do.call(rbind, c(sapply(sourcedata$datafields[1:sourcedata$cols_source_n],
 																								 function(x){
 																								 	cbind("Datafield"= rep(x$columnname, ifelse(is.null(nrow(x$validation_warnings)), 0, nrow(x$validation_warnings))),
 																								 				x$validation_warnings) }),

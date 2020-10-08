@@ -260,7 +260,7 @@ aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethod
 	if( !(aggregation_timeunit %in% c("day","week","month","quarter","year")) ) {
 		stop("Invalid aggregation_timeunit [", aggregation_timeunit, "]. Values allowed are: day, week, month, quarter, year", call. = FALSE)
 	}
-	log_message(paste0("Aggregating by [", aggregation_timeunit, "]..."), showprogress)
+	log_message(paste0("Aggregating [", data$sourcename, "] by [", aggregation_timeunit, "]..."), showprogress)
 	# need to ensure have all possible timepoint values, even if they are missing in the dataset
 	alltimepoints_min <- timepoint_as_aggregationunit(get_datafield_min(data$datafields[[data$timepoint_fieldname]]), aggregation_timeunit)
 	alltimepoints_max <- timepoint_as_aggregationunit(get_datafield_max(data$datafields[[data$timepoint_fieldname]]), aggregation_timeunit)
@@ -280,7 +280,10 @@ aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethod
 		#    agg[[i]] <- c(aggregatefield(data$datafields[[fieldindex]], alltimepointslist, groupbylist, showprogress = showprogress), subaggregates=NA)
 		agg[[i]] <- aggregatefield(data$datafields[[fieldindex]], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	}
+	log_message(paste0("Aggregating calculated fields..."), showprogress)
+	log_message(paste0("DUPLICATES:"), showprogress)
 	agg[[data$cols_imported_n+1]] <- aggregatefield(data$datafields[[data$cols_source_n+1]], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
+	log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
 	agg[[data$cols_imported_n+2]] <- aggregateallfields(agg[1:data$cols_imported_n], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	names(agg) <- c(names(data$cols_imported_indexes), "DUPLICATES", "ALLFIELDSCOMBINED")
 
@@ -334,7 +337,9 @@ aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethod
 						}
 					}
 					log_message(paste0("Aggregating calculated datafields..."), showprogress)
+					log_message(paste0("DUPLICATES:"), showprogress)
 					subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n]] <- aggregatefield(data$datafields[[data$cols_source_n]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+					log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
 					subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:data$cols_imported_n - 1], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
 					names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
 

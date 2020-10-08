@@ -78,7 +78,6 @@ load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL,
 			validate_columnnames(names(check_df), names(fieldtypes), check_length_only = override_columnnames)
 
 			# TODO: doesn't deal with embedded quotes perfectly
-			# TODO: doesn't recognise that a string that starts with a number is not a number (DurationEnteredByPrescriber)
 			# TODO: deal with parsing errors appropriately
 			# read all values as string, then check datatypes after
 			log_message(paste0("Reading file from disk..."), showprogress)
