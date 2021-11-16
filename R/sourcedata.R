@@ -64,10 +64,10 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
 	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
 	# this seems much harder than it should be
-	warningcols <- unique(warningsdt[, "colindex"])[[1]]
+	warningcols <- unique(warningsdt[, colindex])
 	for(c in warningcols){
 		warningcolname <- names(fieldtypes)[c]
-		warningrows <- warningsdt[colindex == c, "rowindex"][[1]]
+		warningrows <- warningsdt[colindex == c, rowindex]
 		clean_dt[warningrows, (warningcolname) := NaN]
 	}
 
