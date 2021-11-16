@@ -157,6 +157,14 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 }
 
+# TODO: render results in markdown. This is still just a placeholder
+generate_report <- function(sourcedata, aggregatedata, save_directory, format = "html"){
+	save_directory <- validate_param_dir(save_directory)
+	rmarkdown::render(input = "./R/report_htmldoc.Rmd"
+										, output_file = "report_htmldoc.html"
+										, output_dir = save_directory
+										, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata))
+}
 
 #
 #

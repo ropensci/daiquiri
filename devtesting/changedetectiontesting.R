@@ -5,13 +5,12 @@
 rm(list = ls())
 devtools::load_all(".", reset = TRUE)
 
-
 # create log file
 # TODO: figure out where this should be
-log_initialise(".\\devtesting\\testoutput")
+log_initialise("./devtesting/testoutput")
 
 # test dataset
-testfile <- ".\\devtesting\\testdata\\abx2014.csv"
+testfile <- "./devtesting/testdata/abx2014.csv"
 # specify column types
 testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																	,TimepointDate = ft_timepoint()
@@ -25,21 +24,8 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																	,FirstAdministrationDateTime = ft_ignore()
 																	,Clusterid = ft_uniqueidentifier()
 																	,AntibioticsSource = ft_categorical(aggregate_by_each_category=TRUE))
-#
-# testfile_bad_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
-#                                       ,TimepointDate = ft_datetime()
-#                                       ,PrescriptionDate = ft_datetime()
-#                                       ,PrescriptionType = ft_categorical()
-#                                       ,AdmissionDate = ft_datetime()
-#                                       ,Drug = ft_ignore()
-#                                       ,Formulation = ft_ignore()
-#                                       ,Dose = ft_number()
-#                                       ,DoseUnit = ft_ignore()
-#                                       ,FirstAdministrationDateTime = ft_ignore()
-#                                       ,Clusterid = ft_ignore()
-#                                       ,AntibioticsSource = ft_partition())
 
-testfile <- ".\\devtesting\\testdata\\abx_IORD2018.csv"
+testfile <- "./devtesting/testdata/abx_IORD2018.csv"
 # specify column types
 testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																							,PrescriptionDate = ft_timepoint()
@@ -88,7 +74,7 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																							,LinkageResult = ft_ignore()
 																							,AntibioticsSource = ft_partition())
 
-testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = ".\\devtesting\\testoutput\\")
+testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
 testcpdsourcedata <- load_dataset(source_df, fieldtypes = testfile_fieldtypes, na=c("","NULL"))
 testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier()
@@ -105,7 +91,7 @@ testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(Prescription
 																																		,AntibioticsSource = ft_partition()), na=c("","NULL"))
 
 
-testcpdsourcedata <- load_dataset(".\\devtesting\\testdata\\abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
+testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																																							,PrescriptionDate = ft_timepoint()
 																																							,PrescriptionStatus = ft_categorical()
 																																							,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
@@ -151,10 +137,10 @@ testcpdsourcedata <- load_dataset(".\\devtesting\\testdata\\abx_IORD2018.csv", f
 																																							,LinkageWarningFlag = ft_categorical()
 																																							,LinkageResult = ft_categorical()
 																																							,AntibioticsSource = ft_partition())
-																	, na=c("","NULL"), showprogress=TRUE, log_directory = ".\\devtesting\\testoutput\\")
+																	, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
 
-testcpdsourcedata <- load_dataset(".\\devtesting\\testdata\\abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_ignore()
+testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_ignore()
 																																													,PrescriptionDate = ft_timepoint()
 																																													,PrescriptionStatus = ft_ignore()
 																																													,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
@@ -202,10 +188,10 @@ testcpdsourcedata <- load_dataset(".\\devtesting\\testdata\\abx_IORD2018.csv", f
 																																													,AntibioticsSource = ft_partition())
 																	, na=c("","NULL")
 																	, showprogress = TRUE
-																	, log_directory = ".\\devtesting\\testoutput\\")
+																	, log_directory = "./devtesting/testoutput/")
 
 
-testcpdsourcedata2014 <- load_dataset(".\\devtesting\\testdata\\abx2014.csv", fieldtypes = fieldtypes(PrescriptionID = ft_ignore()
+testcpdsourcedata2014 <- load_dataset("./devtesting/testdata/abx2014.csv", fieldtypes = fieldtypes(PrescriptionID = ft_ignore()
 																																		,TimepointDate = ft_timepoint()
 																																		,PrescriptionDate = ft_ignore()
 																																		,PrescriptionType = ft_ignore()
@@ -217,7 +203,7 @@ testcpdsourcedata2014 <- load_dataset(".\\devtesting\\testdata\\abx2014.csv", fi
 																																		,FirstAdministrationDateTime = ft_datetime()
 																																		,Clusterid = ft_ignore()
 																																		,AntibioticsSource = ft_partition()), na=c("","NULL")
-																			, log_directory = ".\\devtesting\\testoutput\\")
+																			, log_directory = "./devtesting/testoutput/")
 
 #print(testcpdsourcedata)
 
@@ -232,7 +218,7 @@ testcpddata_byyear <- aggregate_data(testcpdsourcedata, aggregation_timeunit = "
 
 summarise_aggregated_data(testcpddata_byday)
 print(testcpddata_byyear)
-export_aggregated_data(testcpddata_byday, save_directory = ".\\devtesting\\testoutput\\")
+export_aggregated_data(testcpddata_byday, save_directory = "./devtesting/testoutput/")
 
 
 plot_aggregatefield_byaggtype(aggfield = testcpddata_byday[["subaggregates"]][["AntibioticsSource"]][["ITU"]][["aggregatefields"]]$AdmissionDate,aggtype = "missing_n", changepoint_methods = "none", save_plot = FALSE)
@@ -240,98 +226,31 @@ plot_aggregatefield_byaggtype(aggfield = testcpddata_byday[["subaggregates"]][["
 plot_aggregatefield_byaggtype(aggfield = testcpddata_byday$subaggregates[[1]][[2]]$aggregatefields$PrescriptionType,aggtype = "distinct", save_plot = FALSE)
 
 
-plot_aggregated_data(testcpddata_byday, save_plot = TRUE, save_directory = ".\\devtesting\\testoutput\\", save_filetype = "png", showprogress = TRUE)
+plot_aggregated_data(testcpddata_byday, save_plot = TRUE, save_directory = "./devtesting/testoutput/", save_filetype = "png", showprogress = TRUE)
 
-plot_changepoint_summary(testcpddata_byday, save_plot = TRUE, save_directory = ".\\devtesting\\testoutput", save_filename = "Changepoint_summary_abx_IORD2018", save_filetype = "png", showprogress = TRUE)
-plot_changepoint_summary(testcpddata_byday, save_plot = FALSE, save_directory = ".\\devtesting\\testoutput\\", save_filetype = "png", showprogress = TRUE)
-#plot_changepoint_summary(testcpddata_byday, changepoint_methods = "-is_na", save_plot = TRUE, save_directory = "..\\devtesting\\testoutput\\", save_filetype = "png", save_filename = "Changepoint_summary_-isna", showprogress = TRUE)
-plot_changepoint_summary(testcpddata_byday$subaggregates[[1]][[1]], save_plot = TRUE, save_directory = ".\\devtesting\\testoutput\\", save_filetype = "png", showprogress = TRUE)
-plot_changepoint_summary(testcpddata_byday$subaggregates[[1]][[2]], save_plot = TRUE, save_directory = ".\\devtesting\\testoutput\\", save_filetype = "png", showprogress = TRUE)
+plot_changepoint_summary(testcpddata_byday, save_plot = TRUE, save_directory = "./devtesting/testoutput", save_filename = "Changepoint_summary_abx_IORD2018", save_filetype = "png", showprogress = TRUE)
+plot_changepoint_summary(testcpddata_byday, save_plot = FALSE, save_directory = "./devtesting/testoutput/", save_filetype = "png", showprogress = TRUE)
+#plot_changepoint_summary(testcpddata_byday, changepoint_methods = "-is_na", save_plot = TRUE, save_directory = "../devtesting/testoutput/", save_filetype = "png", save_filename = "Changepoint_summary_-isna", showprogress = TRUE)
+plot_changepoint_summary(testcpddata_byday$subaggregates[[1]][[1]], save_plot = TRUE, save_directory = "./devtesting/testoutput/", save_filetype = "png", showprogress = TRUE)
+plot_changepoint_summary(testcpddata_byday$subaggregates[[1]][[2]], save_plot = TRUE, save_directory = "./devtesting/testoutput/", save_filetype = "png", showprogress = TRUE)
 
 summarise_aggregated_data(testcpddata_byday)
 
 
 
-testfile <- "..\\dphil\\data\\pilotdata_outpat_IORD2019.csv"
-# specify column types
-testfile_fieldtypes <- fieldtypes(EpisodeID = ft_uniqueidentifier()
-																	,SiteCode = ft_categorical()
-																	,GPPracticeCode = ft_categorical()
-																	,ReferringOrganisationCode = ft_categorical()
-																	,EthnicGroupCode = ft_categorical()
-																	,AdministrativeCategoryCode = ft_categorical()
-																	,ConsultantMainSpecialtyCode = ft_categorical()
-																	,TreatmentFunctionCode = ft_categorical()
-																	,LocalSubSpecialtyCode = ft_categorical()
-																	,ConsultantCodeAnon = ft_uniqueidentifier()
-																	,CarerSupportCode = ft_categorical()
-																	,OperationStatusCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,PrimaryDiagCode = ft_freetext()
-																	,FirstProcCode = ft_freetext()
-																	,FirstProcDate = ft_datetime()
-																	,ClinicCode = ft_categorical()
-																	,AppointmentDate = ft_timepoint()
-																	,FirstAttendanceCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,AttendanceStatusCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,AttendanceOutcomeCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,ReferralSourceCode = ft_categorical()
-																	,ServiceTypeCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,PriorityTypeCode = ft_categorical(aggregate_by_each_category = TRUE)
-																	,LastDNAorCancelledDate = ft_datetime()
-																	,MedicalStaffType = ft_categorical(aggregate_by_each_category = TRUE)
-																	,CDSSubmissionStatus = ft_freetext()
-																	,ClusterID = ft_uniqueidentifier()
-																	,Sex = ft_categorical(aggregate_by_each_category = TRUE)
-																	,BirthMonth = ft_datetime(includes_time = FALSE)
-																	,Deathdate = ft_datetime()
-																	,PostcodeStub = ft_categorical()
-																	,IMDScore = ft_number()
-																	,LocalAuthority = ft_categorical())
+generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
 
-testfile_fieldtypes <- fieldtypes(EpisodeID = ft_uniqueidentifier()
-																	,SiteCode = ft_categorical()
-																	,GPPracticeCode = ft_ignore()
-																	,ReferringOrganisationCode = ft_ignore()
-																	,EthnicGroupCode = ft_ignore()
-																	,AdministrativeCategoryCode = ft_ignore()
-																	,ConsultantMainSpecialtyCode = ft_ignore()
-																	,TreatmentFunctionCode = ft_ignore()
-																	,LocalSubSpecialtyCode = ft_ignore()
-																	,ConsultantCodeAnon = ft_ignore()
-																	,CarerSupportCode = ft_ignore()
-																	,OperationStatusCode = ft_ignore()
-																	,PrimaryDiagCode = ft_ignore()
-																	,FirstProcCode = ft_ignore()
-																	,FirstProcDate = ft_ignore()
-																	,ClinicCode = ft_ignore()
-																	,AppointmentDate = ft_timepoint(includes_time = FALSE)
-																	,FirstAttendanceCode = ft_ignore()
-																	,AttendanceStatusCode = ft_ignore()
-																	,AttendanceOutcomeCode = ft_ignore()
-																	,ReferralSourceCode = ft_ignore()
-																	,ServiceTypeCode = ft_ignore()
-																	,PriorityTypeCode = ft_ignore()
-																	,LastDNAorCancelledDate = ft_datetime()
-																	,MedicalStaffType = ft_ignore()
-																	,CDSSubmissionStatus = ft_ignore()
-																	,ClusterID = ft_ignore()
-																	,Sex = ft_categorical(aggregate_by_each_category = TRUE)
-																	,BirthMonth = ft_ignore()
-																	,Deathdate = ft_ignore()
-																	,PostcodeStub = ft_ignore()
-																	,IMDScore = ft_number()
-																	,LocalAuthority = ft_ignore())
+generate_report(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday, save_directory = "./devtesting/testoutput")
 
-outpatsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress = TRUE, log_directory = ".\\devtesting\\testoutput\\")
+rmarkdown::render(input = "./R/report_summary.Rmd"
+									, output_dir = "./devtesting/testoutput"
+									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
-saveRDS(outpatsourcedata, ".\\devtesting\\testoutput\\outpatsourcedata.Rds")
-outpatsourcedata <- readRDS(".\\devtesting\\testoutput\\outpatsourcedata.Rds")
+rmarkdown::render(input = "./R/report_dashboard.Rmd"
+									, output_dir = "./devtesting/testoutput"
+									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
-outpatdata_byday <- aggregate_data(outpatsourcedata, changepointmethods = "none", showprogress = TRUE)
 
-outpatdata_byday <- recalculate_changepoints(outpatdata_byday, method = "all", showprogress = TRUE)
-
-saveRDS(outpatdata_byday, ".\\devtesting\\testoutput\\outpatdata_byday.Rds")
-
-saveRDS(source_df, ".\\devtesting\\testoutput\\outpatsourcedf")
-
+rmarkdown::render(input = "./R/report_dashboard_sidebar.Rmd"
+									, output_dir = "./devtesting/testoutput"
+									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))

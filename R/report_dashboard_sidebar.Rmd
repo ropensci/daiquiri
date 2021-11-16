@@ -1,0 +1,234 @@
+---
+title: "EHRCHANGEPOINTS dashboard sidebar"
+output: 
+  flexdashboard::flex_dashboard
+params:
+  sourcedata: sourcedata
+  aggregatedata: aggregatedata
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(comment = NA)
+#knitr::opts_chunk$set(results='asis')
+knitr::opts_chunk$set(rownames.print = FALSE)
+
+```
+
+
+Column {.sidebar}
+-------------------------------------------
+
+Created on: "`r Sys.time()`"
+
+Menu items
+
+Column {.tabset}
+-------------------------------------------
+
+Data source
+
+```{r sourcedata}
+#print(params$sourcedata)
+
+sourcesummary <- summarise_source_data(params$sourcedata)
+
+print(params$sourcedata$sourcename)
+	
+```
+
+### Summary
+
+```{r}
+summarydf <- data.frame("Item" = c("Columns in source",
+																	"Columns imported",
+																	"Column used for timepoint",
+																	"Min timepoint value",
+																	"Max timepoint value",
+																	"Rows in source",
+																	"Duplicate rows",
+																	"Rows missing timepoint values",
+																	"Rows imported",
+																	"Total validation warnings"),
+												"Value" = c(sourcesummary$overall["cols_source_n"],
+																		sourcesummary$overall["cols_imported_n"],
+																		sourcesummary$overall["timepoint_fieldname"],
+																		sourcesummary$overall["timepoint_min"],
+																		sourcesummary$overall["timepoint_max"],
+																		sourcesummary$overall["rows_source_n"],
+																		sourcesummary$overall["rows_duplicates_n"],
+																		sourcesummary$overall["timepoint_missing_n"],
+																		sourcesummary$overall["rows_imported_n"],
+																		nrow(sourcesummary$validation_warnings)),
+												stringsAsFactors = FALSE
+)
+									 
+
+
+reactable::reactable(summarydf,
+					sortable = FALSE,
+					filterable = FALSE,
+					searchable = FALSE,
+					pagination = FALSE,
+					rownames = FALSE,
+					striped = TRUE,
+					compact = TRUE,
+					fullWidth = FALSE,
+					columns = list(
+						Item = reactable::colDef(name = "",
+													style = list(fontWeight = "bold"),
+													minWidth = 300),
+						Value = reactable::colDef(name = "",
+													 minWidth = 200)
+						)
+					)
+
+```
+
+
+```{r}
+
+sourcedatafields <- sourcesummary$datafields
+sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
+
+```
+
+### Data fields ignored
+
+```{r}
+
+	reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), c("fieldname","fieldtype","ordinal_position")],
+					sortable = TRUE,
+					filterable = FALSE,
+					searchable = FALSE,
+					pagination = FALSE,
+					rownames = FALSE,
+					compact = TRUE,
+					fullWidth = FALSE,
+					columns = list(
+						fieldname = reactable::colDef(name = "Field name",
+															 minWidth = 200),
+						fieldtype = reactable::colDef(name = "Field type",
+															 minWidth = 100),
+						ordinal_position = reactable::colDef(name = "Column position")
+						)
+					)
+```
+
+### Data fields imported
+
+```{r}
+
+reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype != "ignore"),],
+				sortable = TRUE,
+				filterable = FALSE,
+				searchable = FALSE,
+				rownames = FALSE,
+				pagination = FALSE,
+				striped = TRUE,
+				highlight = TRUE,
+				columns = list(
+					fieldname = reactable::colDef(name = "Field name",
+														 style = list(fontWeight = "bold")),
+					fieldtype = reactable::colDef(name = "Field type"),
+					datatype = reactable::colDef(name = "Datatype"),
+					count = reactable::colDef(name = "Total values"),
+					missing = reactable::colDef(name = "Missing values"),
+					min = reactable::colDef(name = "Min value"),
+					max = reactable::colDef(name = "Max value"),
+					validation_warnings = reactable::colDef(name = "Validation warnings"),
+					ordinal_position = reactable::colDef(name = "Column position")
+					)
+				)
+```
+
+
+### Validation warnings
+
+```{r}
+
+if (nrow(sourcesummary$validation_warnings) > 0){
+	reactable::reactable(sourcesummary$validation_warnings,
+					sortable = TRUE,
+					filterable = FALSE,
+					searchable = FALSE,
+					rownames = FALSE,
+					pagination = FALSE,
+					striped = TRUE,
+					highlight = TRUE,
+					compact = TRUE,
+					fullWidth = FALSE,
+					columns = list(
+						Datafield = reactable::colDef(name = "Field name",
+															 style = list(fontWeight = "bold"),
+															 minWidth = 200),
+						rowindex = reactable::colDef(name = "Row position"),
+						message = reactable::colDef(name = "Details",
+														 minWidth = 500)
+						)
+					)
+} else{
+	print("None")
+}
+
+```
+
+## Aggregated data
+
+```{r aggregatedata}
+	aggsummary <- summarise_aggregated_data(params$aggregatedata)
+```
+
+### Summary
+
+```{r}
+aggsummarydf <- data.frame("Item" = c("Column used for timepoint",
+																			"Min timepoint value",
+																			"Max timepoint value",
+																			"Timepoint aggregation unit",
+																			"Total number of timepoints",
+																			"Number of empty timepoints",
+																			"Number of data fields",
+																			"Column(s) used as partitionfield"),
+													 "Value" = c(aggsummary$overall["timepoint_fieldname"],
+													 						aggsummary$overall["timepoint_min"],
+													 						aggsummary$overall["timepoint_max"],
+													 						aggsummary$overall["aggregation_timeunit"],
+													 						aggsummary$overall["n_timepoints"],
+													 						aggsummary$overall["n_empty_timepoints"],
+													 						aggsummary$overall["n_fields"],
+													 						aggsummary$overall["partitionfield_fieldnames"]),
+													 stringsAsFactors = FALSE
+)
+
+reactable::reactable(aggsummarydf,
+					sortable = FALSE,
+					filterable = FALSE,
+					searchable = FALSE,
+					pagination = FALSE,
+					rownames = FALSE,
+					striped = TRUE,
+					compact = TRUE,
+					fullWidth = FALSE,
+					columns = list(
+						Item = reactable::colDef(name = "",
+													style = list(fontWeight = "bold"),
+													minWidth = 300),
+						Value = reactable::colDef(name = "",
+													 minWidth = 200)
+						)
+					)
+
+```
+
+**Change points by field**
+
+```{r}
+#	if( nrow(aggsummary$byfield) > 0){
+#		print(aggsummary$byfield)
+#	} else{
+#		print("Change points not calculated.\n")
+#	}
+```
+
