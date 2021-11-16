@@ -12,6 +12,7 @@
 
 # -----------------------------------------------------------------------------
 # SPECIFY ALLOWABLE TYPES
+# TODO: rename ft_number to ft_numeric
 
 # `collector' is readr `collector'
 # TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones

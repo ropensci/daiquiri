@@ -7,6 +7,7 @@
 load_dataset(
   x,
   fieldtypes,
+  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = NULL,
   showprogress = FALSE,
@@ -17,6 +18,8 @@ load_dataset(
 \item{x}{Either a data frame or a string containing full or relative path of file containing data to load}
 
 \item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.}
+
+\item{textfile_contains_columnnames}{If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE}
 
 \item{override_columnnames}{If FALSE, column names must exist in data frame or header row of file and must match
 the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes

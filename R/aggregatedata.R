@@ -5,6 +5,7 @@
 # -----------------------------------------------------------------------------
 # individual aggregatefields
 # NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
+# TODO: timepoint_as_aggregationunit only needs to be called once
 aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	#datafield = outpatsourcedata$datafields[[24]]
@@ -184,6 +185,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # aggregatefield for all fields combined
 # uses results from already-aggregated individual fields rather than doing it all again
 # TODO: do we want to include duplicates in here too?
+# TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
 aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	# aggfields = agg[1:data$cols_imported_n]
@@ -247,6 +249,7 @@ aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, c
 aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethods = "all", showprogress = FALSE){
 	# TODO: move calculation of changepoints into separate function and allow them to be calculated afterwards
 	# TODO: allow user to override existing aggfunctions?
+	# TODO: Use something better than seq() to calculate weeks and months, so that it works when the first date is not the first of the month
 	#temp assignment
 	# data<-outpatsourcedata
 	# aggregation_timeunit = "day"

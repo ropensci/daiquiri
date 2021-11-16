@@ -24,6 +24,7 @@ NULL
 #'
 #' @param x Either a data frame or a string containing full or relative path of file containing data to load
 #' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
+#' @param textfile_contains_columnnames If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE
 #' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
 #' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
 #' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
@@ -32,7 +33,7 @@ NULL
 #' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A \code{sourcedata} object
 #' @export
-load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
+load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
 	# TODO: add option to suppress output to console (rather than just via param)
@@ -43,6 +44,7 @@ load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL,
 	# temp assignments
 	# x <- testfile
 	# fieldtypes <- testfile_fieldtypes
+	# textfile_contains_columnnames = TRUE
 	# override_columnnames = FALSE
 	# na = na=c("","NULL")
 	# showprogress=TRUE
@@ -72,6 +74,9 @@ load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL,
 		if( ext == ".csv"){
 			log_message(paste0("Identified csv file [", source_name, "]"), showprogress)
 			log_message(paste0("Checking column names against fieldtypes..."), showprogress)
+			if( textfile_contains_columnnames == FALSE & override_columnnames == FALSE ){
+				stop("Bad parameters supplied.\n", "If textfile_contains_columnnames is set to FALSE then override_columnnames must be set to TRUE", call. = FALSE)
+			}
 			# check for mismatch between fieldtypes names and column names before reading in whole file
 			# assumes first row has column names
 			check_df <- data.table::fread(file = x, nrows = 1, sep = "auto", na.strings = na, data.table = FALSE)
@@ -81,7 +86,7 @@ load_dataset <- function(x, fieldtypes, override_columnnames = FALSE, na = NULL,
 			# TODO: deal with parsing errors appropriately
 			# read all values as string, then check datatypes after
 			log_message(paste0("Reading file from disk..."), showprogress)
-			source_df <- readr::read_csv(x, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=na)
+			source_df <- readr::read_csv(x, col_names = textfile_contains_columnnames, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=na)
 
 			# return a dataframe instead of a data.table
 			# doesn't seem to recognise POSIXct type
@@ -151,6 +156,7 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 
 }
+
 
 #
 #

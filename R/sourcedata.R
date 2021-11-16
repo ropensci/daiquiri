@@ -230,7 +230,7 @@ print.sourcedata <- function(x, ...){
   cat("Columns in source:", sourcesummary$overall["cols_source_n"], "\n")
   cat("Columns imported:", sourcesummary$overall["cols_imported_n"], "\n")
   cat("Rows in source:", sourcesummary$overall["rows_source_n"], "\n")
-  cat("Duplicate rows removed:", sourcesummary$overall["rows_duplicate_n"], "\n")
+  cat("Duplicate rows removed:", sourcesummary$overall["rows_duplicates_n"], "\n")
   cat("Rows imported:", sourcesummary$overall["rows_imported_n"], "\n")
   cat("Column used for timepoint:", sourcesummary$overall["timepoint_fieldname"], "\n")
   cat("Min timepoint value:", sourcesummary$overall["timepoint_min"], "\n")
@@ -254,7 +254,6 @@ print.sourcedata <- function(x, ...){
 # summarise data
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
-# TODO: Distinguish between imported and calculated fields
 # TODO: Consider adding a warning if a categorical field has "too many" different values
 summarise_source_data <- function(sourcedata, showprogress = FALSE){
 	#temp assignment
@@ -280,6 +279,7 @@ summarise_source_data <- function(sourcedata, showprogress = FALSE){
 	datafields <- data.frame(fieldname = names(sourcedata$datafields[1:sourcedata$cols_source_n]),
 													 fieldtype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_fieldtype_name.datafield),
 													 datatype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n],get_datafield_basetype, format_as_string = TRUE),
+													 count = sapply(sourcedata$datafields[1:sourcedata$cols_source_n],get_datafield_count, format_as_string = TRUE),
 													 missing = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_missing, format_as_string = TRUE),
 													 min = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_min, format_as_string = TRUE),
 													 max = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_max, format_as_string = TRUE),
@@ -397,6 +397,20 @@ get_datafield_validation_warnings_n <- function(datafield, format_as_string = FA
 		}
 		else{
 			nrow(datafield$validation_warnings)
+		}
+	}
+}
+
+get_datafield_count <- function(datafield, format_as_string = FALSE){
+	if (format_as_string){
+		format(get_datafield_count(datafield))
+	}
+	else{
+		if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+			NA
+		}
+		else{
+			sum(!is.na(datafield$values[[1]]))
 		}
 	}
 }
