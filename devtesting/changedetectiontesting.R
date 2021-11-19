@@ -20,8 +20,8 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																	,Drug = ft_categorical()
 																	,Formulation = ft_freetext()
 																	,Dose = ft_number()
-																	,DoseUnit = ft_ignore()
-																	,FirstAdministrationDateTime = ft_ignore()
+																	,DoseUnit = ft_categorical()
+																	,FirstAdministrationDateTime = ft_datetime()
 																	,Clusterid = ft_uniqueidentifier()
 																	,AntibioticsSource = ft_categorical(aggregate_by_each_category=TRUE))
 
@@ -240,17 +240,12 @@ summarise_aggregated_data(testcpddata_byday)
 
 generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
 
-generate_report(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday, save_directory = "./devtesting/testoutput")
+generate_report(sourcedata = testcpdsourcedata,
+								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
+								save_directory = "./devtesting/testoutput")
 
 rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 									, output_dir = "./devtesting/testoutput"
 									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
-rmarkdown::render(input = "./R/report_dashboard.Rmd"
-									, output_dir = "./devtesting/testoutput"
-									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
-
-rmarkdown::render(input = "./R/report_dashboard_sidebar.Rmd"
-									, output_dir = "./devtesting/testoutput"
-									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))

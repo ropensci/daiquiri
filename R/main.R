@@ -14,7 +14,7 @@ NULL
 
 # main set of external functions
 # TODO: make example/test data available as a dataset in the package
-# TODO: add a top-level function that will do everything in one go?
+# TODO: add a top-level function that will do everything in one go? Include option to return sourcedata and aggregatedata
 
 
 
@@ -157,7 +157,7 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 }
 
-# TODO: render results in markdown. This is still just a placeholder
+# TODO: allow specification of filename
 generate_report <- function(sourcedata, aggregatedata, save_directory, format = "html"){
 	save_directory <- validate_param_dir(save_directory)
 	rmarkdown::render(input = "./R/report_htmldoc.Rmd"
