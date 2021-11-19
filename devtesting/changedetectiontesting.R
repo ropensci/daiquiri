@@ -242,7 +242,7 @@ generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2
 
 generate_report(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday, save_directory = "./devtesting/testoutput")
 
-rmarkdown::render(input = "./R/report_summary.Rmd"
+rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 									, output_dir = "./devtesting/testoutput"
 									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
