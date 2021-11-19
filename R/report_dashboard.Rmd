@@ -410,3 +410,28 @@ lineplot_duplicates <- overview_lineplot(data = data_duplicates[fieldname == "DU
 lineplot_duplicates
 
 ```
+
+Per column
+=======================================================
+
+Column {.tabset}
+-------------------------------------
+
+```{r, results = 'asis'}
+#params$aggregatedata <- testcpddata_byday
+timepointcolname <-  names(params$aggregatedata$aggregatefields[[1]]$values)[1]
+#aggtype <- "n"
+for(i in seq_along(names(params$aggregatedata$aggregatefields))[1:2]){
+  cat('\n###', names(params$aggregatedata$aggregatefields)[i], '\n')
+	for(aggtype in params$aggregatedata$aggregatefields[[i]]$functionlist){
+	  cat('\n####', aggtype, '\n')
+	  p <- overview_lineplot(data = params$aggregatedata$aggregatefields[[i]]$values[, c(timepointcolname, aggtype), with = FALSE],
+																				 timepointcol = timepointcolname,
+																				 valuecol = aggtype
+	  											 )
+	  											 
+	  print(p)
+	  cat('\n')
+	}
+}
+```
