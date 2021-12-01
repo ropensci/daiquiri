@@ -241,8 +241,10 @@ summarise_aggregated_data(testcpddata_byday)
 generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
 
 generate_report(sourcedata = testcpdsourcedata,
-								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
-								save_directory = "./devtesting/testoutput")
+								aggregatedata = testcpddata_byweek,
+#								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
+								save_directory = "./devtesting/testoutput",
+								save_filename = "report_htmldoc")
 
 rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 									, output_dir = "./devtesting/testoutput"

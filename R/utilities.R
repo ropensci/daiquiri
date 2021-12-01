@@ -4,7 +4,6 @@ validate_param_file <- function(filepath){
 	if(!file.exists(filepath)){
 		stop(paste("Invalid file: ", filepath))
 	}
-
 }
 
 validate_param_dir <- function(dirpath){
@@ -22,7 +21,14 @@ validate_param_filetype_plot <- function(filetype){
 	if(!filetype %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf")){
 		stop(paste("Invalid filetype: ", filetype))
 	}
+}
 
+validate_param_savefilename <- function(filename){
+	# NOTE: this is very restrictive and I'm not sure how it works in different locales
+	if( grepl("[^a-zA-Z0-9_-]", filename) ){
+		stop(paste0("Invalid filename: ", filename, ". Filename can only contain alphanumeric, '-', and '_' characters, and should not include the file extension."),
+				 call. = FALSE)
+	}
 }
 
 # -----------------------------------------------------------------------------

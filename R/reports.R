@@ -186,17 +186,16 @@ plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, l
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 	breaks <- NA
 
-	if( aggtype %in% c("distinct","n","missing_n") ){
+	if( aggtype %in% c("distinct","n","sum") | endsWith(aggtype, "_n") | startsWith(aggtype, "subcat_n") ){
 		rangesize <- floor(log10(maxval))
 		if( rangesize == 0 || maxval == 0){
-			breaks <- seq(0, max(maxval, 5))
+			breaks <- seq(0, max(maxval, 10))
 		}
 		else{
-			#      ymax <- ceiling(maxval/10^rangesize)*10^rangesize
 			ymax <- ceiling(maxval/10^(rangesize-1))*10^(rangesize-1)
 			breaks <- seq(0, ymax, by = 10^rangesize)
 		}
-	} else if( aggtype %in% c("missing_perc") ){
+	} else if( endsWith(aggtype, "_perc") | startsWith(aggtype, "subcat_perc") ){
 		breaks <- seq(0, 100, by = 10)
 	} else if( aggtype %in% c("min","max") ){
 		if( is.fieldtype_number(fieldtype) ){
@@ -209,8 +208,6 @@ yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 				breaks <- seq(floor(minval), max(ceiling(maxval), 5))
 			}
 			else{
-				#        ymin <- floor(minval/10^rangesize)*10^rangesize
-				#        ymax <- ceiling(maxval/10^rangesize)*10^rangesize
 				ymin <- floor(minval/10^(rangesize-1))*10^(rangesize-1)
 				ymax <- ceiling(maxval/10^(rangesize-1))*10^(rangesize-1)
 				breaks <- seq(ymin, ymax, by = 10^rangesize)

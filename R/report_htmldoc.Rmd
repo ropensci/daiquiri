@@ -20,7 +20,7 @@ Dataset: **`r encodeString(params$sourcedata$sourcename)`**
 
 Aggregated by: **`r params$aggregatedata$aggregation_timeunit`**
 
-Created on: `r Sys.time()`
+Report created on: `r Sys.time()`
 
 # {.tabset .tabset-pills}
 

@@ -157,13 +157,23 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 }
 
-# TODO: allow specification of filename
-generate_report <- function(sourcedata, aggregatedata, save_directory, format = "html"){
+# TODO: ADD Roxygen notes
+generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html"){
 	save_directory <- validate_param_dir(save_directory)
-	rmarkdown::render(input = "./R/report_htmldoc.Rmd"
-										, output_file = "report_htmldoc.html"
-										, output_dir = save_directory
-										, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata))
+	if( is.null(save_filename) ){
+		save_filename <- paste0("ehrchangepoints_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
+	} else{
+		validate_param_savefilename(save_filename)
+	}
+
+	if( format == "html" ){
+		rmarkdown::render(input = "./R/report_htmldoc.Rmd"
+											, output_file = paste0(save_filename, ".html")
+											, output_dir = save_directory
+											, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata))
+	} else{
+		stop(paste("Invalid format: ", format, ". Only html format is currently supported"))
+	}
 }
 
 #
