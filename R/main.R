@@ -15,7 +15,7 @@ NULL
 # main set of external functions
 # TODO: make example/test data available as a dataset in the package
 # TODO: add a top-level function that will do everything in one go? Include option to return sourcedata and aggregatedata
-
+# TODO: try to reduce dependencies installed by readr
 
 
 #' Load source data
@@ -89,6 +89,7 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 			source_df <- readr::read_csv(x, col_names = textfile_contains_columnnames, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=na)
 
 			# return a dataframe instead of a data.table
+			# TODO: worth testing again as it has been a while since last tested
 			# doesn't seem to recognise POSIXct type
 			# also stops reading when there is an embedded comma (even if it is surrounded by quotes) even though the help says it can deal with this. Could this be a Windows thing?
 			#source_df <- data.table::fread(file = x, sep = "auto", na.strings = na, colClasses = fieldtypes_to_cols(fieldtypes, readfunction = "data.table"), data.table = FALSE)
@@ -157,8 +158,19 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 }
 
-# TODO: ADD Roxygen notes
+#' Generate report
+#'
+#' Generate report from previously-created sourcedata and aggregatedata objects
+#'
+#' @param sourcedata A \code{sourcedata} object returned from \code{load_dataset()} function
+#' @param aggregatedata An \code{aggregatedata} object returned from \code{aggregate_data()} function
+#' @param save_directory String specifying directory in which to save the report. Default is current directory.
+#' @param save_filename String specifying filename for the report, excluding any file extension.
+#' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
+#' @param format File format of the report. Currently only "html" is supported
+#' @export
 generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html"){
+	# TODO: Add return value for success or failure
 	save_directory <- validate_param_dir(save_directory)
 	if( is.null(save_filename) ){
 		save_filename <- paste0("ehrchangepoints_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
@@ -167,13 +179,14 @@ generate_report <- function(sourcedata, aggregatedata, save_directory = ".", sav
 	}
 
 	if( format == "html" ){
-		rmarkdown::render(input = "./R/report_htmldoc.Rmd"
+		rmarkdown::render(input = system.file("rmd", "report_htmldoc.Rmd", package = packageName(), mustWork = TRUE)
 											, output_file = paste0(save_filename, ".html")
 											, output_dir = save_directory
 											, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata))
 	} else{
 		stop(paste("Invalid format: ", format, ". Only html format is currently supported"))
 	}
+
 }
 
 #
