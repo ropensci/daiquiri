@@ -34,4 +34,5 @@ A \code{cpdaggregate} object
 }
 \description{
 Create a single plot showing changepoints identified in all data fields of aggregated object
+NOT CURRENTLY IMPLEMENTED. TO REVISIT WHEN SUITABLE CHANGE DETECTION METHODS ARE IDENTIFIED.
 }

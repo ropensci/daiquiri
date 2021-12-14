@@ -1,6 +1,10 @@
-#' ehrchangepoints: Automatic Change-point Detection for Electronic Health Records
+#' ehrchangepoints: Temporal data quality checker for Electronic Health Records
 #'
-#' This is the help page for the package as a whole
+#' This package takes a generic dataset containing record-level data (i.e. one row per event, with one
+#' column specifying the date (and time) of the event, and further columns containing any associated values for the event),
+#' and automatically generates a report showing aggregated values for each column over time, including identifying missing values
+#' and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
+#'
 #'
 #' @section Section 1:
 #' Classes are S3
@@ -13,9 +17,77 @@
 NULL
 
 # main set of external functions
-# TODO: make example/test data available as a dataset in the package
-# TODO: add a top-level function that will do everything in one go? Include option to return sourcedata and aggregatedata
 # TODO: try to reduce dependencies installed by readr
+
+
+#' Check dataset for potential data quality issues
+#'
+#' Accepts record-level data from a csv file or dataframe, generates a collection of time series for each column, and saves a report to disk.
+#'
+#' @param x Either a data frame or a string containing full or relative path of file containing data to load
+#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
+#' @param textfile_contains_columnnames If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE
+#' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
+#' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
+#' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
+#' @param na vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.
+#' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
+#' @param save_directory String specifying directory in which to save the report. Default is current directory.
+#' @param save_filename String specifying filename for the report, excluding any file extension.
+#' If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
+#' @param showprogress Print progress to console. Default = FALSE
+#' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
+#' @return A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
+#' @export
+check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = FALSE, log_directory = NULL){
+	# temp assignments
+	# x <- testfile
+	# fieldtypes <- testfile_fieldtypes
+	# textfile_contains_columnnames = TRUE
+	# override_columnnames = FALSE
+	# na = na=c("","NULL")
+	# aggregation_timeunit = "month"
+	# showprogress=TRUE
+
+	# if a log directory is supplied, start a new log. Otherwise, close any existing log
+	if( !is.null(log_directory) ){
+		log_initialise(log_directory)
+	} else{
+		log_close()
+	}
+
+	log_function_start(match.call()[[1]])
+
+	# check params before running anything so that it fails sooner rather than later
+	validate_aggregation_unit(aggregation_timeunit)
+	validate_param_dir(save_directory)
+	validate_param_savefilename(save_filename, allownull = TRUE)
+
+	sourcedata <- load_dataset(x, fieldtypes, textfile_contains_columnnames = textfile_contains_columnnames, override_columnnames = override_columnnames, na = na, showprogress = showprogress)
+
+	aggregatedata <- aggregate_data(sourcedata, aggregation_timeunit = aggregation_timeunit, changepointmethods = "none", showprogress = showprogress)
+
+	reportfilename <- generate_report(sourcedata, aggregatedata, save_directory = save_directory, save_filename = save_filename, showprogress = showprogress)
+
+	log_function_end(match.call()[[1]])
+
+	log_close()
+
+	structure(
+		list(
+			source_name = sourcedata$sourcename,
+			fieldtypes = fieldtypes,
+			textfile_contains_columnnames = textfile_contains_columnnames,
+			override_columnnames = override_columnnames,
+			na_values = na,
+			aggregation_timeunit = aggregation_timeunit,
+			report_filename = reportfilename,
+			sourcedata = sourcedata,
+			aggregatedata = aggregatedata
+		),
+		class = "check_dataset"
+	)
+}
 
 
 #' Load source data
@@ -28,12 +100,12 @@ NULL
 #' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
 #' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
 #' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
-#' @param na vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}
+#' @param na vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.
 #' @param showprogress Print progress to console. Default = FALSE
-#' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A \code{sourcedata} object
 #' @export
-load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL){
+load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), showprogress = FALSE){
+	# TODO: rename?
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
 	# TODO: add option to suppress output to console (rather than just via param)
@@ -48,12 +120,6 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 	# override_columnnames = FALSE
 	# na = na=c("","NULL")
 	# showprogress=TRUE
-
-	# if a log directory is supplied, start a new log. Otherwise, it will append to an existing log if one is still in memory
-	# TODO: should we start a new log every time?
-	if( !is.null(log_directory) ){
-		log_initialise(log_directory)
-	}
 
 	log_function_start(match.call()[[1]])
 
@@ -154,40 +220,8 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 				 call. = FALSE)
 	}
 
-
-
 }
 
-#' Generate report
-#'
-#' Generate report from previously-created sourcedata and aggregatedata objects
-#'
-#' @param sourcedata A \code{sourcedata} object returned from \code{load_dataset()} function
-#' @param aggregatedata An \code{aggregatedata} object returned from \code{aggregate_data()} function
-#' @param save_directory String specifying directory in which to save the report. Default is current directory.
-#' @param save_filename String specifying filename for the report, excluding any file extension.
-#' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
-#' @param format File format of the report. Currently only "html" is supported
-#' @export
-generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html"){
-	# TODO: Add return value for success or failure
-	save_directory <- validate_param_dir(save_directory)
-	if( is.null(save_filename) ){
-		save_filename <- paste0("ehrchangepoints_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
-	} else{
-		validate_param_savefilename(save_filename)
-	}
-
-	if( format == "html" ){
-		rmarkdown::render(input = system.file("rmd", "report_htmldoc.Rmd", package = packageName(), mustWork = TRUE)
-											, output_file = paste0(save_filename, ".html")
-											, output_dir = save_directory
-											, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata))
-	} else{
-		stop(paste("Invalid format: ", format, ". Only html format is currently supported"))
-	}
-
-}
 
 #
 #

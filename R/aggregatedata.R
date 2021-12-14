@@ -260,9 +260,7 @@ aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethod
 
 	# create column to group by
 	# TODO: raise an error/warning if data is less granular than aggregation_timeunit
-	if( !(aggregation_timeunit %in% c("day","week","month","quarter","year")) ) {
-		stop("Invalid aggregation_timeunit [", aggregation_timeunit, "]. Values allowed are: day, week, month, quarter, year", call. = FALSE)
-	}
+	validate_aggregation_unit(aggregation_timeunit)
 	log_message(paste0("Aggregating [", data$sourcename, "] by [", aggregation_timeunit, "]..."), showprogress)
 	# need to ensure have all possible timepoint values, even if they are missing in the dataset
 	alltimepoints_min <- timepoint_as_aggregationunit(get_datafield_min(data$datafields[[data$timepoint_fieldname]]), aggregation_timeunit)
@@ -551,5 +549,11 @@ timepoint_as_aggregationunit <- function(x, aggregation_timeunit){
 																						, "-01")) }))
 	} else if( aggregation_timeunit == "year" ){
 		as.Date(format(x, format = "%Y-01-01"))
+	}
+}
+
+validate_aggregation_unit <- function(aggunit){
+	if( !(aggunit %in% c("day","week","month","quarter","year")) ) {
+		stop("Invalid aggregation_timeunit [", aggunit, "]. Values allowed are: day, week, month, quarter, year", call. = FALSE)
 	}
 }

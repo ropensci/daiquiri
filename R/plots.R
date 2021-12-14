@@ -1,5 +1,6 @@
 # Functions for plotting aggregated data
-#
+# THIS CODE WAS CREATED IN A VERY EARLY VERSION OF THE PACKAGE AND THE FUNCTIONALITY IS LARGELY REPLACED BY REPORTS.R
+# KEEPING FOR NOW BUT LIKELY WILL REMOVE IN FUTURE
 
 # TODO: set global variables for consistent colour scheme, e.g. red4 for norecords
 
@@ -8,14 +9,13 @@
 #' Plot data for all aggregated fields
 #'
 #' Create individual plots for each data field showing any changepoints identified
+#' NOT CURRENTLY IMPLEMENTED. TO REVISIT IF DECIDE IT'S USEFUL TO SAVE THE INDIVIDUAL PLOTS
 #'
 #' @param cpdaggregate A \code{cpdaggregate} object
 #' @param save_plot Save plot to disk. Currently a bit pointless. What other options would there be?
 #' @param save_directory String. Relative path for save folder, use double blackslashes for nested folders and end with double backslash
 #' @param save_filetype String. Filetype extension supported by \code{ggplot2}, e.g. tif, pdf
 #' @param showprogress Print progress to console. Default = FALSE
-#' @return A \code{cpdaggregate} object
-#' @export
 plot_aggregated_data <- function(cpdaggregate, save_plot = TRUE, save_directory = NULL, save_filetype = "png", showprogress = FALSE){
 	# TODO: decide whether to set a class on the aggregated data and use the generic plot method instead - need to distinguish between wanting overall summary or individual plots
 	# TODO: put some of the repeated ggplot2::ggplot calls into functions
@@ -294,6 +294,7 @@ plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods
 #' Plot overall changepoint summary
 #'
 #' Create a single plot showing changepoints identified in all data fields of aggregated object
+#' NOT CURRENTLY IMPLEMENTED. TO REVISIT WHEN SUITABLE CHANGE DETECTION METHODS ARE IDENTIFIED.
 #'
 #' @param cpdaggregate A \code{cpdaggregate} object
 #' @param changepoint_methods Vector of shortnames of changepoint methods to include or exclude from plot
@@ -303,7 +304,6 @@ plot_aggregatefield_byaggtype <- function(aggfield, aggtype, changepoint_methods
 #' @param save_filename String. Filename for plot, excluding extension
 #' @param showprogress Print progress to console. Default = FALSE
 #' @return A \code{cpdaggregate} object
-#' @export
 plot_changepoint_summary <- function(cpdaggregate, changepoint_methods = "all", save_plot = TRUE, save_directory = NULL, save_filetype = "png", save_filename = "Changepoint_summary", showprogress = FALSE){
 	# TODO: Do we want to differentiate between changepoints that are only relevant to specific field and those that are due to global reasons e.g. totally missing records?
 	# TODO: inconsistent implementation of changepoint_methods param compared to plot_aggregatefield

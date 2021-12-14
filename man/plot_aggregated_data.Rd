@@ -23,9 +23,7 @@ plot_aggregated_data(
 
 \item{showprogress}{Print progress to console. Default = FALSE}
 }
-\value{
-A \code{cpdaggregate} object
-}
 \description{
 Create individual plots for each data field showing any changepoints identified
+NOT CURRENTLY IMPLEMENTED. TO REVISIT IF DECIDE IT'S USEFUL TO SAVE THE INDIVIDUAL PLOTS
 }

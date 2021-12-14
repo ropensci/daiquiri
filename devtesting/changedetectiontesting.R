@@ -11,6 +11,7 @@ log_initialise("./devtesting/testoutput")
 
 # test dataset
 testfile <- "./devtesting/testdata/abx2014.csv"
+
 # specify column types
 testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																	,TimepointDate = ft_timepoint()
@@ -241,7 +242,7 @@ summarise_aggregated_data(testcpddata_byday)
 generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
 
 generate_report(sourcedata = testcpdsourcedata,
-								aggregatedata = testcpddata_byweek,
+								aggregatedata = testcpddata_byday,
 #								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
 								save_directory = "./devtesting/testoutput",
 								save_filename = "report_htmldoc")
@@ -250,4 +251,29 @@ rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 									, output_dir = "./devtesting/testoutput"
 									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
+
+# test against what will be public dataset
+testfile <- system.file("extdata", "abx2014.csv", package = "ehrchangepoints", mustWork = TRUE)
+testfile <- "./inst/extdata/abx2014.csv"
+testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
+																	,PrescriptionDate = ft_timepoint()
+																	,AdmissionDate = ft_datetime(includes_time = FALSE)
+																	,Drug = ft_categorical()
+																	,Formulation = ft_freetext()
+																	,Dose = ft_number()
+																	,DoseUnit = ft_categorical()
+																	,FirstAdministrationDateTime = ft_datetime()
+																	,PatientID = ft_ignore()
+																	,SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
+
+checkobj <- check_dataset(testfile,
+							fieldtypes = testfile_fieldtypes,
+							textfile_contains_columnnames = TRUE,
+							override_columnnames = FALSE,
+							na = c("","NULL"),
+							aggregation_timeunit = "week",
+							save_directory = ".",
+							save_filename = NULL,
+							showprogress = TRUE,
+							log_directory = "./")
 

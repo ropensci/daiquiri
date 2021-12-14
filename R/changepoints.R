@@ -166,7 +166,6 @@ all_changepoints <- function(aggfields, showprogress = FALSE){
 #' @param method String vector of changepoint methods to apply, or "all" or "none". Defaults to "all".
 #' @param showprogress Print progress to console. Default = FALSE
 #' @return An \code{aggregatedata} object with the change points recalculated
-#' @export
 recalculate_changepoints <- function(data, method = "all", showprogress = FALSE){
 	# TODO: add option to append changepoints
 	#temp assignment

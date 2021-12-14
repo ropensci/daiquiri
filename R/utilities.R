@@ -1,4 +1,5 @@
 # Generic functions
+# TODO: Check file paths use slashes consistently
 
 validate_param_file <- function(filepath){
 	if(!file.exists(filepath)){
@@ -13,7 +14,7 @@ validate_param_dir <- function(dirpath){
 	if(!file.exists(cleanpath)){
 		stop(paste("Invalid directory: ", cleanpath))
 	}
-	normalizePath(cleanpath)
+	normalizePath(cleanpath, winslash = "/")
 }
 
 validate_param_filetype_plot <- function(filetype){
@@ -23,9 +24,14 @@ validate_param_filetype_plot <- function(filetype){
 	}
 }
 
-validate_param_savefilename <- function(filename){
-	# NOTE: this is very restrictive and I'm not sure how it works in different locales
-	if( grepl("[^a-zA-Z0-9_-]", filename) ){
+# TODO: Add unit tests
+validate_param_savefilename <- function(filename, allownull = FALSE){
+	if( is.null(filename) ){
+		if( allownull == FALSE ){
+			stop(paste0("Filename is NULL. You must supply a filename."), call. = FALSE)
+		}
+	} else if( grepl("[^a-zA-Z0-9_-]", filename) || nchar(filename) == 0 ){
+		# NOTE: this is very restrictive and I'm not sure how it works in different locales
 		stop(paste0("Invalid filename: ", filename, ". Filename can only contain alphanumeric, '-', and '_' characters, and should not include the file extension."),
 				 call. = FALSE)
 	}
@@ -41,15 +47,18 @@ validate_param_savefilename <- function(filename){
 #' @param dirpath String containing directory to save log file
 #' @export
 log_initialise <- function(dirpath){
-	# TODO: allow user to specify a file name?
 	save_dir <- validate_param_dir(dirpath)
-	packageenvironment$logname <- file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
-	log_message(paste("Log file initialised.", "Package version", utils::packageVersion("ehrchangepoints"), ";", R.Version()$version.string))
+	packageenvironment$logname <- file.path(save_dir, paste0(packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(packageName()), ";", R.Version()$version.string))
 }
 
-log_newfilename <- function(dirpath){
-	save_dir <- validate_param_dir(dirpath)
-	file.path(save_dir, paste0("ehrchangepoints_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+#' Closes any active log file
+#'
+#' @export
+log_close <- function(){
+	if( exists("logname", envir = packageenvironment) ){
+		rm("logname", envir = packageenvironment)
+	}
 }
 
 # TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )

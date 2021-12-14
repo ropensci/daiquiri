@@ -3,9 +3,12 @@
 \docType{package}
 \name{ehrchangepoints}
 \alias{ehrchangepoints}
-\title{ehrchangepoints: Automatic Change-point Detection for Electronic Health Records}
+\title{ehrchangepoints: Temporal data quality checker for Electronic Health Records}
 \description{
-This is the help page for the package as a whole
+This package takes a generic dataset containing record-level data (i.e. one row per event, with one
+column specifying the date (and time) of the event, and further columns containing any associated values for the event),
+and automatically generates a report showing aggregated values for each column over time, including identifying missing values
+and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
 }
 \section{Section 1}{
 

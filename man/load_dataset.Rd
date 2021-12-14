@@ -9,9 +9,8 @@ load_dataset(
   fieldtypes,
   textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
-  na = NULL,
-  showprogress = FALSE,
-  log_directory = NULL
+  na = c("", "NULL"),
+  showprogress = FALSE
 )
 }
 \arguments{
@@ -25,11 +24,9 @@ load_dataset(
 the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
 specification. The specification must therefore contain the columns in the correct order. Default = FALSE}
 
-\item{na}{vector containing strings that should be interpreted as \code{NA}, e.g. \code{c("","NULL")}}
+\item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.}
 
 \item{showprogress}{Print progress to console. Default = FALSE}
-
-\item{log_directory}{String specifying directory in which to save log file. If no directory is supplied, progress is not logged.}
 }
 \value{
 A \code{sourcedata} object

@@ -1,6 +1,51 @@
 # Functions for generating data/plots for reports
 
 # -----------------------------------------------------------------------------
+#' Generate report
+#'
+#' Generate report from previously-created sourcedata and aggregatedata objects
+#'
+#' @param sourcedata A \code{sourcedata} object returned from \code{load_dataset()} function
+#' @param aggregatedata An \code{aggregatedata} object returned from \code{aggregate_data()} function
+#' @param save_directory String specifying directory in which to save the report. Default is current directory.
+#' @param save_filename String specifying filename for the report, excluding any file extension.
+#' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
+#' @param format File format of the report. Currently only "html" is supported
+#' @return A string containing the name and path of the saved report
+#' @export
+generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = FALSE){
+
+	log_function_start(match.call()[[1]])
+
+	save_directory <- validate_param_dir(save_directory)
+	if( is.null(save_filename) ){
+		save_filename <- paste0("ehrchangepoints_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
+	} else{
+		validate_param_savefilename(save_filename)
+	}
+
+	fileandpath <- file.path(save_directory, paste0(save_filename, ".html"))
+
+	if( format == "html" ){
+		log_message("Generating html report...", showprogress)
+		rmarkdown::render(input = system.file("rmd", "report_htmldoc.Rmd", package = packageName(), mustWork = TRUE)
+											, output_file = paste0(save_filename, ".html")
+											, output_dir = save_directory
+											, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata)
+											, quiet = !showprogress)
+	} else{
+		stop(paste("Invalid format: ", format, ". Only html format is currently supported"))
+	}
+
+	log_message(paste0("Report saved to: ", fileandpath), showprogress)
+
+	log_function_end(match.call()[[1]])
+
+	fileandpath
+
+}
+
+# -----------------------------------------------------------------------------
 # create an individual plot according to aggregatetype
 # optionally plot changepoints - "all"/"none"/vectorofmethodnames
 plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "none"){
