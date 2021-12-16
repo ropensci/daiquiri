@@ -1,7 +1,8 @@
 # Code for creation of aggregatedata object
 # these contain both the (vector) data for the aggregated field and the relevant metadata
 # TODO: decide whether better to store values as a dataframe or a list of ts/zoo objects
-# NOTE: Changepoints functionality disabled until we find a method that works (only removed params from exported functions)
+# NOTE: Changepoints functionality disabled until we find a method that works (have not removed params from internal functions but instead have
+# set them to default to "none")
 # NOTE: Partitionfield functionality disabled until we work out how to present it (creating aligned plots only works if small no. of partitions)
 
 # -----------------------------------------------------------------------------
