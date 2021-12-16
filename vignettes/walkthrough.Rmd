@@ -1,7 +1,5 @@
 ---
 title: "Walkthrough for the ehrchangepoints package"
-author: "T. Phuong Quan"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Walkthrough for the ehrchangepoints package}
@@ -9,63 +7,171 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-An example csv data file has been included in this package, and this vignette will demonstrate how to load it, as well as how to export and interpret the results. TODO: reduce size of dataset.
-
-system.file("extdata", "abx2014.csv", package = "changedetection")
-
-Use this vignette as a functional test.
-
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+```{r}
+library(ehrchangepoints)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+An example csv data file has been included in this package, and this vignette will demonstrate how to load it, as well as how to export and interpret the results. TODO: reduce size of dataset further?
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+## Data format
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+Data must be in tabular format, either as a csv file (with or without a header row containing column names, but containing no further rows that need skipping), or as a dataframe (with all columns as character type so that the package can detect any non-conformant values). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
 
-## More Examples
+Currently, dates in csv files must be in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format, though the ability to use other formats will be added in due course.
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+**Example:**
 
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+The `abx2014` dataset provided with this package contains examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
+
+* PrescriptionID - the uniqueidentifier for the row
+* PrescriptionDate - The date the prescription was given
+* AdmissionDate - The date the patient was admitted to the hospital
+* Drug - The name of the antibiotic prescribed
+* Dose - The size of the dose prescribed
+* DoseUnit - The units for the dose prescribed
+* PatientID - A unique identifier for the patient
+* SourceSystem - The computer system that the prescription was created in
+
+There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
+
+```{r}
+abx2014 <- read.csv(system.file("extdata", "abx2014.csv", package = "ehrchangepoints", mustWork = TRUE), stringsAsFactors = FALSE)
+
+head(abx2014)
 ```
 
-Also a quote using `>`:
+## Specification of data fields
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+You must specify what type of data is expected in each column, e.g. a date, a number, a nominal category. The package will use this information to calculate the number of values that are not of the expected type, and to decide which summary statistics to use for the time series'.
+
+One and only one column must be chosen to be the "timepoint" field (though you could run the package again using a different column as the timepoint field if you so choose). This column will be used as the independent time variable on the x-axis of each time series plot.
+
+Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number of non-missing values, as well as the number and percentage of missing values.
+
+* `ft_timepoint` - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series' are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.
+* `ft_uniqueidentifier` - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for minlength, maxlength, and meanlength of the string.
+* `ft_categorical` - identifies data fields which should be treated as categorical. Values are treated as strings. Additional time series are created for the number of "distinct" values, and if the `aggregate_by_each_category` parameter is set to `TRUE`, further time series will be created for the number and percentage of values within each distinct subcategory value.
+* `ft_numeric` - identifies data fields which contain numeric values that should be treated as continuous. Additional time series are created for the min, max, mean, and median value, and and the number and percentage of non-conformant values.
+* `ft_datetime` - identifies data fields which contain date (and optionally time) values that should be treated as continuous. Additional time series are created for the min, max, and mean value, and and the number and percentage of non-conformant values. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values).
+* `ft_freetext` - identifies data fields which contain free text values. Only presence/missingness will be evaluated.
+* `ft_simple` - identifies data fields where you only want presence/missingness to be evaluated (but which are not necessarily free text).
+* `ft_ignore` - identifies data fields which should be ignored. These will not be loaded.
+
+Lastly, a number of time series will be generated for the dataset as a whole, namely:
+
+* The number and percentage presence of duplicate records (i.e. where the entire row is the same as another row in the dataset)
+* The number of records (after duplicates have been removed)
+* The total number and percentage of missing and of non-conformant values (where relevant) across all data fields
+
+NOTE: If your data is already aggregated (e.g. one column contains a date and the other columns contain the number of inpatient admissions, outpatient appointments, and emergency department attendances on that date), you can still use this package if you restrict to the `ft_timepoint`, `ft_numeric`, and `ft_simple` field types.
+
+**Example:**
+
+For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field (though another option could be to use the AdmissionDate), and specify the other columns as follows:
+
+```{r}
+fts <- fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+									PrescriptionDate = ft_timepoint(),
+									AdmissionDate = ft_datetime(includes_time = FALSE),
+									Drug = ft_freetext(),
+									Dose = ft_numeric(),
+									DoseUnit = ft_categorical(),
+									PatientID = ft_ignore(),
+									SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
+```
+
+NOTE: If the csv file does not contain the column names, the names specified in the `fieldtypes` object will be used. You can also choose to override any existing column names with those in the `fieldtypes` object by setting the `override_columnnames` parameter to `TRUE`. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes` specification must match exactly to those in the dataset.
+
+## Generating a data quality report
+
+The simplest way to create a data quality report is to use the `check_dataset` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `sourcedata` and `aggregatedata` objects, which can be reused to create further reports without needing to run everything all over again.
+
+At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.
+
+We also need to decide where to save the report, and optionally specify a filename (excluding file extension). The filename can only contain alphanumeric, `-` and `_` characters. If a filename is not supplied, one will be automatically generated.
+
+If you specify a log directory, details of all the processing steps will be saved into a text file.
+
+**Example:**
+
+For the `abx2014` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
+
+```{r, include=FALSE}
+# save the report to the inst/extdata folder but show the code in the next chunk in the vignette
+checkobj <- check_dataset(abx2014,
+							fieldtypes = fts,
+							textfile_contains_columnnames = TRUE,
+							override_columnnames = FALSE,
+							na = c("","NULL"),
+							aggregation_timeunit = "day",
+							save_directory = "../inst/extdata",
+							save_filename = "abx2014report",
+							showprogress = FALSE,
+							log_directory = NULL)
+```
+
+```{r, eval=FALSE}
+# TODO: Decide whether to pass in dataframe or csv filename
+checkobj <- check_dataset(abx2014,
+							fieldtypes = fts,
+							textfile_contains_columnnames = TRUE,
+							override_columnnames = FALSE,
+							na = c("","NULL"),
+							aggregation_timeunit = "day",
+							save_directory = ".",
+							save_filename = "abx2014report",
+							showprogress = TRUE,
+							log_directory = NULL)
+```
+
+## Contents of the report
+
+If this package is installed, the location of a report that was generated using this dataset can be found by running the following code:
+
+```{r, eval=FALSE}
+system.file("extdata/abx2014report.html", package = "ehrchangepoints")
+```
+
+The html reports created by this package can be opened in a browser and/or attached to an email, and contain the following tabs:
+
+* **Raw data** - this contains child tabs which provide an overall summary of the data imported, plus a complete list of validation warnings (such as locations of non-conformant values)
+* **Aggregated data** - this contains child tabs which display plots showing overall numbers of records, missing values, non-conformant values, and duplicate records per timepoint, across the dataset as a whole. Fields and timepoints where these values are not applicable are coloured in grey.
+* **Individual data fields** - this contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created
+
+
+## Advanced usage details
+
+The simplest way to use this package is to use the `check_dataset` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `fieldtypes` specification then the data will need to be re-loaded.
+
+```{r, eval=FALSE}
+abxsourcedata <- load_dataset(abx2014, 
+                              fieldtypes = fts, 
+                              na=c("","NULL"), 
+                              showprogress=FALSE)
+
+abxaggregate_byday <- aggregate_data(abxsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+abxaggregate_byweek <- aggregate_data(abxsourcedata, aggregation_timeunit = "week", showprogress = FALSE)
+
+generate_report(sourcedata = abxsourcedata,
+                aggregatedata = abxaggregate_byday,
+                save_directory = ".",
+                save_filename = "abx2014_byday")
+
+generate_report(sourcedata = abxsourcedata,
+                aggregatedata = abxaggregate_byweek,
+                save_directory = ".",
+                save_filename = "abx2014_byweek")
+
+```
+
+
+
+
