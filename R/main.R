@@ -2,8 +2,8 @@
 #'
 #' This package takes a generic dataset containing record-level data (i.e. one row per event, with one
 #' column specifying the date (and time) of the event, and further columns containing any associated values for the event),
-#' and automatically generates a report showing aggregated values for each column over time, including identifying missing values
-#' and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
+#' and automatically generates a report showing aggregated values for each column over time, including identifying missing values,
+#' non-conformant values, and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
 #'
 #'
 #' @section Section 1:
@@ -65,7 +65,7 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 
 	sourcedata <- load_dataset(x, fieldtypes, textfile_contains_columnnames = textfile_contains_columnnames, override_columnnames = override_columnnames, na = na, showprogress = showprogress)
 
-	aggregatedata <- aggregate_data(sourcedata, aggregation_timeunit = aggregation_timeunit, changepointmethods = "none", showprogress = showprogress)
+	aggregatedata <- aggregate_data(sourcedata, aggregation_timeunit = aggregation_timeunit, showprogress = showprogress)
 
 	reportfilename <- generate_report(sourcedata, aggregatedata, save_directory = save_directory, save_filename = save_filename, showprogress = showprogress)
 

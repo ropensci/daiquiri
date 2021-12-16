@@ -73,7 +73,7 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 	if( is.infinite(maxval) ){
 		if( is.fieldtype_datetime(aggfield$fieldtype) ){
 			g <- g + ggplot2::geom_blank(ggplot2::aes_string(x = timepointcolname, y = timepointcolname))
-		} else if ( is.fieldtype_number(aggfield$fieldtype) ){
+		} else if ( is.fieldtype_numeric(aggfield$fieldtype) ){
 			# TODO: this isn't working yet
 			g <- g + ggplot2::geom_blank(mapping = ggplot2::aes_string(x=timepointcolname, y="blankaggtype"), data = data.frame(aggfield$values[timepointcolname], blankaggtype=1))
 		}
@@ -243,7 +243,7 @@ yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 	} else if( endsWith(aggtype, "_perc") | startsWith(aggtype, "subcat_perc") ){
 		breaks <- seq(0, 100, by = 10)
 	} else if( aggtype %in% c("min","max") ){
-		if( is.fieldtype_number(fieldtype) ){
+		if( is.fieldtype_numeric(fieldtype) ){
 			if( maxval < minval ){
 				# TODO: maybe better to return a warning and/or a graph with the error written on it rather than stopping altogether
 				stop(paste0("Invalid parameter(s) supplied: minval [", toString(minval),"] is greater than maxval [", toString(maxval),"]"), call. = FALSE)

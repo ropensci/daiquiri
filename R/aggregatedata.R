@@ -1,12 +1,14 @@
 # Code for creation of aggregatedata object
 # these contain both the (vector) data for the aggregated field and the relevant metadata
 # TODO: decide whether better to store values as a dataframe or a list of ts/zoo objects
+# NOTE: Changepoints functionality disabled until we find a method that works (only removed params from exported functions)
+# NOTE: Partitionfield functionality disabled until we work out how to present it (creating aligned plots only works if small no. of partitions)
 
 # -----------------------------------------------------------------------------
 # individual aggregatefields
 # NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
 # TODO: timepoint_as_aggregationunit only needs to be called once
-aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
+aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	#datafield = outpatsourcedata$datafields[[24]]
 	#timepointfieldvalues = get_datafield_vector(outpatsourcedata$datafields[[outpatsourcedata$timepoint_fieldname]])
@@ -165,17 +167,21 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 	}
 
 	# TODO: set individual min/max dates per aggfield? Probably shouldn't calculate changepoints in sections where there are no records for that aggfield
-	cpts <- find_changepoints(groupedvals, method = changepointmethods, showprogress = showprogress)[[1]]
+	# NOTE: Changepoints functionality disabled until we find a method that works
+	#cpts <- find_changepoints(groupedvals, method = changepointmethods, showprogress = showprogress)[[1]]
 
 	log_message(paste0("Finished"), showprogress)
 
 	structure(list(values = groupedvals,
 								 functionlist = functionlist,
-								 changepoints = cpts,
+								 # NOTE: Changepoints functionality disabled until we find a method that works
+								 # changepoints = cpts,
 								 fieldtype = datafield$fieldtype,
-								 columnname = datafield$columnname,
-								 partitionfieldname = partitionfieldname,
-								 partitionfieldvalue = partitionfieldvalue),
+								 columnname = datafield$columnname
+								 # NOTE: Partitionfield functionality disabled until we work out how to present it
+								 # partitionfieldname = partitionfieldname,
+								 # partitionfieldvalue = partitionfieldvalue
+								 ),
 						class = "aggregatefield")
 }
 
@@ -186,7 +192,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # uses results from already-aggregated individual fields rather than doing it all again
 # TODO: do we want to include duplicates in here too?
 # TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
-aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, changepointmethods = "all", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
+aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	# aggfields = agg[1:data$cols_imported_n]
 	# timepointfieldvalues = get_datafield_vector(data$datafields[[data$timepoint_fieldname]])
@@ -220,17 +226,21 @@ aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, c
 	# x < data.frame()
 	# groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(duplicated(x))}, drop = FALSE), by.x = names(alltimepointslist), by.y = "Group.1", all = TRUE)
 
-	cpts <- find_changepoints(groupedvals, method = changepointmethods, showprogress = showprogress)[[1]]
+	# NOTE: Changepoints functionality disabled until we find a method that works
+#	cpts <- find_changepoints(groupedvals, method = changepointmethods, showprogress = showprogress)[[1]]
 
 	log_message(paste0("Finished"), showprogress)
 
 	structure(list(values = groupedvals,
 								 functionlist = functionlist,
-								 changepoints = cpts,
+								 # NOTE: Changepoints functionality disabled until we find a method that works
+								 # changepoints = cpts,
 								 fieldtype = ft,
-								 columnname = "ALLFIELDSCOMBINED",
-								 partitionfieldname = partitionfieldname,
-								 partitionfieldvalue = partitionfieldvalue),
+								 columnname = "ALLFIELDSCOMBINED"
+								 # NOTE: Partitionfield functionality disabled until we work out how to present it
+								 # partitionfieldname = partitionfieldname,
+								 # partitionfieldvalue = partitionfieldvalue
+								 ),
 						class = "aggregatefield")
 }
 
@@ -242,18 +252,18 @@ aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, c
 #'
 #' @param data A \code{sourcedata} object
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
-#' @param changepointmethods String vector of changepoint methods to apply, or "all" or "none". Defaults to "all".
 #' @param showprogress Print progress to console. Default = FALSE
 #' @return An \code{aggregatedata} object
 #' @export
-aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethods = "all", showprogress = FALSE){
+aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = FALSE){
 	# TODO: move calculation of changepoints into separate function and allow them to be calculated afterwards
 	# TODO: allow user to override existing aggfunctions?
 	# TODO: Use something better than seq() to calculate weeks and months, so that it works when the first date is not the first of the month
 	#temp assignment
 	# data<-outpatsourcedata
 	# aggregation_timeunit = "day"
-	# changepointmethods = "none"
+	# NOTE: Changepoints functionality disabled until we find a method that works
+	changepointmethods = "none"
 	# showprogress = TRUE
 
 	log_function_start(match.call()[[1]])
@@ -288,100 +298,106 @@ aggregate_data <- function(data, aggregation_timeunit = "day", changepointmethod
 	agg[[data$cols_imported_n+2]] <- aggregateallfields(agg[1:data$cols_imported_n], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	names(agg) <- c(names(data$cols_imported_indexes), "DUPLICATES", "ALLFIELDSCOMBINED")
 
-	log_message(paste0("Creating changepoint dataframe..."), showprogress)
-	changepoints_df <- all_changepoints(agg)
+	# NOTE: Changepoints functionality disabled until we find a method that works
+#	log_message(paste0("Creating changepoint dataframe..."), showprogress)
+#	changepoints_df <- all_changepoints(agg)
 
 
-	### AGGREGATE BY EACH PARTITIONFIELD SUBGROUP
-	# set up lists of correct size first
-	log_message(paste0("Checking for fields of type 'partition'..."), showprogress)
-	partitionfield_fieldnames <- character()
-	partitionfield_indexes <- numeric()
-	# NOTE: could probably just loop through all datafields here, not sure of value of only checking the imported ones
-	for (i in 1:data$cols_imported_n){
-		fieldindex = data$cols_imported_indexes[[i]]
-		if (is.fieldtype_partition(data$datafields[[fieldindex]]$fieldtype)){
-			partitionfield_indexes <- c(partitionfield_indexes, fieldindex)
-			partitionfield_fieldnames <- c(partitionfield_fieldnames, data$datafields[[fieldindex]]$columnname)
-		}
-	}
-	subaggregate <- vector("list", length(partitionfield_indexes))
-	if( length(partitionfield_indexes)==0 ){
-		log_message(paste0("None found"), showprogress)
-	} else{
-		for (i in seq_along(partitionfield_indexes)){
-			partitionfield_name <- data$datafields[[partitionfield_indexes[[i]]]]$columnname
-			log_message(paste0("Aggregating by ", partitionfield_name, "..."), showprogress)
-			# create factor of partitionfield subgroups
-			# TODO: not sure what's going to happen if NA values are present
-			partitionfield_levels <- unlist(unique(data$datafields[[partitionfield_indexes[[i]]]]$values))
-			# if there is only one value then don't bother
-			if( length(partitionfield_levels) <= 1 ){
-				log_message(paste0(length(partitionfield_levels), " unique value(s) found. Skip."), showprogress)
-			} else{
-				subaggregate[[i]] <- vector("list", length(partitionfield_levels))
-				for (j in seq_along(partitionfield_levels)){
-					log_message(paste0("  Filter on ", partitionfield_name, "=", partitionfield_levels[j], ":"), showprogress)
-					# set timepoint vector to ignore other levels
-					partitionfield_levelindicator <- which(data$datafields[[partitionfield_indexes[[i]]]]$values != partitionfield_levels[j])
-					timepointsubvalues <- get_datafield_vector(data$datafields[[data$timepoint_fieldname]])
-					timepointsubvalues[partitionfield_levelindicator] <- NA
-					log_message(paste0("    Aggregating each datafield in turn..."), showprogress)
-					subaggregate[[i]][[j]]$aggregatefields <- vector("list", data$cols_imported_n + 1)
-					nextindex <- 1
-					for (k in 1:data$cols_imported_n){
-						log_message(paste0("      ", k, ": ", names(data$cols_imported_indexes)[k]), showprogress)
-						fieldindex = data$cols_imported_indexes[[k]]
-						if (fieldindex != partitionfield_indexes[[i]]){
-							subaggregate[[i]][[j]]$aggregatefields[[nextindex]] <- aggregatefield(data$datafields[[fieldindex]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit = aggregation_timeunit, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-							nextindex <- nextindex + 1
-						}
-					}
-					log_message(paste0("Aggregating calculated datafields..."), showprogress)
-					log_message(paste0("DUPLICATES:"), showprogress)
-					subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n]] <- aggregatefield(data$datafields[[data$cols_source_n]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-					log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
-					subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:data$cols_imported_n - 1], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-					names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
-
-					log_message(paste0("Creating changepoint dataframe..."), showprogress)
-					subaggregate[[i]][[j]]$changepoints_df <- all_changepoints(subaggregate[[i]][[j]]$aggregatefields)
-					subaggregate[[i]][[j]]$timepoint_fieldname <- data$timepoint_fieldname
-					subaggregate[[i]][[j]]$aggregation_timeunit <- aggregation_timeunit
-				}
-				names(subaggregate[[i]]) <- partitionfield_levels
-			}
-		}
-		names(subaggregate) <- names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)]
-
-
-		#   # Place subaggregates as children on each overall aggfield
-		#   # TODO: This doesn't yet work if you have >1 partition fieldtype
-		#   for (k in seq_along(agg)){
-		#   	if (names(agg[k]) != names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[1]])]){
-		#   		agg[[k]]$subaggregates <- vector("list", length(partitionfield_indexes))
-		# 	  	for (i in seq_along(partitionfield_indexes)){
-		# 	  			agg[[k]]$subaggregates[[i]] <- vector("list", length(partitionfield_levels))
-		# 	  			for (j in seq_along(partitionfield_levels)){
-		# 	  				agg[[k]]$subaggregates[[i]][[j]] <- subaggregate[[i]][[j]][[1]][[k]]
-		# 	  			}
-		# 	  			names(agg[[k]]$subaggregates[[i]]) <- paste0(names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "_", partitionfield_levels)
-		# 	  	}
-		# 	  	names(agg[[k]]$subaggregates) <- paste0(names(agg[k]), "_by_", names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)])
-		#   	}
-		#   }
-	}
+	# NOTE: Partitionfield functionality disabled until we work out how to present it
+	# ### AGGREGATE BY EACH PARTITIONFIELD SUBGROUP
+	# # set up lists of correct size first
+	# log_message(paste0("Checking for fields of type 'partition'..."), showprogress)
+	# partitionfield_fieldnames <- character()
+	# partitionfield_indexes <- numeric()
+	# # NOTE: could probably just loop through all datafields here, not sure of value of only checking the imported ones
+	# for (i in 1:data$cols_imported_n){
+	# 	fieldindex = data$cols_imported_indexes[[i]]
+	# 	if (is.fieldtype_partition(data$datafields[[fieldindex]]$fieldtype)){
+	# 		partitionfield_indexes <- c(partitionfield_indexes, fieldindex)
+	# 		partitionfield_fieldnames <- c(partitionfield_fieldnames, data$datafields[[fieldindex]]$columnname)
+	# 	}
+	# }
+	# subaggregate <- vector("list", length(partitionfield_indexes))
+	# if( length(partitionfield_indexes)==0 ){
+	# 	log_message(paste0("None found"), showprogress)
+	# } else{
+	# 	for (i in seq_along(partitionfield_indexes)){
+	# 		partitionfield_name <- data$datafields[[partitionfield_indexes[[i]]]]$columnname
+	# 		log_message(paste0("Aggregating by ", partitionfield_name, "..."), showprogress)
+	# 		# create factor of partitionfield subgroups
+	# 		# TODO: not sure what's going to happen if NA values are present
+	# 		partitionfield_levels <- unlist(unique(data$datafields[[partitionfield_indexes[[i]]]]$values))
+	# 		# if there is only one value then don't bother
+	# 		if( length(partitionfield_levels) <= 1 ){
+	# 			log_message(paste0(length(partitionfield_levels), " unique value(s) found. Skip."), showprogress)
+	# 		} else{
+	# 			subaggregate[[i]] <- vector("list", length(partitionfield_levels))
+	# 			for (j in seq_along(partitionfield_levels)){
+	# 				log_message(paste0("  Filter on ", partitionfield_name, "=", partitionfield_levels[j], ":"), showprogress)
+	# 				# set timepoint vector to ignore other levels
+	# 				partitionfield_levelindicator <- which(data$datafields[[partitionfield_indexes[[i]]]]$values != partitionfield_levels[j])
+	# 				timepointsubvalues <- get_datafield_vector(data$datafields[[data$timepoint_fieldname]])
+	# 				timepointsubvalues[partitionfield_levelindicator] <- NA
+	# 				log_message(paste0("    Aggregating each datafield in turn..."), showprogress)
+	# 				subaggregate[[i]][[j]]$aggregatefields <- vector("list", data$cols_imported_n + 1)
+	# 				nextindex <- 1
+	# 				for (k in 1:data$cols_imported_n){
+	# 					log_message(paste0("      ", k, ": ", names(data$cols_imported_indexes)[k]), showprogress)
+	# 					fieldindex = data$cols_imported_indexes[[k]]
+	# 					if (fieldindex != partitionfield_indexes[[i]]){
+	# 						subaggregate[[i]][[j]]$aggregatefields[[nextindex]] <- aggregatefield(data$datafields[[fieldindex]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit = aggregation_timeunit, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+	# 						nextindex <- nextindex + 1
+	# 					}
+	# 				}
+	# 				log_message(paste0("Aggregating calculated datafields..."), showprogress)
+	# 				log_message(paste0("DUPLICATES:"), showprogress)
+	# 				subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n]] <- aggregatefield(data$datafields[[data$cols_source_n]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+	# 				log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
+	# 				subaggregate[[i]][[j]]$aggregatefields[[data$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:data$cols_imported_n - 1], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, changepointmethods = changepointmethods, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
+	# 				names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(data$cols_imported_indexes)[-which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
+	#
+	#
+	# 				# NOTE: Changepoints functionality disabled until we find a method that works
+	# 				# log_message(paste0("Creating changepoint dataframe..."), showprogress)
+	# 				# subaggregate[[i]][[j]]$changepoints_df <- all_changepoints(subaggregate[[i]][[j]]$aggregatefields)
+	# 				subaggregate[[i]][[j]]$timepoint_fieldname <- data$timepoint_fieldname
+	# 				subaggregate[[i]][[j]]$aggregation_timeunit <- aggregation_timeunit
+	# 			}
+	# 			names(subaggregate[[i]]) <- partitionfield_levels
+	# 		}
+	# 	}
+	# 	names(subaggregate) <- names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)]
+	#
+	#
+	# 	#   # Place subaggregates as children on each overall aggfield
+	# 	#   # TODO: This doesn't yet work if you have >1 partition fieldtype
+	# 	#   for (k in seq_along(agg)){
+	# 	#   	if (names(agg[k]) != names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[1]])]){
+	# 	#   		agg[[k]]$subaggregates <- vector("list", length(partitionfield_indexes))
+	# 	# 	  	for (i in seq_along(partitionfield_indexes)){
+	# 	# 	  			agg[[k]]$subaggregates[[i]] <- vector("list", length(partitionfield_levels))
+	# 	# 	  			for (j in seq_along(partitionfield_levels)){
+	# 	# 	  				agg[[k]]$subaggregates[[i]][[j]] <- subaggregate[[i]][[j]][[1]][[k]]
+	# 	# 	  			}
+	# 	# 	  			names(agg[[k]]$subaggregates[[i]]) <- paste0(names(data$cols_imported_indexes)[which(data$cols_imported_indexes==partitionfield_indexes[[i]])], "_", partitionfield_levels)
+	# 	# 	  	}
+	# 	# 	  	names(agg[[k]]$subaggregates) <- paste0(names(agg[k]), "_by_", names(data$cols_imported_indexes)[which(data$cols_imported_indexes %in% partitionfield_indexes)])
+	# 	#   	}
+	# 	#   }
+	# }
 
 	log_function_end(match.call()[[1]])
 
 	structure(
 		list(
 			aggregatefields = agg,
-			changepoints_df = changepoints_df,
+			# NOTE: Changepoints functionality disabled until we find a method that works
+			# changepoints_df = changepoints_df,
 			timepoint_fieldname = data$timepoint_fieldname,
-			aggregation_timeunit = aggregation_timeunit, # not sure if this should be set at overall object level or allow it to differ per aggregatefield
-			partitionfield_fieldnames = partitionfield_fieldnames,
-			subaggregates = subaggregate
+			aggregation_timeunit = aggregation_timeunit # not sure if this should be set at overall object level or allow it to differ per aggregatefield
+			# NOTE: Partitionfield functionality disabled until we work out how to present it
+			# partitionfield_fieldnames = partitionfield_fieldnames,
+			# subaggregates = subaggregate
 		),
 		class = "aggregatedata"
 	)
@@ -395,7 +411,7 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #' Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset
 #'
 #' @param aggregatedata A \code{aggregatedata} object
-#' @param save_directory String. Full or relative path for save folder, use double blackslashes for nested folders and end with double backslash
+#' @param save_directory String. Full or relative path for save folder
 #' @param save_filetype String. Filetype extension supported by \code{readr}, currently only csv allowed
 #' @export
 export_aggregated_data <- function(aggregatedata, save_directory, save_filetype = "csv"){
@@ -404,26 +420,32 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 	# save_directory = ".\\devtesting\\testoutput\\"
 	# save_filetype = "csv"
 
-	# TODO: validation checks on params
+	# validation checks on params
+	save_directory <- validate_param_dir(save_directory)
+	if( !(save_filetype %in% c("csv")) ){
+		stop(paste("Invalid save_filetype: ", save_filetype, ". Only csv format is currently supported"))
+	}
 
-	# export a file for each partition field in dataset
+	# export a file for each field in dataset
 	for( i in seq_along(aggregatedata$aggregatefields) ){
 		readr::write_csv(aggregatedata$aggregatefields[[i]]$values,
-										 paste0(save_directory, names(aggregatedata$aggregatefields[i]), ".csv") )
+										 file.path(save_directory, paste0(names(aggregatedata$aggregatefields[i]), ".csv"))
+										 )
 	}
 
-	for(p in seq_along(aggregatedata$subaggregates)){
-		for( q in seq_along(aggregatedata$subaggregates[[p]]) ){
-			for( i in seq_along(aggregatedata$subaggregates[[p]][[q]]$aggregatefields) ){
-				readr::write_csv(aggregatedata$subaggregates[[p]][[q]]$aggregatefields[[i]]$values,
-												 paste0(save_directory,
-												 			 names(aggregatedata$aggregatefields[i]),
-												 			 "_by_", names(aggregatedata$subaggregates),
-												 			 "_", names(aggregatedata$subaggregates[[p]][q]),
-												 			 ".csv"))
-			}
-		}
-	}
+	# NOTE: Partitionfield functionality disabled until we work out how to present it
+	# for(p in seq_along(aggregatedata$subaggregates)){
+	# 	for( q in seq_along(aggregatedata$subaggregates[[p]]) ){
+	# 		for( i in seq_along(aggregatedata$subaggregates[[p]][[q]]$aggregatefields) ){
+	# 			readr::write_csv(aggregatedata$subaggregates[[p]][[q]]$aggregatefields[[i]]$values,
+	# 											 file.path(save_directory, paste0(
+	# 											 			 names(aggregatedata$aggregatefields[i]),
+	# 											 			 "_by_", names(aggregatedata$subaggregates),
+	# 											 			 "_", names(aggregatedata$subaggregates[[p]][q]),
+	# 											 			 ".csv")))
+	# 		}
+	# 	}
+	# }
 
 }
 
@@ -441,14 +463,16 @@ print.aggregatedata <- function(x, ...){
 	cat("Max timepoint value:", aggsummary$overall["timepoint_max"], "\n")
 	cat("Total number of timepoints:", aggsummary$overall["n_timepoints"], "\n")
 	cat("Number of empty timepoints:", aggsummary$overall["n_empty_timepoints"], "\n")
-	cat("Column(s) used as partitionfield:", aggsummary$overall["partitionfield_fieldnames"], "\n")
+	# NOTE: Partitionfield functionality disabled until we work out how to present it
+	# cat("Column(s) used as partitionfield:", aggsummary$overall["partitionfield_fieldnames"], "\n")
 	cat("\n")
-	cat("Change points by field:\n")
-	if( nrow(aggsummary$byfield) > 0){
-		print(aggsummary$byfield)
-	} else{
-		cat("Change points not calculated.\n")
-	}
+	# NOTE: Changepoints functionality disabled until we find a method that works
+	# cat("Change points by field:\n")
+	# if( nrow(aggsummary$byfield) > 0){
+	# 	print(aggsummary$byfield)
+	# } else{
+	# 	cat("Change points not calculated.\n")
+	# }
 }
 
 # summarise aggregated data
@@ -468,61 +492,69 @@ summarise_aggregated_data <- function(aggregatedata){
 							 timepoint_min = format(min(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]])),
 							 timepoint_max = format(max(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]])),
 							 n_timepoints = length(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]]),
-							 n_empty_timepoints = length(aggfields[[aggregatedata$timepoint_fieldname]]$changepoints[["n"]][["is_zero"]]$istrue_indexes),
-							 partitionfield_fieldnames = toString(aggregatedata$partitionfield_fieldnames)
+							 n_empty_timepoints = sum(aggfields[[aggregatedata$timepoint_fieldname]]$values[["n"]] == 0)
+							 # NOTE: Partitionfield functionality disabled until we work out how to present it
+							 # partitionfield_fieldnames = toString(aggregatedata$partitionfield_fieldnames)
 	)
 
-	# summary info for each column in dataset
-	byfield <- data.frame(fieldname=character(),
-												aggregatetype=character(),
-												changepoint_method=character(),
-												# changepoint_method_params=character(),
-												n_changepoints=integer(),
-												n_outliers=integer(),
-												n_istrues=integer(),
-												stringsAsFactors = FALSE
-	)
-	for(i in seq_along(aggfields)){
-		for(j in seq_along(aggfields[[i]]$changepoints)){
-			cpfield <- aggfields[[i]]$changepoints[[j]]
-			for(k in seq_along(cpfield)){
-				byfield <- rbind(byfield,
-												 data.frame(fieldname=aggfields[[i]]$columnname,
-												 					 aggregatetype=names(aggfields[[i]]$changepoints[j]),
-												 					 changepoint_method=cpfield[[k]]$changepoint_method,
-												 					 # changepoint_method_params=cpfield[[k]]$changepoint_method_params,
-												 					 n_changepoints=ifelse(is.null(cpfield[[k]]$changepoint_indexes), NA, length(cpfield[[k]]$changepoint_indexes)),
-												 					 n_outliers=ifelse(is.null(cpfield[[k]]$outlier_indexes), NA, length(cpfield[[k]]$outlier_indexes)),
-												 					 n_istrues=ifelse(is.null(cpfield[[k]]$istrue_indexes), NA, length(cpfield[[k]]$istrue_indexes)),
-												 					 stringsAsFactors = FALSE
-												 )
-				)
-			}
-		}
-	}
+	# NOTE: Changepoints functionality disabled until we find a method that works
+	# # summary info for each column in dataset
+	# byfield <- data.frame(fieldname=character(),
+	# 											aggregatetype=character(),
+	# 											changepoint_method=character(),
+	# 											# changepoint_method_params=character(),
+	# 											n_changepoints=integer(),
+	# 											n_outliers=integer(),
+	# 											n_istrues=integer(),
+	# 											stringsAsFactors = FALSE
+	# )
+	# for(i in seq_along(aggfields)){
+	# 	for(j in seq_along(aggfields[[i]]$changepoints)){
+	# 		cpfield <- aggfields[[i]]$changepoints[[j]]
+	# 		for(k in seq_along(cpfield)){
+	# 			byfield <- rbind(byfield,
+	# 											 data.frame(fieldname=aggfields[[i]]$columnname,
+	# 											 					 aggregatetype=names(aggfields[[i]]$changepoints[j]),
+	# 											 					 changepoint_method=cpfield[[k]]$changepoint_method,
+	# 											 					 # changepoint_method_params=cpfield[[k]]$changepoint_method_params,
+	# 											 					 n_changepoints=ifelse(is.null(cpfield[[k]]$changepoint_indexes), NA, length(cpfield[[k]]$changepoint_indexes)),
+	# 											 					 n_outliers=ifelse(is.null(cpfield[[k]]$outlier_indexes), NA, length(cpfield[[k]]$outlier_indexes)),
+	# 											 					 n_istrues=ifelse(is.null(cpfield[[k]]$istrue_indexes), NA, length(cpfield[[k]]$istrue_indexes)),
+	# 											 					 stringsAsFactors = FALSE
+	# 											 )
+	# 			)
+	# 		}
+	# 	}
+	# }
+
 	# byfield2 <- aggregate(cbind(n_changepoints=aggregatedata$changepoints_df$changepointtype == "edge", n_outliers=aggregatedata$changepoints_df$changepointtype == "outlier"),
 	#                       by = list(fieldname=aggregatedata$changepoints_df$fieldname, aggregatetype=aggregatedata$changepoints_df$aggregatetype, changepointmethod=aggregatedata$changepoints_df$changepointmethod),
 	#                       FUN = sum,
 	#                       drop = TRUE)
 
-	if( length(aggregatedata$subaggregates) > 0 ){
-		subaggs <- vector("list", length(aggregatedata$subaggregates))
-		for(p in seq_along(aggregatedata$subaggregates)){
-			numlevels <- length(aggregatedata$subaggregates[[p]])
-			subaggs[[p]] <- vector("list", numlevels)
-			for(q in 1:numlevels){
-				subaggs[[p]][[q]] <- summarise_aggregated_data(aggregatedata$subaggregates[[p]][[q]])
-				subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, partitionfield_fieldname=aggregatedata$partitionfield_fieldnames[[p]], partitionfield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
-			}
-		}
-	}
-	else{
-		subaggs <- NA
-	}
+	# NOTE: Partitionfield functionality disabled until we work out how to present it
+	# if( length(aggregatedata$subaggregates) > 0 ){
+	# 	subaggs <- vector("list", length(aggregatedata$subaggregates))
+	# 	for(p in seq_along(aggregatedata$subaggregates)){
+	# 		numlevels <- length(aggregatedata$subaggregates[[p]])
+	# 		subaggs[[p]] <- vector("list", numlevels)
+	# 		for(q in 1:numlevels){
+	# 			subaggs[[p]][[q]] <- summarise_aggregated_data(aggregatedata$subaggregates[[p]][[q]])
+	# 			subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, partitionfield_fieldname=aggregatedata$partitionfield_fieldnames[[p]], partitionfield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
+	# 		}
+	# 	}
+	# }
+	# else{
+	# 	subaggs <- NA
+	# }
 
 	structure(
 		list(
-			overall = overall, byfield = byfield, bypartitionfield = subaggs
+			overall = overall
+			# NOTE: Changepoints functionality disabled until we find a method that works
+			#	byfield = byfield,
+			# NOTE: Partitionfield functionality disabled until we work out how to present it
+			# bypartitionfield = subaggs
 		),
 		class = "summary_aggregated_data"
 	)

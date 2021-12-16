@@ -12,7 +12,6 @@
 
 # -----------------------------------------------------------------------------
 # SPECIFY ALLOWABLE TYPES
-# TODO: rename ft_number to ft_numeric
 
 # `collector' is readr `collector'
 # TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones
@@ -34,9 +33,10 @@ is.fieldtype_ignore <- function(x) inherits(x, "fieldtype_ignore")
 
 is.fieldtype_datetime <- function(x) inherits(x, "fieldtype_datetime")
 
-is.fieldtype_number <- function(x) inherits(x, "fieldtype_number")
+is.fieldtype_numeric <- function(x) inherits(x, "fieldtype_numeric")
 
-is.fieldtype_partition <- function(x) inherits(x, "fieldtype_partition")
+# NOTE: Partitionfield functionality disabled until we work out how to present it
+# is.fieldtype_partition <- function(x) inherits(x, "fieldtype_partition")
 
 is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fieldtype_duplicates"))
 
@@ -86,19 +86,21 @@ ft_uniqueidentifier <- function() {
 
 }
 
-#' @section Details:
-#' \code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
-#'   should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
-#' The data will be aggregated overall as well as by each partition.
-#' @rdname availablefieldtypes
-#' @export
-ft_partition <- function() {
-  fieldtype(type = "partition",
-  					collector = readr::col_character(),
-  					dataclass = "character",
-  					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
-            )
-}
+# NOTE: Partitionfield functionality disabled until we work out how to present it
+#' #' @section Details:
+#' #' \code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
+#' #'   should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
+#' #' The data will be aggregated overall as well as by each partition.
+#' #' @rdname availablefieldtypes
+#' #' @export
+#'
+#' ft_partition <- function() {
+#'   fieldtype(type = "partition",
+#'   					collector = readr::col_character(),
+#'   					dataclass = "character",
+#'   					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
+#'             )
+#' }
 
 #' @section Details:
 #' \code{ft_categorical} - identifies data fields which should be treated as categorical.
@@ -123,11 +125,11 @@ ft_categorical <- function( aggregate_by_each_category = FALSE ) {
 }
 
 #' @section Details:
-#' \code{ft_number} - identifies data fields which contain numeric values that should be treated as continuous.
+#' \code{ft_numeric} - identifies data fields which contain numeric values that should be treated as continuous.
 #' @rdname availablefieldtypes
 #' @export
-ft_number <- function() {
-  fieldtype(type = "number",
+ft_numeric <- function() {
+  fieldtype(type = "numeric",
   					collector = readr::col_double(),
   					dataclass = "numeric",
   					aggfunctions = c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max", "mean", "median")
@@ -173,7 +175,7 @@ ft_freetext <- function() {
 # }
 
 #' @section Details:
-#' \code{ft_simple} - identifies data fields where you only want presence/missingness to be evaluated.
+#' \code{ft_simple} - identifies data fields where you only want presence/missingness to be evaluated (but which are not necessarily free text).
 #' @rdname availablefieldtypes
 #' @export
 ft_simple <- function() {
@@ -225,12 +227,12 @@ ft_duplicates <- function() {
 #' @param ... names and types of fields (columns) in source data, in the correct order.
 #'   CHECK IF READR DEALS WITH CORRECTLY NAMED COLUMNS IN WRONG ORDER
 #' @return A \code{fieldtypes} object
-#' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier()
-#'   ,TestDate = ft_timepoint()
-#'   ,TestName = ft_categorical(aggregate_by_each_category = FALSE)
-#'   ,TestResult = ft_number()
-#'   ,TestComment = ft_ignore()
-#'   ,Site = ft_partition())
+#' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
+#'                             TestDate = ft_timepoint(),
+#'                             TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'                             TestResult = ft_numeric(),
+#'                             TestComment = ft_ignore(),
+#'                             Location = ft_categorical())
 #' @export
 fieldtypes <- function(...) {
   fts <- list(...)

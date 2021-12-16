@@ -235,16 +235,20 @@ aggsummarydf <- data.frame("Item" = c("Column used for timepoint",
 																			"Timepoint aggregation unit",
 																			"Total number of timepoints",
 																			"Number of empty timepoints",
-																			"Number of data fields",
-																			"Column(s) used as partitionfield"),
+																			"Number of data fields"
+																			# NOTE: Partitionfield functionality disabled until we work out how to present it
+																			# "Column(s) used as partitionfield"
+																			),
 													 "Value" = c(aggsummary$overall["timepoint_fieldname"],
 													 						aggsummary$overall["timepoint_min"],
 													 						aggsummary$overall["timepoint_max"],
 													 						aggsummary$overall["aggregation_timeunit"],
 													 						aggsummary$overall["n_timepoints"],
 													 						aggsummary$overall["n_empty_timepoints"],
-													 						aggsummary$overall["n_fields"],
-													 						aggsummary$overall["partitionfield_fieldnames"]),
+													 						aggsummary$overall["n_fields"]
+													 						# NOTE: Partitionfield functionality disabled until we work out how to present it
+													 						# aggsummary$overall["partitionfield_fieldnames"]
+													 						),
 													 stringsAsFactors = FALSE
 )
 

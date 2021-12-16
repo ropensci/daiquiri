@@ -9,7 +9,7 @@ export_aggregated_data(aggregatedata, save_directory, save_filetype = "csv")
 \arguments{
 \item{aggregatedata}{A \code{aggregatedata} object}
 
-\item{save_directory}{String. Full or relative path for save folder, use double blackslashes for nested folders and end with double backslash}
+\item{save_directory}{String. Full or relative path for save folder}
 
 \item{save_filetype}{String. Filetype extension supported by \code{readr}, currently only csv allowed}
 }

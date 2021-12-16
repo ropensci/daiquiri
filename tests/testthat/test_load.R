@@ -6,10 +6,11 @@ library(ehrchangepoints)
 test_that("Valid fieldtypes can be specified", {
 	expect_is(fieldtypes(Col_tp = ft_timepoint()
 											 ,Col_uid = ft_uniqueidentifier()
-											 ,Col_part = ft_partition()
+											 # NOTE: Partitionfield functionality disabled until we work out how to present it
+											 #,Col_part = ft_partition()
 											 ,Col_cat = ft_categorical()
 											 ,Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE)
-											 ,Col_num = ft_number()
+											 ,Col_num = ft_numeric()
 											 ,Col_dt = ft_datetime()
 											 ,Col_dt2 = ft_datetime(includes_time = FALSE)
 											 ,Col_ft = ft_freetext()
@@ -39,7 +40,7 @@ test_that("More than one timepoint field not allowed", {
 
 
 test_that("Text files must have override_columnnames set to TRUE if textfile_contains_columnnames is set to FALSE", {
-	expect_error(load_dataset(".\\devtesting\\testdata\\antibiotics_example.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = FALSE, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
+	expect_error(load_dataset(".\\devtesting\\testdata\\antibiotics_example.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = FALSE, override_columnnames = FALSE, na = NULL, showprogress = FALSE))
 })
 
 test_that("Column names in data and fieldtypes match exactly", {
@@ -81,13 +82,13 @@ test_that("Column names in fieldtypes not in data not allowed", {
 ## TEST THAT DATA TYPE TO LOAD IS VALID ##
 
 test_that("Invalid filename supplied", {
-	expect_error(load_dataset("fakedatafile.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
+	expect_error(load_dataset("fakedatafile.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = NULL, showprogress = FALSE))
 })
 
 test_that("Non-csv files not allowed", {
-	expect_error(load_dataset("./DESCRIPTION", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
+	expect_error(load_dataset("./DESCRIPTION", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE))
 })
 
 test_that("Non-data frames not allowed", {
-	expect_error(load_dataset(c("Fieldname", 123), fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE, log_directory = NULL))
+	expect_error(load_dataset(c("Fieldname", 123), fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE))
 })
