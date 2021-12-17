@@ -18,13 +18,13 @@ knitr::opts_chunk$set(
 library(ehrchangepoints)
 ```
 
-An example csv data file has been included in this package, and this vignette will demonstrate how to load it, as well as how to export and interpret the results. TODO: reduce size of dataset further?
+This vignette demonstrates how to use this package to generate a report that allows you to quickly review any changes in a temporal dataset’s values over time.
 
 ## Data format
 
 Data must be in tabular format, either as a csv file (with or without a header row containing column names, but containing no further rows that need skipping), or as a dataframe (with all columns as character type so that the package can detect any non-conformant values). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
 
-Currently, dates in csv files must be in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format, though the ability to use other formats will be added in due course.
+Currently, all dates must be in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format, though the ability to use other formats will be added in due course.
 
 **Example:**
 
@@ -42,7 +42,9 @@ The `abx2014` dataset provided with this package contains examples of antibiotic
 There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
 
 ```{r}
-abx2014 <- read.csv(system.file("extdata", "abx2014.csv", package = "ehrchangepoints", mustWork = TRUE), stringsAsFactors = FALSE)
+abx2014 <- read.csv(system.file("extdata", "abx2014.csv", 
+																package = "ehrchangepoints"), 
+										stringsAsFactors = FALSE)
 
 head(abx2014)
 ```
@@ -74,7 +76,7 @@ NOTE: If your data is already aggregated (e.g. one column contains a date and th
 
 **Example:**
 
-For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field (though another option could be to use the AdmissionDate), and specify the other columns as follows:
+For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
 fts <- fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -86,6 +88,8 @@ fts <- fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 									PatientID = ft_ignore(),
 									SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
 ```
+
+This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
 
 NOTE: If the csv file does not contain the column names, the names specified in the `fieldtypes` object will be used. You can also choose to override any existing column names with those in the `fieldtypes` object by setting the `override_columnnames` parameter to `TRUE`. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes` specification must match exactly to those in the dataset.
 
@@ -118,7 +122,7 @@ checkobj <- check_dataset(abx2014,
 ```
 
 ```{r, eval=FALSE}
-# TODO: Decide whether to pass in dataframe or csv filename
+# passing in a dataframe
 checkobj <- check_dataset(abx2014,
 							fieldtypes = fts,
 							textfile_contains_columnnames = TRUE,
@@ -129,6 +133,20 @@ checkobj <- check_dataset(abx2014,
 							save_filename = "abx2014report",
 							showprogress = TRUE,
 							log_directory = NULL)
+
+# passing in a csv filename
+checkobj <- check_dataset(system.file("extdata", "abx2014.csv", 
+																package = "ehrchangepoints"),
+							fieldtypes = fts,
+							textfile_contains_columnnames = TRUE,
+							override_columnnames = FALSE,
+							na = c("","NULL"),
+							aggregation_timeunit = "day",
+							save_directory = ".",
+							save_filename = "abx2014report",
+							showprogress = TRUE,
+							log_directory = NULL)
+
 ```
 
 ## Contents of the report

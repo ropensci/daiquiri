@@ -146,6 +146,7 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 # -----------------------------------------------------------------------------
 # create a heatmap showing a particular aggtype value across all fields
 # TODO: Decide whether or not to include the timepoint field in the heatmap
+# TODO: When all values are zero, colour should be white (currently it colours the tiles making them look non-zero)
 plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkred"){
 	#temp assignment
 	# aggfields<-testcpddata_byday$aggregatefields

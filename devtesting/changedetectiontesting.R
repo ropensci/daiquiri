@@ -73,7 +73,7 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																							,SpineCheckDate = ft_ignore()
 																							,LinkageWarningFlag = ft_ignore()
 																							,LinkageResult = ft_ignore()
-																							,AntibioticsSource = ft_partition())
+																							,AntibioticsSource = ft_categorical())
 
 testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
@@ -89,7 +89,7 @@ testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(Prescription
 #																																		,DoseUnit = ft_ignore()
 																																		,FirstAdministrationDateTime = ft_datetime()
 																																		,Clusterid = ft_uniqueidentifier()
-																																		,AntibioticsSource = ft_partition()), na=c("","NULL"))
+																																		,AntibioticsSource = ft_categorical()), na=c("","NULL"))
 
 
 testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
@@ -137,7 +137,7 @@ testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fiel
 																																							,SpineCheckDate = ft_datetime()
 																																							,LinkageWarningFlag = ft_categorical()
 																																							,LinkageResult = ft_categorical()
-																																							,AntibioticsSource = ft_partition())
+																																							,AntibioticsSource = ft_categorical())
 																	, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
 
@@ -186,7 +186,7 @@ testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fiel
 																																													,SpineCheckDate = ft_ignore()
 																																													,LinkageWarningFlag = ft_ignore()
 																																													,LinkageResult = ft_ignore()
-																																													,AntibioticsSource = ft_partition())
+																																													,AntibioticsSource = ft_categorical())
 																	, na=c("","NULL")
 																	, showprogress = TRUE
 																	, log_directory = "./devtesting/testoutput/")
@@ -203,7 +203,7 @@ testcpdsourcedata2014 <- load_dataset("./devtesting/testdata/abx2014.csv", field
 																																		,DoseUnit = ft_categorical()
 																																		,FirstAdministrationDateTime = ft_datetime()
 																																		,Clusterid = ft_ignore()
-																																		,AntibioticsSource = ft_partition()), na=c("","NULL")
+																																		,AntibioticsSource = ft_categorical()), na=c("","NULL")
 																			, log_directory = "./devtesting/testoutput/")
 
 #print(testcpdsourcedata)
