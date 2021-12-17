@@ -11,6 +11,7 @@
 #' @param save_filename String specifying filename for the report, excluding any file extension.
 #' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
 #' @param format File format of the report. Currently only "html" is supported
+#' @param showprogress Print progress to console. Default = FALSE
 #' @return A string containing the name and path of the saved report
 #' @export
 generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = FALSE){

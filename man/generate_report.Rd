@@ -24,6 +24,8 @@ generate_report(
 If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.}
 
 \item{format}{File format of the report. Currently only "html" is supported}
+
+\item{showprogress}{Print progress to console. Default = FALSE}
 }
 \value{
 A string containing the name and path of the saved report

@@ -1,11 +1,10 @@
 Package: ehrchangepoints
 Type: Package
-Title: Automatic Change-point Detection for Electronic Health Records
+Title: Temporal data quality checker for Electronic Health Records
 Version: 0.5.1
 Author: T. Phuong Quan
 Maintainer: T. Phuong Quan <phuong.quan@ndm.ox.ac.uk>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: For any temporal dataset (i.e. one that contains a date field) that you provide it, this package creates an html report allowing you to quickly review any changes in the dataset’s values over time.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
