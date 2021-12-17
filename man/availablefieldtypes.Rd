@@ -35,14 +35,6 @@ ft_ignore()
 }
 \description{
 Specify the type of data contained in each field of your dataset using a combination of the following
-
-ft_partition <- function() {
-  fieldtype(type = "partition",
-  					collector = readr::col_character(),
-  					dataclass = "character",
-  					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
-            )
-}
 }
 \section{Details}{
 

@@ -87,20 +87,20 @@ ft_uniqueidentifier <- function() {
 }
 
 # NOTE: Partitionfield functionality disabled until we work out how to present it
-#' #' @section Details:
-#' #' \code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
-#' #'   should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
-#' #' The data will be aggregated overall as well as by each partition.
-#' #' @rdname availablefieldtypes
-#' #' @export
-#'
-#' ft_partition <- function() {
-#'   fieldtype(type = "partition",
-#'   					collector = readr::col_character(),
-#'   					dataclass = "character",
-#'   					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
-#'             )
-#' }
+# #' @section Details:
+# #' \code{ft_partition} - identifies data fields which should be used to partition the data, such that each partition
+# #'   should be considered separately, e.g. a field that designates that different data rows originated from distinct source systems.
+# #' The data will be aggregated overall as well as by each partition.
+# #' @rdname availablefieldtypes
+# #' @export
+#
+# ft_partition <- function() {
+#   fieldtype(type = "partition",
+#   					collector = readr::col_character(),
+#   					dataclass = "character",
+#   					aggfunctions = c("n", "missing_n", "missing_perc", "distinct", "subcat_n", "subcat_perc")
+#             )
+# }
 
 #' @section Details:
 #' \code{ft_categorical} - identifies data fields which should be treated as categorical.
