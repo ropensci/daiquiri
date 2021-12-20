@@ -287,21 +287,10 @@ summarise_source_data <- function(sourcedata, showprogress = FALSE){
 													 stringsAsFactors = FALSE)
 
 	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
-	validation_warnings <- do.call(rbind, c(sapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+	validation_warnings <- do.call(rbind, sapply(sourcedata$datafields[1:sourcedata$cols_source_n],
 																								 function(x){
 																								 	cbind("Datafield"= rep(x$columnname, ifelse(is.null(nrow(x$validation_warnings)), 0, nrow(x$validation_warnings))),
-																								 				x$validation_warnings) }),
-																					make.row.names = FALSE))
-	# strangely, when all validation_warnings data frames are empty the above creates a matrix with single make.row.names row instead of an empty data frame
-	# set to empty data frame here until find better way of doing it
-	if (!is.data.frame(validation_warnings)){
-		validation_warnings <- cbind("Datafield"=character(0), sourcedata$datafields[[1]]$validation_warnings)
-	}
-
-	# do.call(rbind, sapply(sourcedata$datafields,
-	# 												function(x){
-	# 													cbind("Datafield"= rep(x$columnname, nrow(x$validation_warnings)),
-	# 																x$validation_warnings) }))
+																								 				x$validation_warnings) }))
 
 	log_function_end(match.call()[[1]])
 
