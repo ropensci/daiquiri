@@ -193,10 +193,10 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # uses results from already-aggregated individual fields rather than doing it all again
 # TODO: do we want to include duplicates in here too?
 # TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
-aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
+aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
 	#temp assignment
 	# aggfields = agg[1:data$cols_imported_n]
-	# timepointfieldvalues = get_datafield_vector(data$datafields[[data$timepoint_fieldname]])
+	# alltimepoints = get_datafield_vector(data$datafields[[testcpdsourcedata$timepoint_fieldname]])
 	#showprogress = TRUE
 
 	ft <- ft_allfields()
@@ -218,7 +218,11 @@ aggregateallfields <- function(aggfields, timepointfieldvalues, alltimepoints, c
 			}
 		}
 	}
-	# TODO: Should timepoint field be included too?
+	# if there are no datetime or numeric fields, nonconformant_n field needs to be created explicitly
+	if( !("nonconformant_n" %in% names(groupedvals)) ){
+		groupedvals[, "nonconformant_n" := data.table::fifelse(n == 0, NA_integer_, 0)]
+	}
+
 	groupedvals[, "missing_perc" := 100*missing_n/(n + missing_n + nonconformant_n)]
 	groupedvals[, "nonconformant_perc" := 100*nonconformant_n/(n + missing_n + nonconformant_n)]
 
@@ -296,7 +300,7 @@ aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = FA
 	log_message(paste0("DUPLICATES:"), showprogress)
 	agg[[data$cols_imported_n+1]] <- aggregatefield(data$datafields[[data$cols_source_n+1]], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
-	agg[[data$cols_imported_n+2]] <- aggregateallfields(agg[1:data$cols_imported_n], get_datafield_vector(data$datafields[[data$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
+	agg[[data$cols_imported_n+2]] <- aggregateallfields(agg[1:data$cols_imported_n], alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	names(agg) <- c(names(data$cols_imported_indexes), "DUPLICATES", "ALLFIELDSCOMBINED")
 
 	# NOTE: Changepoints functionality disabled until we find a method that works

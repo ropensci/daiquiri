@@ -110,6 +110,8 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 	# aggfield <- testcpddata_byday$aggregatefields[[testcpddata_byday$timepoint_fieldname]]
 	# aggtype = "n"
 	# fillcolour = "pink"
+	# aggfield <- testcpddata_byday2[["aggregatefields"]][["ALLFIELDSCOMBINED"]]
+	# aggtype = "nonconformant_n"
 
 	timepointcolname <- names(aggfield$values)[1]
 	data <- aggfield$values[, c(timepointcolname, aggtype), with = FALSE]
@@ -166,16 +168,21 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 		} else{
 			d <- aggfields[[f]]$values[, timepointcolname, with = FALSE]
 			d[, fieldname := f]
-			d[, (aggtype) := NA]
+			d[, (aggtype) := NA_integer_]
 		}
 		data <- rbind(data, d)
 	}
 	data[, fieldname := factor(fieldname, levels = names(aggfields))]
 
-	ggplot2::ggplot(data, ggplot2::aes_string(timepointcolname, "fieldname", fill = aggtype)) +
+	# when the only values are zero, make sure the fill colour is white (as geom_tile uses the 'high' colour)
+	if( all(data[, aggtype, with = FALSE] == 0, na.rm = TRUE) ){
+		fillcolour <- "white"
+	}
+
+	g <- ggplot2::ggplot(data, ggplot2::aes_string(timepointcolname, "fieldname", fill = aggtype)) +
 		ggplot2::geom_tile() +
 		ggplot2::scale_fill_gradient("Instances", low="white", high = fillcolour, na.value = "grey",
-																 labels=function(x) format(x, big.mark = ",", scientific = FALSE),
+																 labels=NULL,
 																 limits = c(0, NA)) +
 		ggplot2::scale_x_date(breaks = scales::breaks_pretty(12),
 													labels = scales::label_date_short(sep = " "),
@@ -206,11 +213,18 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 			# legend.text = ggplot2::element_text(size=7),
 			# legend.background = ggplot2::element_rect(colour = "black", size = 0.25),
 			)
+	g
 }
 
 # -----------------------------------------------------------------------------
 # combine a lineplot and heatmap to show as an overall summary for a particular aggtype
 plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, lineplot_fillcolour, heatmap_fillcolour, title = NULL){
+	# aggfields = testcpddata_byday2$aggregatefields
+	# aggtype = "nonconformant_n"
+	# lineplot_fieldname = "ALLFIELDSCOMBINED"
+	# lineplot_fillcolour = "lightgreen"
+	# heatmap_fillcolour = "darkgreen"
+	# title = "Total nonconformant values"
 
 	totals <- plot_overview_totals_static(aggfield = aggfields[[lineplot_fieldname]],
 																				aggtype = aggtype,
