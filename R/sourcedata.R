@@ -42,6 +42,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	# TODO: deal with warnings about embedded quotes
 	# TODO: don't know what is causing the "length of NULL cannot be changed" warning
 	# NOTE: row/column indexes for warnings appear to be for original data file, and count the header as row 1
+	# TODO: only add 1 to the rowindex if there was a header row
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
 	clean_dt <- withCallingHandlers(
@@ -58,8 +59,8 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	# list of warnings each with character vector containing row, column, message
 	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
 	warningsdt <- data.table::data.table(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
-													 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
-													 message = as.character(sapply(warningslist, function(x){x[3]})))
+																			 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
+																			 message = as.character(sapply(warningslist, function(x){x[3]})))
 
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
 	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
@@ -98,6 +99,11 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
 	} else{
 		timepoint_missing_n <- 0
 	}
+
+	# tidy up warnings
+	data.table::setorder(warningsdt, colindex, rowindex)
+	warningsdt <- cbind(data.table::data.table(fieldname = names(clean_dt)[warningsdt[, colindex]]),
+											warningsdt[, list(colindex, rowindex, message)])
 
 	log_message(paste0("Checking for duplicates..."), showprogress)
 	# sort by timepoint field then by everything else, so that we can batch the data
@@ -287,10 +293,7 @@ summarise_source_data <- function(sourcedata, showprogress = FALSE){
 													 stringsAsFactors = FALSE)
 
 	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
-	validation_warnings <- do.call(rbind, sapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-																								 function(x){
-																								 	cbind("Datafield"= rep(x$columnname, ifelse(is.null(nrow(x$validation_warnings)), 0, nrow(x$validation_warnings))),
-																								 				x$validation_warnings) }))
+	validation_warnings <- sourcedata$validation_warnings
 
 	log_function_end(match.call()[[1]])
 

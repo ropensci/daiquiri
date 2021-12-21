@@ -27,7 +27,7 @@ Report created on: `r Sys.time()`
 ## Raw data {.tabset}
 
 
-```{r}
+```{r sourcedata}
 sourcesummary <- summarise_source_data(params$sourcedata)
 sourcedatafields <- sourcesummary$datafields
 sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
@@ -35,7 +35,7 @@ sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 
 ### Data fields imported
 
-```{r}
+```{r fields-imported}
 
 reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype != "ignore"),],
 				sortable = TRUE,
@@ -63,60 +63,57 @@ reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype !
 
 ### Data fields ignored
 
-```{r}
+```{r fields-ignored}
 
-	reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), c("fieldname","fieldtype","ordinal_position")],
-					sortable = TRUE,
-					filterable = FALSE,
-					searchable = FALSE,
-					pagination = FALSE,
-					rownames = FALSE,
-					compact = TRUE,
-					fullWidth = FALSE,
-					columns = list(
-						fieldname = reactable::colDef(name = "Field name",
-															 minWidth = 200),
-						fieldtype = reactable::colDef(name = "Field type",
-															 minWidth = 100),
-						ordinal_position = reactable::colDef(name = "Column position")
-						)
+reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), c("fieldname","fieldtype","ordinal_position")],
+				sortable = TRUE,
+				filterable = FALSE,
+				searchable = FALSE,
+				pagination = FALSE,
+				rownames = FALSE,
+				compact = TRUE,
+				fullWidth = FALSE,
+				columns = list(
+					fieldname = reactable::colDef(name = "Field name",
+														 minWidth = 200),
+					fieldtype = reactable::colDef(name = "Field type",
+														 minWidth = 100),
+					ordinal_position = reactable::colDef(name = "Column position")
 					)
+				)
 ```
 
 
 ### Validation warnings
 
-```{r}
+```{r validation-warnings}
 
-if (nrow(sourcesummary$validation_warnings) > 0){
-	reactable::reactable(sourcesummary$validation_warnings,
-					sortable = TRUE,
-					filterable = FALSE,
-					searchable = FALSE,
-					rownames = FALSE,
-					pagination = FALSE,
-					striped = TRUE,
-					highlight = TRUE,
-					compact = TRUE,
-					fullWidth = FALSE,
-					columns = list(
-						Datafield = reactable::colDef(name = "Field name",
-															 style = list(fontWeight = "bold"),
-															 minWidth = 200),
-						rowindex = reactable::colDef(name = "Row position"),
-						message = reactable::colDef(name = "Details",
-														 minWidth = 500)
-						)
+reactable::reactable(sourcesummary$validation_warnings,
+				sortable = TRUE,
+				filterable = FALSE,
+				searchable = FALSE,
+				rownames = FALSE,
+				pagination = FALSE,
+				striped = TRUE,
+				highlight = TRUE,
+				compact = TRUE,
+				fullWidth = FALSE,
+				columns = list(
+					fieldname = reactable::colDef(name = "Field name",
+														 style = list(fontWeight = "bold"),
+														 minWidth = 200),
+					colindex = reactable::colDef(name = "Column position"),
+					rowindex = reactable::colDef(name = "Row position"),
+					message = reactable::colDef(name = "Details",
+													 minWidth = 500)
 					)
-} else{
-	print("None")
-}
+				)
 
 ```
 
 ### Summary
 
-```{r}
+```{r sourcedata-summary}
 summarydf <- data.frame("Item" = c("Columns in source",
 																	"Columns imported",
 																	"Column used for timepoint",
@@ -228,7 +225,7 @@ plot_overview_totals_static(aggfield = params$aggregatedata$aggregatefields[["DU
 
 ### Summary
 
-```{r}
+```{r aggregatedata-summary}
 aggsummarydf <- data.frame("Item" = c("Column used for timepoint",
 																			"Min timepoint value",
 																			"Max timepoint value",
@@ -274,7 +271,7 @@ reactable::reactable(aggsummarydf,
 
 ## Individual data fields {.tabset}
 
-```{r, results = 'asis'}
+```{r individual-fields, results = 'asis'}
 #params$aggregatedata <- testcpddata_byday
 #aggtype <- "n"
 for(i in seq_along(names(params$aggregatedata$aggregatefields))){
