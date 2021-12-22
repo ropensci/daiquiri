@@ -7,7 +7,7 @@
 #'
 #' Classes are S3
 #'
-#' The best place to start is the \code{\link{check_dataset()}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
+#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
 #'
 #'
 #' @docType package
