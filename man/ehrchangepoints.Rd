@@ -10,13 +10,8 @@ column specifying the date (and time) of the event, and further columns containi
 and automatically generates a report showing aggregated values for each column over time, including identifying missing values,
 non-conformant values, and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
 }
-\section{Section 1}{
-
+\details{
 Classes are S3
+
+The best place to start is the \code{\link{check_dataset()}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
 }
-
-\section{Section 2}{
-
-The functions ...
-}
-

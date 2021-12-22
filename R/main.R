@@ -5,12 +5,10 @@
 #' and automatically generates a report showing aggregated values for each column over time, including identifying missing values,
 #' non-conformant values, and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
 #'
-#'
-#' @section Section 1:
 #' Classes are S3
 #'
-#' @section Section 2:
-#' The functions ...
+#' The best place to start is the \code{\link{check_dataset()}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
+#'
 #'
 #' @docType package
 #' @name ehrchangepoints
@@ -25,7 +23,7 @@ NULL
 #' Accepts record-level data from a csv file or dataframe, generates a collection of time series for each column, and saves a report to disk.
 #'
 #' @param x Either a data frame or a string containing full or relative path of file containing data to load
-#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
+#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.
 #' @param textfile_contains_columnnames If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE
 #' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
 #' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
@@ -35,11 +33,31 @@ NULL
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
 #' If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
-#' @param showprogress Print progress to console. Default = FALSE
+#' @param showprogress Print progress to console. Default = TRUE
 #' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
+#' @examples checkobj <- check_dataset(
+#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'     PrescriptionDate = ft_timepoint(),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     Drug = ft_freetext(),
+#'     Dose = ft_numeric(),
+#'     DoseUnit = ft_categorical(),
+#'     PatientID = ft_ignore(),
+#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'   textfile_contains_columnnames = TRUE,
+#'   override_columnnames = FALSE,
+#'   na = c("","NULL"),
+#'   aggregation_timeunit = "day",
+#'   save_directory = ".",
+#'   save_filename = "abx2014report",
+#'   showprogress = TRUE,
+#'   log_directory = NULL
+#' )
+#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 #' @export
-check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = FALSE, log_directory = NULL){
+check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = TRUE, log_directory = NULL){
 	# temp assignments
 	# x <- testfile
 	# fieldtypes <- testfile_fieldtypes
@@ -95,16 +113,32 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 #' Load source data into sourcedata object
 #'
 #' @param x Either a data frame or a string containing full or relative path of file containing data to load
-#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.
+#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.
 #' @param textfile_contains_columnnames If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE
 #' @param override_columnnames If FALSE, column names must exist in data frame or header row of file and must match
 #' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
 #' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
 #' @param na vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.
-#' @param showprogress Print progress to console. Default = FALSE
+#' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
+#' @examples sourcedataobj <- load_dataset(
+#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'     PrescriptionDate = ft_timepoint(),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     Drug = ft_freetext(),
+#'     Dose = ft_numeric(),
+#'     DoseUnit = ft_categorical(),
+#'     PatientID = ft_ignore(),
+#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'   textfile_contains_columnnames = TRUE,
+#'   override_columnnames = FALSE,
+#'   na = c("","NULL"),
+#'   showprogress = TRUE
+#' )
+#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{generate_report}}, \code{\link{check_dataset}}
 #' @export
-load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), showprogress = FALSE){
+load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), showprogress = TRUE){
 	# TODO: rename?
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming

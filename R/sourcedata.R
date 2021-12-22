@@ -20,7 +20,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 # constructor for sourcedata object
 # takes in a data.table, fieldtypes specification, and (string) sourcename
-sourcedata <- function(dt, fieldtypes, sourcename, showprogress = FALSE) {
+sourcedata <- function(dt, fieldtypes, sourcename, showprogress = TRUE) {
 # temp assignments
 # dt<-data.table::setDT(source_df)
 #	dt<-data.table(source_df)
@@ -261,7 +261,7 @@ print.sourcedata <- function(x, ...){
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Consider adding a warning if a categorical field has "too many" different values
-summarise_source_data <- function(sourcedata, showprogress = FALSE){
+summarise_source_data <- function(sourcedata, showprogress = TRUE){
 	#temp assignment
 	#  sourcedata<-testcpddata
 	# str(sourcedata)

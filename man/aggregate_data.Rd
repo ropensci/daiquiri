@@ -4,14 +4,14 @@
 \alias{aggregate_data}
 \title{Aggregate source data}
 \usage{
-aggregate_data(data, aggregation_timeunit = "day", showprogress = FALSE)
+aggregate_data(data, aggregation_timeunit = "day", showprogress = TRUE)
 }
 \arguments{
-\item{data}{A \code{sourcedata} object}
+\item{data}{A \code{sourcedata} object returned from \code{\link{load_dataset}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
 
-\item{showprogress}{Print progress to console. Default = FALSE}
+\item{showprogress}{Print progress to console. Default = TRUE}
 }
 \value{
 An \code{aggregatedata} object
@@ -19,4 +19,7 @@ An \code{aggregatedata} object
 \description{
 Aggregates sourcedata object based on fieldtypes specified at load time.
 Default time period for aggregation is a calendar day
+}
+\seealso{
+\code{\link{load_dataset}}, \code{\link{generate_report}}
 }

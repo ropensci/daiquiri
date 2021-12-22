@@ -13,14 +13,14 @@ check_dataset(
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = NULL,
-  showprogress = FALSE,
+  showprogress = TRUE,
   log_directory = NULL
 )
 }
 \arguments{
 \item{x}{Either a data frame or a string containing full or relative path of file containing data to load}
 
-\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.}
+\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.}
 
 \item{textfile_contains_columnnames}{If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE}
 
@@ -37,7 +37,7 @@ specification. The specification must therefore contain the columns in the corre
 \item{save_filename}{String specifying filename for the report, excluding any file extension.
 If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.}
 
-\item{showprogress}{Print progress to console. Default = FALSE}
+\item{showprogress}{Print progress to console. Default = TRUE}
 
 \item{log_directory}{String specifying directory in which to save log file. If no directory is supplied, progress is not logged.}
 }
@@ -46,4 +46,28 @@ A list containing information relating to the supplied parameters as well as the
 }
 \description{
 Accepts record-level data from a csv file or dataframe, generates a collection of time series for each column, and saves a report to disk.
+}
+\examples{
+checkobj <- check_dataset(
+  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  aggregation_timeunit = "day",
+  save_directory = ".",
+  save_filename = "abx2014report",
+  showprogress = TRUE,
+  log_directory = NULL
+)
+}
+\seealso{
+\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 }

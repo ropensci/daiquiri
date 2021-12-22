@@ -28,7 +28,7 @@ Report created on: `r Sys.time()`
 
 
 ```{r sourcedata}
-sourcesummary <- summarise_source_data(params$sourcedata)
+sourcesummary <- summarise_source_data(params$sourcedata, showprogress = FALSE)
 sourcedatafields <- sourcesummary$datafields
 sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 ```

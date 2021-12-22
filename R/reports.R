@@ -5,16 +5,46 @@
 #'
 #' Generate report from previously-created sourcedata and aggregatedata objects
 #'
-#' @param sourcedata A \code{sourcedata} object returned from \code{load_dataset()} function
-#' @param aggregatedata An \code{aggregatedata} object returned from \code{aggregate_data()} function
+#' @param sourcedata A \code{sourcedata} object returned from \code{\link{load_dataset()}} function
+#' @param aggregatedata An \code{aggregatedata} object returned from \code{\link{aggregate_data()}} function
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
 #' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
 #' @param format File format of the report. Currently only "html" is supported
-#' @param showprogress Print progress to console. Default = FALSE
+#' @param showprogress Print progress to console. Default = TRUE
 #' @return A string containing the name and path of the saved report
+#' @examples sourcedataobj <- load_dataset(
+#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'     PrescriptionDate = ft_timepoint(),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     Drug = ft_freetext(),
+#'     Dose = ft_numeric(),
+#'     DoseUnit = ft_categorical(),
+#'     PatientID = ft_ignore(),
+#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'   textfile_contains_columnnames = TRUE,
+#'   override_columnnames = FALSE,
+#'   na = c("","NULL"),
+#'   showprogress = TRUE
+#' )
+#'
+#' aggregatedataobj <- aggregate_data(
+#'   sourcedataobj,
+#'   aggregation_timeunit = "day",
+#'   showprogress = TRUE
+#' )
+#'
+#' generate_report(
+#'   sourcedataobj,
+#'   aggregatedataobj,
+#'   save_directory = ".",
+#'   save_filename = "abx2014report",
+#'   showprogress = TRUE
+#' )
+#' @seealso \code{\link{load_dataset}}, \code{\link{aggregate_data}}, \code{\link{check_dataset}}
 #' @export
-generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = FALSE){
+generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = TRUE){
 
 	log_function_start(match.call()[[1]])
 
@@ -29,7 +59,7 @@ generate_report <- function(sourcedata, aggregatedata, save_directory = ".", sav
 
 	if( format == "html" ){
 		log_message("Generating html report...", showprogress)
-		rmarkdown::render(input = system.file("rmd", "report_htmldoc.Rmd", package = packageName(), mustWork = TRUE)
+		rmarkdown::render(input = system.file("rmd", "report_htmldoc.Rmd", package = utils::packageName(), mustWork = TRUE)
 											, output_file = paste0(save_filename, ".html")
 											, output_dir = save_directory
 											, params = list(sourcedata = sourcedata, aggregatedata = aggregatedata)
@@ -148,7 +178,6 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 # -----------------------------------------------------------------------------
 # create a heatmap showing a particular aggtype value across all fields
 # TODO: Decide whether or not to include the timepoint field in the heatmap
-# TODO: When all values are zero, colour should be white (currently it colours the tiles making them look non-zero)
 plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkred"){
 	#temp assignment
 	# aggfields<-testcpddata_byday$aggregatefields

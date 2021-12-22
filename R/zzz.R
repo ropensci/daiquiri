@@ -1,5 +1,4 @@
 # initialise package environment (doesn't work if put in .onLoad)
-# TODO: consider using actual package name
 packageenvironment <- new.env(parent = emptyenv())
 # tell data.table that you as a package developer have designed your code to intentionally
 #  rely on data.table functionality even though it is not mentioned in NAMESPACE file.

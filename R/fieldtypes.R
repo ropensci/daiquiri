@@ -222,17 +222,19 @@ ft_duplicates <- function() {
 #' Create fieldtypes specification
 #'
 #' Helper function for users to specify the types of fields in the source data.  This is important both for reading
-#'   in the data correctly, and because the data in each field will be tested for changepoints in different ways,
+#'   in the data correctly, and because the data in each field will aggregated in different ways,
 #'   depending on its fieldtype.  See \link{availablefieldtypes}
 #' @param ... names and types of fields (columns) in source data, in the correct order.
-#'   CHECK IF READR DEALS WITH CORRECTLY NAMED COLUMNS IN WRONG ORDER
 #' @return A \code{fieldtypes} object
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
+#'                             TestID = ft_ignore(),
 #'                             TestDate = ft_timepoint(),
 #'                             TestName = ft_categorical(aggregate_by_each_category = FALSE),
 #'                             TestResult = ft_numeric(),
-#'                             TestComment = ft_ignore(),
+#'                             ResultDate = ft_datetime(),
+#'                             ResultComment = ft_freetext(),
 #'                             Location = ft_categorical())
+#' @seealso \code{\link{availablefieldtypes}}
 #' @export
 fieldtypes <- function(...) {
   fts <- list(...)

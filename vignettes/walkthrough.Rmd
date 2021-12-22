@@ -42,9 +42,10 @@ The `abx2014` dataset provided with this package contains examples of antibiotic
 There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
 
 ```{r}
-abx2014 <- read.csv(system.file("extdata", "abx2014.csv", 
-																package = "ehrchangepoints"), 
-										stringsAsFactors = FALSE)
+abx2014 <- read.csv(
+  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  stringsAsFactors = FALSE
+ )
 
 head(abx2014)
 ```
@@ -79,14 +80,16 @@ NOTE: If your data is already aggregated (e.g. one column contains a date and th
 For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
-fts <- fieldtypes(PrescriptionID = ft_uniqueidentifier(),
-									PrescriptionDate = ft_timepoint(),
-									AdmissionDate = ft_datetime(includes_time = FALSE),
-									Drug = ft_freetext(),
-									Dose = ft_numeric(),
-									DoseUnit = ft_categorical(),
-									PatientID = ft_ignore(),
-									SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
+fts <- fieldtypes(
+  PrescriptionID = ft_uniqueidentifier(),
+  PrescriptionDate = ft_timepoint(),
+  AdmissionDate = ft_datetime(includes_time = FALSE),
+  Drug = ft_freetext(),
+  Dose = ft_numeric(),
+  DoseUnit = ft_categorical(),
+  PatientID = ft_ignore(),
+  SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)
+)
 ```
 
 This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
@@ -109,43 +112,48 @@ For the `abx2014` dataset above, we will set the aggregation granularity to `day
 
 ```{r, include=FALSE}
 # save the report to the inst/extdata folder but show the code in the next chunk in the vignette
-checkobj <- check_dataset(abx2014,
-							fieldtypes = fts,
-							textfile_contains_columnnames = TRUE,
-							override_columnnames = FALSE,
-							na = c("","NULL"),
-							aggregation_timeunit = "day",
-							save_directory = "../inst/extdata",
-							save_filename = "abx2014report",
-							showprogress = FALSE,
-							log_directory = NULL)
+checkobj <- check_dataset(
+  abx2014,
+  fieldtypes = fts,
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  aggregation_timeunit = "day",
+  save_directory = "../inst/extdata",
+  save_filename = "abx2014report",
+  showprogress = FALSE,
+  log_directory = NULL
+)
 ```
 
 ```{r, eval=FALSE}
 # passing in a dataframe
-checkobj <- check_dataset(abx2014,
-							fieldtypes = fts,
-							textfile_contains_columnnames = TRUE,
-							override_columnnames = FALSE,
-							na = c("","NULL"),
-							aggregation_timeunit = "day",
-							save_directory = ".",
-							save_filename = "abx2014report",
-							showprogress = TRUE,
-							log_directory = NULL)
+checkobj <- check_dataset(
+  abx2014,
+  fieldtypes = fts,
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  aggregation_timeunit = "day",
+  save_directory = ".",
+  save_filename = "abx2014report",
+  showprogress = TRUE,
+  log_directory = NULL
+)
 
 # passing in a csv filename
-checkobj <- check_dataset(system.file("extdata", "abx2014.csv", 
-																package = "ehrchangepoints"),
-							fieldtypes = fts,
-							textfile_contains_columnnames = TRUE,
-							override_columnnames = FALSE,
-							na = c("","NULL"),
-							aggregation_timeunit = "day",
-							save_directory = ".",
-							save_filename = "abx2014report",
-							showprogress = TRUE,
-							log_directory = NULL)
+checkobj <- check_dataset(
+  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  fieldtypes = fts,
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  aggregation_timeunit = "day",
+  save_directory = ".",
+  save_filename = "abx2014report",
+  showprogress = TRUE,
+  log_directory = NULL
+)
 
 ```
 
@@ -169,24 +177,39 @@ The html reports created by this package can be opened in a browser and/or attac
 The simplest way to use this package is to use the `check_dataset` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `fieldtypes` specification then the data will need to be re-loaded.
 
 ```{r, eval=FALSE}
-abxsourcedata <- load_dataset(abx2014, 
-                              fieldtypes = fts, 
-                              na=c("","NULL"), 
-                              showprogress=FALSE)
+# load your dataset into a sourcedata object
+abxsourcedata <- load_dataset(
+  abx2014, 
+  fieldtypes = fts, 
+  na=c("","NULL")
+)
 
-abxaggregate_byday <- aggregate_data(abxsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+# aggregate the sourcedata object by desired granularity
+abxaggregate_byday <- aggregate_data(
+  abxsourcedata,
+  aggregation_timeunit = "day"
+)
 
-abxaggregate_byweek <- aggregate_data(abxsourcedata, aggregation_timeunit = "week", showprogress = FALSE)
+# aggregate the same sourcedata object by a different granularity
+abxaggregate_byweek <- aggregate_data(
+  abxsourcedata,
+  aggregation_timeunit = "week"
+)
 
-generate_report(sourcedata = abxsourcedata,
-                aggregatedata = abxaggregate_byday,
-                save_directory = ".",
-                save_filename = "abx2014_byday")
+# generate and save the reports
+generate_report(
+  sourcedata = abxsourcedata,
+  aggregatedata = abxaggregate_byday,
+  save_directory = ".",
+  save_filename = "abx2014_byday"
+)
 
-generate_report(sourcedata = abxsourcedata,
-                aggregatedata = abxaggregate_byweek,
-                save_directory = ".",
-                save_filename = "abx2014_byweek")
+generate_report(
+  sourcedata = abxsourcedata,
+  aggregatedata = abxaggregate_byweek,
+  save_directory = ".",
+  save_filename = "abx2014_byweek"
+)
 
 ```
 

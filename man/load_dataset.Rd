@@ -10,13 +10,13 @@ load_dataset(
   textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = c("", "NULL"),
-  showprogress = FALSE
+  showprogress = TRUE
 )
 }
 \arguments{
 \item{x}{Either a data frame or a string containing full or relative path of file containing data to load}
 
-\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data.}
+\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.}
 
 \item{textfile_contains_columnnames}{If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE}
 
@@ -26,11 +26,31 @@ specification. The specification must therefore contain the columns in the corre
 
 \item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.}
 
-\item{showprogress}{Print progress to console. Default = FALSE}
+\item{showprogress}{Print progress to console. Default = TRUE}
 }
 \value{
 A \code{sourcedata} object
 }
 \description{
 Load source data into sourcedata object
+}
+\examples{
+sourcedataobj <- load_dataset(
+  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  showprogress = TRUE
+)
+}
+\seealso{
+\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{generate_report}}, \code{\link{check_dataset}}
 }

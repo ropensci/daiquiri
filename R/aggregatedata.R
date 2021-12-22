@@ -9,7 +9,7 @@
 # individual aggregatefields
 # NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
 # TODO: timepoint_as_aggregationunit only needs to be called once
-aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
+aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
 	#temp assignment
 	#datafield = outpatsourcedata$datafields[[24]]
 	#timepointfieldvalues = get_datafield_vector(outpatsourcedata$datafields[[outpatsourcedata$timepoint_fieldname]])
@@ -193,7 +193,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # uses results from already-aggregated individual fields rather than doing it all again
 # TODO: do we want to include duplicates in here too?
 # TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
-aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = FALSE) {
+aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
 	#temp assignment
 	# aggfields = agg[1:data$cols_imported_n]
 	# alltimepoints = get_datafield_vector(data$datafields[[testcpdsourcedata$timepoint_fieldname]])
@@ -255,12 +255,13 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 #' Aggregates sourcedata object based on fieldtypes specified at load time.
 #' Default time period for aggregation is a calendar day
 #'
-#' @param data A \code{sourcedata} object
+#' @param data A \code{sourcedata} object returned from \code{\link{load_dataset}} function
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
-#' @param showprogress Print progress to console. Default = FALSE
+#' @param showprogress Print progress to console. Default = TRUE
 #' @return An \code{aggregatedata} object
+#' @seealso \code{\link{load_dataset}}, \code{\link{generate_report}}
 #' @export
-aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = FALSE){
+aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = TRUE){
 	# TODO: move calculation of changepoints into separate function and allow them to be calculated afterwards
 	# TODO: allow user to override existing aggfunctions?
 	# TODO: Use something better than seq() to calculate weeks and months, so that it works when the first date is not the first of the month

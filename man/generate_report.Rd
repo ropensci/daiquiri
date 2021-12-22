@@ -10,13 +10,13 @@ generate_report(
   save_directory = ".",
   save_filename = NULL,
   format = "html",
-  showprogress = FALSE
+  showprogress = TRUE
 )
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from \code{load_dataset()} function}
+\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{load_dataset()}} function}
 
-\item{aggregatedata}{An \code{aggregatedata} object returned from \code{aggregate_data()} function}
+\item{aggregatedata}{An \code{aggregatedata} object returned from \code{\link{aggregate_data()}} function}
 
 \item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
 
@@ -25,11 +25,45 @@ If no filename is supplied, one will be automatically generated with the format 
 
 \item{format}{File format of the report. Currently only "html" is supported}
 
-\item{showprogress}{Print progress to console. Default = FALSE}
+\item{showprogress}{Print progress to console. Default = TRUE}
 }
 \value{
 A string containing the name and path of the saved report
 }
 \description{
 Generate report from previously-created sourcedata and aggregatedata objects
+}
+\examples{
+sourcedataobj <- load_dataset(
+  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+  textfile_contains_columnnames = TRUE,
+  override_columnnames = FALSE,
+  na = c("","NULL"),
+  showprogress = TRUE
+)
+
+aggregatedataobj <- aggregate_data(
+  sourcedataobj,
+  aggregation_timeunit = "day",
+  showprogress = TRUE
+)
+
+generate_report(
+  sourcedataobj,
+  aggregatedataobj,
+  save_directory = ".",
+  save_filename = "abx2014report",
+  showprogress = TRUE
+)
+}
+\seealso{
+\code{\link{load_dataset}}, \code{\link{aggregate_data}}, \code{\link{check_dataset}}
 }
