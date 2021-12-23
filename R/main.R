@@ -7,7 +7,7 @@
 #'
 #' Classes are S3
 #'
-#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
+#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "ehrchangepoints")}}.
 #'
 #'
 #' @docType package
@@ -160,7 +160,13 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)), showprogress)
 
 	if( is.data.frame(x) ){
-		source_name <- as.list(match.call())$x
+		# When load_dataset is called from check_dataset, passing in a dataframe, we lose the name of the original object
+		#   that was passed in, so need to check the grandparent call instead
+		if( match.call(definition = sys.function(-1), call = sys.call(sys.parent()))[[1]] == "check_dataset"){
+			source_name <- as.list(match.call(definition = sys.function(-1), call = sys.call(sys.parent())))$x
+		} else{
+			source_name <- as.list(match.call())$x
+		}
 		log_message(paste0("Identified data frame [", source_name, "]"), showprogress)
 		# check for mismatch between fieldtypes names and column names
 		validate_columnnames(names(x), names(fieldtypes), check_length_only = override_columnnames)
@@ -209,7 +215,7 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 
 
   # create sourcedata object which includes "ignored" columns
-  sourcedata <- sourcedata(data.table::setDT(source_df), fieldtypes, source_name, showprogress)
+  sourcedata <- sourcedata(data.table::setDT(source_df), fieldtypes, source_name, na = na, showprogress)
   # print summary to console
   if(showprogress){ print(summarise_source_data(sourcedata, showprogress)) }
 

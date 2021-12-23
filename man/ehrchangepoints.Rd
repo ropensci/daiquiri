@@ -13,5 +13,5 @@ non-conformant values, and duplicated rows. It is designed with Electronic Healt
 \details{
 Classes are S3
 
-The best place to start is the \code{\link{check_dataset()}} function, and the walkthrough vignette: \code{vignette("walkthrough", package = "ehrchangepoints")}.
+The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "ehrchangepoints")}}.
 }

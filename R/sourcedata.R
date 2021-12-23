@@ -20,7 +20,8 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 # constructor for sourcedata object
 # takes in a data.table, fieldtypes specification, and (string) sourcename
-sourcedata <- function(dt, fieldtypes, sourcename, showprogress = TRUE) {
+# need to pass in na string values too, in case a dataframe is passed in that hasn't had them removed
+sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 # temp assignments
 # dt<-data.table::setDT(source_df)
 #	dt<-data.table(source_df)
@@ -46,7 +47,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, showprogress = TRUE) {
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
 	clean_dt <- withCallingHandlers(
-		readr::type_convert(dt, fieldtypes_to_cols(fieldtypes, readfunction = "readr")),
+		readr::type_convert(dt, fieldtypes_to_cols(fieldtypes, readfunction = "readr"), na = na),
 		warning = function(w) {
 			raw_warnings <<- append(raw_warnings, conditionMessage(w))
 			invokeRestart("muffleWarning")
