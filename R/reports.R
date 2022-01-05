@@ -5,8 +5,8 @@
 #'
 #' Generate report from previously-created sourcedata and aggregatedata objects
 #'
-#' @param sourcedata A \code{sourcedata} object returned from \code{\link{load_dataset()}} function
-#' @param aggregatedata An \code{aggregatedata} object returned from \code{\link{aggregate_data()}} function
+#' @param sourcedata A \code{sourcedata} object returned from \code{\link{load_dataset}} function
+#' @param aggregatedata An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
 #' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
