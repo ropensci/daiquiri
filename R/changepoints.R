@@ -61,7 +61,7 @@ find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FAL
 	                                is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
 	      )
 	    } else if( aggtypes[i] %in% c("min","max") ){
-	      if( inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") | inherits(aggfieldvalues[[aggtypes[i]]], "Date") ) {
+	      if( inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") || inherits(aggfieldvalues[[aggtypes[i]]], "Date") ) {
 	        # zeros are not meaningful for dates
 	        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
 	                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
@@ -238,7 +238,7 @@ changepoints_cptvar <- function(aggfieldvalues, aggtype){
 		if( is.numeric(valuevector) ){
 			valuevector[is.na(valuevector)] <- (abs(max(valuevector, na.rm = TRUE))+100)*2
 		} else{
-			if( inherits(valuevector, "POSIXct") | inherits(valuevector, "Date") ) {
+			if( inherits(valuevector, "POSIXct") || inherits(valuevector, "Date") ) {
 				valuevector[is.na(valuevector)] <- max(valuevector, na.rm = TRUE) + 3600
 			} else {
 				stop("cpt.var method can only be used on numeric data")

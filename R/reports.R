@@ -276,7 +276,7 @@ plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, l
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 	breaks <- NA
 
-	if( aggtype %in% c("distinct","n","sum") | endsWith(aggtype, "_n") | startsWith(aggtype, "subcat_n") ){
+	if( aggtype %in% c("distinct","n","sum") || endsWith(aggtype, "_n") || startsWith(aggtype, "subcat_n") ){
 		rangesize <- floor(log10(maxval))
 		if( rangesize == 0 || maxval == 0){
 			breaks <- seq(0, max(maxval, 10))
@@ -285,7 +285,7 @@ yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 			ymax <- ceiling(maxval/10^(rangesize-1))*10^(rangesize-1)
 			breaks <- seq(0, ymax, by = 10^rangesize)
 		}
-	} else if( endsWith(aggtype, "_perc") | startsWith(aggtype, "subcat_perc") ){
+	} else if( endsWith(aggtype, "_perc") || startsWith(aggtype, "subcat_perc") ){
 		breaks <- seq(0, 100, by = 10)
 	} else if( aggtype %in% c("min","max") ){
 		if( is.fieldtype_numeric(fieldtype) ){

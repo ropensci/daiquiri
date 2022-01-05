@@ -171,7 +171,7 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 		# check for mismatch between fieldtypes names and column names
 		validate_columnnames(names(x), names(fieldtypes), check_length_only = override_columnnames)
 		source_df <- x
-	} else if( is.character(x) & length(x) == 1 ){
+	} else if( is.character(x) && length(x) == 1 ){
 		# assume all strings are file paths for now
 		validate_param_file(x)
 		source_name <- normalizePath(x)
@@ -180,7 +180,7 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 		if( ext == ".csv"){
 			log_message(paste0("Identified csv file [", source_name, "]"), showprogress)
 			log_message(paste0("Checking column names against fieldtypes..."), showprogress)
-			if( textfile_contains_columnnames == FALSE & override_columnnames == FALSE ){
+			if( textfile_contains_columnnames == FALSE && override_columnnames == FALSE ){
 				stop("Bad parameters supplied.\n", "If textfile_contains_columnnames is set to FALSE then override_columnnames must be set to TRUE", call. = FALSE)
 			}
 			# check for mismatch between fieldtypes names and column names before reading in whole file

@@ -67,15 +67,15 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 		} else {
 			c <- c + 1
 			if( f == "n" ){
-				groupedvals[datafield_dt[, .("value" = sum(!(is.na(values) & !is.nan(values))))
+				groupedvals[datafield_dt[, .("value" = sum(!(is.na(values) && !is.nan(values))))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 						, (f) := value, by = .EACHI]
 			} else if( f == "missing_n" ){
-				groupedvals[datafield_dt[, .("value" = sum(is.na(values) & !is.nan(values)))
+				groupedvals[datafield_dt[, .("value" = sum(is.na(values) && !is.nan(values)))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "missing_perc" ){
-				groupedvals[datafield_dt[, .("value" = 100*sum(is.na(values) & !is.nan(values))/length(values))
+				groupedvals[datafield_dt[, .("value" = 100*sum(is.na(values) && !is.nan(values))/length(values))
 																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "nonconformant_n" ){
@@ -150,10 +150,10 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 			}
 			# min/max return Inf when all values are NA. Use NA instead as don't want to differentiate these from timepoints where there are no records
 			if( f %in% c("min","max","mean","minlength","maxlength","midnight_perc") ){
-				groupedvals[is.infinite(get(f)) | is.nan(get(f)), (f) := NA]
+				groupedvals[is.infinite(get(f)) || is.nan(get(f)), (f) := NA]
 				# min/max also drops datetime class
 				# preserve datatypes
-				if( inherits(datafield[["values"]][[1]],"POSIXct") & f %in% c("min","max") ){
+				if( inherits(datafield[["values"]][[1]],"POSIXct") && f %in% c("min","max") ){
 					# TODO: make sure this is consistent with data format on loading
 					groupedvals[, (f) := as.POSIXct(get(f), tz = "UTC", origin = "1970-01-01")]
 				}
