@@ -14,10 +14,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-library(ehrchangepoints)
-```
-
 This vignette demonstrates how to use this package to generate a report that allows you to quickly review any changes in a temporal dataset’s values over time.
 
 ## Data format
@@ -80,6 +76,10 @@ NOTE: If your data is already aggregated (e.g. one column contains a date and th
 For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
+# first, attach the package if you haven't already
+library(ehrchangepoints)
+
+# set up a datafields specification for use later
 fts <- fieldtypes(
   PrescriptionID = ft_uniqueidentifier(),
   PrescriptionDate = ft_timepoint(),
