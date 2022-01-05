@@ -14,9 +14,9 @@ generate_report(
 )
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{load_dataset()}} function}
+\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{load_dataset}} function}
 
-\item{aggregatedata}{An \code{aggregatedata} object returned from \code{\link{aggregate_data()}} function}
+\item{aggregatedata}{An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function}
 
 \item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
 
