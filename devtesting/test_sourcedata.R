@@ -18,11 +18,11 @@ fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																	,AdmissionDate = ft_datetime(includes_time = FALSE)
 																	,Drug = ft_categorical()
 																	,Formulation = ft_freetext()
-																	,Dose = ft_number()
+																	,Dose = ft_numeric()
 																	,DoseUnit = ft_ignore()
 																	,FirstAdministrationDateTime = ft_datetime()
-																 ,NumberOfDosesAdministered = ft_number()
-																 ,AntibioticsSource = ft_partition())
+																 ,NumberOfDosesAdministered = ft_numeric()
+																 ,AntibioticsSource = ft_categorical())
 
 source_df <- readr::read_csv(filename, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=c("","NULL"))
 
@@ -52,3 +52,29 @@ sourcedata$rows_duplicates_n
 
 summarise_source_data(sourcedata, showprogress = FALSE)
 print(sourcedata)
+
+
+# non-standard date formats
+# test dataset
+filename <- "./devtesting/testdata/abx2014ukdates.csv"
+# specify column types
+fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
+												 ,PrescriptionDate = ft_timepoint(format = "%d/%m/%Y %H:%M")
+												 ,AdmissionDate = ft_datetime(includes_time = FALSE, format = "%d/%m/%Y")
+												 ,Drug = ft_categorical()
+												 ,Dose = ft_numeric()
+												 ,DoseUnit = ft_ignore()
+												 ,PatientID = ft_ignore()
+												 ,SourceSystem = ft_categorical())
+
+checkobj <- check_dataset(filename,
+													fieldtypes = fieldtypes,
+													textfile_contains_columnnames = TRUE,
+													override_columnnames = FALSE,
+													na = c("","NULL"),
+													aggregation_timeunit = "week",
+													save_directory = ".",
+													save_filename = NULL,
+													showprogress = TRUE,
+													log_directory = "./")
+

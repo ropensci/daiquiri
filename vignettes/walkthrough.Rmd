@@ -20,7 +20,7 @@ This vignette demonstrates how to use this package to generate a report that all
 
 Data must be in tabular format, either as a csv file (with or without a header row containing column names, but containing no further rows that need skipping), or as a dataframe (with all columns as character type so that the package can detect any non-conformant values). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
 
-Currently, all dates must be in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format, though the ability to use other formats will be added in due course.
+Dates are expected to be in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, though a range of other date formats can also be accepted (see later). User-specified locales are not currently supported.
 
 **Example:**
 
@@ -68,6 +68,8 @@ Lastly, a number of time series will be generated for the dataset as a whole, na
 * The number and percentage presence of duplicate records (i.e. where the entire row is the same as another row in the dataset)
 * The number of records (after duplicates have been removed)
 * The total number and percentage of missing and of non-conformant values (where relevant) across all data fields
+
+NOTE ABOUT DATES: The `ft_timepoint` and `ft_datetime` field types accept a `format` parameter for when the values in the column are not in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format. These must follow the \code{\link[readr]{col_datetime}} format specifications, e.g. "%d/%m/%Y". When a format is supplied, it must match the complete string. User-specified locales are not currently supported.
 
 NOTE: If your data is already aggregated (e.g. one column contains a date and the other columns contain the number of inpatient admissions, outpatient appointments, and emergency department attendances on that date), you can still use this package if you restrict to the `ft_timepoint`, `ft_numeric`, and `ft_simple` field types.
 

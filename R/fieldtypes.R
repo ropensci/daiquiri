@@ -52,9 +52,11 @@ NULL
 #' \code{ft_timepoint} - identifies the data field which should be used as the independent time variable.
 #'   There should be one and only one of these specified.
 #' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
+#' @param format Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}} format specifications, e.g. \code{format = "\%d/\%m/\%Y"}.
+#'  When a format is supplied, it must match the complete string.
 #' @rdname availablefieldtypes
 #' @export
-ft_timepoint <- function( includes_time = TRUE ) {
+ft_timepoint <- function( includes_time = TRUE, format = "" ) {
 	# NOTE: nonconformant values appear in validation warnings
 	aggfn <- c("n")
 	options <- NULL
@@ -64,7 +66,7 @@ ft_timepoint <- function( includes_time = TRUE ) {
 		options <- "includes_time"
 	}
 	fieldtype(type = "timepoint",
-            collector = readr::col_datetime(),
+            collector = readr::col_datetime(format = format),
   					dataclass = "POSIXct",
 						aggfunctions = aggfn,
 						options = options
@@ -139,9 +141,11 @@ ft_numeric <- function() {
 #' @section Details:
 #' \code{ft_datetime} - identifies data fields which contain date values that should be treated as continuous.
 #' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
+#' @param format Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}} format specifications, e.g. \code{format = "\%d/\%m/\%Y"}.
+#'  When a format is supplied, it must match the complete string.
 #' @rdname availablefieldtypes
 #' @export
-ft_datetime <- function( includes_time = TRUE ) {
+ft_datetime <- function( includes_time = TRUE, format = "" ) {
 	aggfn <- c("n", "missing_n", "missing_perc", "nonconformant_n", "nonconformant_perc", "min", "max")
 	options <- NULL
 	if( includes_time ){
@@ -150,7 +154,7 @@ ft_datetime <- function( includes_time = TRUE ) {
 		options <- "includes_time"
 	}
 	fieldtype(type = "datetime",
-						collector = readr::col_datetime(),
+						collector = readr::col_datetime(format = format),
   					dataclass = "POSIXct",
 						aggfunctions = aggfn,
 						options = options
@@ -286,7 +290,7 @@ print.fieldtypes <- function(x, ...) {
 # -----------------------------------------------------------------------------
 # MAP ALLOWABLE TYPES TO:
 # 	readr::col_types
-#		read.table:colClasses
+#		read.table::colClasses
 fieldtypes_to_cols <- function(fieldtypes, readfunction, alltostring = FALSE){
   # validate
   if (missing(fieldtypes) || !is.fieldtypes(fieldtypes)) {

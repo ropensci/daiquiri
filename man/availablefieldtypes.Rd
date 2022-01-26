@@ -12,7 +12,7 @@
 \alias{ft_ignore}
 \title{Available fieldtypes}
 \usage{
-ft_timepoint(includes_time = TRUE)
+ft_timepoint(includes_time = TRUE, format = "")
 
 ft_uniqueidentifier()
 
@@ -20,7 +20,7 @@ ft_categorical(aggregate_by_each_category = FALSE)
 
 ft_numeric()
 
-ft_datetime(includes_time = TRUE)
+ft_datetime(includes_time = TRUE, format = "")
 
 ft_freetext()
 
@@ -30,6 +30,9 @@ ft_ignore()
 }
 \arguments{
 \item{includes_time}{If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE}
+
+\item{format}{Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}} format specifications, e.g. \code{format = "\%d/\%m/\%Y"}.
+When a format is supplied, it must match the complete string.}
 
 \item{aggregate_by_each_category}{If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE}
 }
