@@ -141,7 +141,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 	}
 	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
 	duprowsindex <- c(duprowsvector[-1], FALSE)
-	duprowsindex <- duprowsindex && !duprowsvector
+	duprowsindex <- duprowsindex & !duprowsvector
 	# ...and record the no. of duplicates on it
 	dpruns <- rle(duprowsvector)
 	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
