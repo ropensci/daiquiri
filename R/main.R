@@ -188,17 +188,12 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 			check_df <- data.table::fread(file = x, nrows = 1, sep = "auto", na.strings = na, data.table = FALSE)
 			validate_columnnames(names(check_df), names(fieldtypes), check_length_only = override_columnnames)
 
-			# TODO: doesn't deal with embedded quotes perfectly
-			# TODO: deal with parsing errors appropriately
 			# read all values as string, then check datatypes after
 			log_message(paste0("Reading file from disk..."), showprogress)
 			source_df <- readr::read_csv(x, col_names = textfile_contains_columnnames, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=na)
 
 			# return a dataframe instead of a data.table
-			# TODO: worth testing again as it has been a while since last tested
-			# doesn't seem to recognise POSIXct type
-			# also stops reading when there is an embedded comma (even if it is surrounded by quotes) even though the help says it can deal with this. Could this be a Windows thing?
-			#source_df <- data.table::fread(file = x, sep = "auto", na.strings = na, colClasses = fieldtypes_to_cols(fieldtypes, readfunction = "data.table"), data.table = FALSE)
+			# TODO: this may be useful if/when try to implement locales that use ; as separator and , as decimal point
 			# read all values as string
 			#source_df <- data.table::fread(file = x, sep = "auto", na.strings = na, colClasses = fieldtypes_to_cols(fieldtypes, readfunction = "data.table", alltostring = TRUE), data.table = FALSE)
 		} else {

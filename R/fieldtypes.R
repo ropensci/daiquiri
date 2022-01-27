@@ -128,6 +128,7 @@ ft_categorical <- function( aggregate_by_each_category = FALSE ) {
 
 #' @section Details:
 #' \code{ft_numeric} - identifies data fields which contain numeric values that should be treated as continuous.
+#' Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant
 #' @rdname availablefieldtypes
 #' @export
 ft_numeric <- function() {
@@ -140,9 +141,11 @@ ft_numeric <- function() {
 
 #' @section Details:
 #' \code{ft_datetime} - identifies data fields which contain date values that should be treated as continuous.
-#' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
-#' @param format Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}} format specifications, e.g. \code{format = "\%d/\%m/\%Y"}.
-#'  When a format is supplied, it must match the complete string.
+#' @param includes_time If TRUE, additional aggregated values will be generated using the time portion (and if
+#' no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE
+#' @param format Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`,
+#' an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}}
+#' format specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is supplied, it must match the complete string.
 #' @rdname availablefieldtypes
 #' @export
 ft_datetime <- function( includes_time = TRUE, format = "" ) {
