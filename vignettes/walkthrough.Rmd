@@ -40,6 +40,7 @@ There are some missing values which are represented by the string 'NULL'. String
 ```{r}
 abx2014 <- read.csv(
   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  colClasses = "character",
   stringsAsFactors = FALSE
  )
 

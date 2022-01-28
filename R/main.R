@@ -170,6 +170,9 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 		log_message(paste0("Identified data frame [", source_name, "]"), showprogress)
 		# check for mismatch between fieldtypes names and column names
 		validate_columnnames(names(x), names(fieldtypes), check_length_only = override_columnnames)
+		# ensure all columns are character type because readr::type_convert (in sourcedata()) won't skip numeric columns
+		# TODO: can probably make more efficient by only converting non-char columns and/or converting to data.table first
+		x[] <- lapply(x, as.character)
 		source_df <- x
 	} else if( is.character(x) && length(x) == 1 ){
 		# assume all strings are file paths for now
