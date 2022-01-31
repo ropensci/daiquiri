@@ -29,51 +29,51 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 testfile <- "./devtesting/testdata/abx_IORD2018.csv"
 # specify column types
 testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
-																							,PrescriptionDate = ft_timepoint()
-																							,PrescriptionStatus = ft_ignore()
-																							,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
-																							,AdmissionDate = ft_datetime()
-																							,Prescriber = ft_categorical()
-																							,Drug = ft_categorical()
-																							,Formulation = ft_freetext()
-																							,Dose = ft_numeric()
-																							,DoseUnit = ft_ignore()
-																							,Frequency = ft_ignore()
-																							,Route = ft_ignore()
-																							,Indication = ft_ignore()
-																							,ScheduledStartDateTime = ft_ignore()
-																							,ScheduledStopDateTime = ft_ignore()
-																							,DurationEnteredByPrescriber = ft_ignore()
-																							,ReviewDateTime = ft_ignore()
-																							,FirstAdministrationDateTime = ft_ignore()
-																							,LastAdministrationDateTime = ft_ignore()
-																							,NumberOfDosesAdministered = ft_ignore()
-																							,SpecialInstructions = ft_ignore()
-																							,TreatmentFunctionCode = ft_ignore()
-																							,TreatmentSpecialty = ft_ignore()
-																							,ConsultantName = ft_ignore()
-																							,PatientOrderLocation = ft_ignore()
-																							,Weight = ft_ignore()
-																							,idsetuid = ft_ignore()
-																							,Clusterid = ft_uniqueidentifier()
-																							,LinkedNHSNumber = ft_ignore()
-																							,LinkedORHNumber = ft_ignore()
-																							,LinkedSurname = ft_ignore()
-																							,LinkedForename = ft_ignore()
-																							,LinkedSex = ft_ignore()
-																							,LinkedBirthdate = ft_ignore()
-																							,LinkedDeathdate = ft_ignore()
-																							,SourceNHSNumber = ft_ignore()
-																							,SourceORHNumber = ft_ignore()
-																							,SourceSurname = ft_ignore()
-																							,SourceForename = ft_ignore()
-																							,SourceSex = ft_ignore()
-																							,SourceBirthdate = ft_ignore()
-																							,SourceDeathdate = ft_ignore()
-																							,SpineCheckDate = ft_ignore()
-																							,LinkageWarningFlag = ft_ignore()
-																							,LinkageResult = ft_ignore()
-																							,AntibioticsSource = ft_categorical())
+																	,PrescriptionDate = ft_timepoint()
+																	,PrescriptionStatus = ft_ignore()
+																	,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
+																	,AdmissionDate = ft_datetime()
+																	,Prescriber = ft_categorical()
+																	,Drug = ft_categorical()
+																	,Formulation = ft_freetext()
+																	,Dose = ft_numeric()
+																	,DoseUnit = ft_ignore()
+																	,Frequency = ft_ignore()
+																	,Route = ft_ignore()
+																	,Indication = ft_ignore()
+																	,ScheduledStartDateTime = ft_ignore()
+																	,ScheduledStopDateTime = ft_ignore()
+																	,DurationEnteredByPrescriber = ft_ignore()
+																	,ReviewDateTime = ft_ignore()
+																	,FirstAdministrationDateTime = ft_ignore()
+																	,LastAdministrationDateTime = ft_ignore()
+																	,NumberOfDosesAdministered = ft_ignore()
+																	,SpecialInstructions = ft_ignore()
+																	,TreatmentFunctionCode = ft_ignore()
+																	,TreatmentSpecialty = ft_ignore()
+																	,ConsultantName = ft_ignore()
+																	,PatientOrderLocation = ft_ignore()
+																	,Weight = ft_ignore()
+																	,idsetuid = ft_ignore()
+																	,Clusterid = ft_uniqueidentifier()
+																	,LinkedNHSNumber = ft_ignore()
+																	,LinkedORHNumber = ft_ignore()
+																	,LinkedSurname = ft_ignore()
+																	,LinkedForename = ft_ignore()
+																	,LinkedSex = ft_ignore()
+																	,LinkedBirthdate = ft_ignore()
+																	,LinkedDeathdate = ft_ignore()
+																	,SourceNHSNumber = ft_ignore()
+																	,SourceORHNumber = ft_ignore()
+																	,SourceSurname = ft_ignore()
+																	,SourceForename = ft_ignore()
+																	,SourceSex = ft_ignore()
+																	,SourceBirthdate = ft_ignore()
+																	,SourceDeathdate = ft_ignore()
+																	,SpineCheckDate = ft_ignore()
+																	,LinkageWarningFlag = ft_ignore()
+																	,LinkageResult = ft_ignore()
+																	,AntibioticsSource = ft_categorical())
 
 testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
@@ -86,124 +86,124 @@ testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(Prescription
 																																		,Drug = ft_categorical()
 																																		,Formulation = ft_freetext()
 																																		,Dose = ft_numeric()
-#																																		,DoseUnit = ft_ignore()
+																																		#																																		,DoseUnit = ft_ignore()
 																																		,FirstAdministrationDateTime = ft_datetime()
 																																		,Clusterid = ft_uniqueidentifier()
 																																		,AntibioticsSource = ft_categorical()), na=c("","NULL"))
 
 
 testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
-																																							,PrescriptionDate = ft_timepoint()
-																																							,PrescriptionStatus = ft_categorical()
-																																							,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
-																																							,AdmissionDate = ft_datetime()
-																																							,Prescriber = ft_categorical()
-																																							,Drug = ft_categorical()
-																																							,Formulation = ft_freetext()
-																																							,Dose = ft_numeric()
-																																							,DoseUnit = ft_categorical()
-																																							,Frequency = ft_categorical()
-																																							,Route = ft_categorical()
-																																							,Indication = ft_freetext()
-																																							,ScheduledStartDateTime = ft_datetime()
-																																							,ScheduledStopDateTime = ft_datetime()
-																																							,DurationEnteredByPrescriber = ft_categorical()
-																																							,ReviewDateTime = ft_datetime()
-																																							,FirstAdministrationDateTime = ft_datetime()
-																																							,LastAdministrationDateTime = ft_datetime()
-																																							,NumberOfDosesAdministered = ft_numeric()
-																																							,SpecialInstructions = ft_ignore()
-																																							,TreatmentFunctionCode = ft_categorical()
-																																							,TreatmentSpecialty = ft_categorical()
-																																							,ConsultantName = ft_categorical()
-																																							,PatientOrderLocation = ft_categorical()
-																																							,Weight = ft_numeric()
-																																							,idsetuid = ft_uniqueidentifier()
-																																							,Clusterid = ft_uniqueidentifier()
-																																							,LinkedNHSNumber = ft_uniqueidentifier()
-																																							,LinkedORHNumber = ft_uniqueidentifier()
-																																							,LinkedSurname = ft_freetext()
-																																							,LinkedForename = ft_freetext()
-																																							,LinkedSex = ft_categorical()
-																																							,LinkedBirthdate = ft_datetime()
-																																							,LinkedDeathdate = ft_datetime()
-																																							,SourceNHSNumber = ft_uniqueidentifier()
-																																							,SourceORHNumber = ft_uniqueidentifier()
-																																							,SourceSurname = ft_freetext()
-																																							,SourceForename = ft_freetext()
-																																							,SourceSex = ft_categorical()
-																																							,SourceBirthdate = ft_datetime()
-																																							,SourceDeathdate = ft_datetime()
-																																							,SpineCheckDate = ft_datetime()
-																																							,LinkageWarningFlag = ft_categorical()
-																																							,LinkageResult = ft_categorical()
-																																							,AntibioticsSource = ft_categorical())
+																																											 ,PrescriptionDate = ft_timepoint()
+																																											 ,PrescriptionStatus = ft_categorical()
+																																											 ,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
+																																											 ,AdmissionDate = ft_datetime()
+																																											 ,Prescriber = ft_categorical()
+																																											 ,Drug = ft_categorical()
+																																											 ,Formulation = ft_freetext()
+																																											 ,Dose = ft_numeric()
+																																											 ,DoseUnit = ft_categorical()
+																																											 ,Frequency = ft_categorical()
+																																											 ,Route = ft_categorical()
+																																											 ,Indication = ft_freetext()
+																																											 ,ScheduledStartDateTime = ft_datetime()
+																																											 ,ScheduledStopDateTime = ft_datetime()
+																																											 ,DurationEnteredByPrescriber = ft_categorical()
+																																											 ,ReviewDateTime = ft_datetime()
+																																											 ,FirstAdministrationDateTime = ft_datetime()
+																																											 ,LastAdministrationDateTime = ft_datetime()
+																																											 ,NumberOfDosesAdministered = ft_numeric()
+																																											 ,SpecialInstructions = ft_ignore()
+																																											 ,TreatmentFunctionCode = ft_categorical()
+																																											 ,TreatmentSpecialty = ft_categorical()
+																																											 ,ConsultantName = ft_categorical()
+																																											 ,PatientOrderLocation = ft_categorical()
+																																											 ,Weight = ft_numeric()
+																																											 ,idsetuid = ft_uniqueidentifier()
+																																											 ,Clusterid = ft_uniqueidentifier()
+																																											 ,LinkedNHSNumber = ft_uniqueidentifier()
+																																											 ,LinkedORHNumber = ft_uniqueidentifier()
+																																											 ,LinkedSurname = ft_freetext()
+																																											 ,LinkedForename = ft_freetext()
+																																											 ,LinkedSex = ft_categorical()
+																																											 ,LinkedBirthdate = ft_datetime()
+																																											 ,LinkedDeathdate = ft_datetime()
+																																											 ,SourceNHSNumber = ft_uniqueidentifier()
+																																											 ,SourceORHNumber = ft_uniqueidentifier()
+																																											 ,SourceSurname = ft_freetext()
+																																											 ,SourceForename = ft_freetext()
+																																											 ,SourceSex = ft_categorical()
+																																											 ,SourceBirthdate = ft_datetime()
+																																											 ,SourceDeathdate = ft_datetime()
+																																											 ,SpineCheckDate = ft_datetime()
+																																											 ,LinkageWarningFlag = ft_categorical()
+																																											 ,LinkageResult = ft_categorical()
+																																											 ,AntibioticsSource = ft_categorical())
 																	, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
 
 testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_ignore()
-																																													,PrescriptionDate = ft_timepoint()
-																																													,PrescriptionStatus = ft_ignore()
-																																													,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
-																																													,AdmissionDate = ft_datetime()
-																																													,Prescriber = ft_categorical()
-																																													,Drug = ft_categorical()
-																																													,Formulation = ft_freetext()
-																																													,Dose = ft_numeric()
-																																													,DoseUnit = ft_ignore()
-																																													,Frequency = ft_ignore()
-																																													,Route = ft_ignore()
-																																													,Indication = ft_ignore()
-																																													,ScheduledStartDateTime = ft_ignore()
-																																													,ScheduledStopDateTime = ft_ignore()
-																																													,DurationEnteredByPrescriber = ft_ignore()
-																																													,ReviewDateTime = ft_ignore()
-																																													,FirstAdministrationDateTime = ft_ignore()
-																																													,LastAdministrationDateTime = ft_ignore()
-																																													,NumberOfDosesAdministered = ft_ignore()
-																																													,SpecialInstructions = ft_ignore()
-																																													,TreatmentFunctionCode = ft_ignore()
-																																													,TreatmentSpecialty = ft_ignore()
-																																													,ConsultantName = ft_ignore()
-																																													,PatientOrderLocation = ft_ignore()
-																																													,Weight = ft_ignore()
-																																													,idsetuid = ft_ignore()
-																																													,Clusterid = ft_uniqueidentifier()
-																																													,LinkedNHSNumber = ft_ignore()
-																																													,LinkedORHNumber = ft_ignore()
-																																													,LinkedSurname = ft_ignore()
-																																													,LinkedForename = ft_ignore()
-																																													,LinkedSex = ft_ignore()
-																																													,LinkedBirthdate = ft_ignore()
-																																													,LinkedDeathdate = ft_ignore()
-																																													,SourceNHSNumber = ft_ignore()
-																																													,SourceORHNumber = ft_ignore()
-																																													,SourceSurname = ft_ignore()
-																																													,SourceForename = ft_ignore()
-																																													,SourceSex = ft_ignore()
-																																													,SourceBirthdate = ft_ignore()
-																																													,SourceDeathdate = ft_ignore()
-																																													,SpineCheckDate = ft_ignore()
-																																													,LinkageWarningFlag = ft_ignore()
-																																													,LinkageResult = ft_ignore()
-																																													,AntibioticsSource = ft_categorical())
+																																											 ,PrescriptionDate = ft_timepoint()
+																																											 ,PrescriptionStatus = ft_ignore()
+																																											 ,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
+																																											 ,AdmissionDate = ft_datetime()
+																																											 ,Prescriber = ft_categorical()
+																																											 ,Drug = ft_categorical()
+																																											 ,Formulation = ft_freetext()
+																																											 ,Dose = ft_numeric()
+																																											 ,DoseUnit = ft_ignore()
+																																											 ,Frequency = ft_ignore()
+																																											 ,Route = ft_ignore()
+																																											 ,Indication = ft_ignore()
+																																											 ,ScheduledStartDateTime = ft_ignore()
+																																											 ,ScheduledStopDateTime = ft_ignore()
+																																											 ,DurationEnteredByPrescriber = ft_ignore()
+																																											 ,ReviewDateTime = ft_ignore()
+																																											 ,FirstAdministrationDateTime = ft_ignore()
+																																											 ,LastAdministrationDateTime = ft_ignore()
+																																											 ,NumberOfDosesAdministered = ft_ignore()
+																																											 ,SpecialInstructions = ft_ignore()
+																																											 ,TreatmentFunctionCode = ft_ignore()
+																																											 ,TreatmentSpecialty = ft_ignore()
+																																											 ,ConsultantName = ft_ignore()
+																																											 ,PatientOrderLocation = ft_ignore()
+																																											 ,Weight = ft_ignore()
+																																											 ,idsetuid = ft_ignore()
+																																											 ,Clusterid = ft_uniqueidentifier()
+																																											 ,LinkedNHSNumber = ft_ignore()
+																																											 ,LinkedORHNumber = ft_ignore()
+																																											 ,LinkedSurname = ft_ignore()
+																																											 ,LinkedForename = ft_ignore()
+																																											 ,LinkedSex = ft_ignore()
+																																											 ,LinkedBirthdate = ft_ignore()
+																																											 ,LinkedDeathdate = ft_ignore()
+																																											 ,SourceNHSNumber = ft_ignore()
+																																											 ,SourceORHNumber = ft_ignore()
+																																											 ,SourceSurname = ft_ignore()
+																																											 ,SourceForename = ft_ignore()
+																																											 ,SourceSex = ft_ignore()
+																																											 ,SourceBirthdate = ft_ignore()
+																																											 ,SourceDeathdate = ft_ignore()
+																																											 ,SpineCheckDate = ft_ignore()
+																																											 ,LinkageWarningFlag = ft_ignore()
+																																											 ,LinkageResult = ft_ignore()
+																																											 ,AntibioticsSource = ft_categorical())
 																	, na=c("","NULL")
 																	, showprogress = TRUE
 																	, log_directory = "./devtesting/testoutput/")
 
 
 testcpdsourcedata2014 <- load_dataset("./devtesting/testdata/abx2014.csv", fieldtypes = fieldtypes(PrescriptionID = ft_ignore()
-																																		,TimepointDate = ft_timepoint()
-																																		,PrescriptionDate = ft_ignore()
-																																		,PrescriptionType = ft_ignore()
-																																		,AdmissionDate = ft_datetime()
-																																		,Drug = ft_ignore()
-																																		,Formulation = ft_ignore()
-																																		,Dose = ft_numeric()
-																																		,DoseUnit = ft_categorical()
-																																		,FirstAdministrationDateTime = ft_datetime()
-																																		,Clusterid = ft_ignore()
-																																		,AntibioticsSource = ft_categorical()), na=c("","NULL")
+																																																	 ,TimepointDate = ft_timepoint()
+																																																	 ,PrescriptionDate = ft_ignore()
+																																																	 ,PrescriptionType = ft_ignore()
+																																																	 ,AdmissionDate = ft_datetime()
+																																																	 ,Drug = ft_ignore()
+																																																	 ,Formulation = ft_ignore()
+																																																	 ,Dose = ft_numeric()
+																																																	 ,DoseUnit = ft_categorical()
+																																																	 ,FirstAdministrationDateTime = ft_datetime()
+																																																	 ,Clusterid = ft_ignore()
+																																																	 ,AntibioticsSource = ft_categorical()), na=c("","NULL")
 																			, log_directory = "./devtesting/testoutput/")
 
 #print(testcpdsourcedata)
@@ -243,7 +243,7 @@ generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2
 
 generate_report(sourcedata = testcpdsourcedata,
 								aggregatedata = testcpddata_byday,
-#								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
+								#								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
 								save_directory = "./devtesting/testoutput",
 								save_filename = "report_htmldoc")
 
@@ -265,15 +265,98 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																	,SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
 
 checkobj <- check_dataset(testfile,
-							fieldtypes = testfile_fieldtypes,
-							textfile_contains_columnnames = TRUE,
-							override_columnnames = FALSE,
-							na = c("","NULL"),
-							aggregation_timeunit = "week",
-							save_directory = ".",
-							save_filename = NULL,
-							showprogress = TRUE,
-							log_directory = "./")
+													fieldtypes = testfile_fieldtypes,
+													textfile_contains_columnnames = TRUE,
+													override_columnnames = FALSE,
+													na = c("","NULL"),
+													aggregation_timeunit = "week",
+													save_directory = ".",
+													save_filename = NULL,
+													showprogress = TRUE,
+													log_directory = "./")
 
 testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE)
 testcpddata_byday <- aggregate_data(testcpdsourcedata, aggregation_timeunit = "day", showprogress = TRUE)
+
+
+testfile <- "W:/GRAMProj/IORD_GRAMProj_15_20200520_Episodes.csv"
+
+fts <- fieldtypes(ClusterID = ft_uniqueidentifier(),
+									PathMatchBloodCultureCollectionDuringSpell  = ft_categorical(),
+									SpellID			 = ft_uniqueidentifier(),
+									AdmissionDate		 = ft_timepoint(),
+									DischargeDate = ft_datetime(),
+									PatientClassificationCode			 = ft_categorical(),
+									AdmissionMethodCode			 = ft_categorical(),
+									AdmissionSourceCode			 = ft_categorical(),
+									DischargeMethodCode					 = ft_categorical(),
+									IntendedManagementCode = ft_categorical(),
+									DischargeDestinationCode	 = ft_categorical(),
+									EpisodeID			 = ft_uniqueidentifier(),
+									EpisodeNumber			 = ft_numeric(),
+									EpisodeStartDate			 = ft_datetime(),
+									EpisodeEndDate = ft_datetime(),
+									ConsultantMainSpecialtyCode			 = ft_categorical(),
+									TreatmentFunctionCode = ft_categorical(),
+									FirstWard	 = ft_categorical(),
+									PrimaryDiagCode = ft_freetext(),
+									NumberOfDiagCodes	 = ft_numeric(),
+									Charlson2005			 = ft_numeric(),
+									Charlson2012				 = ft_numeric(),
+									IMDScore = ft_numeric(),
+									PostcodeStub = ft_freetext(),
+									LocalAuthority = ft_categorical())
+
+sourcedata <- load_dataset(testfile,
+													 fieldtypes = fts,
+													 textfile_contains_columnnames = TRUE,
+													 override_columnnames = FALSE,
+													 na = c("","NULL"),
+													 showprogress = TRUE)
+
+aggregatedata <- aggregate_data(sourcedata, "day", showprogress = TRUE)
+
+generate_report(sourcedata, aggregatedata,
+								save_directory = ".",
+								save_filename = "gramepi",
+								showprogress = TRUE
+)
+
+# test non-standard date formats
+tb_raw <- read_csv("./BhamTB WGSdb_edited.csv", col_types = cols_only(
+	`Lab number` = col_character(),
+	`Date collected` = col_character(),
+	`Date Heat killed for NGS` = col_character(),
+	`Library conc (ng/ul)` = col_character()
+))
+
+
+tbreadr <- read_csv("./BhamTB WGSdb_edited.csv", col_types = cols_only(
+	`Lab number` = col_character(),
+	`Date collected` = col_date(),
+	`Date Heat killed for NGS` = col_date(format = "%d.%m.%y"),
+	`Library conc (ng/ul)` = col_double()
+))
+
+
+# file reading speed tests
+# 139 MB
+testfile <- "W:/MonitoringEColi/IORD_MonitoringEColi_30_20220117_Bloodgases.csv"
+
+dstart <- Sys.time()
+x <- readr::read_csv(testfile)
+cat("read_csv:", Sys.time() - dstart)
+
+dstart <- Sys.time()
+x2 <- read.csv(testfile)
+cat("read.csv:", Sys.time() - dstart)
+
+dstart <- Sys.time()
+x3 <- data.table::fread(testfile)
+cat("fread:", Sys.time() - dstart)
+
+dstart <- Sys.time()
+x2[] <- lapply(x2, as.character)
+cat("as.char:", Sys.time() - dstart)
+
+
