@@ -1,6 +1,6 @@
 library(testthat)
-library(ehrchangepoints)
+library(daiquiri)
 
-test_check("ehrchangepoints")
+test_check("daiquiri")
 
 

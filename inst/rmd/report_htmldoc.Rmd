@@ -1,5 +1,5 @@
 ---
-title: "EHRCHANGEPOINTS REPORT"
+title: "daiquiri report"
 output: 
   html_document:
     df_print: paged

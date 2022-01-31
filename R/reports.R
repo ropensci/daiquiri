@@ -9,12 +9,12 @@
 #' @param aggregatedata An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
-#' If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
+#' If no filename is supplied, one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.
 #' @param format File format of the report. Currently only "html" is supported
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A string containing the name and path of the saved report
 #' @examples sourcedataobj <- load_dataset(
-#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -50,7 +50,7 @@ generate_report <- function(sourcedata, aggregatedata, save_directory = ".", sav
 
 	save_directory <- validate_param_dir(save_directory)
 	if( is.null(save_filename) ){
-		save_filename <- paste0("ehrchangepoints_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
+		save_filename <- paste0("daiquiri_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
 	} else{
 		validate_param_savefilename(save_filename)
 	}

@@ -21,7 +21,7 @@ generate_report(
 \item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
 
 \item{save_filename}{String specifying filename for the report, excluding any file extension.
-If no filename is supplied, one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.}
+If no filename is supplied, one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.}
 
 \item{format}{File format of the report. Currently only "html" is supported}
 
@@ -35,7 +35,7 @@ Generate report from previously-created sourcedata and aggregatedata objects
 }
 \examples{
 sourcedataobj <- load_dataset(
-  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  system.file("extdata", "abx2014.csv", package = "daiquiri"),
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),

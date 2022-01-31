@@ -36,7 +36,7 @@ Load source data into sourcedata object
 }
 \examples{
 sourcedataobj <- load_dataset(
-  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  system.file("extdata", "abx2014.csv", package = "daiquiri"),
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),

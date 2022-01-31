@@ -35,7 +35,7 @@ specification. The specification must therefore contain the columns in the corre
 \item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
 
 \item{save_filename}{String specifying filename for the report, excluding any file extension.
-If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.}
+If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.}
 
 \item{showprogress}{Print progress to console. Default = TRUE}
 
@@ -49,7 +49,7 @@ Accepts record-level data from a csv file or dataframe, generates a collection o
 }
 \examples{
 checkobj <- check_dataset(
-  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  system.file("extdata", "abx2014.csv", package = "daiquiri"),
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),

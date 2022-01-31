@@ -253,7 +253,7 @@ rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 
 
 # test against what will be public dataset
-testfile <- system.file("extdata", "abx2014.csv", package = "ehrchangepoints", mustWork = TRUE)
+testfile <- system.file("extdata", "abx2014.csv", package = "daiquiri", mustWork = TRUE)
 testfile <- "./inst/extdata/abx2014.csv"
 testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																	,PrescriptionDate = ft_timepoint()

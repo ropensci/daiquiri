@@ -1,5 +1,5 @@
 context("loading data")
-library(ehrchangepoints)
+library(daiquiri)
 
 ## TEST THAT FIELDTYPES SPECIFICATION AND COLUMNNAMES ARE VALID ##
 

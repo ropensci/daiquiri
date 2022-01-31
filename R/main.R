@@ -1,4 +1,4 @@
-#' ehrchangepoints: Data quality reporting for temporal datasets
+#' daiquiri: Data quality reporting for temporal datasets
 #'
 #' Generate reports that enable quick visual review of
 #' temporal shifts in record-level data. Time series plots showing aggregated
@@ -10,11 +10,11 @@
 #'
 #' Classes are S3
 #'
-#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "ehrchangepoints")}}.
+#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
 #'
 #'
 #' @docType package
-#' @name ehrchangepoints
+#' @name daiquiri
 NULL
 
 # main set of external functions
@@ -35,12 +35,12 @@ NULL
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
-#' If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format ehrchangepoints_report_YYMMDD_HHMMSS.
+#' If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.
 #' @param showprogress Print progress to console. Default = TRUE
 #' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
 #' @examples checkobj <- check_dataset(
-#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -125,7 +125,7 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
 #' @examples sourcedataobj <- load_dataset(
-#'   system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),

@@ -1,4 +1,4 @@
-Package: ehrchangepoints
+Package: daiquiri
 Type: Package
 Title: Data quality reporting for temporal datasets
 Version: 0.6.0

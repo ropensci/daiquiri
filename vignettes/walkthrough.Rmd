@@ -1,8 +1,8 @@
 ---
-title: "Walkthrough for the ehrchangepoints package"
+title: "Walkthrough for the daiquiri package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Walkthrough for the ehrchangepoints package}
+  %\VignetteIndexEntry{Walkthrough for the daiquiri package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -39,7 +39,7 @@ There are some missing values which are represented by the string 'NULL'. String
 
 ```{r}
 abx2014 <- read.csv(
-  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  system.file("extdata", "abx2014.csv", package = "daiquiri"),
   colClasses = "character",
   stringsAsFactors = FALSE
  )
@@ -80,7 +80,7 @@ For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoi
 
 ```{r}
 # first, attach the package if you haven't already
-library(ehrchangepoints)
+library(daiquiri)
 
 # set up a datafields specification for use later
 fts <- fieldtypes(
@@ -146,7 +146,7 @@ checkobj <- check_dataset(
 
 # passing in a csv filename
 checkobj <- check_dataset(
-  system.file("extdata", "abx2014.csv", package = "ehrchangepoints"),
+  system.file("extdata", "abx2014.csv", package = "daiquiri"),
   fieldtypes = fts,
   textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
@@ -165,7 +165,7 @@ checkobj <- check_dataset(
 If this package is installed, the location of a report that was generated using this dataset can be found by running the following code:
 
 ```{r, eval=FALSE}
-system.file("extdata/abx2014report.html", package = "ehrchangepoints")
+system.file("extdata/abx2014report.html", package = "daiquiri")
 ```
 
 The html reports created by this package can be opened in a browser and/or attached to an email, and contain the following tabs:
