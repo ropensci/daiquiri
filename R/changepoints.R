@@ -36,11 +36,6 @@ find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FAL
 	  #     names(changepoints)[index] <- paste0(aggtypes[i], "__is_na")
 	  #     index <- index + 1
 	  #   }
-	  #   if( 1==1 ){
-	  #     changepoints[[index]] <- changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i])
-	  #     names(changepoints)[index] <- paste0(aggtypes[i], "__cptvar")
-	  #     index <- index + 1
-	  #   }
 	  # }
 	  # # truncate to last non-NULL element
 	  # changepoints <- changepoints[1:index-1]
@@ -52,23 +47,19 @@ find_changepoints <- function(aggfieldvalues, method = "all", showprogress = FAL
 	    #    i = 1
 	    if( aggtypes[i] == "n"){
 	      # TODO: timepoint field should only do is_zero
-	      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-	                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i])
+	      changepoints[[i]] <- list(is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i])
 	      )
 	    } else if( aggtypes[i] %in% c("missing_n","missing_perc","distinct") ){
-	      changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-	                                is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
+	      changepoints[[i]] <- list(is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
 	                                is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
 	      )
 	    } else if( aggtypes[i] %in% c("min","max") ){
 	      if( inherits(aggfieldvalues[[aggtypes[i]]], "POSIXct") || inherits(aggfieldvalues[[aggtypes[i]]], "Date") ) {
 	        # zeros are not meaningful for dates
-	        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-	                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
+	        changepoints[[i]] <- list(is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
 	        )
 	      } else{
-	        changepoints[[i]] <- list(cptvar=changepoints_cptvar(aggfieldvalues, aggtype = aggtypes[i]),
-	                                  is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
+	        changepoints[[i]] <- list(is_zero=changepoints_is_zero(aggfieldvalues, aggtype = aggtypes[i], nainterpretation = "ignore"),
 	                                  is_na=changepoints_is_na(aggfieldvalues, aggtype = aggtypes[i])
 	        )
 	      }
@@ -214,56 +205,6 @@ recalculate_changepoints <- function(data, method = "all", showprogress = FALSE)
 
 # -----------------------------------------------------------------------------
 # individual functions depending on changepoint method, all return same class
-
-# TODO: maybe should call this cptvar_plus since we're not just running it on the raw data
-# TODO: consider adding a scaling factor as cptvar doesn't seem to work well on small numbers
-#       (e.g. when converted values from proportions to percentages, it found changepoints only in the latter)
-changepoints_cptvar <- function(aggfieldvalues, aggtype){
-  #temp assignment
-  # aggfieldvalues<-outpatdata_byday$aggregatefields[[4]]$values
-  # aggtype = "n"
-  # aggtype = "missing_n"
-  #aggtype = "min"
-
-	log_message(paste0("    ", match.call()[[1]]))
-	valuevector <- aggfieldvalues[[aggtype]]
-
-	# if no values then nothing to do
-	if( all(is.na(valuevector)) ){
-		changepoint_indexes <- vector("numeric")
-		changepoint_timepoints <- vector("numeric")
-	} else{
-		# cpt.var can't deal with NAs so replace NAs with a value well outside the range
-		# TODO: what is the right way to deal with NAs? Should they actually be "ignored" instead? E.g. by setting to mean value?
-		if( is.numeric(valuevector) ){
-			valuevector[is.na(valuevector)] <- (abs(max(valuevector, na.rm = TRUE))+100)*2
-		} else{
-			if( inherits(valuevector, "POSIXct") || inherits(valuevector, "Date") ) {
-				valuevector[is.na(valuevector)] <- max(valuevector, na.rm = TRUE) + 3600
-			} else {
-				stop("cpt.var method can only be used on numeric data")
-			}
-			# convert data to numeric explicitly (cpt.var complains if data is double)
-			valuevector <- as.numeric(valuevector)
-		}
-
-		cpts <- changepoint::cpt.var(valuevector, method = "PELT", class = FALSE)
-		changepoint_indexes = cpts[-length(cpts)]
-		changepoint_timepoints = aggfieldvalues[[1]][changepoint_indexes]
-	}
-
-  structure(
-    list(
-      changepoint_method = "cpt.var {changepoint}",
-      changepoint_method_params = "method = PELT",
-      n_changepoints = length(changepoint_indexes),
-      changepoint_indexes = changepoint_indexes,
-      changepoint_timepoints = changepoint_timepoints,
-      aggregatetype = aggtype
-    ),
-    class = "changepointresult"
-  )
-}
 
 # simply look for any changes from zero values to nonzero values - makes most sense for count data
 # treats NA values either as zero, nonzero, neither zero nor nonzero, or ignores them completely
