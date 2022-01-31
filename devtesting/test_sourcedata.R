@@ -54,6 +54,7 @@ summarise_source_data(sourcedata, showprogress = FALSE)
 print(sourcedata)
 
 
+###########################################
 # non-standard date formats
 # test dataset
 filename <- "./devtesting/testdata/abx2014ukdates.csv"
@@ -78,3 +79,51 @@ checkobj <- check_dataset(filename,
 													showprogress = TRUE,
 													log_directory = "./")
 
+
+###########################################
+# supply data frame where not all columns are char. readr::type_convert does not skip columns that are not char
+testfile <- "./inst/extdata/abx2014.csv"
+testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
+																	,PrescriptionDate = ft_timepoint()
+																	,AdmissionDate = ft_datetime()
+																	,Drug = ft_freetext()
+																	,Dose = ft_ignore()
+																	,DoseUnit = ft_categorical()
+																	,PatientID = ft_ignore()
+																	,SourceSystem = ft_categorical())
+testdf <- readr::read_csv(testfile, col_names = TRUE
+													,na = c("","NULL")
+)
+check_dataset(testdf,testfile_fieldtypes,
+							aggregation_timeunit = "day",
+							na = c("","NULL"),
+							save_directory = ".",
+							save_filename = NULL,
+							showprogress = TRUE)
+
+
+###########################################
+# special chars
+# TODO: TO COMPLETE
+filename <- "./devtesting/testdata/specialchars.csv"
+# specify column types
+fieldtypes <- fieldtypes(date = ft_timepoint()
+												 ,col1 = ft_freetext()
+												 ,col2 = ft_freetext()
+												 ,col3 = ft_numeric()
+)
+
+sourceobj <- load_dataset(filename, fieldtypes = fieldtypes)
+
+# look at all warnings and pre/post cleaned data
+#source("./R/fieldtypes.R")
+source_df <- readr::read_csv(filename, col_types = fieldtypes_to_cols(fieldtypes, readfunction = "readr", alltostring = TRUE), na=c("","NULL"))
+raw_warnings <- NULL
+clean_dt <- withCallingHandlers(
+	readr::type_convert(source_df, fieldtypes_to_cols(fieldtypes, readfunction = "readr"), na = na),
+	warning = function(w) {
+		raw_warnings <<- append(raw_warnings, conditionMessage(w))
+		invokeRestart("muffleWarning")
+	}
+)
+raw_warnings
