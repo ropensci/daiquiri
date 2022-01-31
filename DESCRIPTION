@@ -15,7 +15,6 @@ Description: Generate reports that enable quick visual review of
     Health Records in mind, but can be used for any type of record-level temporal data.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
 Imports:
     data.table,
     readr,
