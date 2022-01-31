@@ -1,9 +1,12 @@
-#' ehrchangepoints: Temporal data quality checker for Electronic Health Records
+#' ehrchangepoints: Data quality reporting for temporal datasets
 #'
-#' This package takes a generic dataset containing record-level data (i.e. one row per event, with one
-#' column specifying the date (and time) of the event, and further columns containing any associated values for the event),
-#' and automatically generates a report showing aggregated values for each column over time, including identifying missing values,
-#' non-conformant values, and duplicated rows. It is designed with Electronic Health Records in mind, but can be used for any type of record-level data.
+#' Generate reports that enable quick visual review of
+#' temporal shifts in record-level data. Time series plots showing aggregated
+#' values are automatically created for each column depending on its
+#' datatype (e.g. min/max/mean values for numeric columns, no. of distinct
+#' values for categorical columns), as well as overviews for missing values,
+#' non-conformant values, and duplicated rows. It is designed with Electronic
+#' Health Records in mind, but can be used for any type of record-level temporal data.
 #'
 #' Classes are S3
 #'
