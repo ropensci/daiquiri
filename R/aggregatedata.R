@@ -619,7 +619,7 @@ aggtype_friendlyname <- function(aggtype, type){
 		switch(aggtype,
 					 n = {switch(type,
 					 						short = "n",
-					 						long = "No. of non-missing values"
+					 						long = "No. of values present"
 					 )},
 					 missing_n = {switch(type,
 					 										short = "missing_n",

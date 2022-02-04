@@ -168,7 +168,7 @@ reactable::reactable(summarydf,
 ```
 
 
-### Data presence
+### Values present
 
 ```{r overview-presence}
 #, fig.height = 0.5*as.numeric(aggsummary$overall["n_fields"])+3
