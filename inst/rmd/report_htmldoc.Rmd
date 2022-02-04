@@ -278,7 +278,7 @@ for(i in seq_along(names(params$aggregatedata$aggregatefields))){
   cat('\n###', names(params$aggregatedata$aggregatefields)[i], ' {.tabset}\n')
 	aggtypes <- names(params$aggregatedata$aggregatefields[[i]]$values)[-1]
 	for(aggtype in aggtypes){
-	  cat('\n####', aggtype, '\n')
+	  cat('\n####', aggtype_friendlyname(aggtype, "short"), '\n')
 	  p <- plot_timeseries_static(aggfield = params$aggregatedata$aggregatefields[[i]], aggtype = aggtype)
 	  											 
 	  print(p)

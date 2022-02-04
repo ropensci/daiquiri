@@ -96,7 +96,10 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 		ggplot2::theme_bw() +
 		ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90)) +
 		# no labels needed as info will be in the holding section
-		ggplot2::labs(x = NULL, y = NULL, title = NULL)
+		ggplot2::labs(x = NULL,
+									y = paste0(aggtype_friendlyname(aggtype, "long"),
+														 ifelse(aggfield$columnname == "DUPLICATES", "", paste0("\n(", aggfield$columnname, ")"))),
+									title = NULL)
 
 	# if all values are NA, maxval will be infinite, so show a blank plot. So far only happens for min/max aggtypes
 	maxval <- suppressWarnings(max(aggfield$values[[aggtype]], na.rm = TRUE))

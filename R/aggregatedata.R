@@ -595,3 +595,97 @@ validate_aggregation_unit <- function(aggunit){
 		stop("Invalid aggregation_timeunit [", aggunit, "]. Values allowed are: day, week, month, quarter, year", call. = FALSE)
 	}
 }
+
+# -----------------------------------------------------------------------------
+# TODO: Define set of allowed aggregation functions similarly to fieldtypes, with each object containing formula for aggregation as well as friendly names
+
+# Set user-friendly names
+# this works using the resulting columnname rather than the original aggregationfunction (relevant for subcats)
+aggtype_friendlyname <- function(aggtype, type){
+	if( startsWith(aggtype, "subcat_" ) ){
+		catval <- substring(gsub('^(?:[^_]*_){3}','_', aggtype), 2)
+		if( startsWith(aggtype, "subcat_n") ){
+			switch(type,
+						 short = aggtype,
+						 long = paste0("No. of values in the category: ", catval)
+			)
+		} else if( startsWith(aggtype, "subcat_perc") ){
+			switch(type,
+						 short = aggtype,
+						 long = paste0("Percentage of values in the category: ", catval)
+			)
+		}
+	} else{
+		switch(aggtype,
+					 n = {switch(type,
+					 						short = "n",
+					 						long = "No. of non-missing values"
+					 )},
+					 missing_n = {switch(type,
+					 										short = "missing_n",
+					 										long = "No. of missing values"
+					 )},
+					 missing_perc = {switch(type,
+					 											 short = "missing_perc",
+					 											 long = "Percentage of missing values"
+					 )},
+					 nonconformant_n = {switch(type,
+					 													short = "nonconformant_n",
+					 													long = "No. of non-conformant values"
+					 )},
+					 nonconformant_perc = {switch(type,
+					 														 short = "nonconformant_perc",
+					 														 long = "Percentage of non-conformant values"
+					 )},
+					 sum = {switch(type,
+					 							short = "sum",
+					 							long = "No. of duplicate records removed"
+					 )},
+					 nonzero_perc = {switch(type,
+					 											 short = "nonzero_perc",
+					 											 long = "Percentage of (remaining) records that were duplicated"
+					 )},
+					 distinct = {switch(type,
+					 									 short = "distinct",
+					 									 long = "No. of distinct values"
+					 )},
+					 midnight_n = {switch(type,
+					 										 short = "midnight_n",
+					 										 long = "No. of values with no time element"
+					 )},
+					 midnight_perc = {switch(type,
+					 												short = "midnight_perc",
+					 												long = "Percentage of values with no time element"
+					 )},
+					 min = {switch(type,
+					 							short = "min",
+					 							long = "Minimum value"
+					 )},
+					 max = {switch(type,
+					 							short = "max",
+					 							long = "Maximum value"
+					 )},
+					 mean = {switch(type,
+					 							 short = "mean",
+					 							 long = "Mean value"
+					 )},
+					 median = {switch(type,
+					 								 short = "median",
+					 								 long = "Median value"
+					 )},
+					 minlength = {switch(type,
+					 										short = "minlength",
+					 										long = "Minimum string length"
+					 )},
+					 maxlength = {switch(type,
+					 										short = "maxlength",
+					 										long = "Maximum string length"
+					 )},
+					 meanlength = {switch(type,
+					 										 short = "meanlength",
+					 										 long = "Mean string length"
+					 )}
+		)
+
+	}
+}
