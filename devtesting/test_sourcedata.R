@@ -68,7 +68,7 @@ fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 												 ,PatientID = ft_ignore()
 												 ,SourceSystem = ft_categorical())
 
-checkobj <- check_dataset(filename,
+daiqobj <- create_report(filename,
 													fieldtypes = fieldtypes,
 													textfile_contains_columnnames = TRUE,
 													override_columnnames = FALSE,
@@ -94,7 +94,7 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 testdf <- readr::read_csv(testfile, col_names = TRUE
 													,na = c("","NULL")
 )
-check_dataset(testdf,testfile_fieldtypes,
+create_report(testdf,testfile_fieldtypes,
 							aggregation_timeunit = "day",
 							na = c("","NULL"),
 							save_directory = ".",
@@ -113,7 +113,7 @@ fieldtypes <- fieldtypes(date = ft_timepoint()
 												 ,col3 = ft_numeric()
 )
 
-sourceobj <- load_dataset(filename, fieldtypes = fieldtypes)
+sourceobj <- load_data(filename, fieldtypes = fieldtypes)
 
 # look at all warnings and pre/post cleaned data
 #source("./R/fieldtypes.R")

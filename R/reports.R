@@ -1,11 +1,11 @@
 # Functions for generating data/plots for reports
 
 # -----------------------------------------------------------------------------
-#' Generate report
+#' Generate report from existing objects
 #'
 #' Generate report from previously-created sourcedata and aggregatedata objects
 #'
-#' @param sourcedata A \code{sourcedata} object returned from \code{\link{load_dataset}} function
+#' @param sourcedata A \code{sourcedata} object returned from \code{\link{load_data}} function
 #' @param aggregatedata An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function
 #' @param save_directory String specifying directory in which to save the report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any file extension.
@@ -13,7 +13,7 @@
 #' @param format File format of the report. Currently only "html" is supported
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A string containing the name and path of the saved report
-#' @examples sourcedataobj <- load_dataset(
+#' @examples sourcedataobj <- load_data(
 #'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
@@ -35,16 +35,16 @@
 #'   showprogress = TRUE
 #' )
 #'
-#' generate_report(
+#' report_data(
 #'   sourcedataobj,
 #'   aggregatedataobj,
 #'   save_directory = ".",
 #'   save_filename = "abx2014report",
 #'   showprogress = TRUE
 #' )
-#' @seealso \code{\link{load_dataset}}, \code{\link{aggregate_data}}, \code{\link{check_dataset}}
+#' @seealso \code{\link{load_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
 #' @export
-generate_report <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = TRUE){
+report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = TRUE){
 
 	log_function_start(match.call()[[1]])
 

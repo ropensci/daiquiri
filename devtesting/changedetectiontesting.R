@@ -75,10 +75,10 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_ignore()
 																	,LinkageResult = ft_ignore()
 																	,AntibioticsSource = ft_categorical())
 
-testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
+testcpdsourcedata <- load_data(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
-testcpdsourcedata <- load_dataset(source_df, fieldtypes = testfile_fieldtypes, na=c("","NULL"))
-testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier()
+testcpdsourcedata <- load_data(source_df, fieldtypes = testfile_fieldtypes, na=c("","NULL"))
+testcpdsourcedata <- load_data(clean_df, fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																																		,TimepointDate = ft_timepoint()
 																																		,PrescriptionDate = ft_datetime()
 																																		,PrescriptionType = ft_categorical()
@@ -92,7 +92,7 @@ testcpdsourcedata <- load_dataset(clean_df, fieldtypes = fieldtypes(Prescription
 																																		,AntibioticsSource = ft_categorical()), na=c("","NULL"))
 
 
-testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
+testcpdsourcedata <- load_data("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																																											 ,PrescriptionDate = ft_timepoint()
 																																											 ,PrescriptionStatus = ft_categorical()
 																																											 ,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
@@ -141,7 +141,7 @@ testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fiel
 																	, na=c("","NULL"), showprogress=TRUE, log_directory = "./devtesting/testoutput/")
 
 
-testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_ignore()
+testcpdsourcedata <- load_data("./devtesting/testdata/abx_IORD2018.csv", fieldtypes(PrescriptionID = ft_ignore()
 																																											 ,PrescriptionDate = ft_timepoint()
 																																											 ,PrescriptionStatus = ft_ignore()
 																																											 ,PrescriptionType = ft_categorical(aggregate_by_each_category = TRUE)
@@ -192,7 +192,7 @@ testcpdsourcedata <- load_dataset("./devtesting/testdata/abx_IORD2018.csv", fiel
 																	, log_directory = "./devtesting/testoutput/")
 
 
-testcpdsourcedata2014 <- load_dataset("./devtesting/testdata/abx2014.csv", fieldtypes = fieldtypes(PrescriptionID = ft_ignore()
+testcpdsourcedata2014 <- load_data("./devtesting/testdata/abx2014.csv", fieldtypes = fieldtypes(PrescriptionID = ft_ignore()
 																																																	 ,TimepointDate = ft_timepoint()
 																																																	 ,PrescriptionDate = ft_ignore()
 																																																	 ,PrescriptionType = ft_ignore()
@@ -239,9 +239,9 @@ summarise_aggregated_data(testcpddata_byday)
 
 
 
-generate_report(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
+report_data(sourcedata = testcpdsourcedata2014, aggregatedata = testcpddata2014_byweek, save_directory = "./devtesting/testoutput")
 
-generate_report(sourcedata = testcpdsourcedata,
+report_data(sourcedata = testcpdsourcedata,
 								aggregatedata = testcpddata_byday,
 								#								aggregatedata = aggregate_data(testcpdsourcedata, aggregation_timeunit = "week", changepointmethods = "none", showprogress = TRUE),
 								save_directory = "./devtesting/testoutput",
@@ -251,7 +251,8 @@ rmarkdown::render(input = "./R/report_htmldoc.Rmd"
 									, output_dir = "./devtesting/testoutput"
 									, params = list(sourcedata = testcpdsourcedata, aggregatedata = testcpddata_byday))
 
-
+rm(list = ls())
+devtools::load_all(".", reset = TRUE)
 # test against what will be public dataset
 testfile <- system.file("extdata", "abx2014.csv", package = "daiquiri", mustWork = TRUE)
 testfile <- "./inst/extdata/abx2014.csv"
@@ -264,7 +265,7 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																	,PatientID = ft_ignore()
 																	,SourceSystem = ft_categorical(aggregate_by_each_category=TRUE))
 
-checkobj <- check_dataset(testfile,
+daiqobj <- create_report(testfile,
 													fieldtypes = testfile_fieldtypes,
 													textfile_contains_columnnames = TRUE,
 													override_columnnames = FALSE,
@@ -275,7 +276,7 @@ checkobj <- check_dataset(testfile,
 													showprogress = TRUE,
 													log_directory = "./")
 
-testcpdsourcedata <- load_dataset(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE)
+testcpdsourcedata <- load_data(testfile, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE)
 testcpddata_byday <- aggregate_data(testcpdsourcedata, aggregation_timeunit = "day", showprogress = TRUE)
 
 
@@ -307,7 +308,7 @@ fts <- fieldtypes(ClusterID = ft_uniqueidentifier(),
 									PostcodeStub = ft_freetext(),
 									LocalAuthority = ft_categorical())
 
-sourcedata <- load_dataset(testfile,
+sourcedata <- load_data(testfile,
 													 fieldtypes = fts,
 													 textfile_contains_columnnames = TRUE,
 													 override_columnnames = FALSE,
@@ -316,7 +317,7 @@ sourcedata <- load_dataset(testfile,
 
 aggregatedata <- aggregate_data(sourcedata, "day", showprogress = TRUE)
 
-generate_report(sourcedata, aggregatedata,
+report_data(sourcedata, aggregatedata,
 								save_directory = ".",
 								save_filename = "gramepi",
 								showprogress = TRUE

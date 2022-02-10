@@ -3,7 +3,7 @@
 \docType{package}
 \name{daiquiri}
 \alias{daiquiri}
-\title{daiquiri: Data quality reporting for temporal datasets}
+\title{Data quality reporting for temporal datasets}
 \description{
 Generate reports that enable quick visual review of
 temporal shifts in record-level data. Time series plots showing aggregated
@@ -16,5 +16,5 @@ Health Records in mind, but can be used for any type of record-level temporal da
 \details{
 Classes are S3
 
-The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
+The best place to start is the \code{\link{create_report}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
 }

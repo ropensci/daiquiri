@@ -1,4 +1,4 @@
-#' daiquiri: Data quality reporting for temporal datasets
+#' Data quality reporting for temporal datasets
 #'
 #' Generate reports that enable quick visual review of
 #' temporal shifts in record-level data. Time series plots showing aggregated
@@ -10,7 +10,7 @@
 #'
 #' Classes are S3
 #'
-#' The best place to start is the \code{\link{check_dataset}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
+#' The best place to start is the \code{\link{create_report}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
 #'
 #'
 #' @docType package
@@ -21,9 +21,9 @@ NULL
 # TODO: try to reduce dependencies installed by readr
 
 
-#' Check dataset for potential data quality issues
+#' Load data and generate report
 #'
-#' Accepts record-level data from a csv file or dataframe, generates a collection of time series for each column, and saves a report to disk.
+#' Accepts record-level data from a dataframe or csv file, generates a collection of time series for each column, and saves a report to disk.
 #'
 #' @param x Either a data frame or a string containing full or relative path of file containing data to load
 #' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.
@@ -39,7 +39,7 @@ NULL
 #' @param showprogress Print progress to console. Default = TRUE
 #' @param log_directory String specifying directory in which to save log file. If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
-#' @examples checkobj <- check_dataset(
+#' @examples daiqobj <- create_report(
 #'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
@@ -60,7 +60,7 @@ NULL
 #' )
 #' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 #' @export
-check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = TRUE, log_directory = NULL){
+create_report <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = TRUE, log_directory = NULL){
 	# temp assignments
 	# x <- testfile
 	# fieldtypes <- testfile_fieldtypes
@@ -84,11 +84,11 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 	validate_param_dir(save_directory)
 	validate_param_savefilename(save_filename, allownull = TRUE)
 
-	sourcedata <- load_dataset(x, fieldtypes, textfile_contains_columnnames = textfile_contains_columnnames, override_columnnames = override_columnnames, na = na, showprogress = showprogress)
+	sourcedata <- load_data(x, fieldtypes, textfile_contains_columnnames = textfile_contains_columnnames, override_columnnames = override_columnnames, na = na, showprogress = showprogress)
 
 	aggregatedata <- aggregate_data(sourcedata, aggregation_timeunit = aggregation_timeunit, showprogress = showprogress)
 
-	reportfilename <- generate_report(sourcedata, aggregatedata, save_directory = save_directory, save_filename = save_filename, showprogress = showprogress)
+	reportfilename <- report_data(sourcedata, aggregatedata, save_directory = save_directory, save_filename = save_filename, showprogress = showprogress)
 
 	log_function_end(match.call()[[1]])
 
@@ -106,7 +106,7 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 			sourcedata = sourcedata,
 			aggregatedata = aggregatedata
 		),
-		class = "check_dataset"
+		class = "daiquiri_object"
 	)
 }
 
@@ -124,7 +124,7 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 #' @param na vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
-#' @examples sourcedataobj <- load_dataset(
+#' @examples sourcedataobj <- load_data(
 #'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
@@ -139,9 +139,9 @@ check_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 #'   na = c("","NULL"),
 #'   showprogress = TRUE
 #' )
-#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{generate_report}}, \code{\link{check_dataset}}
+#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{report_data}}, \code{\link{create_report}}
 #' @export
-load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), showprogress = TRUE){
+load_data <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = c("","NULL"), showprogress = TRUE){
 	# TODO: rename?
 	# TODO: other versions that load from a data frame etc, use @describeIn for help file
 	# TODO: locales and trimming
@@ -163,9 +163,9 @@ load_dataset <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, ov
 	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)), showprogress)
 
 	if( is.data.frame(x) ){
-		# When load_dataset is called from check_dataset, passing in a dataframe, we lose the name of the original object
+		# When load_data is called from create_report, passing in a dataframe, we lose the name of the original object
 		#   that was passed in, so need to check the grandparent call instead
-		if( match.call(definition = sys.function(-1), call = sys.call(sys.parent()))[[1]] == "check_dataset"){
+		if( match.call(definition = sys.function(-1), call = sys.call(sys.parent()))[[1]] == "create_report"){
 			source_name <- as.list(match.call(definition = sys.function(-1), call = sys.call(sys.parent())))$x
 		} else{
 			source_name <- as.list(match.call())$x

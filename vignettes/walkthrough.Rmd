@@ -18,7 +18,7 @@ This vignette demonstrates how to use this package to generate a report that all
 
 ## Data format
 
-Data must be in tabular format, either as a csv file (with or without a header row containing column names, but containing no further rows that need skipping), or as a dataframe (with all columns as character type so that the package can detect any non-conformant values). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
+Data must be in tabular format, either as a dataframe (with all columns as character type so that the package can detect any non-conformant values), or as a csv file (with or without a header row containing column names, but containing no further rows that need skipping). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
 
 Dates are expected to be in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, though a range of other date formats can also be accepted (see later). User-specified locales are not currently supported.
 
@@ -37,9 +37,12 @@ The `abx2014` dataset provided with this package contains examples of antibiotic
 
 There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
 
+When we load in the data we need to remember to specify that all the columns should be read in as character type (so that the package can later detect any non-conformant values). There are a range of good file readers out there, so feel free to use your favourite one. Alternatively, if you already know what your data looks like, you can skip this step and pass in the csv filename directly when creating the report.
+
 ```{r}
 abx2014 <- read.csv(
   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  header = TRUE,
   colClasses = "character",
   stringsAsFactors = FALSE
  )
@@ -97,11 +100,11 @@ fts <- fieldtypes(
 
 This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
 
-NOTE: If the csv file does not contain the column names, the names specified in the `fieldtypes` object will be used. You can also choose to override any existing column names with those in the `fieldtypes` object by setting the `override_columnnames` parameter to `TRUE`. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes` specification must match exactly to those in the dataset.
+NOTE ABOUT COLUMN NAMES: If you will be passing in a csv filename directly, and the csv file does not contain the column names, the names specified in the `fieldtypes` object will be used. You can also choose to override any existing column names (in the csv file or the dataframe) with those in the `fieldtypes` object by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes` specification must match exactly to those in the dataset.
 
 ## Generating a data quality report
 
-The simplest way to create a data quality report is to use the `check_dataset` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `sourcedata` and `aggregatedata` objects, which can be reused to create further reports without needing to run everything all over again.
+The simplest way to create a data quality report is to use the `create_report` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `sourcedata` and `aggregatedata` objects, which can be reused to create further reports without needing to run everything all over again.
 
 At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.
 
@@ -115,10 +118,9 @@ For the `abx2014` dataset above, we will set the aggregation granularity to `day
 
 ```{r, include=FALSE}
 # save the report to the inst/extdata folder but show the code in the next chunk in the vignette
-checkobj <- check_dataset(
+daiqobj <- create_report(
   abx2014,
   fieldtypes = fts,
-  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = c("","NULL"),
   aggregation_timeunit = "day",
@@ -131,10 +133,9 @@ checkobj <- check_dataset(
 
 ```{r, eval=FALSE}
 # passing in a dataframe
-checkobj <- check_dataset(
+daiqobj <- create_report(
   abx2014,
   fieldtypes = fts,
-  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = c("","NULL"),
   aggregation_timeunit = "day",
@@ -145,7 +146,7 @@ checkobj <- check_dataset(
 )
 
 # passing in a csv filename
-checkobj <- check_dataset(
+daiqobj <- create_report(
   system.file("extdata", "abx2014.csv", package = "daiquiri"),
   fieldtypes = fts,
   textfile_contains_columnnames = TRUE,
@@ -177,11 +178,11 @@ The html reports created by this package can be opened in a browser and/or attac
 
 ## Advanced usage details
 
-The simplest way to use this package is to use the `check_dataset` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `fieldtypes` specification then the data will need to be re-loaded.
+The simplest way to use this package is to use the `create_report` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `fieldtypes` specification then the data will need to be re-loaded.
 
 ```{r, eval=FALSE}
 # load your dataset into a sourcedata object
-abxsourcedata <- load_dataset(
+abxsourcedata <- load_data(
   abx2014, 
   fieldtypes = fts, 
   na=c("","NULL")
@@ -200,14 +201,14 @@ abxaggregate_byweek <- aggregate_data(
 )
 
 # generate and save the reports
-generate_report(
+report_data(
   sourcedata = abxsourcedata,
   aggregatedata = abxaggregate_byday,
   save_directory = ".",
   save_filename = "abx2014_byday"
 )
 
-generate_report(
+report_data(
   sourcedata = abxsourcedata,
   aggregatedata = abxaggregate_byweek,
   save_directory = ".",
