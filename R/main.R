@@ -110,6 +110,28 @@ create_report <- function(x, fieldtypes, textfile_contains_columnnames = TRUE, o
 	)
 }
 
+#' @export
+print.daiquiri_object <- function(x, ...){
+	cat("Class: daiquiri_object\n")
+	cat("Sourcename:", x$sourcedata$sourcename, "\n")
+	cat("\n")
+	cat("Columns in source:", x$sourcedata$cols_source_n, "\n")
+	cat("Columns imported:", x$sourcedata$cols_imported_n, "\n")
+	cat("Rows in source:", x$sourcedata$rows_source_n, "\n")
+	cat("Duplicate rows removed:", x$sourcedata$rows_duplicates_n, "\n")
+	cat("Rows imported:", x$sourcedata$rows_imported_n, "\n")
+	cat("Column used for timepoint:", x$sourcedata$timepoint_fieldname, "\n")
+	cat("Rows missing timepoint values removed:", x$sourcedata$timepoint_missing_n, "\n")
+	cat("Total validation warnings:", nrow(x$sourcedata$validation_warnings), "\n")
+	cat("\n")
+
+	cat("Min timepoint value:", format(x$aggregatedata$aggregatefields[[1]]$values[[1]][1]), "\n")
+	cat("Max timepoint value:", format(rev(x$aggregatedata$aggregatefields[[1]]$values[[1]])[1]), "\n")
+	cat("Timepoint aggregation unit:", x$aggregatedata$aggregation_timeunit, "\n")
+	cat("Total number of timepoints:", length(x$aggregatedata$aggregatefields[[x$aggregatedata$timepoint_fieldname]]$values[[1]]), "\n")
+	cat("Number of empty timepoints:", sum(x$aggregatedata$aggregatefields[[x$aggregatedata$timepoint_fieldname]]$values[["n"]] == 0), "\n")
+}
+
 
 #' Load source data
 #'
