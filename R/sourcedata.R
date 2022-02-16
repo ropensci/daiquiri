@@ -40,9 +40,6 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 
 	# Validate data against specification, store warnings instead of printing them
 	# use readr::type_convert for now.  Ideally want to store original values and describe action taken too
-	# TODO: deal with warnings about embedded quotes
-	# TODO: don't know what is causing the "length of NULL cannot be changed" warning
-	# NOTE: row/column indexes for warnings correspond to original data file, and count the header as row 1
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
 	clean_dt <- withCallingHandlers(
@@ -55,11 +52,13 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 	log_message(paste0("  Selecting relevant warnings..."), showprogress)
 	# TODO: consider removing dt at this point, to release memory
 	# extract items of interest from warnings
+	# NOTE: column indexes for readr::type_convert warnings correspond to original data file and are 1-based
+	# NOTE: row indexes for readr::type_convert warnings are zero-based (confusingly)
 	relevant_warnings <- grep("\\[[0-9]*?, [0-9]*?\\]:", raw_warnings, value = TRUE)
 	# list of warnings each with character vector containing row, column, message
 	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
 	warningsdt <- data.table::data.table(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
-																			 rowindex = as.integer(sapply(warningslist, function(x){x[1]})),
+																			 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
 																			 message = as.character(sapply(warningslist, function(x){x[3]})))
 
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
@@ -67,7 +66,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 	# this seems much harder than it should be
 	warningcols <- unique(warningsdt[, colindex])
 	for(c in warningcols){
-		warningcolname <- names(fieldtypes)[c]
+		warningcolname <- names(dt)[c]
 		warningrows <- warningsdt[colindex == c, rowindex]
 		clean_dt[warningrows, (warningcolname) := NaN]
 	}
@@ -78,7 +77,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 	# TODO: check don't duplicate any messages from above
 	if (anyNA(clean_dt[[(timepoint_fieldname)]])){
 		navector <- is.na(clean_dt[[(timepoint_fieldname)]])
-		timepointwarnings <- data.table::data.table(colindex = timepoint_index,
+		timepointwarnings <- data.table::data.table(colindex = which(names(dt) == timepoint_fieldname),
 																		rowindex = which(navector == TRUE),
 																		message = "Missing or invalid value in Timepoint field"
 																		)
@@ -102,8 +101,9 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 
 	# tidy up warnings
 	data.table::setorder(warningsdt, colindex, rowindex)
-	warningsdt <- cbind(data.table::data.table(fieldname = names(clean_dt)[warningsdt[, colindex]]),
+	warningsdt <- cbind(data.table::data.table(fieldname = names(dt)[warningsdt[, colindex]]),
 											warningsdt[, list(colindex, rowindex, message)])
+	warnings_summary <- warningsdt[, list(instances = .N), by = list(fieldname, message)]
 
 	log_message(paste0("Checking for duplicates..."), showprogress)
 	# sort by timepoint field then by everything else, so that we can batch the data
@@ -183,17 +183,17 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
   # dfs[[!is_fieldtype_ignore]] <- datafield(clean_dt[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
 
   for (i in 1:cols_source_n){
-  	fieldname <- names(fieldtypes[i])
-  	log_message(paste0("  ", fieldname), showprogress)
+  	currentfield <- names(fieldtypes[i])
+  	log_message(paste0("  ", currentfield), showprogress)
   	if (is.fieldtype_ignore(fieldtypes[[i]])){
       dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
     }
     else{
-  		dfs[[i]] <- datafield(clean_dt[, ..fieldname],
+  		dfs[[i]] <- datafield(clean_dt[, ..currentfield],
   													fieldtypes[[i]],
-  													warningsdt[colindex == i, c("rowindex","message")])
+  													warningsdt[fieldname == currentfield, c("rowindex","message")])
       cols_imported_indexes <- c(cols_imported_indexes, i)
-      names(cols_imported_indexes)[length(cols_imported_indexes)] <- fieldname
+      names(cols_imported_indexes)[length(cols_imported_indexes)] <- currentfield
     }
   }
   # Create new datafield to store numbers of dups.
@@ -216,7 +216,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
       cols_source_n = cols_source_n,
       cols_imported_n = cols_imported_n,
       cols_imported_indexes = cols_imported_indexes,
-      validation_warnings = warningsdt, # TODO: not sure whether to store all warnings here or hive them off to each datafield
+      validation_warnings = warnings_summary,
       sourcename = sourcename
     ),
     class = "sourcedata"
@@ -242,7 +242,7 @@ print.sourcedata <- function(x, ...){
   cat("Min timepoint value:", sourcesummary$overall["timepoint_min"], "\n")
   cat("Max timepoint value:", sourcesummary$overall["timepoint_max"], "\n")
   cat("Rows missing timepoint values removed:", sourcesummary$overall["timepoint_missing_n"], "\n")
-  cat("Total validation warnings:", nrow(sourcesummary$validation_warnings), "\n")
+  cat("Total validation warnings:", sum(sourcesummary$validation_warnings$instances), "\n")
   cat("\n")
   cat("Datafields:\n")
   print(sourcesummary$datafields)

@@ -87,7 +87,6 @@ reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype =
 ### Validation warnings
 
 ```{r validation-warnings}
-
 reactable::reactable(sourcesummary$validation_warnings,
 				sortable = TRUE,
 				filterable = FALSE,
@@ -102,10 +101,9 @@ reactable::reactable(sourcesummary$validation_warnings,
 					fieldname = reactable::colDef(name = "Field name",
 														 style = list(fontWeight = "bold"),
 														 minWidth = 200),
-					colindex = reactable::colDef(name = "Column position"),
-					rowindex = reactable::colDef(name = "Row position"),
 					message = reactable::colDef(name = "Details",
-													 minWidth = 500)
+													 minWidth = 500),
+					instances = reactable::colDef(name = "Instances")
 					)
 				)
 
