@@ -7,14 +7,17 @@
 \description{
 Generate reports that enable quick visual review of
 temporal shifts in record-level data. Time series plots showing aggregated
-values are automatically created for each column depending on its
-datatype (e.g. min/max/mean values for numeric columns, no. of distinct
-values for categorical columns), as well as overviews for missing values,
-non-conformant values, and duplicated rows. It is designed with Electronic
-Health Records in mind, but can be used for any type of record-level temporal data.
+values are automatically created for each data field depending on its
+contents (e.g. min/max/mean values for numeric data, no. of distinct
+values for categorical data), as well as overviews for missing values,
+non-conformant values, and duplicated rows. The resulting reports are sharable
+and can contribute to forming a transparent record of the entire analysis process.
+It is designed with Electronic Health Records in mind, but can be used for
+any type of record-level temporal data.
 }
 \details{
 Classes are S3
 
-The best place to start is the \code{\link{create_report}} function, and the walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
+The best place to start is the \code{\link{create_report}} function, and the
+walkthrough vignette: \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package = "daiquiri")}}.
 }
