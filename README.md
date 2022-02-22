@@ -60,8 +60,12 @@ can install the latest version from github by doing the following:
     section, then download the `daiquiri_x.y.z.tar.gz` file (where x.y.z
     is the release number)
 
-3.  To install, run the following, replacing the file_name_and_path with
-    the path to the downloaded file
+3.  To install, run the following, replacing the `file_name_and_path`
+    with the path to the downloaded file. NOTE: Depending on what
+    packages you already have installed, it may return an error saying
+    that certain dependencies are not available for the package. It will
+    not install these automatically. Once you have installed the
+    dependencies from CRAN, try to install the package again.
 
 ``` r
 install.packages(file_name_and_path, repos = NULL, type="source")
