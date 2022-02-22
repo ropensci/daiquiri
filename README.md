@@ -1,18 +1,22 @@
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # daiquiri
 
 The daiquiri package generates data quality reports that enable quick
 visual review of temporal shifts in record-level data. Time series plots
 showing aggregated values are automatically created for each data field
-depending on its contents (e.g. min/max/mean values for numeric data,
-no. of distinct values for categorical data), as well as overviews for
-missing values, non-conformant values, and duplicated rows. The
+(column) depending on its contents (e.g. min/max/mean values for numeric
+data, no. of distinct values for categorical data), as well as overviews
+for missing values, non-conformant values, and duplicated rows. The
 resulting reports are sharable and can contribute to forming a
 transparent record of the entire analysis process. It is designed with
 Electronic Health Records in mind, but can be used for any type of
-record-level temporal data.
+record-level temporal data (i.e. tabular data where each row represents
+a single “event”, one column contains the “event date”, and other
+columns contain any associated values for the event).
 
-## Why should people use it?
+## Why should I use it?
 
 Large routinely-collected datasets are increasingly being used in
 research. However, given their data are collected for operational rather
@@ -24,16 +28,15 @@ identified and taken into account, can lead to biased results and
 incorrect conclusions. For example, the figures below show real data
 from a large hospital in the UK.
 
-<img src="man/figures/antibiotics_day_DurationEnteredByPrescriber_missing_perc.png" width="350" />
-<img src="man/figures/bchem_creatinine_day_Value_mean.png" width="350" />
+<img src="man/figures/antibiotics_day_DurationEnteredByPrescriber_missing_perc.png" width="350" /><img src="man/figures/bchem_creatinine_day_Value_mean.png" width="350" />
 
 The first figure shows the percentage of missing values in the
 ‘Duration’ field of a dataset containing antibiotic prescriptions, and
 the second figure shows the mean value of all laboratory tests checking
 for levels of ‘creatinine’ in the blood. As you can see, these values
-can sometimes change suddenly and unnaturally, and researchers/analysts
-need to take this into account if comparing or combining the data before
-and after these ‘change points’.
+can sometimes change suddenly and unnaturally, and researchers need to
+take this into account if comparing or combining the data before and
+after these ‘change points’.
 
 While these checks should theoretically be conducted by the researcher
 at the initial data analysis stage, in practice it is unclear to what
@@ -49,13 +52,23 @@ trust in the scientific process.
 ## Getting started
 
 The intention is to make daiquiri available in CRAN but until then, you
-can install the latest version from github:
+can install the latest version from github by doing the following:
+
+1.  Navigate to <https://github.com/phuongquan/daiquiri/releases>
+
+2.  Underneath the most recent release, click to open the Assets
+    section, then download the `daiquiri_x.y.z.tar.gz` file (where x.y.z
+    is the release number)
+
+3.  To install, run the following, replacing the file_name_and_path with
+    the path to the downloaded file
 
 ``` r
-devtools::install_github("phuongquan/daiquiri")
+install.packages(file_name_and_path, repos = NULL, type="source")
 ```
 
-The walkthrough vignette guides you through how to use the package:
+Once installed, the walkthrough vignette guides you through how to use
+the package:
 
 ``` r
 vignette("walkthrough", package = "daiquiri")
