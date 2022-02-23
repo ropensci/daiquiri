@@ -8,13 +8,20 @@ visual review of temporal shifts in record-level data. Time series plots
 showing aggregated values are automatically created for each data field
 (column) depending on its contents (e.g. min/max/mean values for numeric
 data, no. of distinct values for categorical data), as well as overviews
-for missing values, non-conformant values, and duplicated rows. The
-resulting reports are sharable and can contribute to forming a
+for missing values, non-conformant values, and duplicated rows.
+
+Essentially, it takes input such as this:
+
+<img src="man/figures/abx2014_head.png" width="700" />
+
+And outputs this:
+
+<img src="man/figures/abx2014_aggregated_valuespresent.png" height="350" /><img src="man/figures/abx2014_allfields_missing_perc.png" height="350" />
+
+The resulting html reports are sharable and can contribute to forming a
 transparent record of the entire analysis process. It is designed with
 Electronic Health Records in mind, but can be used for any type of
-record-level temporal data (i.e. tabular data where each row represents
-a single “event”, one column contains the “event date”, and other
-columns contain any associated values for the event).
+record-level temporal data.
 
 ## Why should I use it?
 
