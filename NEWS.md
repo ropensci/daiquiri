@@ -1,4 +1,4 @@
-# daiquiri 0.6.1 (2022-02-21)
+# daiquiri 0.6.1 (2022-02-23)
 
 Beta release. Complete list of functions exported:
 
