@@ -16,7 +16,7 @@ Essentially, it takes input such as this:
 
 And outputs this:
 
-<img src="man/figures/abx2014_aggregated_valuespresent.png" height="350" /><img src="man/figures/abx2014_allfields_missing_perc.png" height="350" />
+<img src="man/figures/abx2014_aggregated_valuespresent.png" width="350" /><img src="man/figures/abx2014_allfields_missing_perc.png" width="350" />
 
 The resulting html reports are sharable and can contribute to forming a
 transparent record of the entire analysis process. It is designed with
