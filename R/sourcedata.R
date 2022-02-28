@@ -170,7 +170,7 @@ sourcedata <- function(dt, fieldtypes, sourcename, na, showprogress = TRUE) {
 	# number of duplicate rows removed
 	rows_duplicates_n <- sum(duprowsvector, na.rm = TRUE)
 
-	log_message(paste0("Loading into sourcedata struture..."), showprogress)
+	log_message(paste0("Loading into sourcedata structure..."), showprogress)
   # load data into datafield classes
   dfs <- vector("list", cols_source_n + 1)
   cols_imported_indexes <- vector("integer")
