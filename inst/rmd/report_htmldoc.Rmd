@@ -49,6 +49,7 @@ reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype !
 					fieldname = reactable::colDef(name = "Field name",
 														 style = list(fontWeight = "bold")),
 					fieldtype = reactable::colDef(name = "Field type"),
+					datatype = reactable::colDef(show = FALSE),
 					count = reactable::colDef(name = "Total values"),
 					missing = reactable::colDef(name = "Missing values"),
 					min = reactable::colDef(name = "Min value"),
@@ -132,7 +133,8 @@ summarydf <- data.frame("Item" = c("Columns in source",
 																		sourcesummary$overall["timepoint_missing_n"],
 																		sourcesummary$overall["rows_imported_n"],
 																		sourcesummary$overall["na_values"],
-																		nrow(sourcesummary$validation_warnings)),
+																		sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
+																			sum(is.na(sourcesummary$validation_warnings$instances))),
 												stringsAsFactors = FALSE
 )
 									 
