@@ -2,14 +2,14 @@
 % Please edit documentation in R/main.R
 \name{create_report}
 \alias{create_report}
-\title{Load data and generate report}
+\title{Create a data quality report from a data frame}
 \usage{
 create_report(
-  x,
+  df,
   fieldtypes,
-  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
-  na = c("", "NULL"),
+  na = c("", "NA", "NULL"),
+  dataset_shortdesc = NULL,
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = NULL,
@@ -18,17 +18,17 @@ create_report(
 )
 }
 \arguments{
-\item{x}{Either a data frame or a string containing full or relative path of file containing data to load}
+\item{df}{A data frame. Rectangular data can be read from file using \code{\link{read_data}}. See details.}
 
 \item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.}
 
-\item{textfile_contains_columnnames}{If the data to be loaded is a text file, does the first row contain the column names? Default = TRUE}
-
-\item{override_columnnames}{If FALSE, column names must exist in data frame or header row of file and must match
+\item{override_columnnames}{If FALSE, column names must exist in data frame and must match
 the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
 specification. The specification must therefore contain the columns in the correct order. Default = FALSE}
 
-\item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NULL")}.}
+\item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NA","NULL")}.}
+
+\item{dataset_shortdesc}{Short description of the dataset being checked. This will appear on the report. If blank, the name of the data frame object will be used}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
 
@@ -45,11 +45,22 @@ If no filename is supplied (i.e. filename = NULL), one will be automatically gen
 A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
 }
 \description{
-Accepts record-level data from a dataframe or csv file, generates a collection of time series for each column, and saves a report to disk.
+Accepts record-level data from a data frame, validates it against the expected type of content of each column, generates a collection of time series plots for visual inspection, and saves a report to disk.
 }
+\section{Details}{
+
+In order for the package to detect any non-conformant values in numeric or datetime fields, these should be present in the data frame in their raw character format. Rectangular data from a text file will automatically be read in as character type if you use the \code{\link{read_data}} function. Data frame columns that are not of class character will still be processed according to the fieldtypes specification.
+}
+
 \examples{
-daiqobj <- create_report(
+rawdata <- read_data(
   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  delim = ",",
+  col_names = TRUE
+)
+
+daiqobj <- create_report(
+  rawdata,
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -58,7 +69,6 @@ daiqobj <- create_report(
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
-  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = c("","NULL"),
   aggregation_timeunit = "day",
@@ -69,5 +79,5 @@ daiqobj <- create_report(
 )
 }
 \seealso{
-\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
+\code{\link{read_data}}, \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 }

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(rownames.print = FALSE)
 
 ```
 
-Dataset: **`r encodeString(params$sourcedata$sourcename)`**
+Dataset: **`r encodeString(params$sourcedata$dataset_shortdesc)`**
 
 Aggregated by: **`r params$aggregatedata$aggregation_timeunit`**
 
@@ -24,7 +24,7 @@ Report created on: `r Sys.time()`; Package version `r utils::packageVersion(util
 
 # {.tabset .tabset-pills}
 
-## Raw data {.tabset}
+## Source data {.tabset}
 
 
 ```{r sourcedata}
@@ -49,7 +49,6 @@ reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype !
 					fieldname = reactable::colDef(name = "Field name",
 														 style = list(fontWeight = "bold")),
 					fieldtype = reactable::colDef(name = "Field type"),
-					datatype = reactable::colDef(name = "Datatype"),
 					count = reactable::colDef(name = "Total values"),
 					missing = reactable::colDef(name = "Missing values"),
 					min = reactable::colDef(name = "Min value"),
@@ -121,6 +120,7 @@ summarydf <- data.frame("Item" = c("Columns in source",
 																	"Duplicate rows",
 																	"Rows missing timepoint values",
 																	"Rows imported",
+																	"Strings interpreted as missing values",
 																	"Total validation warnings"),
 												"Value" = c(sourcesummary$overall["cols_source_n"],
 																		sourcesummary$overall["cols_imported_n"],
@@ -131,6 +131,7 @@ summarydf <- data.frame("Item" = c("Columns in source",
 																		sourcesummary$overall["rows_duplicates_n"],
 																		sourcesummary$overall["timepoint_missing_n"],
 																		sourcesummary$overall["rows_imported_n"],
+																		sourcesummary$overall["na_values"],
 																		nrow(sourcesummary$validation_warnings)),
 												stringsAsFactors = FALSE
 )

@@ -14,7 +14,7 @@ report_data(
 )
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{load_data}} function}
+\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
 
 \item{aggregatedata}{An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function}
 
@@ -34,8 +34,14 @@ A string containing the name and path of the saved report
 Generate report from previously-created sourcedata and aggregatedata objects
 }
 \examples{
-sourcedataobj <- load_data(
+rawdata <- read_data(
   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  delim = ",",
+  col_names = TRUE
+)
+
+sourcedataobj <- prepare_data(
+  rawdata,
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -44,7 +50,6 @@ sourcedataobj <- load_data(
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
-  textfile_contains_columnnames = TRUE,
   override_columnnames = FALSE,
   na = c("","NULL"),
   showprogress = TRUE
@@ -65,5 +70,5 @@ report_data(
 )
 }
 \seealso{
-\code{\link{load_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
+\code{\link{prepare_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
 }

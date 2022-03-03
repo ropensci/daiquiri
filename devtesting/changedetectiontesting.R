@@ -361,3 +361,24 @@ x2[] <- lapply(x2, as.character)
 cat("as.char:", Sys.time() - dstart)
 
 
+# non-char columns in data frame
+testfile <- "./devtesting/testdata/abx2014.csv"
+testdf <- read_data(testfile)
+testdf$PatientID <- as.numeric(df$PatientID)
+testdf$Dose <- as.numeric(df$Dose)
+
+fieldtypes <- fieldtypes(
+	PrescriptionID = ft_uniqueidentifier(),
+	PrescriptionDate = ft_timepoint(),
+	AdmissionDate = ft_datetime(includes_time = FALSE),
+	Drug = ft_freetext(),
+	Dose = ft_numeric(),
+	DoseUnit = ft_categorical(),
+	PatientID = ft_ignore(),
+	SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)
+)
+
+daiqobj <- create_report(testdf, fieldtypes)
+sourcedata <- prepare_data(testdf, fieldtypes)
+aggregatedata <- aggregate_data(sourcedata)
+report_data(sourcedata , aggregatedata)

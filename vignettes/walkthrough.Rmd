@@ -18,13 +18,16 @@ This vignette demonstrates how to use this package to generate an html report th
 
 ## Data format
 
-Data must be in tabular format, either as a dataframe (with all columns as character type so that the package can detect any non-conformant values), or as a csv file (with or without a header row containing column names, but containing no further rows that need skipping). Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
+Data must be in tabular format, as a data frame. Each row should represent a single "event" such as a visit to hospital or a medical test result or a drug prescription. One column must contain the "event date" (aka "timepoint") for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.
+
+In order for the package to detect any non-conformant values in numeric or datetime fields, these should be present in the data frame in their raw character format. A function called `read_data()` is supplied to assist with this, and will read rectangular data from a text file automatically as character type.
 
 Dates are expected to be in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, though a range of other date formats can also be accepted (see later). User-specified locales are not currently supported.
 
+
 **Example:**
 
-The `abx2014` dataset provided with this package contains examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
+The `abx2014` dataset is provided with this package as a csv file, and contains examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
 
 * PrescriptionID - the uniqueidentifier for the row
 * PrescriptionDate - The date the prescription was given
@@ -37,15 +40,20 @@ The `abx2014` dataset provided with this package contains examples of antibiotic
 
 There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
 
-When we load in the data we need to remember to specify that all the columns should be read in as character type (so that the package can later detect any non-conformant values). There are a range of good file readers out there, so feel free to use your favourite one. Alternatively, if you already know what your data looks like, you can skip this step and pass in the csv filename directly when creating the report.
-
 ```{r}
-abx2014 <- read.csv(
-  system.file("extdata", "abx2014.csv", package = "daiquiri"),
-  header = TRUE,
-  colClasses = "character",
-  stringsAsFactors = FALSE
- )
+# first, attach the package if you haven't already
+library(daiquiri)
+
+# this is where the example file is located
+filename <- system.file("extdata", "abx2014.csv", package = "daiquiri")
+
+# read in the data
+abx2014 <- read_data(
+  filename,
+  delim = ",",
+  col_names = TRUE,
+  showprogress = FALSE
+)
 
 head(abx2014)
 ```
@@ -82,9 +90,6 @@ NOTE: If your data is already aggregated (e.g. one column contains a date and th
 For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
-# first, attach the package if you haven't already
-library(daiquiri)
-
 # set up a datafields specification for use later
 fts <- fieldtypes(
   PrescriptionID = ft_uniqueidentifier(),
@@ -108,7 +113,7 @@ The simplest way to create a data quality report is to use the `create_report()`
 
 At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.
 
-We also need to decide where to save the report, and optionally specify a filename (excluding file extension). The filename can only contain alphanumeric, `-` and `_` characters. If a filename is not supplied, one will be automatically generated.
+We also need to decide where to save the report, and optionally specify a filename (excluding file extension). The filename can only contain alphanumeric, `-` and `_` characters. If a filename is not supplied, one will be automatically generated. We can also optionally specify a short description for the dataset, which will appear on the report.
 
 If you specify a log directory, details of all the processing steps will be saved into a text file.
 
@@ -119,10 +124,11 @@ For the `abx2014` dataset above, we will set the aggregation granularity to `day
 ```{r, include=FALSE}
 # save the report to the inst/extdata folder but show the code in the next chunk in the vignette
 daiqobj <- create_report(
-  abx2014,
+  df = abx2014,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
+  dataset_shortdesc = "abx2014 example data",
   aggregation_timeunit = "day",
   save_directory = "../inst/extdata",
   save_filename = "abx2014report",
@@ -132,26 +138,12 @@ daiqobj <- create_report(
 ```
 
 ```{r, eval=FALSE}
-# passing in a dataframe
 daiqobj <- create_report(
-  abx2014,
+  df = abx2014,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
-  aggregation_timeunit = "day",
-  save_directory = ".",
-  save_filename = "abx2014report",
-  showprogress = TRUE,
-  log_directory = NULL
-)
-
-# passing in a csv filename
-daiqobj <- create_report(
-  system.file("extdata", "abx2014.csv", package = "daiquiri"),
-  fieldtypes = fts,
-  textfile_contains_columnnames = TRUE,
-  override_columnnames = FALSE,
-  na = c("","NULL"),
+  dataset_shortdesc = "abx2014 example data",
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "abx2014report",
@@ -171,7 +163,7 @@ system.file("extdata/abx2014report.html", package = "daiquiri")
 
 The html reports created by this package can be opened in a browser and/or attached to an email, and contain three main tabs:
 
-### Raw data
+### Source data
 
 This contains child tabs which provide an overall summary of the data imported, plus a complete list of validation warnings (such as any values identified as non-conformant)
 
@@ -195,7 +187,7 @@ The simplest way to use this package is to use the `create_report()` function as
 
 ```{r, eval=FALSE}
 # load your dataset into a sourcedata object
-abxsourcedata <- load_data(
+abxsourcedata <- prepare_data(
   abx2014, 
   fieldtypes = fts, 
   na=c("","NULL")

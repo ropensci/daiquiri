@@ -7,7 +7,7 @@
 aggregate_data(data, aggregation_timeunit = "day", showprogress = TRUE)
 }
 \arguments{
-\item{data}{A \code{sourcedata} object returned from \code{\link{load_data}} function}
+\item{data}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
 
@@ -21,5 +21,5 @@ Aggregates sourcedata object based on fieldtypes specified at load time.
 Default time period for aggregation is a calendar day
 }
 \seealso{
-\code{\link{load_data}}, \code{\link{report_data}}
+\code{\link{prepare_data}}, \code{\link{report_data}}
 }

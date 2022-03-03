@@ -255,11 +255,11 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 #' Aggregates sourcedata object based on fieldtypes specified at load time.
 #' Default time period for aggregation is a calendar day
 #'
-#' @param data A \code{sourcedata} object returned from \code{\link{load_data}} function
+#' @param data A \code{sourcedata} object returned from \code{\link{prepare_data}} function
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return An \code{aggregatedata} object
-#' @seealso \code{\link{load_data}}, \code{\link{report_data}}
+#' @seealso \code{\link{prepare_data}}, \code{\link{report_data}}
 #' @export
 aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = TRUE){
 	# TODO: move calculation of changepoints into separate function and allow them to be calculated afterwards

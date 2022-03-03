@@ -39,10 +39,6 @@ test_that("More than one timepoint field not allowed", {
 })
 
 
-test_that("Text files must have override_columnnames set to TRUE if textfile_contains_columnnames is set to FALSE", {
-	expect_error(load_data(".\\devtesting\\testdata\\antibiotics_example.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = FALSE, override_columnnames = FALSE, na = NULL, showprogress = FALSE))
-})
-
 test_that("Column names in data and fieldtypes match exactly", {
 	expect_silent(validate_columnnames(c("nonsense","set","of")
 																		 ,c("nonsense","set","of"), check_length_only = FALSE))
@@ -81,14 +77,6 @@ test_that("Column names in fieldtypes not in data not allowed", {
 
 ## TEST THAT DATA TYPE TO LOAD IS VALID ##
 
-test_that("Invalid filename supplied", {
-	expect_error(load_data("fakedatafile.csv", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), textfile_contains_columnnames = TRUE, override_columnnames = FALSE, na = NULL, showprogress = FALSE))
-})
-
-test_that("Non-csv files not allowed", {
-	expect_error(load_data("./DESCRIPTION", fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE))
-})
-
 test_that("Non-data frames not allowed", {
-	expect_error(load_data(c("Fieldname", 123), fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE))
+	expect_error(prepare_data(c("Fieldname", 123), fieldtypes = fieldtypes(Col_tp = ft_timepoint()), override_columnnames = FALSE, na = NULL, showprogress = FALSE))
 })
