@@ -4,3 +4,5 @@
 ^\.Rproj\.user$
 ^devtesting$
 ^README\.Rmd$
+^daiquiri_report_*\.html$
+^.*\.log$
