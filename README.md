@@ -18,9 +18,9 @@ And outputs this:
 
 <img src="man/figures/abx2014_aggregated_valuespresent.png" width="350" /><img src="man/figures/abx2014_allfields_missing_perc.png" width="350" />
 
-The resulting html reports are sharable and can contribute to forming a
+The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process. It is designed with
-Electronic Health Records in mind, but can be used for any type of
+electronic health records in mind, but can be used for any type of
 record-level temporal data.
 
 ## Why should I use it?
@@ -59,30 +59,31 @@ trust in the scientific process.
 ## Getting started
 
 The intention is to make daiquiri available in CRAN but until then, you
-can install the latest version from github by doing the following:
-
-1.  Navigate to <https://github.com/phuongquan/daiquiri/releases>
-
-2.  Underneath the most recent release, click to open the Assets
-    section, then download the `daiquiri_x.y.z.tar.gz` file (where x.y.z
-    is the release number)
-
-3.  To install, run the following, replacing the `file_name_and_path`
-    with the path to the downloaded file. NOTE: Depending on what
-    packages you already have installed, it may return an error saying
-    that certain dependencies are not available for the package. It will
-    not install these automatically. Once you have installed the
-    dependencies from CRAN, try to install the package again.
+can install the latest release by running the following:
 
 ``` r
-install.packages(file_name_and_path, repos = NULL, type="source")
+install.packages("https://github.com/phuongquan/daiquiri/releases/download/v0.6.1/daiquiri_0.6.1.tar.gz", 
+                                 repos = NULL, type = "source")
 ```
+
+NOTE: Depending on what packages you already have installed, it may
+return an error saying that certain dependencies are not available for
+the package. It will not install these automatically. Once you have
+installed the dependencies from CRAN, try to install the package again.
 
 Once installed, the walkthrough vignette guides you through how to use
 the package:
 
 ``` r
 vignette("walkthrough", package = "daiquiri")
+```
+
+Alternatively, you can install the current development version from
+GitHub (though this may be more buggy):
+
+``` r
+#install.packages("remotes")
+remotes::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 ```
 
 ## Acknowledgements
