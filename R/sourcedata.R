@@ -53,6 +53,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #' )
 #' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{report_data}}, \code{\link{create_report}}
 #' @export
+#' @importFrom data.table .N
 prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = NULL, showprogress = TRUE) {
 	# temp assignments
 	# dt<-data.table::setDT(source_df)
@@ -61,6 +62,9 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	#	showprogress = TRUE
 
 	log_function_start(match.call()[[1]])
+
+	# initialise known column names to prevent R CMD check notes
+	colindex = rowindex = fieldname = NULL
 
 	# TODO: consolidate param checks
 	if( missing(df) ){
@@ -272,7 +276,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 			dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
 		}
 		else{
-			dfs[[i]] <- datafield(clean_dt[, ..currentfield],
+			dfs[[i]] <- datafield(clean_dt[, currentfield, with = FALSE],
 														fieldtypes[[i]],
 														warningsdt[fieldname == currentfield, c("rowindex","message")])
 			cols_imported_indexes <- c(cols_imported_indexes, i)

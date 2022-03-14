@@ -152,6 +152,9 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 	# aggfield <- testcpddata_byday2[["aggregatefields"]][["ALLFIELDSCOMBINED"]]
 	# aggtype = "nonconformant_n"
 
+	# initialise known column names to prevent R CMD check notes
+	ymin = NULL
+
 	timepointcolname <- names(aggfield$values)[1]
 	data <- aggfield$values[, c(timepointcolname, aggtype), with = FALSE]
 
@@ -192,6 +195,9 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 	# aggfields<-testcpddata_byday$aggregatefields
 	#   aggtype = "n"
 	# fillcolour = "darkred"
+
+	# initialise known column names to prevent R CMD check notes
+	fieldname = NULL
 
 	timepointcolname <- names(aggfields[[1]]$values)[1]
 

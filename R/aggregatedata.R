@@ -9,6 +9,7 @@
 # individual aggregatefields
 # NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
 # TODO: timepoint_as_aggregationunit only needs to be called once
+#' @importFrom data.table ':=' .EACHI
 aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
 	#temp assignment
 	#datafield = outpatsourcedata$datafields[[24]]
@@ -16,8 +17,11 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 	#timepointfieldvalues = timepointsubvalues
 	#showprogress = TRUE
 	#aggregation_timeunit = "day"
-
 	#functionlist = c("n", "missing_n", "missing_perc")
+
+	# initialise known column names to prevent R CMD check notes
+	n = value = values = timepoint = NULL
+
 	log_message(paste0("Preparing..."), showprogress)
 	functionlist = datafield$fieldtype$aggfunctions
 
@@ -52,13 +56,13 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 					catval <- distinctcategories[j]
 					catname <- paste0(f, "_", j, "_", gsub('([[:punct:]])|\\s+', "_", catval))
 					if( f == "subcat_n" ){
-						groupedvals[datafield_dt[, .("value" = sum(values==catval, na.rm = TRUE))
-																		 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+						groupedvals[datafield_dt[, list("value" = sum(values==catval, na.rm = TRUE))
+																		 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 												, (catname) := value, by = .EACHI]
 					} else if( f == "subcat_perc" ){
 						# include all values in denominator, including NA and NaN
-						groupedvals[datafield_dt[, .("value" = 100*sum(values==catval, na.rm = TRUE)/length(values))
-																		 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+						groupedvals[datafield_dt[, list("value" = 100*sum(values==catval, na.rm = TRUE)/length(values))
+																		 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 												, (catname) := value, by = .EACHI]
 					}
 					c <- c + 1
@@ -67,80 +71,80 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 		} else {
 			c <- c + 1
 			if( f == "n" ){
-				groupedvals[datafield_dt[, .("value" = sum(!(is.na(values) & !is.nan(values))))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = sum(!(is.na(values) & !is.nan(values))))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 						, (f) := value, by = .EACHI]
 			} else if( f == "missing_n" ){
-				groupedvals[datafield_dt[, .("value" = sum(is.na(values) & !is.nan(values)))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = sum(is.na(values) & !is.nan(values)))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "missing_perc" ){
-				groupedvals[datafield_dt[, .("value" = 100*sum(is.na(values) & !is.nan(values))/length(values))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = 100*sum(is.na(values) & !is.nan(values))/length(values))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "nonconformant_n" ){
-				groupedvals[datafield_dt[, .("value" = sum(is.nan(values)))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = sum(is.nan(values)))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "nonconformant_perc" ){
 				# TODO: should the denominator be all rows or only conformant/nonmissing rows?
-				groupedvals[datafield_dt[, .("value" = 100*sum(is.nan(values))/length(values))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = 100*sum(is.nan(values))/length(values))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 
 			} else if( f == "sum" ){
-				groupedvals[datafield_dt[, .("value" = sum(values, na.rm = TRUE))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = sum(values, na.rm = TRUE))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "nonzero_perc" ){
-				groupedvals[datafield_dt[, .("value" = 100*length(which(values>0))/length(values[!is.na(values)]))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = 100*length(which(values>0))/length(values[!is.na(values)]))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "distinct" ){
-				groupedvals[datafield_dt[, .("value" = length(unique(values[!is.na(values)])))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = length(unique(values[!is.na(values)])))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "midnight_n" ){
 				# TODO: if n is zero, should this be zero or NA?
-				groupedvals[datafield_dt[, .("value" = sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "midnight_perc" ){
 				# NOTE: if n is zero, this returns NaN. Update to NA when tidying up
-				groupedvals[datafield_dt[, .("value" = 100*sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)/length(values[!is.na(values)]))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = 100*sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)/length(values[!is.na(values)]))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "min" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
-				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(min(values, na.rm = TRUE))))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = suppressWarnings(as.double(min(values, na.rm = TRUE))))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "max" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
-				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(max(values, na.rm = TRUE))))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = suppressWarnings(as.double(max(values, na.rm = TRUE))))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "mean" ){
-				groupedvals[datafield_dt[, .("value" = mean(values, na.rm = TRUE))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = mean(values, na.rm = TRUE))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "median" ){
-				groupedvals[datafield_dt[, .("value" = stats::median(values, na.rm = TRUE))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = stats::median(values, na.rm = TRUE))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "minlength" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
-				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(min(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = suppressWarnings(as.double(min(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "maxlength" ){
 				# NOTE: need the as.double() because min/max returns integer if all values are NA (in the group), and if a mixture of doubles and integers are returned, data.table doesn't like it (though the error only seems to appear when using the package and not when testing inside the package itself)
-				groupedvals[datafield_dt[, .("value" = suppressWarnings(as.double(max(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = suppressWarnings(as.double(max(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else if( f == "meanlength" ){
-				groupedvals[datafield_dt[, .("value" = mean(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))
-																 , .("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
+				groupedvals[datafield_dt[, list("value" = mean(nchar(as.character(values), keepNA = TRUE), na.rm = TRUE))
+																 , list("timepoint" = timepoint_as_aggregationunit(timepoint, aggregation_timeunit = aggregation_timeunit))]
 										, (f) := value, by = .EACHI]
 			} else{
 				# TODO: Decide if this should stop everything or just raise a warning
@@ -198,6 +202,9 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 	# aggfields = agg[1:data$cols_imported_n]
 	# alltimepoints = get_datafield_vector(data$datafields[[testcpdsourcedata$timepoint_fieldname]])
 	#showprogress = TRUE
+
+	# initialise known column names to prevent R CMD check notes
+	n = missing_n = nonconformant_n = NULL
 
 	ft <- ft_allfields()
 	functionlist <- ft$aggfunctions
