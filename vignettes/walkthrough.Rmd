@@ -60,11 +60,11 @@ head(abx2014)
 
 ## Specification of data fields
 
-You must specify what type of data is expected in each column, e.g. a date, a number, a nominal category. The package will use this information to calculate the number of values that are not of the expected type, and to decide which summary statistics to use for the time series'.
+You must specify what type of data is expected in each column, e.g. a date, a number, a nominal category. The package will use this information to calculate the number of values that are not of the expected type, and to decide which summary functions to use for the time series'.
 
 One and only one column must be chosen to be the "timepoint" field (though you could run the package again using a different column as the timepoint field if you so choose). This column will be used as the independent time variable on the x-axis of each time series plot.
 
-Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number of non-missing values, as well as the number and percentage of missing values.
+Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number values present, as well as the number and percentage of missing values.
 
 * `ft_timepoint()` - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series' are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.
 * `ft_uniqueidentifier()` - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for minlength, maxlength, and meanlength of the string.
@@ -122,7 +122,7 @@ If you specify a log directory, details of all the processing steps will be save
 For the `abx2014` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
 
 ```{r, include=FALSE}
-# save the report to the inst/extdata folder but show the code in the next chunk in the vignette
+# quietly check can create the report but show the code in the next chunk in the vignette
 daiqobj <- create_report(
   df = abx2014,
   fieldtypes = fts,
@@ -130,11 +130,15 @@ daiqobj <- create_report(
   na = c("","NULL"),
   dataset_shortdesc = "abx2014 example data",
   aggregation_timeunit = "day",
-  save_directory = "../inst/extdata",
+  save_directory = ".",
   save_filename = "abx2014report",
   showprogress = FALSE,
   log_directory = NULL
 )
+
+# clean up
+file.remove("./abx2014report.html")
+
 ```
 
 ```{r, eval=FALSE}
@@ -154,12 +158,6 @@ daiqobj <- create_report(
 ```
 
 ## Contents of the report
-
-If this package is installed, the location of a report that was generated using this dataset can be found by running the following code:
-
-```{r, eval=FALSE}
-system.file("extdata/abx2014report.html", package = "daiquiri")
-```
 
 The html reports created by this package can be opened in a browser and/or attached to an email, and contain three main tabs:
 
