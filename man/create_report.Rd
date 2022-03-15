@@ -77,6 +77,9 @@ daiqobj <- create_report(
   showprogress = TRUE,
   log_directory = NULL
 )
+
+\dontshow{file.remove("./abx2014report.html")}
+
 }
 \seealso{
 \code{\link{read_data}}, \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}

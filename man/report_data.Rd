@@ -68,6 +68,9 @@ report_data(
   save_filename = "abx2014report",
   showprogress = TRUE
 )
+
+\dontshow{file.remove("./abx2014report.html")}
+
 }
 \seealso{
 \code{\link{prepare_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}

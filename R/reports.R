@@ -48,6 +48,9 @@
 #'   save_filename = "abx2014report",
 #'   showprogress = TRUE
 #' )
+#'
+#' \dontshow{file.remove("./abx2014report.html")}
+#'
 #' @seealso \code{\link{prepare_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
 #' @export
 report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_filename = NULL, format = "html", showprogress = TRUE){

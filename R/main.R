@@ -70,6 +70,9 @@ NULL
 #'   showprogress = TRUE,
 #'   log_directory = NULL
 #' )
+#'
+#' \dontshow{file.remove("./abx2014report.html")}
+#'
 #' @seealso \code{\link{read_data}}, \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 #' @export
 create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = NULL, aggregation_timeunit = "day", save_directory = ".", save_filename = NULL, showprogress = TRUE, log_directory = NULL){
