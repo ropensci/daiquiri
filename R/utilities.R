@@ -78,3 +78,17 @@ log_function_start <- function(functionname){
 log_function_end <- function(functionname){
 	log_message(paste("[END FUNCTION]", functionname), FALSE)
 }
+
+# custom errors with classes that can be tested for
+# copied from https://adv-r.hadley.nz/conditions.html#custom-conditions
+stop_custom <- function(.subclass, message, call = NULL, ...) {
+  err <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c(.subclass, "error", "condition")
+  )
+  stop(err)
+}

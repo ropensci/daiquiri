@@ -528,9 +528,10 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 	}
 
 	if (length(err_validation) > 0) {
-		stop("Invalid column names.\n",
-				 paste(err_validation, collapse = "\n"),
-				 call. = FALSE)
+    stop_custom(.subclass = "invalid_columnnames",
+    						message = paste0("Invalid column names.\n",
+    														 paste(err_validation, collapse = "\n")),
+    						call. = FALSE)
 	}
 
 }

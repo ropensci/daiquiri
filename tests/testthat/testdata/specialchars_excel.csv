@@ -1,0 +1,10 @@
+date,freetext,numeric_good,numeric_mixed
+01/01/2001,plain string,5,5
+02/01/2001,"hello, there",,
+03/01/2001,the show's on,7,7.544
+04/01/2001,"""so,"" he said",7.256,8g
+05/01/2001,"lot's of ""quotes""",0.00001,"""9"""
+06/01/2001,"just "" here",0,'10'
+07/01/2001,"line
+return",11000,"11,000"
+08/01/2001,end,-78,-78
