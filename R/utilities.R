@@ -40,8 +40,8 @@ validate_param_savefilename <- function(filename, allownull = FALSE){
 #' @param dirpath String containing directory to save log file
 #' @export
 log_initialise <- function(dirpath){
-	save_dir <- validate_param_dir(dirpath)
-	packageenvironment$logname <- file.path(save_dir, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	validate_param_dir(dirpath)
+	packageenvironment$logname <- file.path(dirpath, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
 	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(utils::packageName()), ";", R.Version()$version.string))
 }
 
