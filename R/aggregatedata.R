@@ -434,7 +434,7 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 	# save_filetype = "csv"
 
 	# validation checks on params
-	save_directory <- validate_param_dir(save_directory)
+	validate_param_dir(save_directory)
 	if( !(save_filetype %in% c("csv")) ){
 		stop(paste("Invalid save_filetype: ", save_filetype, ". Only csv format is currently supported"))
 	}
