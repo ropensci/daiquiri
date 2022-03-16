@@ -61,3 +61,13 @@ test_that("validate_param_savefilename() checks if supplied name is acceptable",
 							 class = "invalid_file_or_path")
 
 })
+
+test_that("validate_param_xxx() check for correct type", {
+	expect_silent(validate_param_df(df = data.frame("Fieldname" = 123)))
+	expect_error(validate_param_df(df = c("Fieldname" = 123)),
+							 class = "invalid_param_df")
+
+	expect_silent(validate_param_fieldtypes(fieldtypes(Col_tp = ft_timepoint())))
+	expect_error(validate_param_fieldtypes(TRUE),
+							 class = "invalid_param_fieldtypes")
+})

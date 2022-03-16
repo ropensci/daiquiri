@@ -34,13 +34,20 @@ test_that("validate_columnnames() checks that colnames match fieldtypes spec", {
 })
 
 
-## TEST THAT DATA TYPE TO LOAD IS VALID ##
 
-test_that("Non-data frames not allowed", {
+test_that("prepare_data() params are present and of correct type", {
+	expect_error(prepare_data(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+							 class = "invalid_param_missing")
+
+	expect_error(prepare_data(df = data.frame("Fieldname" = 123)),
+							 class = "invalid_param_missing")
+
 	expect_error(prepare_data(c("Fieldname", 123),
-														fieldtypes = fieldtypes(Col_tp = ft_timepoint()),
-														override_columnnames = FALSE,
-														na = NULL,
-														showprogress = FALSE),
-							 regexp = "Invalid data source")
+														fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+							 class = "invalid_param_df")
+
+	expect_error(prepare_data(df = data.frame("Fieldname" = 123),
+														fieldtypes = TRUE),
+							 class = "invalid_param_fieldtypes")
+
 })

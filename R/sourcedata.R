@@ -67,14 +67,8 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	colindex = rowindex = fieldname = NULL
 
 	validate_params_required(param_names = c("df", "fieldtypes"))
-
-	# TODO: consolidate param checks
-	if( !is.data.frame(df) ){
-		stop(paste("Invalid data source: [ class = ", class(df), "; contents = ", substr(toString(df),1,100), "]. First parameter must be a data frame"))
-	}
-	if( !is.fieldtypes(fieldtypes) ){
-		stop(paste("Something other than a fieldtypes specification was supplied in fieldtypes parameter: [ class = ", class(fieldtypes), "; contents = ", substr(toString(fieldtypes),1,100), "]"))
-	}
+	validate_param_df(df)
+	validate_param_fieldtypes(fieldtypes)
 
 	# use dataset_shortdesc if present, otherwise get from call
 	if( is.null(dataset_shortdesc) ){

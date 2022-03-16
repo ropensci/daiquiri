@@ -88,6 +88,8 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 
 	# check params before running anything so that it fails sooner rather than later
 	validate_params_required(param_names = c("df", "fieldtypes"))
+	validate_param_df(df)
+	validate_param_fieldtypes(fieldtypes)
 	validate_aggregation_unit(aggregation_timeunit)
 	validate_param_dir(save_directory)
 	validate_param_savefilename(save_filename, allownull = TRUE)

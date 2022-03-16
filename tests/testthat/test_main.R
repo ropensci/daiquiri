@@ -28,3 +28,19 @@ test_that("Test read_data() on csv file created using Excel", {
 
 })
 
+test_that("create_report() params are present and of correct type", {
+	expect_error(create_report(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+							 class = "invalid_param_missing")
+
+	expect_error(create_report(df = data.frame("Fieldname" = 123)),
+							 class = "invalid_param_missing")
+
+	expect_error(create_report(c("Fieldname", 123),
+														fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+							 class = "invalid_param_df")
+
+	expect_error(create_report(df = data.frame("Fieldname" = 123),
+														fieldtypes = TRUE),
+							 class = "invalid_param_fieldtypes")
+
+})

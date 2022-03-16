@@ -44,6 +44,22 @@ validate_param_savefilename <- function(filename, allownull = FALSE){
 	}
 }
 
+validate_param_df <- function(df){
+	if( !is.data.frame(df) ){
+		stop_custom(.subclass = "invalid_param_df",
+								message = paste0("Invalid data source: [ class = ", class(df),
+																 "; contents = ", substr(toString(df),1,100), "].",
+																 " 'df' parameter must be a data frame"))
+	}
+}
+
+validate_param_fieldtypes <- function(fieldtypes){
+	if( !is.fieldtypes(fieldtypes) ){
+		stop_custom(.subclass = "invalid_param_fieldtypes",
+								message = paste0("Something other than a fieldtypes specification was supplied in fieldtypes parameter: [ class = ", class(fieldtypes), "; contents = ", substr(toString(fieldtypes),1,100), "]"))
+	}
+}
+
 # -----------------------------------------------------------------------------
 # logging functions
 #' Initialise log file
