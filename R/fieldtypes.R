@@ -263,8 +263,7 @@ fieldtypes <- function(...) {
   if (length(err_validation) > 0) {
     stop_custom(.subclass = "invalid_fieldtypes",
     						message = paste0("Invalid `fieldtypes' specification.\n",
-    														 paste(err_validation, collapse = "\n")),
-    						call. = FALSE)
+    														 paste(err_validation, collapse = "\n")))
   }
 
   structure(fts, class = "fieldtypes")
