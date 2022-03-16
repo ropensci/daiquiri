@@ -57,6 +57,7 @@ report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_fi
 
 	log_function_start(match.call()[[1]])
 
+	validate_params_required(param_names = c("sourcedata", "aggregatedata"))
 	validate_param_dir(save_directory)
 	if( is.null(save_filename) ){
 		save_filename <- paste0("daiquiri_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))

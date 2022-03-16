@@ -281,6 +281,8 @@ aggregate_data <- function(data, aggregation_timeunit = "day", showprogress = TR
 
 	log_function_start(match.call()[[1]])
 
+	validate_params_required(param_names = c("data"))
+
 	# create column to group by
 	# TODO: raise an error/warning if data is less granular than aggregation_timeunit
 	validate_aggregation_unit(aggregation_timeunit)
@@ -434,6 +436,7 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 	# save_filetype = "csv"
 
 	# validation checks on params
+	validate_params_required(param_names = c("aggregatedata", "save_directory"))
 	validate_param_dir(save_directory)
 	if( !(save_filetype %in% c("csv")) ){
 		stop(paste("Invalid save_filetype: ", save_filetype, ". Only csv format is currently supported"))

@@ -1,5 +1,19 @@
 # Generic functions
-# TODO: Check file paths use slashes consistently
+
+# check required params have been passed in
+# param_names is a vector
+validate_params_required <- function(param_names){
+	# get the arguments passed into the parent call
+	params_passed <- names(as.list(match.call(definition = sys.function(-1), call = sys.call(sys.parent())))[-1])
+
+	if (any(!param_names %in% params_passed)) {
+		stop_custom(.subclass = "invalid_param_missing",
+								message = paste("Required argument(s) missing:",
+																paste(setdiff(param_names, params_passed),
+																			collapse=", ")))
+	}
+
+}
 
 validate_param_file <- function(filepath){
 	if(!file.exists(filepath)){
@@ -40,6 +54,8 @@ validate_param_savefilename <- function(filename, allownull = FALSE){
 #' @param dirpath String containing directory to save log file
 #' @export
 log_initialise <- function(dirpath){
+
+	validate_params_required(param_names = c("dirpath"))
 	validate_param_dir(dirpath)
 	packageenvironment$logname <- file.path(dirpath, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
 	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(utils::packageName()), ";", R.Version()$version.string))

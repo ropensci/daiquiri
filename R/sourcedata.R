@@ -66,13 +66,9 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# initialise known column names to prevent R CMD check notes
 	colindex = rowindex = fieldname = NULL
 
+	validate_params_required(param_names = c("df", "fieldtypes"))
+
 	# TODO: consolidate param checks
-	if( missing(df) ){
-		stop(paste("df parameter is missing but is required"))
-	}
-	if( missing(fieldtypes) ){
-		stop(paste("fieldtypes parameter is missing but is required"))
-	}
 	if( !is.data.frame(df) ){
 		stop(paste("Invalid data source: [ class = ", class(df), "; contents = ", substr(toString(df),1,100), "]. First parameter must be a data frame"))
 	}

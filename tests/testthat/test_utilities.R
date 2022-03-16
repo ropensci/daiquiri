@@ -1,3 +1,20 @@
+test_that("validate_params_required() checks if params are supplied", {
+	testfun <- function(p1, p2, p3 = NULL){
+		validate_params_required(c("p1", "p2"))
+	}
+
+	expect_silent(testfun(1, 2))
+	expect_silent(testfun(p2 = 1, p1 = 2))
+
+	expect_error(testfun(),
+							 class = "invalid_param_missing")
+	expect_error(testfun(1),
+							 class = "invalid_param_missing")
+	expect_error(testfun(p2 = 1),
+							 class = "invalid_param_missing")
+
+})
+
 test_that("validate_param_file() checks if file exists", {
 	# Real file
 	expect_silent(validate_param_file(test_path("test_utilities.R")))
