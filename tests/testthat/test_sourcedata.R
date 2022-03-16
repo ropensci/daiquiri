@@ -1,4 +1,4 @@
-test_that("Test validate_columnnames() works correctly", {
+test_that("validate_columnnames() checks that colnames match fieldtypes spec", {
 	# Column names in data and fieldtypes match exactly
 	expect_silent(validate_columnnames(c("nonsense","set","of")
 																		 ,c("nonsense","set","of"), check_length_only = FALSE))
