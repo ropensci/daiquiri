@@ -129,15 +129,16 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 			g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
 		}
 
-		# add changepoint lines if requested
-		if( changepoint_methods != "none"){
-			cpts <- aggfield$changepoints[[aggtype]]
-			for(k in 1:length(cpts)){
-				if( names(cpts[k]) %in% changepoint_methods || changepoint_methods == "all" ){
-					g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
-				}
-			}
-		}
+		# NOTE: Changepoints functionality disabled until we find a method that works
+		# # add changepoint lines if requested
+		# if( changepoint_methods != "none"){
+		# 	cpts <- aggfield$changepoints[[aggtype]]
+		# 	for(k in 1:length(cpts)){
+		# 		if( names(cpts[k]) %in% changepoint_methods || changepoint_methods == "all" ){
+		# 			g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
+		# 		}
+		# 	}
+		# }
 	}
 
 	g
