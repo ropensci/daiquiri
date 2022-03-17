@@ -17,50 +17,101 @@ validate_params_required <- function(call){
 	}
 }
 
-validate_param_file <- function(filepath){
-	if(!file.exists(filepath)){
-		stop_custom(.subclass = "invalid_file_or_path",
-								message = paste0("File not found: ", filepath))
-	}
-}
+# TODO: check if passing in df objects affects performance
+validate_params_type <- function(call, ...){
+	params_defined <- names(formals(as.character(call[[1]])))
+	params_passed <- list(...)
+	params_names <- names(params_passed)
 
-validate_param_dir <- function(dirpath){
-	if(!dir.exists(dirpath)){
-		stop_custom(.subclass = "invalid_file_or_path",
-								message = paste0("Directory not found: ", dirpath))
+	# check internal usage is correct
+	if(length(which(params_names != "")) != length(params_passed)){
+		stop_custom(.subclass = "invalid_call",
+								message = "Invalid call for function. Params must be passed in with names")
 	}
-}
+	if(!setequal(params_defined, params_names)){
+		stop_custom(.subclass = "invalid_call",
+								message = paste0("Invalid call for function. Different set of params in parent function definition than were passed in. Params missing: ",
+																 paste(setdiff(params_names, params_defined), collapse=", "),
+																 "; Params superfluous: ",
+																 paste(setdiff(params_defined, params_names), collapse=", ")))
+	}
 
-validate_param_savefilename <- function(filename, allownull = FALSE){
-	if( is.null(filename) ){
-		if( allownull == FALSE ){
-			stop_custom(.subclass = "invalid_file_or_path",
-									message = "Filename is NULL. You must supply a filename.")
+	# validate user-supplied params - collect all errors together and return only once
+	err_validation <- character()
+	for(i in seq_along(params_names)){
+		if(params_names[i] == "df"){
+			if( !is.data.frame(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a data frame but found: [ class = ", class(params_passed[[i]]),
+																		 "; contents = ", substr(toString(params_passed[[i]]),1,100), "]."))
+			}
+		} else if(params_names[i] == "fieldtypes"){
+			if( !is.fieldtypes(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a fieldtypes specification but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
+		} else if(params_names[i] == "sourcedata"){
+			if( !is.sourcedata(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a sourcedata object but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
+		} else if(params_names[i] == "aggregatedata"){
+			if( !is.aggregatedata(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a aggregatedata object but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
+		} else if(params_names[i] %in% c("override_columnnames", "showprogress")){
+			if( !is.logical(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected TRUE/FALSE but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
+		} else if(params_names[i] %in% c("save_directory")){
+			if(!is.character(params_passed[[i]]) || !dir.exists(params_passed[[i]])){
+				err_validation <- append(err_validation,
+																 paste0(params_names[i], ": Directory not found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,255), "]"))
+			}
+		} else if(params_names[i] %in% c("log_directory")){
+			if(!is.null(params_passed[[i]]) && ( !is.character(params_passed[[i]]) || !dir.exists(params_passed[[i]]) )){
+				err_validation <- append(err_validation,
+																 paste0(params_names[i], ": Directory not found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,255), "]"))
+			}
+		} else if(params_names[i] %in% c("save_filename")){
+			if( !is.null(params_passed[[i]]) && ( grepl("[^a-zA-Z0-9_-]", params_passed[[i]]) || nchar(params_passed[[i]]) == 0 ) ){
+					# NOTE: this is very restrictive and I'm not sure how it works in different locales
+				err_validation <- append(err_validation,
+																 paste0(params_names[i], ": Invalid filename: ",
+																			 params_passed[[i]],
+																			 ". Filename can only contain alphanumeric, '-', and '_' characters, and should not include the file extension."))
+			}
+		} else if(params_names[i] %in% c("aggregation_timeunit")){
+			if( length(params_passed[[i]]) != 1 || !(params_passed[[i]] %in% c("day","week","month","quarter","year")) ) {
+				err_validation <- append(err_validation,
+																 paste0(params_names[i], ": Values allowed are: day, week, month, quarter, year but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
+
+		} else if(params_names[i] %in% c("dataset_shortdesc")){
+			if( !is.null(params_passed[[i]]) && ( !is.character(params_passed[[i]]) || length(params_passed[[i]]) != 1 ) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a character string but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,500), "]"))
+			}
+		} else if(params_names[i] %in% c("na")){
+			if( any(!is.character(params_passed[[i]])) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a vector of character strings but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,500), "]"))
+			}
+		} else if(params_names[i] %in% c("format", "save_filetype")){
+			# ignore for now as currently dealt with inside function
 		}
-	} else if( grepl("[^a-zA-Z0-9_-]", filename) || nchar(filename) == 0 ){
-		# NOTE: this is very restrictive and I'm not sure how it works in different locales
-		stop_custom(.subclass = "invalid_file_or_path",
-								message = paste0("Invalid filename: ",
-																 filename,
-																 ". Filename can only contain alphanumeric, '-', and '_' characters, and should not include the file extension."))
 	}
+
+	if (length(err_validation) > 0) {
+  stop_custom(.subclass = "invalid_param_type",
+  						message = paste0("Invalid argument(s) supplied.\n",
+  														 paste(err_validation, collapse = "\n")))
+	}
+
 }
 
-validate_param_df <- function(df){
-	if( !is.data.frame(df) ){
-		stop_custom(.subclass = "invalid_param_type",
-								message = paste0("Invalid data source: [ class = ", class(df),
-																 "; contents = ", substr(toString(df),1,100), "].",
-																 " 'df' parameter must be a data frame"))
-	}
-}
-
-validate_param_fieldtypes <- function(fieldtypes){
-	if( !is.fieldtypes(fieldtypes) ){
-		stop_custom(.subclass = "invalid_param_type",
-								message = paste0("Something other than a fieldtypes specification was supplied in fieldtypes parameter: [ class = ", class(fieldtypes), "; contents = ", substr(toString(fieldtypes),1,100), "]"))
-	}
-}
 
 # -----------------------------------------------------------------------------
 # logging functions
@@ -74,7 +125,8 @@ validate_param_fieldtypes <- function(fieldtypes){
 log_initialise <- function(dirpath){
 
 	validate_params_required(match.call())
-	validate_param_dir(dirpath)
+	validate_params_type(match.call(),
+											 dirpath = dirpath)
 	packageenvironment$logname <- file.path(dirpath, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
 	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(utils::packageName()), ";", R.Version()$version.string))
 }
@@ -119,3 +171,44 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   )
   stop(err)
 }
+
+######################################################
+# dummy functions set up for unit testing. testthat can't find them when they are defined in the test_xxx files
+
+# test_utilities
+testfn_params_required <- function(p1, p2, p3 = NULL){
+	validate_params_required(match.call())
+}
+
+testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv"){
+		if(missing(df)){
+			df <- data.frame("Fieldname" = 123)
+		}
+		if(missing(fieldtypes)){
+			fieldtypes <- daiquiri::fieldtypes(Col_tp = ft_timepoint())
+		}
+		if(missing(sourcedata)){
+			sourcedata <- structure(list(datafields = NA), class = "sourcedata")
+		}
+		if(missing(aggregatedata)){
+			aggregatedata <- structure(list(datafields = NA), class = "aggregatedata")
+		}
+
+		validate_params_type(match.call(),
+												 df = df,
+												 fieldtypes = fieldtypes,
+												 override_columnnames = override_columnnames,
+												 na = na,
+												 dataset_shortdesc = dataset_shortdesc,
+												 aggregation_timeunit = aggregation_timeunit,
+												 save_directory = save_directory,
+												 save_filename = save_filename,
+												 showprogress = showprogress,
+												 log_directory = log_directory,
+												 sourcedata = sourcedata,
+												 aggregatedata = aggregatedata,
+												 format = format,
+												 save_filetype = save_filetype)
+	}
+
+

@@ -4,10 +4,10 @@
 \alias{aggregate_data}
 \title{Aggregate source data}
 \usage{
-aggregate_data(data, aggregation_timeunit = "day", showprogress = TRUE)
+aggregate_data(sourcedata, aggregation_timeunit = "day", showprogress = TRUE)
 }
 \arguments{
-\item{data}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
+\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
 

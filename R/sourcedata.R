@@ -67,8 +67,13 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	colindex = rowindex = fieldname = NULL
 
 	validate_params_required(match.call())
-	validate_param_df(df)
-	validate_param_fieldtypes(fieldtypes)
+	validate_params_type(match.call(),
+											 df = df,
+											 fieldtypes = fieldtypes,
+											 override_columnnames = override_columnnames,
+											 na = na,
+											 dataset_shortdesc = dataset_shortdesc,
+											 showprogress = showprogress)
 
 	# use dataset_shortdesc if present, otherwise get from call
 	if( is.null(dataset_shortdesc) ){

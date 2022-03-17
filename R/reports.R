@@ -58,11 +58,16 @@ report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_fi
 	log_function_start(match.call()[[1]])
 
 	validate_params_required(match.call())
-	validate_param_dir(save_directory)
+	validate_params_type(match.call(),
+											 sourcedata = sourcedata,
+											 aggregatedata = aggregatedata,
+											 save_directory = save_directory,
+											 save_filename = save_filename,
+											 showprogress = showprogress,
+											 format = format)
+
 	if( is.null(save_filename) ){
 		save_filename <- paste0("daiquiri_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
-	} else{
-		validate_param_savefilename(save_filename)
 	}
 
 	fileandpath <- file.path(save_directory, paste0(save_filename, ".html"))

@@ -88,11 +88,17 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 
 	# check params before running anything so that it fails sooner rather than later
 	validate_params_required(match.call())
-	validate_param_df(df)
-	validate_param_fieldtypes(fieldtypes)
-	validate_aggregation_unit(aggregation_timeunit)
-	validate_param_dir(save_directory)
-	validate_param_savefilename(save_filename, allownull = TRUE)
+	validate_params_type(match.call(),
+											 df = df,
+											 fieldtypes = fieldtypes,
+											 override_columnnames = override_columnnames,
+											 na = na,
+											 dataset_shortdesc = dataset_shortdesc,
+											 aggregation_timeunit = aggregation_timeunit,
+											 save_directory = save_directory,
+											 save_filename = save_filename,
+											 showprogress = showprogress,
+											 log_directory = log_directory)
 
 	sourcedata <- prepare_data(df, fieldtypes, override_columnnames = override_columnnames, dataset_shortdesc = dataset_shortdesc, na = na, showprogress = showprogress)
 
@@ -169,6 +175,7 @@ read_data <- function(file, delim = NULL, col_names = TRUE, quote = "\"", trim_w
 											comment = "", skip = 0, n_max = Inf, showprogress = TRUE){
 
 	validate_params_required(match.call())
+	# NOTE: let readr do its own param validation
 
 	readr::read_delim(file, delim = delim, quote = quote, col_names = col_names, col_types = readr::cols(.default = "c"),
 										col_select = NULL, na = character(), comment = comment, trim_ws = trim_ws,
