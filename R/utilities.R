@@ -2,17 +2,19 @@
 
 # check required params have been passed in
 # param_names is a vector
-validate_params_required <- function(param_names){
+validate_params_required <- function(call){
+	# get the required arguments from function definition
+	params_defined <- formals(as.character(call[[1]]))
+	params_required <- names(which(sapply(params_defined, is.symbol)))
 	# get the arguments passed into the parent call
-	params_passed <- names(as.list(match.call(definition = sys.function(-1), call = sys.call(sys.parent())))[-1])
+	params_passed <- names(as.list(call)[-1])
 
-	if (any(!param_names %in% params_passed)) {
+	if (any(!params_required %in% params_passed)) {
 		stop_custom(.subclass = "invalid_param_missing",
 								message = paste("Required argument(s) missing:",
-																paste(setdiff(param_names, params_passed),
+																paste(setdiff(params_required, params_passed),
 																			collapse=", ")))
 	}
-
 }
 
 validate_param_file <- function(filepath){
@@ -46,7 +48,7 @@ validate_param_savefilename <- function(filename, allownull = FALSE){
 
 validate_param_df <- function(df){
 	if( !is.data.frame(df) ){
-		stop_custom(.subclass = "invalid_param_df",
+		stop_custom(.subclass = "invalid_param_type",
 								message = paste0("Invalid data source: [ class = ", class(df),
 																 "; contents = ", substr(toString(df),1,100), "].",
 																 " 'df' parameter must be a data frame"))
@@ -55,7 +57,7 @@ validate_param_df <- function(df){
 
 validate_param_fieldtypes <- function(fieldtypes){
 	if( !is.fieldtypes(fieldtypes) ){
-		stop_custom(.subclass = "invalid_param_fieldtypes",
+		stop_custom(.subclass = "invalid_param_type",
 								message = paste0("Something other than a fieldtypes specification was supplied in fieldtypes parameter: [ class = ", class(fieldtypes), "; contents = ", substr(toString(fieldtypes),1,100), "]"))
 	}
 }
@@ -71,7 +73,7 @@ validate_param_fieldtypes <- function(fieldtypes){
 #' @export
 log_initialise <- function(dirpath){
 
-	validate_params_required(param_names = c("dirpath"))
+	validate_params_required(match.call())
 	validate_param_dir(dirpath)
 	packageenvironment$logname <- file.path(dirpath, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
 	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(utils::packageName()), ";", R.Version()$version.string))

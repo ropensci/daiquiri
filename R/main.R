@@ -87,7 +87,7 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 	log_function_start(match.call()[[1]])
 
 	# check params before running anything so that it fails sooner rather than later
-	validate_params_required(param_names = c("df", "fieldtypes"))
+	validate_params_required(match.call())
 	validate_param_df(df)
 	validate_param_fieldtypes(fieldtypes)
 	validate_aggregation_unit(aggregation_timeunit)
@@ -168,7 +168,7 @@ print.daiquiri_object <- function(x, ...){
 read_data <- function(file, delim = NULL, col_names = TRUE, quote = "\"", trim_ws = TRUE,
 											comment = "", skip = 0, n_max = Inf, showprogress = TRUE){
 
-	validate_params_required(param_names = c("file"))
+	validate_params_required(match.call())
 
 	readr::read_delim(file, delim = delim, quote = quote, col_names = col_names, col_types = readr::cols(.default = "c"),
 										col_select = NULL, na = character(), comment = comment, trim_ws = trim_ws,

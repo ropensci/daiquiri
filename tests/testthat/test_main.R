@@ -37,10 +37,10 @@ test_that("create_report() params are present and of correct type", {
 
 	expect_error(create_report(c("Fieldname", 123),
 														fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
-							 class = "invalid_param_df")
+							 class = "invalid_param_type")
 
 	expect_error(create_report(df = data.frame("Fieldname" = 123),
 														fieldtypes = TRUE),
-							 class = "invalid_param_fieldtypes")
+							 class = "invalid_param_type")
 
 })

@@ -66,7 +66,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# initialise known column names to prevent R CMD check notes
 	colindex = rowindex = fieldname = NULL
 
-	validate_params_required(param_names = c("df", "fieldtypes"))
+	validate_params_required(match.call())
 	validate_param_df(df)
 	validate_param_fieldtypes(fieldtypes)
 
