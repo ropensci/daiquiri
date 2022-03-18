@@ -51,3 +51,51 @@ test_that("prepare_data() params are present and of correct type", {
 							 class = "invalid_param_type")
 
 })
+
+
+test_that("prepare_data() creates sourcedata object correctly", {
+	testdf <- read_data(test_path("testdata", "completetestset.csv"))
+	testsourcedata <- prepare_data(testdf,
+																 fieldtypes = fieldtypes( col_timepoint_err = ft_ignore(),
+																													col_timepoint = ft_timepoint(),
+																													col_date_time_err = ft_ignore(),
+																													col_date_time = ft_datetime(),
+																													col_date_only_err = ft_ignore(),
+																													col_date_only = ft_datetime(includes_time = FALSE),
+																													col_date_uk_err = ft_ignore(),
+																													col_date_uk = ft_datetime(includes_time = FALSE, format = "%d/%m/%Y"),
+																													col_id_num_err = ft_ignore(),
+																													col_id_num = ft_uniqueidentifier(),
+																													col_id_string_err = ft_ignore(),
+																													col_id_string = ft_uniqueidentifier(),
+																													col_numeric_clean_err = ft_ignore(),
+																													col_numeric_clean = ft_numeric(),
+																													col_numeric_dirty_err = ft_ignore(),
+																													col_numeric_dirty = ft_numeric(),
+																													col_categorical_small_err = ft_ignore(),
+																													col_categorical_small = ft_categorical(aggregate_by_each_category = TRUE),
+																													col_categorical_large_err = ft_ignore(),
+																													col_categorical_large = ft_categorical(),
+																													col_freetext_err = ft_ignore(),
+																													col_freetext = ft_freetext(),
+																													col_simple_err = ft_ignore(),
+																													col_simple = ft_simple()),
+																 dataset_shortdesc = "completetestset",
+																 showprogress = FALSE
+																 )
+
+	expect_s3_class(testsourcedata, "sourcedata")
+
+	expect_equal(testsourcedata$timepoint_fieldname, "col_timepoint")
+	expect_equal(testsourcedata$timepoint_missing_n, 6)
+	expect_equal(testsourcedata$rows_source_n, 900)
+	expect_equal(testsourcedata$rows_imported_n, 890)
+	expect_equal(testsourcedata$rows_duplicates_n, 4)
+	expect_equal(testsourcedata$cols_source_n, 24)
+	expect_equal(testsourcedata$cols_imported_n, 12)
+	expect_equal(testsourcedata$dataset_shortdesc, "completetestset")
+
+	expect_snapshot(testsourcedata$validation_warnings)
+
+})
+

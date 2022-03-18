@@ -37,3 +37,4 @@ Suggests:
     knitr,
     testthat
 VignetteBuilder: knitr
+Config/testthat/edition: 3
