@@ -4,15 +4,22 @@
 \alias{export_aggregated_data}
 \title{Export aggregated data}
 \usage{
-export_aggregated_data(aggregatedata, save_directory, save_filetype = "csv")
+export_aggregated_data(
+  aggregatedata,
+  save_directory,
+  save_fileprefix = "",
+  save_filetype = "csv"
+)
 }
 \arguments{
 \item{aggregatedata}{A \code{aggregatedata} object}
 
 \item{save_directory}{String. Full or relative path for save folder}
 
+\item{save_fileprefix}{String. Optional prefix for the exported filenames}
+
 \item{save_filetype}{String. Filetype extension supported by \code{readr}, currently only csv allowed}
 }
 \description{
-Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset
+Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset.
 }

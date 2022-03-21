@@ -426,13 +426,14 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 # -----------------------------------------------------------------------------
 #' Export aggregated data
 #'
-#' Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset
+#' Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset.
 #'
 #' @param aggregatedata A \code{aggregatedata} object
 #' @param save_directory String. Full or relative path for save folder
+#' @param save_fileprefix String. Optional prefix for the exported filenames
 #' @param save_filetype String. Filetype extension supported by \code{readr}, currently only csv allowed
 #' @export
-export_aggregated_data <- function(aggregatedata, save_directory, save_filetype = "csv"){
+export_aggregated_data <- function(aggregatedata, save_directory, save_fileprefix = "", save_filetype = "csv"){
 	#temp assignment
 	# aggregatedata<-testcpddata_byday
 	# save_directory = ".\\devtesting\\testoutput\\"
@@ -443,6 +444,7 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 	validate_params_type(match.call(),
 											 aggregatedata = aggregatedata,
 											 save_directory = save_directory,
+											 save_fileprefix = save_fileprefix,
 											 save_filetype = save_filetype)
 
 	if( !(save_filetype %in% c("csv")) ){
@@ -452,7 +454,7 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_filetype 
 	# export a file for each field in dataset
 	for( i in seq_along(aggregatedata$aggregatefields) ){
 		readr::write_csv(aggregatedata$aggregatefields[[i]]$values,
-										 file.path(save_directory, paste0(names(aggregatedata$aggregatefields[i]), ".csv"))
+										 file.path(save_directory, paste0(save_fileprefix, names(aggregatedata$aggregatefields[i]), ".csv"))
 										 )
 	}
 

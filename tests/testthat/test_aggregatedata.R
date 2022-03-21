@@ -75,3 +75,40 @@ test_that("aggregate_data() creates aggregate object correctly", {
 	expect_equal(ncol(testaggregatedata$aggregatefields$ALLFIELDSCOMBINED$values), 6)
 
 })
+
+test_that("export_aggregated_data() params are present and of correct type", {
+	expect_error(export_aggregated_data(save_directory = tempdir()),
+							 class = "invalid_param_missing")
+
+	expect_error(export_aggregated_data(aggregatedata = structure(list(datafields = NA), class = "aggregatedata")),
+							 class = "invalid_param_missing")
+
+	expect_error(export_aggregated_data(data.frame("Fieldname" = 123), save_directory = tempdir()),
+							 class = "invalid_param_type")
+
+})
+
+test_that("export_aggregated_data() generates csv files", {
+	testsourcedata <- prepare_data(data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5),
+																 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																 												col2 = ft_simple(),
+																 												col3 = ft_ignore()),
+																 dataset_shortdesc = "exporttestset",
+																 showprogress = FALSE
+	)
+	testaggregatedata <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+	export_aggregated_data(testaggregatedata, save_directory = tempdir(), save_fileprefix = "test_")
+
+	expect_snapshot_file(file.path(tempdir(), "test_col1.csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_col2.csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_ALLFIELDSCOMBINED.csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_DUPLICATES.csv"))
+
+	expect_false(file.exists(file.path(tempdir(), "test_col3.csv")))
+
+	# clean up
+	file.remove(file.path(tempdir(), "test_col1.csv"))
+	file.remove(file.path(tempdir(), "test_col2.csv"))
+	file.remove(file.path(tempdir(), "test_ALLFIELDSCOMBINED.csv"))
+	file.remove(file.path(tempdir(), "test_DUPLICATES.csv"))
+})

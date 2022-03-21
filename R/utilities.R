@@ -29,9 +29,9 @@ validate_params_type <- function(call, ...){
 	}
 	if(!setequal(params_defined, params_names)){
 		stop_custom(.subclass = "invalid_call",
-								message = paste0("Invalid call for function. Different set of params in parent function definition than were passed in. Params missing: ",
+								message = paste0("Invalid call for function. Different set of params in parent function definition than were passed in to validate_params_type(). In validate_params_type() but not in parent function: ",
 																 paste(setdiff(params_names, params_defined), collapse=", "),
-																 "; Params superfluous: ",
+																 "; In parent function but not in validate_params_type(): ",
 																 paste(setdiff(params_defined, params_names), collapse=", ")))
 	}
 
@@ -81,6 +81,14 @@ validate_params_type <- function(call, ...){
 																 paste0(params_names[i], ": Invalid filename: ",
 																			 params_passed[[i]],
 																			 ". Filename can only contain alphanumeric, '-', and '_' characters, and should not include the file extension."))
+			}
+		} else if(params_names[i] %in% c("save_fileprefix")){
+			if( grepl("[^a-zA-Z0-9_-]", params_passed[[i]]) ){
+				# NOTE: this is very restrictive and I'm not sure how it works in different locales
+				err_validation <- append(err_validation,
+																 paste0(params_names[i], ": Invalid fileprefix: ",
+																 			 params_passed[[i]],
+																 			 ". Fileprefix can only contain alphanumeric, '-', and '_' characters"))
 			}
 		} else if(params_names[i] %in% c("aggregation_timeunit")){
 			if( length(params_passed[[i]]) != 1 || !(params_passed[[i]] %in% c("day","week","month","quarter","year")) ) {
@@ -179,7 +187,7 @@ testfn_params_required <- function(p1, p2, p3 = NULL){
 	validate_params_required(match.call())
 }
 
-testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv"){
+testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv", save_fileprefix = ""){
 		if(missing(df)){
 			df <- data.frame("Fieldname" = 123)
 		}
@@ -207,7 +215,8 @@ testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, overri
 												 sourcedata = sourcedata,
 												 aggregatedata = aggregatedata,
 												 format = format,
-												 save_filetype = save_filetype)
+												 save_filetype = save_filetype,
+												 save_fileprefix = save_fileprefix)
 	}
 
 
