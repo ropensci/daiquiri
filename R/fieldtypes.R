@@ -228,10 +228,10 @@ ft_duplicates <- function() {
 # need to think about how that would work if want to allow user to define more complicated specifications though
 #' Create fieldtypes specification
 #'
-#' Helper function for users to specify the types of fields in the source data.  This is important both for reading
-#'   in the data correctly, and because the data in each field will aggregated in different ways,
+#' Specify the names and types of fields in the source data frame.
+#' This is important because the data in each field will be aggregated in different ways,
 #'   depending on its fieldtype.  See \link{availablefieldtypes}
-#' @param ... names and types of fields (columns) in source data, in the correct order.
+#' @param ... names and types of fields (columns) in source data.
 #' @return A \code{fieldtypes} object
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
 #'                             TestID = ft_ignore(),
@@ -288,7 +288,27 @@ print.fieldtypes <- function(x, ...) {
 	cat(fieldtypes_to_string(x))
 }
 
-
+#' Print a template fieldtypes specification to console
+#'
+#' Helper function to generate template code for a fieldtypes() specification, based on
+#' the supplied data frame. All fields (columns) in the specification will be defined using the default_fieldtype,
+#' and the console output can be copied and updated before being used as input to \code{\link{create_report}}() or \code{\link{prepare_data}}().
+#' @param df data frame including the column names for the template specification
+#' @param default_fieldtype fieldtype to be used for each column. Default = \code{ft_ignore()}. See  \code{\link{availablefieldtypes}}
+#' @examples
+#' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
+#'
+#' fieldtypes_template(df, default_fieldtype = ft_numeric())
+#' @seealso \code{\link{fieldtypes}}
+#' @export
+fieldtypes_template <- function(df, default_fieldtype = ft_ignore()){
+	fieldnames <- names(df)
+	cat("fieldtypes(",
+			paste0(fieldnames, " = ft_", default_fieldtype$type, "()",
+						 ifelse(fieldnames == rev(fieldnames)[1], "", ","),
+						 collapse = "\n\t" ),
+			")")
+}
 
 # -----------------------------------------------------------------------------
 # MAP ALLOWABLE TYPES TO:

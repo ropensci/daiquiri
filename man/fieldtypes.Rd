@@ -7,14 +7,14 @@
 fieldtypes(...)
 }
 \arguments{
-\item{...}{names and types of fields (columns) in source data, in the correct order.}
+\item{...}{names and types of fields (columns) in source data.}
 }
 \value{
 A \code{fieldtypes} object
 }
 \description{
-Helper function for users to specify the types of fields in the source data.  This is important both for reading
-  in the data correctly, and because the data in each field will aggregated in different ways,
+Specify the names and types of fields in the source data frame.
+This is important because the data in each field will be aggregated in different ways,
   depending on its fieldtype.  See \link{availablefieldtypes}
 }
 \examples{
