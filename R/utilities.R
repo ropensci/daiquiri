@@ -17,7 +17,6 @@ validate_params_required <- function(call){
 	}
 }
 
-# TODO: check if passing in df objects affects performance
 validate_params_type <- function(call, ...){
 	params_defined <- names(formals(as.character(call[[1]])))
 	params_passed <- list(...)
