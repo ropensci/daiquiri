@@ -52,6 +52,16 @@ test_that("prepare_data() params are present and of correct type", {
 
 })
 
+test_that("prepare_data() checks that at least one valid timepoint value is present", {
+	expect_error(prepare_data(df = data.frame(col1 = rep("01/01/2022", 5), col2 = rep(1, 5), col3 = 1:5),
+														fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																										col2 = ft_simple(),
+																										col3 = ft_ignore()),
+														showprogress = FALSE),
+							 class = "invalid_param_type")
+
+})
+
 
 test_that("prepare_data() creates sourcedata object correctly", {
 	testdf <- read_data(test_path("testdata", "completetestset.csv"))
@@ -98,4 +108,3 @@ test_that("prepare_data() creates sourcedata object correctly", {
 	expect_snapshot(testsourcedata$validation_warnings)
 
 })
-

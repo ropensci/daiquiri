@@ -158,6 +158,11 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# TODO: check don't duplicate any messages from above
 	if (anyNA(clean_dt[[(timepoint_fieldname)]])){
 		navector <- is.na(clean_dt[[(timepoint_fieldname)]])
+		# stop if there are no valid timepoint values
+		if(sum(navector) == nrow(df)){
+			stop_custom(.subclass = "invalid_param_type",
+									message = "Timepoint field does not contain any valid values. Check the correct date format has been used.")
+		}
 		timepointwarnings <- data.table::data.table(colindex = which(names(df) == timepoint_fieldname),
 																								rowindex = which(navector == TRUE),
 																								message = "Missing or invalid value in Timepoint field"
