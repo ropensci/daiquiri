@@ -45,7 +45,7 @@ Operates as a restricted implementation of \code{readr::read_delim}.
 }
 \examples{
 rawdata <- read_data(
-  system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )

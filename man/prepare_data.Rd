@@ -36,7 +36,7 @@ Validate a data frame against a \code{\link{fieldtypes}} specification, and prep
 }
 \examples{
 rawdata <- read_data(
-  system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
@@ -50,7 +50,7 @@ sourcedataobj <- prepare_data(
     Dose = ft_numeric(),
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
-    SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+    Location = ft_categorical(aggregate_by_each_category=TRUE)),
   override_columnnames = FALSE,
   na = c("","NULL")
 )

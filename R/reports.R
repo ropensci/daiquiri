@@ -15,7 +15,7 @@
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' rawdata <- read_data(
-#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
@@ -29,7 +29,7 @@
 #'     Dose = ft_numeric(),
 #'     DoseUnit = ft_categorical(),
 #'     PatientID = ft_ignore(),
-#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
 #'   override_columnnames = FALSE,
 #'   na = c("","NULL"),
 #'   showprogress = TRUE
@@ -45,11 +45,11 @@
 #'   sourcedataobj,
 #'   aggregatedataobj,
 #'   save_directory = ".",
-#'   save_filename = "abx2014report",
+#'   save_filename = "example_data_report",
 #'   showprogress = TRUE
 #' )
 #'
-#' \dontshow{file.remove("./abx2014report.html")}
+#' \dontshow{file.remove("./example_data_report.html")}
 #'
 #' @seealso \code{\link{prepare_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
 #' @export

@@ -54,7 +54,7 @@ In order for the package to detect any non-conformant values in numeric or datet
 
 \examples{
 rawdata <- read_data(
-  system.file("extdata", "abx2014.csv", package = "daiquiri"),
+  system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
@@ -68,17 +68,17 @@ daiqobj <- create_report(
     Dose = ft_numeric(),
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
-    SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+    Location = ft_categorical(aggregate_by_each_category=TRUE)),
   override_columnnames = FALSE,
   na = c("","NULL"),
   aggregation_timeunit = "day",
   save_directory = ".",
-  save_filename = "abx2014report",
+  save_filename = "example_data_report",
   showprogress = TRUE,
   log_directory = NULL
 )
 
-\dontshow{file.remove("./abx2014report.html")}
+\dontshow{file.remove("./example_data_report.html")}
 
 }
 \seealso{

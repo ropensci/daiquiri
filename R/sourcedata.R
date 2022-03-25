@@ -33,7 +33,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
 #' @examples rawdata <- read_data(
-#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
@@ -47,7 +47,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'     Dose = ft_numeric(),
 #'     DoseUnit = ft_categorical(),
 #'     PatientID = ft_ignore(),
-#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
 #'   override_columnnames = FALSE,
 #'   na = c("","NULL")
 #' )

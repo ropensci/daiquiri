@@ -27,7 +27,7 @@ Dates are expected to be in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, th
 
 **Example:**
 
-The `abx2014` dataset is provided with this package as a csv file, and contains examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
+The `example_data` dataset is provided with this package as a csv file, and contains (synthetic) examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
 
 * PrescriptionID - the uniqueidentifier for the row
 * PrescriptionDate - The date the prescription was given
@@ -36,7 +36,7 @@ The `abx2014` dataset is provided with this package as a csv file, and contains 
 * Dose - The size of the dose prescribed
 * DoseUnit - The units for the dose prescribed
 * PatientID - A unique identifier for the patient
-* SourceSystem - The computer system that the prescription was created in
+* Location - The location of the patient
 
 There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
 
@@ -45,17 +45,17 @@ There are some missing values which are represented by the string 'NULL'. String
 library(daiquiri)
 
 # this is where the example file is located
-filename <- system.file("extdata", "abx2014.csv", package = "daiquiri")
+filename <- system.file("extdata", "example_data.csv", package = "daiquiri")
 
 # read in the data
-abx2014 <- read_data(
+example_data <- read_data(
   filename,
   delim = ",",
   col_names = TRUE,
   showprogress = FALSE
 )
 
-head(abx2014)
+head(example_data)
 ```
 
 ## Specification of data fields
@@ -87,7 +87,7 @@ NOTE: If your data is already aggregated (e.g. one column contains a date and th
 
 **Example:**
 
-For the `abx2014` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
+For the `example_data` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
 # set up a datafields specification for use later
@@ -99,7 +99,7 @@ fts <- fieldtypes(
   Dose = ft_numeric(),
   DoseUnit = ft_categorical(),
   PatientID = ft_ignore(),
-  SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)
+  Location = ft_categorical(aggregate_by_each_category=TRUE)
 )
 ```
 
@@ -119,38 +119,38 @@ If you specify a log directory, details of all the processing steps will be save
 
 **Example:**
 
-For the `abx2014` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
+For the `example_data` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
 
 ```{r, include=FALSE}
 # quietly check can create the report but show the code in the next chunk in the vignette
 daiqobj <- create_report(
-  df = abx2014,
+  df = example_data,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
-  dataset_shortdesc = "abx2014 example data",
+  dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
-  save_filename = "abx2014report",
+  save_filename = "example_data_report",
   showprogress = FALSE,
   log_directory = NULL
 )
 
 # clean up
-file.remove("./abx2014report.html")
+file.remove("./example_data_report.html")
 
 ```
 
 ```{r, eval=FALSE}
 daiqobj <- create_report(
-  df = abx2014,
+  df = example_data,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
-  dataset_shortdesc = "abx2014 example data",
+  dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
-  save_filename = "abx2014report",
+  save_filename = "example_data_report",
   showprogress = TRUE,
   log_directory = NULL
 )
@@ -165,19 +165,19 @@ The html reports created by this package can be opened in a browser and/or attac
 
 This contains child tabs which provide an overall summary of the data imported, plus a complete list of validation warnings (such as any values identified as non-conformant)
 
-<img src="../man/figures/abx2014_raw_fieldsimported.png" width="500" />
+<img src="../man/figures/example_data_source_fieldsimported.png" width="500" />
 
 ### Aggregated data
 
 This contains child tabs which display plots showing overall numbers of records, missing values, non-conformant values, and duplicate records per timepoint, across the dataset as a whole. Fields and timepoints where these values are not applicable are coloured in grey.
 
-<img src="../man/figures/abx2014_aggregated_valuespresent.png" width="500" />
+<img src="../man/figures/example_data_aggregated_valuespresent.png" width="500" />
 
 ### Individual data fields
 
 This contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created
 
-<img src="../man/figures/abx2014_allfields_missing_perc.png" width="500" />
+<img src="../man/figures/example_data_allfields_missing_perc.png" width="500" />
 
 ## Advanced usage details
 
@@ -185,37 +185,37 @@ The simplest way to use this package is to use the `create_report()` function as
 
 ```{r, eval=FALSE}
 # load your dataset into a sourcedata object
-abxsourcedata <- prepare_data(
-  abx2014, 
+examplesourcedata <- prepare_data(
+  example_data, 
   fieldtypes = fts, 
   na=c("","NULL")
 )
 
 # aggregate the sourcedata object by desired granularity
-abxaggregate_byday <- aggregate_data(
-  abxsourcedata,
+exampleaggregate_byday <- aggregate_data(
+  examplesourcedata,
   aggregation_timeunit = "day"
 )
 
 # aggregate the same sourcedata object by a different granularity
-abxaggregate_byweek <- aggregate_data(
-  abxsourcedata,
+exampleaggregate_byweek <- aggregate_data(
+  examplesourcedata,
   aggregation_timeunit = "week"
 )
 
 # generate and save the reports
 report_data(
-  sourcedata = abxsourcedata,
-  aggregatedata = abxaggregate_byday,
+  sourcedata = examplesourcedata,
+  aggregatedata = exampleaggregate_byday,
   save_directory = ".",
-  save_filename = "abx2014_byday"
+  save_filename = "example_data_byday"
 )
 
 report_data(
-  sourcedata = abxsourcedata,
-  aggregatedata = abxaggregate_byweek,
+  sourcedata = examplesourcedata,
+  aggregatedata = exampleaggregate_byweek,
   save_directory = ".",
-  save_filename = "abx2014_byweek"
+  save_filename = "example_data_byweek"
 )
 
 ```

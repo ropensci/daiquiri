@@ -47,7 +47,7 @@ NULL
 #' In order for the package to detect any non-conformant values in numeric or datetime fields, these should be present in the data frame in their raw character format. Rectangular data from a text file will automatically be read in as character type if you use the \code{\link{read_data}} function. Data frame columns that are not of class character will still be processed according to the fieldtypes specification.
 #' @examples
 #' rawdata <- read_data(
-#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
@@ -61,17 +61,17 @@ NULL
 #'     Dose = ft_numeric(),
 #'     DoseUnit = ft_categorical(),
 #'     PatientID = ft_ignore(),
-#'     SourceSystem = ft_categorical(aggregate_by_each_category=TRUE)),
+#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
 #'   override_columnnames = FALSE,
 #'   na = c("","NULL"),
 #'   aggregation_timeunit = "day",
 #'   save_directory = ".",
-#'   save_filename = "abx2014report",
+#'   save_filename = "example_data_report",
 #'   showprogress = TRUE,
 #'   log_directory = NULL
 #' )
 #'
-#' \dontshow{file.remove("./abx2014report.html")}
+#' \dontshow{file.remove("./example_data_report.html")}
 #'
 #' @seealso \code{\link{read_data}}, \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
 #' @export
@@ -165,7 +165,7 @@ print.daiquiri_object <- function(x, ...){
 #' @param showprogress Display a progress bar? Default = TRUE
 #' @return A data frame
 #' @examples rawdata <- read_data(
-#'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
@@ -204,7 +204,7 @@ read_data <- function(file, delim = NULL, col_names = TRUE, quote = "\"", trim_w
 # #' @param showprogress Print progress to console. Default = TRUE
 # #' @return A data.frame by default, or a \code{data.table} object if \code{data.table} = TRUE
 # #' @examples sourcedataobj <- read_data(
-# #'   system.file("extdata", "abx2014.csv", package = "daiquiri"),
+# #'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 # #'   sep = ","
 # #'   header = TRUE
 # #' )
