@@ -108,3 +108,14 @@ test_that("prepare_data() creates sourcedata object correctly", {
 	expect_snapshot(testsourcedata$validation_warnings)
 
 })
+
+test_that("prepare_data() ignores nonchar columns (since readr::type_convert fails to skip nonchar cols)", {
+	testsourcedata <- prepare_data(df = data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5),
+														fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																										col2 = ft_simple(),
+																										col3 = ft_ignore()),
+														showprogress = FALSE)
+
+	expect_equal(testsourcedata$cols_imported_n, 2)
+})
+
