@@ -16,11 +16,27 @@ knitr::opts_chunk$set(rownames.print = FALSE)
 
 ```
 
+```{css, echo=FALSE}
+h1.title {
+	font-size: 28px;
+	}
+p.compact {
+	margin-bottom: 0px;
+	margin-top: 0px;
+	}
+```
+
+<p class="compact">
 Dataset: **`r encodeString(params$sourcedata$dataset_shortdesc)`**
+</p>
 
+<p class="compact">
 Aggregated by: **`r params$aggregatedata$aggregation_timeunit`**
+</p>
 
+<p class="compact">
 Report created on: `r Sys.time()`; Package version `r utils::packageVersion(utils::packageName())`; `r R.Version()$version.string`
+</p>
 
 # {.tabset .tabset-pills}
 
