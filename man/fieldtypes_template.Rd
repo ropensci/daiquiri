@@ -14,7 +14,7 @@ fieldtypes_template(df, default_fieldtype = ft_ignore())
 \description{
 Helper function to generate template code for a fieldtypes() specification, based on
 the supplied data frame. All fields (columns) in the specification will be defined using the default_fieldtype,
-and the console output can be copied and updated before being used as input to \code{\link{create_report}}() or \code{\link{prepare_data}}().
+and the console output can be copied and edited before being used as input to \code{\link{create_report}}() or \code{\link{prepare_data}}().
 }
 \examples{
 df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))

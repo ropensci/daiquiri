@@ -91,3 +91,26 @@ test_that("create_data() creates report and returns daiquiri object successfully
 	# clean up
 	expect_true(file.remove(testdaiqobj$report_filename))
 })
+
+
+test_that("create_report() works even when columnnames contain special chars", {
+	testdaiqobj <- create_report(df = read_data(test_path("testdata", "specialchars_colnames.csv")),
+															 fieldtypes = fieldtypes( "col_underscore" = ft_ignore(),
+															 												 "col space" = ft_timepoint(),
+															 												 "col-dash" = ft_simple(),
+															 												 "col.dot" = ft_simple(),
+															 												 "col!exclamation" = ft_simple(),
+															 												 "col%percent" = ft_simple(),
+															 												 "col&ampersand" = ft_simple(),
+															 												 "col\"doublequote" = ft_simple(),
+															 												 "col'singlequote" = ft_simple(),
+															 												 "col[]squarebrackets" = ft_simple(),
+															 												 "col()brackets" = ft_simple() ),
+															 dataset_shortdesc = "specialchars_colnames",
+															 aggregation_timeunit = "day",
+															 save_directory = tempdir(),
+															 save_filename = "daiquiri_testthatreport",
+															 showprogress = FALSE)
+	# clean up
+	expect_true(file.remove(testdaiqobj$report_filename))
+})

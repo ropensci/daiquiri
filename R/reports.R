@@ -156,7 +156,7 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 # TODO: automatically choose to draw a lineplot or barplot depending on number of timepoints (as barplots don't render well with lots of timepoints)
 plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, title = NULL){
 	#temp assignment
-	# aggfield <- testcpddata_byday$aggregatefields[[testcpddata_byday$timepoint_fieldname]]
+	# aggfield <- testaggregatedata$aggregatefields[[testaggregatedata$timepoint_fieldname]]
 	# aggtype = "n"
 	# fillcolour = "pink"
 	# aggfield <- testcpddata_byday2[["aggregatefields"]][["ALLFIELDSCOMBINED"]]

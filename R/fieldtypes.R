@@ -292,7 +292,7 @@ print.fieldtypes <- function(x, ...) {
 #'
 #' Helper function to generate template code for a fieldtypes() specification, based on
 #' the supplied data frame. All fields (columns) in the specification will be defined using the default_fieldtype,
-#' and the console output can be copied and updated before being used as input to \code{\link{create_report}}() or \code{\link{prepare_data}}().
+#' and the console output can be copied and edited before being used as input to \code{\link{create_report}}() or \code{\link{prepare_data}}().
 #' @param df data frame including the column names for the template specification
 #' @param default_fieldtype fieldtype to be used for each column. Default = \code{ft_ignore()}. See  \code{\link{availablefieldtypes}}
 #' @examples
@@ -304,7 +304,7 @@ print.fieldtypes <- function(x, ...) {
 fieldtypes_template <- function(df, default_fieldtype = ft_ignore()){
 	fieldnames <- names(df)
 	cat("fieldtypes(",
-			paste0(fieldnames, " = ft_", default_fieldtype$type, "()",
+			paste0("\"", fieldnames, "\"", " = ft_", default_fieldtype$type, "()",
 						 ifelse(fieldnames == rev(fieldnames)[1], "", ","),
 						 collapse = "\n\t" ),
 			")")

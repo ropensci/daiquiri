@@ -294,7 +294,7 @@ aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogres
 	alltimepoints_min <- timepoint_as_aggregationunit(get_datafield_min(sourcedata$datafields[[sourcedata$timepoint_fieldname]]), aggregation_timeunit)
 	alltimepoints_max <- timepoint_as_aggregationunit(get_datafield_max(sourcedata$datafields[[sourcedata$timepoint_fieldname]]), aggregation_timeunit)
 	alltimepoints <- data.table::data.table(seq(alltimepoints_min, alltimepoints_max, by = aggregation_timeunit))
-	names(alltimepoints) <- paste0(sourcedata$timepoint_fieldname, "_by", aggregation_timeunit)
+	names(alltimepoints) <- paste0(gsub("[^a-zA-Z0-9_]", "_", sourcedata$timepoint_fieldname), "_by", aggregation_timeunit)
 
 	### AGGREGATE OVERALL DATASET
 	log_message(paste0("Aggregating overall dataset..."), showprogress)
