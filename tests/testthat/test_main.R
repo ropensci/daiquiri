@@ -114,3 +114,35 @@ test_that("create_report() works even when columnnames contain special chars", {
 	# clean up
 	expect_true(file.remove(testdaiqobj$report_filename))
 })
+
+
+test_that("create_report() gets dataset_shortdesc from call if NULL (default) passed in", {
+	dfobj <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5)
+	testdaiqobj <- create_report(df = dfobj,
+															 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+															 												col2 = ft_simple(),
+															 												col3 = ft_ignore()),
+															 aggregation_timeunit = "day",
+															 save_directory = tempdir(),
+															 save_filename = "daiquiri_testthatreport",
+															 showprogress = FALSE)
+
+	expect_equal(testdaiqobj$sourcedata$dataset_shortdesc, "dfobj")
+	# clean up
+	expect_true(file.remove(testdaiqobj$report_filename))
+
+	testdaiqobj <- create_report(df = data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5),
+															 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+															 												col2 = ft_simple(),
+															 												col3 = ft_ignore()),
+															 aggregation_timeunit = "day",
+															 save_directory = tempdir(),
+															 save_filename = "daiquiri_testthatreport",
+															 showprogress = FALSE)
+
+	expect_equal(testdaiqobj$sourcedata$dataset_shortdesc,
+							 "data.frame(col1 = rep(\"2022-01-01\", 5), col2 = rep(1, 5), col3 = 1:5)")
+	# clean up
+	expect_true(file.remove(testdaiqobj$report_filename))
+
+})

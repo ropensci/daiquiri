@@ -77,10 +77,14 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 
 	# use dataset_shortdesc if present, otherwise get from call
 	if( is.null(dataset_shortdesc) ){
-		if( match.call(definition = sys.function(-1), call = sys.call(sys.parent()))[[1]] == "create_report"){
-			dataset_shortdesc <- as.list(match.call(definition = sys.function(-1), call = sys.call(sys.parent())))$df
+		# look for create_report() in the call stack and if present, use the latest one
+		# can't just use sys.function(-1) as that doesn't work inside testthat
+		matchedcalls <- grep("create_report", as.character(sys.calls()))
+		if( length(matchedcalls) > 0 ){
+			dataset_shortdesc <- as.character(enquote(as.list(match.call(definition = sys.function(rev(matchedcalls)[1]),
+																							call = sys.call(sys.parent())))$df))[2]
 		} else{
-			dataset_shortdesc <- as.list(match.call())$df
+			dataset_shortdesc <- as.character(enquote(as.list(match.call())$df))[2]
 		}
 	}
 
