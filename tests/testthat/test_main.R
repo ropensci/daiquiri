@@ -48,7 +48,7 @@ test_that("create_report() params are present and of correct type", {
 })
 
 
-test_that("create_data() creates report and returns daiquiri object successfully", {
+test_that("create_report() creates report and returns daiquiri object successfully", {
 	testdf <- read_data(test_path("testdata", "completetestset.csv"))
 	testdaiqobj <- create_report(testdf,
 															 fieldtypes = fieldtypes( col_timepoint_err = ft_ignore(),
@@ -79,6 +79,7 @@ test_that("create_data() creates report and returns daiquiri object successfully
 															 aggregation_timeunit = "week",
 															 save_directory = tempdir(),
 															 save_filename = "daiquiri_testthatreport",
+															 log_directory = tempdir(),
 															 showprogress = FALSE)
 
 	expect_s3_class(testdaiqobj, "daiquiri_object")
@@ -90,6 +91,7 @@ test_that("create_data() creates report and returns daiquiri object successfully
 
 	# clean up
 	expect_true(file.remove(testdaiqobj$report_filename))
+	expect_true(file.remove(testdaiqobj$log_filename))
 })
 
 

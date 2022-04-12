@@ -79,9 +79,10 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 
 	# if a log directory is supplied, start a new log. Otherwise, close any existing log
 	if( !is.null(log_directory) ){
-		log_initialise(log_directory)
+		log_filename <- log_initialise(log_directory)
 	} else{
 		log_close()
+		log_filename <- NULL
 	}
 
 	log_function_start(match.call()[[1]])
@@ -119,7 +120,8 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 			aggregation_timeunit = aggregation_timeunit,
 			report_filename = reportfilename,
 			sourcedata = sourcedata,
-			aggregatedata = aggregatedata
+			aggregatedata = aggregatedata,
+			log_filename = log_filename
 		),
 		class = "daiquiri_object"
 	)

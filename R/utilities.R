@@ -132,15 +132,30 @@ validate_params_type <- function(call, ...){
 #' Choose a directory in which to save the log file.
 #' If this is not called, no log file is created.
 #'
-#' @param dirpath String containing directory to save log file
+#' @param log_directory String containing directory to save log file
 #' @export
-log_initialise <- function(dirpath){
+log_initialise <- function(log_directory){
 
 	validate_params_required(match.call())
 	validate_params_type(match.call(),
-											 dirpath = dirpath)
-	packageenvironment$logname <- file.path(dirpath, paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
-	log_message(paste("Log file initialised.", "Package version", utils::packageVersion(utils::packageName()), ";", R.Version()$version.string))
+											 log_directory = log_directory)
+
+	filenameandpath <- file.path(log_directory,
+															 paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log"))
+	if( file.create(filenameandpath) ){
+		# need to save absolute path so that logging continues correctly from report_htmldoc.Rmd
+		packageenvironment$logname <- normalizePath(filenameandpath)
+
+		log_message(paste("Log file initialised.",
+											"Package version",
+											utils::packageVersion(utils::packageName()), ";",
+											R.Version()$version.string))
+
+	} else{
+		stop("Log file [", filenameandpath, "] could not be created")
+	}
+
+	packageenvironment$logname
 }
 
 #' Closes any active log file
@@ -155,9 +170,13 @@ log_close <- function(){
 # TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
 log_message <- function(message, showprogress = FALSE){
 	if( exists("logname", envir = packageenvironment) ){
-		log_con <- file(packageenvironment$logname, open="a")
-		writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message), con = log_con)
-		close(log_con)
+		if( file.access(packageenvironment$logname, mode = 2) == -1 ){
+			stop(paste0("Cannot write to log file [", packageenvironment$logname, "]. Message not logged: ", message ))
+		} else{
+			log_con <- file(packageenvironment$logname, open="a")
+			writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message), con = log_con)
+			close(log_con)
+		}
 	}
 	if(showprogress) cat(message, "\n")
 }

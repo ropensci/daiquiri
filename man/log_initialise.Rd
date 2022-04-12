@@ -4,10 +4,10 @@
 \alias{log_initialise}
 \title{Initialise log file}
 \usage{
-log_initialise(dirpath)
+log_initialise(log_directory)
 }
 \arguments{
-\item{dirpath}{String containing directory to save log file}
+\item{log_directory}{String containing directory to save log file}
 }
 \description{
 Choose a directory in which to save the log file.
