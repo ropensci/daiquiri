@@ -216,7 +216,7 @@ testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, overri
 			df <- data.frame("Fieldname" = 123)
 		}
 		if(missing(fieldtypes)){
-			fieldtypes <- daiquiri::fieldtypes(Col_tp = ft_timepoint())
+			fieldtypes <- fieldtypes(Col_tp = ft_timepoint())
 		}
 		if(missing(sourcedata)){
 			sourcedata <- structure(list(datafields = NA), class = "sourcedata")
