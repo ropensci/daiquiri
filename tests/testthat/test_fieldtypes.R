@@ -35,4 +35,10 @@ test_that("Must include one and only one timepoint field", {
 													,Col_tp2 = ft_timepoint()), class = "invalid_fieldtypes")
 })
 
+test_that("Fieldtype colnames cannot include reserved words", {
+	expect_error(fieldtypes("[DUPLICATES]" = ft_timepoint()), class = "invalid_fieldtypes")
+	expect_error(fieldtypes(Col_tp = ft_timepoint(),
+													"[DUPLICATES]" = ft_simple()), class = "invalid_fieldtypes")
+	expect_error(fieldtypes("[ALLFIELDSCOMBINED]" = ft_timepoint()), class = "invalid_fieldtypes")
+})
 

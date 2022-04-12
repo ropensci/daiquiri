@@ -50,7 +50,7 @@ test_that("aggregate_data() creates aggregate object correctly", {
 	# check the basic structure is ok
 	expect_equal(testaggregatedata$timepoint_fieldname, "col_timepoint")
 	expect_equal(testaggregatedata$aggregation_timeunit, "week")
-	expect_setequal(names(testaggregatedata$aggregatefields), c(names(testsourcedata$cols_imported_indexes), "DUPLICATES", "ALLFIELDSCOMBINED"))
+	expect_setequal(names(testaggregatedata$aggregatefields), c(names(testsourcedata$cols_imported_indexes), "[DUPLICATES]", "[ALLFIELDSCOMBINED]"))
 	expect_equal(nrow(testaggregatedata$aggregatefields$col_timepoint$values), 43)
 	expect_equal(ncol(testaggregatedata$aggregatefields$col_timepoint$values), 4)
 	expect_equal(nrow(testaggregatedata$aggregatefields$col_date_time$values), 43)
@@ -69,10 +69,10 @@ test_that("aggregate_data() creates aggregate object correctly", {
 	expect_equal(ncol(testaggregatedata$aggregatefields$col_freetext$values), 4)
 	expect_equal(nrow(testaggregatedata$aggregatefields$col_simple$values), 43)
 	expect_equal(ncol(testaggregatedata$aggregatefields$col_simple$values), 4)
-	expect_equal(nrow(testaggregatedata$aggregatefields$DUPLICATES$values), 43)
-	expect_equal(ncol(testaggregatedata$aggregatefields$DUPLICATES$values), 3)
-	expect_equal(nrow(testaggregatedata$aggregatefields$ALLFIELDSCOMBINED$values), 43)
-	expect_equal(ncol(testaggregatedata$aggregatefields$ALLFIELDSCOMBINED$values), 6)
+	expect_equal(nrow(testaggregatedata$aggregatefields[["[DUPLICATES]"]]$values), 43)
+	expect_equal(ncol(testaggregatedata$aggregatefields[["[DUPLICATES]"]]$values), 3)
+	expect_equal(nrow(testaggregatedata$aggregatefields[["[ALLFIELDSCOMBINED]"]]$values), 43)
+	expect_equal(ncol(testaggregatedata$aggregatefields[["[ALLFIELDSCOMBINED]"]]$values), 6)
 
 })
 
@@ -101,14 +101,14 @@ test_that("export_aggregated_data() generates csv files", {
 
 	expect_snapshot_file(file.path(tempdir(), "test_col1.csv"))
 	expect_snapshot_file(file.path(tempdir(), "test_col2.csv"))
-	expect_snapshot_file(file.path(tempdir(), "test_ALLFIELDSCOMBINED.csv"))
-	expect_snapshot_file(file.path(tempdir(), "test_DUPLICATES.csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_[ALLFIELDSCOMBINED].csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_[DUPLICATES].csv"))
 
 	expect_false(file.exists(file.path(tempdir(), "test_col3.csv")))
 
 	# clean up
 	file.remove(file.path(tempdir(), "test_col1.csv"))
 	file.remove(file.path(tempdir(), "test_col2.csv"))
-	file.remove(file.path(tempdir(), "test_ALLFIELDSCOMBINED.csv"))
-	file.remove(file.path(tempdir(), "test_DUPLICATES.csv"))
+	file.remove(file.path(tempdir(), "test_[ALLFIELDSCOMBINED].csv"))
+	file.remove(file.path(tempdir(), "test_[DUPLICATES].csv"))
 })

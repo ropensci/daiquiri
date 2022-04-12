@@ -248,7 +248,7 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 								 # NOTE: Changepoints functionality disabled until we find a method that works
 								 # changepoints = cpts,
 								 fieldtype = ft,
-								 columnname = "ALLFIELDSCOMBINED"
+								 columnname = "[ALLFIELDSCOMBINED]"
 								 # NOTE: Partitionfield functionality disabled until we work out how to present it
 								 # partitionfieldname = partitionfieldname,
 								 # partitionfieldvalue = partitionfieldvalue
@@ -310,11 +310,11 @@ aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogres
 		agg[[i]] <- aggregatefield(sourcedata$datafields[[fieldindex]], get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	}
 	log_message(paste0("Aggregating calculated fields..."), showprogress)
-	log_message(paste0("DUPLICATES:"), showprogress)
+	log_message(paste0("[DUPLICATES]:"), showprogress)
 	agg[[sourcedata$cols_imported_n+1]] <- aggregatefield(sourcedata$datafields[[sourcedata$cols_source_n+1]], get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
-	log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
+	log_message(paste0("[ALLFIELDSCOMBINED]:"), showprogress)
 	agg[[sourcedata$cols_imported_n+2]] <- aggregateallfields(agg[1:sourcedata$cols_imported_n], alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
-	names(agg) <- c(names(sourcedata$cols_imported_indexes), "DUPLICATES", "ALLFIELDSCOMBINED")
+	names(agg) <- c(names(sourcedata$cols_imported_indexes), "[DUPLICATES]", "[ALLFIELDSCOMBINED]")
 
 	# NOTE: Changepoints functionality disabled until we find a method that works
 #	log_message(paste0("Creating changepoint dataframe..."), showprogress)

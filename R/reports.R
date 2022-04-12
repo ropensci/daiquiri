@@ -113,7 +113,7 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 		# no labels needed as info will be in the holding section
 		ggplot2::labs(x = NULL,
 									y = paste0(aggtype_friendlyname(aggtype, "long"),
-														 ifelse(aggfield$columnname == "DUPLICATES", "", paste0("\n(", aggfield$columnname, ")"))),
+														 ifelse(aggfield$columnname == "[DUPLICATES]", "", paste0("\n(", aggfield$columnname, ")"))),
 									title = NULL)
 
 	# if all values are NA, maxval will be infinite, so show a blank plot. So far only happens for min/max aggtypes
@@ -159,7 +159,7 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 	# aggfield <- testaggregatedata$aggregatefields[[testaggregatedata$timepoint_fieldname]]
 	# aggtype = "n"
 	# fillcolour = "pink"
-	# aggfield <- testcpddata_byday2[["aggregatefields"]][["ALLFIELDSCOMBINED"]]
+	# aggfield <- testcpddata_byday2[["aggregatefields"]][["[ALLFIELDSCOMBINED]"]]
 	# aggtype = "nonconformant_n"
 
 	# initialise known column names to prevent R CMD check notes
@@ -212,7 +212,7 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 	timepointcolname <- names(aggfields[[1]]$values)[1]
 
 	# get aggtype values from each datafield
-	heatmapfields <- names(aggfields)[which(!names(aggfields) %in% c("DUPLICATES", "ALLFIELDSCOMBINED"))]
+	heatmapfields <- names(aggfields)[which(!names(aggfields) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]"))]
 	data <- data.table::data.table()
 	for(i in seq_along(heatmapfields)){
 		f <- heatmapfields[i]
@@ -275,7 +275,7 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, lineplot_fillcolour, heatmap_fillcolour, title = NULL){
 	# aggfields = testcpddata_byday2$aggregatefields
 	# aggtype = "nonconformant_n"
-	# lineplot_fieldname = "ALLFIELDSCOMBINED"
+	# lineplot_fieldname = "[ALLFIELDSCOMBINED]"
 	# lineplot_fillcolour = "lightgreen"
 	# heatmap_fillcolour = "darkgreen"
 	# title = "Total nonconformant values"

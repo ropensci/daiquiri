@@ -206,7 +206,7 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields, 
 													 aggtype = "missing_n", 
-													 lineplot_fieldname = "ALLFIELDSCOMBINED",
+													 lineplot_fieldname = "[ALLFIELDSCOMBINED]",
 													 lineplot_fillcolour = "lightblue", 
 													 heatmap_fillcolour = "darkblue", 
 													 title = paste("Total missing values per", params$aggregatedata$aggregation_timeunit))
@@ -220,7 +220,7 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields, 
 													 aggtype = "nonconformant_n", 
-													 lineplot_fieldname = "ALLFIELDSCOMBINED",
+													 lineplot_fieldname = "[ALLFIELDSCOMBINED]",
 													 lineplot_fillcolour = "lightgreen", 
 													 heatmap_fillcolour = "darkgreen", 
 													 title = paste("Total nonconformant values per", params$aggregatedata$aggregation_timeunit))
@@ -232,7 +232,7 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 ```{r overview-duplicates}
 
-plot_overview_totals_static(aggfield = params$aggregatedata$aggregatefields[["DUPLICATES"]], 
+plot_overview_totals_static(aggfield = params$aggregatedata$aggregatefields[["[DUPLICATES]"]], 
 													aggtype = "sum",
 													fillcolour = "yellow",
 													title = paste("Total duplicate records per", params$aggregatedata$aggregation_timeunit))

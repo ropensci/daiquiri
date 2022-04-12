@@ -259,6 +259,10 @@ fieldtypes <- function(...) {
   if (anyDuplicated(names(fts)) > 0){
   	err_validation <- append(err_validation, paste("Duplicate column names not allowed: [", paste(names(fts)[duplicated(names(fts))], collapse = ", "), "]"))
   }
+	# check for reserved names
+	if ( any(names(fts) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]")) ){
+		err_validation <- append(err_validation, paste("'[DUPLICATES]' and '[ALLFIELDSCOMBINED]' are names reserved for calculated columns. Please rename these columns in your data."))
+	}
   if (length(err_validation) > 0) {
     stop_custom(.subclass = "invalid_fieldtypes",
     						message = paste0("Invalid `fieldtypes' specification.\n",

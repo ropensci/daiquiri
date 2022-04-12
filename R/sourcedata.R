@@ -235,7 +235,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# ...and record the no. of duplicates on it
 	dpruns <- rle(duprowsvector)
 	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
-	duprowsindex <- data.table::data.table("DUPLICATES" = duprowsindex[!duprowsvector])
+	duprowsindex <- data.table::data.table("[DUPLICATES]" = duprowsindex[!duprowsvector])
 
 	# and remove the duplicates from the final clean dataset
 	# TODO: see if can consolidate this with navector removal so only do it once
@@ -291,8 +291,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
 																				ft_duplicates(),
 																				warningsdt[colindex == 0, c("rowindex","message")])
-	# TODO: Need to use a reserved word to distinguish it from imported fields
-	names(dfs) <- c(names(fieldtypes), "DUPLICATES")
+	names(dfs) <- c(names(fieldtypes), "[DUPLICATES]")
 
 	log_message(paste0("Finished"), showprogress)
 
