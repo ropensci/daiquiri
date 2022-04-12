@@ -305,6 +305,11 @@ print.fieldtypes <- function(x, ...) {
 #' @seealso \code{\link{fieldtypes}}
 #' @export
 fieldtypes_template <- function(df, default_fieldtype = ft_ignore()){
+	validate_params_required(match.call())
+	validate_params_type(match.call(),
+											 df = df,
+											 default_fieldtype = default_fieldtype)
+
 	fieldnames <- names(df)
 	cat("fieldtypes(",
 			paste0("\"", fieldnames, "\"", " = ft_", default_fieldtype$type, "()",

@@ -42,3 +42,22 @@ test_that("Fieldtype colnames cannot include reserved words", {
 	expect_error(fieldtypes("[ALLFIELDSCOMBINED]" = ft_timepoint()), class = "invalid_fieldtypes")
 })
 
+
+test_that("fieldtypes_template() params are present and of correct type", {
+	expect_error(fieldtypes_template(),
+							 class = "invalid_param_missing")
+
+	expect_error(fieldtypes_template(df = c("Fieldname", 123)),
+							 class = "invalid_param_type")
+
+	expect_error(fieldtypes_template(df = data.frame("Fieldname" = 123),
+														default_fieldtype = TRUE),
+							 class = "invalid_param_type")
+})
+
+test_that("fieldtypes_template() generates template fieldtypes output", {
+	expect_snapshot_output(fieldtypes_template(df = data.frame("col1" = 123,
+																														 "col2" = 123,
+																														 "col3" = "hello")))
+})
+

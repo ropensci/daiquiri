@@ -49,6 +49,11 @@ validate_params_type <- function(call, ...){
 			err_validation <- append(err_validation,
 															 paste0(params_names[i], ": Expected a fieldtypes specification but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
 			}
+		} else if(params_names[i] == "default_fieldtype"){
+			if( !is.fieldtype(params_passed[[i]]) ){
+			err_validation <- append(err_validation,
+															 paste0(params_names[i], ": Expected a fieldtype but found: [ class = ", class(params_passed[[i]]), "; contents = ", substr(toString(params_passed[[i]]),1,100), "]"))
+			}
 		} else if(params_names[i] == "sourcedata"){
 			if( !is.sourcedata(params_passed[[i]]) ){
 			err_validation <- append(err_validation,
@@ -187,7 +192,7 @@ testfn_params_required <- function(p1, p2, p3 = NULL){
 	validate_params_required(match.call())
 }
 
-testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv", save_fileprefix = ""){
+testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv", save_fileprefix = "", default_fieldtype = ft_ignore()){
 		if(missing(df)){
 			df <- data.frame("Fieldname" = 123)
 		}
@@ -216,7 +221,8 @@ testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, overri
 												 aggregatedata = aggregatedata,
 												 format = format,
 												 save_filetype = save_filetype,
-												 save_fileprefix = save_fileprefix)
+												 save_fileprefix = save_fileprefix,
+												 default_fieldtype = default_fieldtype)
 	}
 
 
