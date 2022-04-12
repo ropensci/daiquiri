@@ -247,7 +247,6 @@ fieldtypes <- function(...) {
   fts <- list(...)
 
   # validate - collect all errors together and return only once
-  # TODO: replace spaces and special chars with _
   err_validation <- character()
   is_fieldtype <- vapply(fts, is.fieldtype, logical(1))
   if (any(!is_fieldtype)) {
