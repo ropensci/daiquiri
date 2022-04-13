@@ -477,7 +477,6 @@ export_aggregated_data <- function(aggregatedata, save_directory, save_fileprefi
 
 #' @export
 print.aggregatedata <- function(x, ...){
-	# TODO: to finish
 	aggsummary <- summarise_aggregated_data(x)
 	cat("Class: aggregatedata\n")
 	cat("\n")

@@ -319,7 +319,6 @@ is.sourcedata <- function(x) inherits(x, "sourcedata")
 
 #' @export
 print.sourcedata <- function(x, ...){
-	# TODO: to finish
 	sourcesummary <- summarise_source_data(x)
 	cat("Class: sourcedata\n")
   cat("Source:", x$dataset_shortdesc, "\n")
