@@ -99,10 +99,10 @@ test_that("export_aggregated_data() generates csv files", {
 	testaggregatedata <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
 	export_aggregated_data(testaggregatedata, save_directory = tempdir(), save_fileprefix = "test_")
 
-	expect_snapshot_file(file.path(tempdir(), "test_col1.csv"))
-	expect_snapshot_file(file.path(tempdir(), "test_col2.csv"))
-	expect_snapshot_file(file.path(tempdir(), "test_[ALLFIELDSCOMBINED].csv"))
-	expect_snapshot_file(file.path(tempdir(), "test_[DUPLICATES].csv"))
+	expect_snapshot_file(file.path(tempdir(), "test_col1.csv"), compare = compare_file_text)
+	expect_snapshot_file(file.path(tempdir(), "test_col2.csv"), compare = compare_file_text)
+	expect_snapshot_file(file.path(tempdir(), "test_[ALLFIELDSCOMBINED].csv"), compare = compare_file_text)
+	expect_snapshot_file(file.path(tempdir(), "test_[DUPLICATES].csv"), compare = compare_file_text)
 
 	expect_false(file.exists(file.path(tempdir(), "test_col3.csv")))
 
