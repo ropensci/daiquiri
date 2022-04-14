@@ -112,3 +112,23 @@ test_that("export_aggregated_data() generates csv files", {
 	file.remove(file.path(tempdir(), "test_[ALLFIELDSCOMBINED].csv"))
 	file.remove(file.path(tempdir(), "test_[DUPLICATES].csv"))
 })
+
+
+test_that("aggregateallfields() removes NAs when rowsumming", {
+	testdf <- data.table::data.table("col_timepoint" = paste0("2022-01-", 10 + c(seq(1,3), seq(6,21))),
+																	 "col_numeric" = c("","",rep(1,17)),
+																	 "col_numeric_missing" = "")
+	testsourcedata <- prepare_data(testdf,
+																 fieldtypes = fieldtypes(col_timepoint = ft_timepoint(),
+																 												col_numeric = ft_numeric(),
+																 												col_numeric_missing = ft_numeric()),
+																 dataset_shortdesc = "blankplottest",
+																 override_columnnames = FALSE,
+																 na = c("","NULL"),
+																 showprogress=FALSE)
+	testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+	expect_true(identical(is.na(testdata_byday$aggregatefields$`[ALLFIELDSCOMBINED]`$values$missing_n),
+												c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 16))))
+})
+

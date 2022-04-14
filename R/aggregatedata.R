@@ -198,10 +198,8 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # uses results from already-aggregated individual fields rather than doing it all again
 # TODO: do we want to include duplicates in here too?
 # TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
-aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
+aggregateallfields <- function(aggfields, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
 	#temp assignment
-	# aggfields = agg[1:data$cols_imported_n]
-	# alltimepoints = get_datafield_vector(data$datafields[[testcpdsourcedata$timepoint_fieldname]])
 	#showprogress = TRUE
 
 	# initialise known column names to prevent R CMD check notes
@@ -210,7 +208,7 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 	ft <- ft_allfields()
 	functionlist <- ft$aggfunctions
 
-	groupedvals <- data.table::data.table(alltimepoints, key = names(alltimepoints))
+	groupedvals <- aggfields[[1]][["values"]][,1]
 
 	for (i in seq_along(aggfields)){
 		for( j in 2:length(names(aggfields[[i]][["values"]])) ){
@@ -219,7 +217,7 @@ aggregateallfields <- function(aggfields, alltimepoints, changepointmethods = "n
 				f <- names(aggfields[[i]][["values"]])[j]
 				if( f %in% names(groupedvals) ){
 					# If all values are NA then leave as NA, but if any values are not NA then ignore the NAs (per timepoint)
-					groupedvals[, (f) := data.table::fifelse(is.na(aggfields[[i]][["values"]][, get(f)]), rowSums(cbind(get(f), aggfields[[i]][["values"]][, get(f)]), na.rm = FALSE), rowSums(cbind(get(f), aggfields[[i]][["values"]][, get(f)]), na.rm = TRUE))]
+					groupedvals[, (f) := data.table::fifelse(is.na(get(f)) & is.na(aggfields[[i]][["values"]][, get(f)]), NA_integer_, rowSums(cbind(get(f), aggfields[[i]][["values"]][, get(f)]), na.rm = TRUE))]
 				} else{
 					groupedvals[, (f) := aggfields[[i]][["values"]][, get(f)]]
 				}
@@ -314,7 +312,7 @@ aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogres
 	log_message(paste0("[DUPLICATES]:"), showprogress)
 	agg[[sourcedata$cols_imported_n+1]] <- aggregatefield(sourcedata$datafields[[sourcedata$cols_source_n+1]], get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]]), alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	log_message(paste0("[ALLFIELDSCOMBINED]:"), showprogress)
-	agg[[sourcedata$cols_imported_n+2]] <- aggregateallfields(agg[1:sourcedata$cols_imported_n], alltimepoints, aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
+	agg[[sourcedata$cols_imported_n+2]] <- aggregateallfields(agg[1:sourcedata$cols_imported_n], aggregation_timeunit, changepointmethods = changepointmethods, showprogress = showprogress)
 	names(agg) <- c(names(sourcedata$cols_imported_indexes), "[DUPLICATES]", "[ALLFIELDSCOMBINED]")
 
 	# NOTE: Changepoints functionality disabled until we find a method that works
