@@ -51,3 +51,19 @@ test_that("report_data() creates report and returns path successfully", {
 	# clean up
 	expect_true(file.remove(testreportpath))
 })
+
+test_that("plots still work when all values are missing", {
+	testdf <- data.table::data.table("col_timepoint" = paste0("2022-01-", seq(10,31)),
+																	 "col_numeric_missing" = "")
+	testsourcedata <- prepare_data(testdf,
+																 fieldtypes = fieldtypes(col_timepoint = ft_timepoint(),
+																 												col_numeric_missing = ft_numeric()),
+																 dataset_shortdesc = "blankplottest",
+																 override_columnnames = FALSE,
+																 na = c("","NULL"),
+																 showprogress=FALSE)
+	testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+	expect_s3_class(plot_timeseries_static(aggfield = testdata_byday$aggregatefields$col_numeric_missing, aggtype = "missing_n"), "ggplot")
+	expect_s3_class(plot_overview_totals_static(aggfield = testdata_byday$aggregatefields$col_numeric_missing, aggtype = "missing_n"), "ggplot")
+})

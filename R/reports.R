@@ -96,9 +96,9 @@ report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_fi
 # optionally plot changepoints - "all"/"none"/vectorofmethodnames
 plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "none"){
 	#temp assignment
-	# aggfield<-testcpddata_byday$aggregatefields[[3]]
+	# aggfield<-testdata_byday$aggregatefields[[3]]
 	# aggfield<-testcpddata_byday$aggregatefields[[8]]$subaggregates[[1]][[1]]
-	#   aggtype = "min"
+	#   aggtype = "missing_n"
 	# changepoint_methods = "none"
 
 	timepointcolname <- names(aggfield$values)[1]
@@ -116,24 +116,16 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 														 ifelse(aggfield$columnname == "[DUPLICATES]", "", paste0("\n(", aggfield$columnname, ")"))),
 									title = NULL)
 
-	# if all values are NA, maxval will be infinite, so show a blank plot. So far only happens for min/max aggtypes
-	maxval <- suppressWarnings(max(aggfield$values[[aggtype]], na.rm = TRUE))
-	minval <- suppressWarnings(min(aggfield$values[[aggtype]], na.rm = TRUE))
-	if( is.infinite(maxval) ){
-		if( is.fieldtype_datetime(aggfield$fieldtype) ){
-			g <- g + ggplot2::geom_blank(ggplot2::aes_string(x = timepointcolname, y = timepointcolname))
-		} else if ( is.fieldtype_numeric(aggfield$fieldtype) ){
-			# TODO: this isn't working yet
-			g <- g + ggplot2::geom_blank(mapping = ggplot2::aes_string(x=timepointcolname, y="blankaggtype"), data = data.frame(aggfield$values[timepointcolname], blankaggtype=1))
-		}
-	} else{
+	# if all values are NA, show a blank plot, otherwise plot the values
+	if( !all(is.na(aggfield$values[[aggtype]])) ){
 		g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4)
 
 		# specify y axis scale
+		maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
+		minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
 		aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
-		if( !is.na(aggbreaks[1]) ){
-			g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
-		}
+		g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks,
+																				 limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
 
 		# NOTE: Changepoints functionality disabled until we find a method that works
 		# # add changepoint lines if requested
@@ -181,16 +173,20 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 									 plot.title = ggplot2::element_text(size=8, face = "bold", hjust = 0.5)) +
 		ggplot2::labs(x = NULL, y = NULL, title = title)
 
-	g <- g + ggplot2::geom_line(na.rm = TRUE) +
-	# use ribbon instead of area so that NAs don't get interpolated
-	ggplot2::geom_ribbon(data = data[!is.na(get(aggtype)), ymin := 0], ggplot2::aes_string(x = timepointcolname, ymin = "ymin", ymax = aggtype), fill = fillcolour, alpha = 0.5)
+	# if all values are NA, show a blank plot, otherwise plot the values
+	if( !all(is.na(aggfield$values[[aggtype]])) ){
+		g <- g + ggplot2::geom_line(na.rm = TRUE) +
+			# use ribbon instead of area so that NAs don't get interpolated
+			ggplot2::geom_ribbon(data = data[!is.na(get(aggtype)), ymin := 0],
+													 ggplot2::aes_string(x = timepointcolname, ymin = "ymin", ymax = aggtype),
+													 fill = fillcolour, alpha = 0.5)
 
-	# specify y axis scale
-	maxval <- suppressWarnings(max(aggfield$values[[aggtype]], na.rm = TRUE))
-	minval <- suppressWarnings(min(aggfield$values[[aggtype]], na.rm = TRUE))
-	aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
-	if( !is.na(aggbreaks[1]) ){
-		g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks, limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
+		# specify y axis scale
+		maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
+		minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
+		aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
+		g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks,
+																				 limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
 	}
 
 	g
@@ -299,7 +295,7 @@ plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, l
 # HELPER FUNCTIONS
 
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
-	breaks <- NA
+	breaks <- NULL
 
 	if( aggtype %in% c("distinct","n","sum") || endsWith(aggtype, "_n") || startsWith(aggtype, "subcat_n") ){
 		rangesize <- floor(log10(maxval))
@@ -312,7 +308,7 @@ yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 		}
 	} else if( endsWith(aggtype, "_perc") || startsWith(aggtype, "subcat_perc") ){
 		breaks <- seq(0, 100, by = 10)
-	} else if( aggtype %in% c("min","max") ){
+	} else{
 		if( is.fieldtype_numeric(fieldtype) ){
 			if( maxval < minval ){
 				# TODO: maybe better to return a warning and/or a graph with the error written on it rather than stopping altogether
