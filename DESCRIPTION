@@ -34,6 +34,7 @@ Imports:
     reactable (>= 0.2.3)
 RoxygenNote: 7.1.2
 Suggests:
+    covr,
     knitr,
     testthat
 VignetteBuilder: knitr

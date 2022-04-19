@@ -7,3 +7,4 @@
 ^daiquiri_report_*\.html$
 ^.*\.log$
 ^\.github$
+^codecov\.yml$
