@@ -61,3 +61,19 @@ test_that("fieldtypes_template() generates template fieldtypes output", {
 																														 "col3" = "hello")))
 })
 
+test_that("fieldtypes object prints to console ok", {
+	testfieldtypes <- fieldtypes(Col_tp = ft_timepoint()
+											 ,Col_uid = ft_uniqueidentifier()
+											 # NOTE: Partitionfield functionality disabled until we work out how to present it
+											 #,Col_part = ft_partition()
+											 ,Col_cat = ft_categorical()
+											 ,Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE)
+											 ,Col_num = ft_numeric()
+											 ,Col_dt = ft_datetime()
+											 ,Col_dt2 = ft_datetime(includes_time = FALSE)
+											 ,Col_ft = ft_freetext()
+											 ,Col_sim = ft_simple()
+											 ,Col_ign = ft_ignore())
+	expect_snapshot_output(print(testfieldtypes))
+})
+

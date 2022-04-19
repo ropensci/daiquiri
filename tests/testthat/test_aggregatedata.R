@@ -132,3 +132,16 @@ test_that("aggregateallfields() removes NAs when rowsumming", {
 												c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 16))))
 })
 
+
+test_that("aggregatedata object prints to console ok", {
+	testsourcedata <- prepare_data(df = data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5),
+																 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																 												col2 = ft_simple(),
+																 												col3 = ft_ignore()),
+																 showprogress = FALSE)
+	testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+	expect_snapshot_output(print(testdata_byday))
+})
+
+

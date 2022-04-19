@@ -130,7 +130,7 @@ create_report <- function(df, fieldtypes, override_columnnames = FALSE, na = c("
 #' @export
 print.daiquiri_object <- function(x, ...){
 	cat("Class: daiquiri_object\n")
-	cat("Sourcename:", x$sourcedata$sourcename, "\n")
+	cat("Dataset:", x$sourcedata$dataset_shortdesc, "\n")
 	cat("\n")
 	cat("Columns in source:", x$sourcedata$cols_source_n, "\n")
 	cat("Columns imported:", x$sourcedata$cols_imported_n, "\n")

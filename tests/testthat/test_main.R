@@ -148,3 +148,20 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
 	expect_true(file.remove(testdaiqobj$report_filename))
 
 })
+
+
+test_that("daiquiri_object prints to console ok", {
+	testdaiqobj <- create_report(df = data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5),
+															 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+															 												col2 = ft_simple(),
+															 												col3 = ft_ignore()),
+															 aggregation_timeunit = "day",
+															 save_directory = tempdir(),
+															 save_filename = "daiquiri_testthatreport",
+															 showprogress = FALSE)
+
+	expect_snapshot_output(print(testdaiqobj))
+	# clean up
+	expect_true(file.remove(testdaiqobj$report_filename))
+})
+
