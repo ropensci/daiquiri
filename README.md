@@ -3,6 +3,11 @@
 
 # daiquiri
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/phuongquan/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/phuongquan/daiquiri/actions)
+<!-- badges: end -->
+
 The daiquiri package generates data quality reports that enable quick
 visual review of temporal shifts in record-level data. Time series plots
 showing aggregated values are automatically created for each data field

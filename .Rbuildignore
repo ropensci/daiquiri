@@ -6,3 +6,4 @@
 ^README\.Rmd$
 ^daiquiri_report_*\.html$
 ^.*\.log$
+^\.github$
