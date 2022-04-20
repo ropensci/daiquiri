@@ -42,6 +42,8 @@ This release moves the reading of csv files out into a separate function in orde
 
 * Added further validation checks for user-supplied params.
 
+* Added CITATION file.
+
 
 # daiquiri 0.6.1 (2022-02-23)
 
