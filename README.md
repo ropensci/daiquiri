@@ -69,7 +69,7 @@ The intention is to make daiquiri available in CRAN but until then, you
 can install the latest release by running the following:
 
 ``` r
-install.packages("https://github.com/phuongquan/daiquiri/releases/download/v0.6.1/daiquiri_0.6.1.tar.gz", 
+install.packages("https://github.com/phuongquan/daiquiri/releases/download/v0.7.0/daiquiri_0.7.0.tar.gz", 
                                  repos = NULL, type = "source")
 ```
 
