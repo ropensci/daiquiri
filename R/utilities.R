@@ -5,7 +5,7 @@
 validate_params_required <- function(call){
 	# get the required arguments from function definition
 	params_defined <- formals(as.character(call[[1]]))
-	params_required <- names(which(sapply(params_defined, is.symbol)))
+	params_required <- names(which(vapply(params_defined, is.symbol, logical(1))))
 	# get the arguments passed into the parent call
 	params_passed <- names(as.list(call)[-1])
 

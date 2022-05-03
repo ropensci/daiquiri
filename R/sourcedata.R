@@ -98,15 +98,15 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	}
 
 	# ensure all columns are character type because readr::type_convert won't skip numeric columns
-	df_datatypes <- sapply(df, typeof)
+	df_datatypes <- vapply(df, typeof, character(1))
 	df_nonchar_warnings <- data.table::data.table()
 	if( any(df_datatypes != "character") ){
 		# Report presence of any non-char columns in source data frame (except ignored ones)
 		df_nonchar_warnings <- data.table::data.table(
-			colindex = which(df_datatypes != "character" & !sapply(fieldtypes, is.fieldtype_ignore)),
+			colindex = which(df_datatypes != "character" & !vapply(fieldtypes, is.fieldtype_ignore, logical(1))),
 			rowindex = NA,
 			message = paste0("Data supplied as ",
-											 df_datatypes[which(df_datatypes != "character" & !sapply(fieldtypes, is.fieldtype_ignore))],
+											 df_datatypes[which(df_datatypes != "character" & !vapply(fieldtypes, is.fieldtype_ignore, logical(1)))],
 											 " instead of character, non-conformant values will not be identified")
 			)
 		# update the df
@@ -142,9 +142,9 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	relevant_warnings <- grep("\\[[0-9]*?, [0-9]*?\\]:", raw_warnings, value = TRUE)
 	# list of warnings each with character vector containing row, column, message
 	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
-	warningsdt <- data.table::data.table(colindex = as.integer(sapply(warningslist, function(x){x[2]})),
-																			 rowindex = as.integer(sapply(warningslist, function(x){x[1]})) + 1,
-																			 message = as.character(sapply(warningslist, function(x){x[3]})))
+	warningsdt <- data.table::data.table(colindex = as.integer(vapply(warningslist, function(x){x[2]}, character(1))),
+																			 rowindex = as.integer(vapply(warningslist, function(x){x[1]}, character(1))) + 1,
+																			 message = vapply(warningslist, function(x){x[3]}, character(1)))
 
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
 	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
@@ -355,7 +355,7 @@ print.sourcedata <- function(x, ...){
 # TODO: Consider adding a warning if a categorical field has "too many" different values
 summarise_source_data <- function(sourcedata, showprogress = TRUE){
 	#temp assignment
-	#  sourcedata<-testcpddata
+	#  sourcedata<-testsourcedata
 	# str(sourcedata)
 
 	log_function_start(match.call()[[1]])
@@ -368,21 +368,33 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 							 rows_duplicates_n = format(sourcedata$rows_duplicates_n),
 							 rows_imported_n = format(sourcedata$rows_imported_n),
 							 timepoint_fieldname = sourcedata$timepoint_fieldname,
-							 timepoint_min = get_datafield_min(sourcedata$datafields[[sourcedata$timepoint_fieldname]], format_as_string = TRUE),
-							 timepoint_max = get_datafield_max(sourcedata$datafields[[sourcedata$timepoint_fieldname]], format_as_string = TRUE),
+							 timepoint_min = format(get_datafield_min(sourcedata$datafields[[sourcedata$timepoint_fieldname]])),
+							 timepoint_max = format(get_datafield_max(sourcedata$datafields[[sourcedata$timepoint_fieldname]])),
 							 timepoint_missing_n = format(sourcedata$timepoint_missing_n),
 							 na_values = paste(dQuote(sourcedata$na_values, q = FALSE), collapse = ",")
 	)
 
 	log_message(paste0("  For each column in dataset..."), showprogress)
 	datafields <- data.frame(fieldname = names(sourcedata$datafields[1:sourcedata$cols_source_n]),
-													 fieldtype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_fieldtype_name.datafield),
-													 datatype = sapply(sourcedata$datafields[1:sourcedata$cols_source_n],get_datafield_basetype, format_as_string = TRUE),
-													 count = sapply(sourcedata$datafields[1:sourcedata$cols_source_n],get_datafield_count, format_as_string = TRUE),
-													 missing = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_missing, format_as_string = TRUE),
-													 min = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_min, format_as_string = TRUE),
-													 max = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_max, format_as_string = TRUE),
-													 validation_warnings = sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_validation_warnings_n, format_as_string = TRUE),
+													 fieldtype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+													 													get_fieldtype_name.datafield, character(1))),
+													 datatype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+													 												 get_datafield_basetype, character(1))),
+													 count = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+													 											get_datafield_count, integer(1))),
+													 missing = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+													 								 function(x){
+													 								 	gdm <- get_datafield_missing(x)
+													 								 	if( is.na(gdm$frequency) ){
+													 								 		NA_character_
+													 								 	} else{
+													 								 		paste0(gdm$frequency, " (", format(gdm$percentage, digits = 3), "%)")
+													 								 	}
+													 								 }, character(1))),
+													 min = format(sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_min)),
+													 max = format(sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_max)),
+													 validation_warnings = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+													 																		get_datafield_validation_warnings_n, integer(1))),
 													 stringsAsFactors = FALSE)
 
 	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
@@ -411,92 +423,57 @@ get_datafield_vector <- function(datafield){
   }
 }
 
-get_datafield_basetype <- function(datafield, format_as_string = FALSE){
-  if (format_as_string){
-    format(get_datafield_basetype(datafield))
+get_datafield_basetype <- function(datafield){
+  if (is.fieldtype_ignore(datafield$fieldtype)){
+    NA_character_
   }
   else{
-    if (is.fieldtype_ignore(datafield$fieldtype)){
-      NA
-    }
-    else{
-      typeof(datafield$values[[1]])
-    }
+    typeof(datafield$values[[1]])
   }
 }
 
-get_datafield_min <- function(datafield, format_as_string = FALSE){
-  if (format_as_string){
-    format(get_datafield_min(datafield))
+get_datafield_min <- function(datafield){
+  if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+    NA_real_
   }
   else{
-    if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
-      NA
-    }
-    else{
-      min(datafield$values[[1]], na.rm = TRUE)
-    }
+    min(datafield$values[[1]], na.rm = TRUE)
   }
 }
 
-get_datafield_max <- function(datafield, format_as_string = FALSE){
-  if (format_as_string){
-    format(get_datafield_max(datafield))
+get_datafield_max <- function(datafield){
+  if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+    NA_real_
   }
   else{
-    if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
-      NA
-    }
-    else{
-      max(datafield$values[[1]], na.rm = TRUE)
-    }
+    max(datafield$values[[1]], na.rm = TRUE)
   }
 }
 
-get_datafield_missing <- function(datafield, format_as_string = FALSE){
-  if (format_as_string){
-    if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
-      format(NA)
-    }
-    else{
-      paste0(sum(is.na(datafield$values[[1]])), " (", format(sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]])*100, digits = 3), "%)")
-    }
+get_datafield_missing <- function(datafield){
+  if (is.fieldtype_ignore(datafield$fieldtype)){
+    list("frequency" = NA_integer_, "percentage" = NA_real_)
   }
   else{
-    if (is.fieldtype_ignore(datafield$fieldtype)){
-      NA
-    }
-    else{
-      list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
-    }
+    list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
   }
 }
 
-get_datafield_validation_warnings_n <- function(datafield, format_as_string = FALSE){
-	if (format_as_string){
-		format(get_datafield_validation_warnings_n(datafield))
+get_datafield_validation_warnings_n <- function(datafield){
+	if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
+		NA_integer_
 	}
 	else{
-		if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
-			NA
-		}
-		else{
-			nrow(datafield$validation_warnings)
-		}
+		nrow(datafield$validation_warnings)
 	}
 }
 
-get_datafield_count <- function(datafield, format_as_string = FALSE){
-	if (format_as_string){
-		format(get_datafield_count(datafield))
+get_datafield_count <- function(datafield){
+	if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+		NA_integer_
 	}
 	else{
-		if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
-			NA
-		}
-		else{
-			sum(!is.na(datafield$values[[1]]))
-		}
+		sum(!is.na(datafield$values[[1]]))
 	}
 }
 
