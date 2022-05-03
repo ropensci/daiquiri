@@ -19,7 +19,7 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 	#functionlist = c("n", "missing_n", "missing_perc")
 
 	# initialise known column names to prevent R CMD check notes
-	n = value = values = timepointgroup = NULL
+	n <- value <- values <- timepointgroup <- NULL
 
 	log_message(paste0("Preparing..."), showprogress)
 	functionlist = datafield$fieldtype$aggfunctions
@@ -203,7 +203,7 @@ aggregateallfields <- function(aggfields, changepointmethods = "none", partition
 	#showprogress = TRUE
 
 	# initialise known column names to prevent R CMD check notes
-	n = missing_n = nonconformant_n = NULL
+	n <- missing_n <- nonconformant_n <- NULL
 
 	ft <- ft_allfields()
 	functionlist <- ft$aggfunctions

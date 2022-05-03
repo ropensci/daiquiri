@@ -64,7 +64,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	log_function_start(match.call()[[1]])
 
 	# initialise known column names to prevent R CMD check notes
-	colindex = rowindex = fieldname = NULL
+	colindex <- rowindex <- fieldname <- NULL
 
 	validate_params_required(match.call())
 	validate_params_type(match.call(),
