@@ -594,14 +594,14 @@ timepoint_as_aggregationunit <- function(x, aggregation_timeunit){
 	} else if( aggregation_timeunit == "month" ){
 		as.Date(format(x, format = "%Y-%m-01"))
 	} else if( aggregation_timeunit == "quarter" ){
-		as.Date(sapply(x, function(x){ format(x, paste0("%Y-"
+		as.Date(vapply(x, function(x){ format(x, paste0("%Y-"
 																						, switch(format(x, format = "%m")
 																										 , "01" = "01", "02" = "01", "03" = "01"
 																										 , "04" = "04", "05" = "04", "06" = "04"
 																										 , "07" = "07", "08" = "07", "09" = "07"
 																										 , "10" = "10", "11" = "10", "12" = "10"
 																										)
-																						, "-01")) }))
+																						, "-01")) }, character(1)))
 	} else if( aggregation_timeunit == "year" ){
 		as.Date(format(x, format = "%Y-01-01"))
 	}

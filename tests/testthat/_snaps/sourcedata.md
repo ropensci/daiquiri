@@ -81,81 +81,56 @@
     Total validation warnings: 33 
     
     Datafields:
-                                              fieldname        fieldtype  datatype
-    col_timepoint_err                 col_timepoint_err           ignore        NA
-    col_timepoint                         col_timepoint        timepoint    double
-    col_date_time_err                 col_date_time_err           ignore        NA
-    col_date_time                         col_date_time         datetime    double
-    col_date_only_err                 col_date_only_err           ignore        NA
-    col_date_only                         col_date_only         datetime    double
-    col_date_uk_err                     col_date_uk_err           ignore        NA
-    col_date_uk                             col_date_uk         datetime    double
-    col_id_num_err                       col_id_num_err           ignore        NA
-    col_id_num                               col_id_num uniqueidentifier character
-    col_id_string_err                 col_id_string_err           ignore        NA
-    col_id_string                         col_id_string uniqueidentifier character
-    col_numeric_clean_err         col_numeric_clean_err           ignore        NA
-    col_numeric_clean                 col_numeric_clean          numeric    double
-    col_numeric_dirty_err         col_numeric_dirty_err           ignore        NA
-    col_numeric_dirty                 col_numeric_dirty          numeric    double
-    col_categorical_small_err col_categorical_small_err           ignore        NA
-    col_categorical_small         col_categorical_small      categorical character
-    col_categorical_large_err col_categorical_large_err           ignore        NA
-    col_categorical_large         col_categorical_large      categorical character
-    col_freetext_err                   col_freetext_err           ignore        NA
-    col_freetext                           col_freetext         freetext character
-    col_simple_err                       col_simple_err           ignore        NA
-    col_simple                               col_simple           simple character
-                              count    missing                 min
-    col_timepoint_err            NA         NA                  NA
-    col_timepoint               890     0 (0%) 2021-06-01 03:00:00
-    col_date_time_err            NA         NA                  NA
-    col_date_time               878 12 (1.35%) 2021-06-03 08:00:00
-    col_date_only_err            NA         NA                  NA
-    col_date_only               879 11 (1.24%)          2021-06-03
-    col_date_uk_err              NA         NA                  NA
-    col_date_uk                 881  9 (1.01%)          2021-06-02
-    col_id_num_err               NA         NA                  NA
-    col_id_num                  883 7 (0.787%)                  10
-    col_id_string_err            NA         NA                  NA
-    col_id_string               883 7 (0.787%)               A0126
-    col_numeric_clean_err        NA         NA                  NA
-    col_numeric_clean           883 7 (0.787%)                   0
-    col_numeric_dirty_err        NA         NA                  NA
-    col_numeric_dirty           874  16 (1.8%)                   0
-    col_categorical_small_err    NA         NA                  NA
-    col_categorical_small       883 7 (0.787%)                cat1
-    col_categorical_large_err    NA         NA                  NA
-    col_categorical_large       883 7 (0.787%)                cat1
-    col_freetext_err             NA         NA                  NA
-    col_freetext                883 7 (0.787%)                   "
-    col_simple_err               NA         NA                  NA
-    col_simple                  883 7 (0.787%)           some text
-                                              max validation_warnings
-    col_timepoint_err                          NA                  NA
-    col_timepoint                      2022-03-26                   9
-    col_date_time_err                          NA                  NA
-    col_date_time             2022-05-02 08:00:00                   6
-    col_date_only_err                          NA                  NA
-    col_date_only                      2022-03-26                   5
-    col_date_uk_err                            NA                  NA
-    col_date_uk                        2022-03-26                   3
-    col_id_num_err                             NA                  NA
-    col_id_num                                 99                   0
-    col_id_string_err                          NA                  NA
-    col_id_string                           A1019                   0
-    col_numeric_clean_err                      NA                  NA
-    col_numeric_clean                       30.23                   0
-    col_numeric_dirty_err                      NA                  NA
-    col_numeric_dirty                       15.14                  10
-    col_categorical_small_err                  NA                  NA
-    col_categorical_small                    cat7                   0
-    col_categorical_large_err                  NA                  NA
-    col_categorical_large                    cat9                   0
-    col_freetext_err                           NA                  NA
-    col_freetext                       some, text                   0
-    col_simple_err                             NA                  NA
-    col_simple                          some text                   0
+                       fieldname        fieldtype  datatype count  missing
+    1  col_timepoint_err         ignore           NA           NA NA      
+    2  col_timepoint             timepoint        double      890 0 (0%)  
+    3  col_date_time_err         ignore           NA           NA NA      
+    4  col_date_time             datetime         double      878 12 (1%) 
+    5  col_date_only_err         ignore           NA           NA NA      
+    6  col_date_only             datetime         double      879 11 (1%) 
+    7  col_date_uk_err           ignore           NA           NA NA      
+    8  col_date_uk               datetime         double      881 9 (1%)  
+    9  col_id_num_err            ignore           NA           NA NA      
+    10 col_id_num                uniqueidentifier character   883 7 (0.8%)
+    11 col_id_string_err         ignore           NA           NA NA      
+    12 col_id_string             uniqueidentifier character   883 7 (0.8%)
+    13 col_numeric_clean_err     ignore           NA           NA NA      
+    14 col_numeric_clean         numeric          double      883 7 (0.8%)
+    15 col_numeric_dirty_err     ignore           NA           NA NA      
+    16 col_numeric_dirty         numeric          double      874 16 (2%) 
+    17 col_categorical_small_err ignore           NA           NA NA      
+    18 col_categorical_small     categorical      character   883 7 (0.8%)
+    19 col_categorical_large_err ignore           NA           NA NA      
+    20 col_categorical_large     categorical      character   883 7 (0.8%)
+    21 col_freetext_err          ignore           NA           NA NA      
+    22 col_freetext              freetext         character   883 7 (0.8%)
+    23 col_simple_err            ignore           NA           NA NA      
+    24 col_simple                simple           character   883 7 (0.8%)
+                       min                 max validation_warnings
+    1                   NA                  NA                  NA
+    2  2021-06-01 03:00:00          2022-03-26                   9
+    3                   NA                  NA                  NA
+    4  2021-06-03 08:00:00 2022-05-02 08:00:00                   6
+    5                   NA                  NA                  NA
+    6           2021-06-03          2022-03-26                   5
+    7                   NA                  NA                  NA
+    8           2021-06-02          2022-03-26                   3
+    9                   NA                  NA                  NA
+    10                  10                  99                   0
+    11                  NA                  NA                  NA
+    12               A0126               A1019                   0
+    13                  NA                  NA                  NA
+    14                   0               30.23                   0
+    15                  NA                  NA                  NA
+    16                   0               15.14                  10
+    17                  NA                  NA                  NA
+    18                cat1                cat7                   0
+    19                  NA                  NA                  NA
+    20                cat1                cat9                   0
+    21                  NA                  NA                  NA
+    22                   "          some, text                   0
+    23                  NA                  NA                  NA
+    24           some text           some text                   0
     
     Validation warnings:
     

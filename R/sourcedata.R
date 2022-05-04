@@ -375,27 +375,31 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 	)
 
 	log_message(paste0("  For each column in dataset..."), showprogress)
-	datafields <- data.frame(fieldname = names(sourcedata$datafields[1:sourcedata$cols_source_n]),
-													 fieldtype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-													 													get_fieldtype_name.datafield, character(1))),
-													 datatype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-													 												 get_datafield_basetype, character(1))),
-													 count = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-													 											get_datafield_count, integer(1))),
-													 missing = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-													 								 function(x){
-													 								 	gdm <- get_datafield_missing(x)
-													 								 	if( is.na(gdm$frequency) ){
-													 								 		NA_character_
-													 								 	} else{
-													 								 		paste0(gdm$frequency, " (", format(gdm$percentage, digits = 3), "%)")
-													 								 	}
-													 								 }, character(1))),
-													 min = format(sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_min)),
-													 max = format(sapply(sourcedata$datafields[1:sourcedata$cols_source_n], get_datafield_max)),
-													 validation_warnings = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-													 																		get_datafield_validation_warnings_n, integer(1))),
-													 stringsAsFactors = FALSE)
+	datafields <-
+		data.frame(fieldname = format(names(sourcedata$datafields[1:sourcedata$cols_source_n])),
+							 fieldtype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 													get_fieldtype_name.datafield, character(1))),
+							 datatype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 												 get_datafield_basetype, character(1))),
+							 count = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 											get_datafield_count, integer(1))),
+							 missing = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 								 function(x){
+							 								 	gdm <- get_datafield_missing(x)
+							 								 	if( is.na(gdm$frequency) ){
+							 								 		NA_character_
+							 								 	} else{
+							 								 		paste0(gdm$frequency, " (", format(gdm$percentage,  digits = 1), "%)")
+							 								 	}
+							 								 }, character(1))),
+							 min = vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 						 function(x){format(get_datafield_min(x))}, character(1)),
+							 max = vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 						 function(x){format(get_datafield_max(x))}, character(1)),
+							 validation_warnings = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
+							 																		get_datafield_validation_warnings_n, integer(1))),
+							 stringsAsFactors = FALSE,
+							 row.names = NULL)
 
 	log_message(paste0("  Validation errors on loading dataset..."), showprogress)
 	validation_warnings <- sourcedata$validation_warnings
@@ -455,7 +459,7 @@ get_datafield_missing <- function(datafield){
     list("frequency" = NA_integer_, "percentage" = NA_real_)
   }
   else{
-    list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
+    list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = 100*sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
   }
 }
 
