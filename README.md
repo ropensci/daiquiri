@@ -93,6 +93,16 @@ GitHub (though this may be more buggy):
 remotes::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 ```
 
+## How to cite this package
+
+Please remember to update the version number to match the version you
+used.
+
+> Quan TP (2022). daiquiri: Data quality reporting for temporal
+> datasets. R package version v0.7.0. Zenodo.
+> <https://doi.org/10.5281/zenodo.6334341>. URL:
+> <https://github.com/phuongquan/daiquiri>
+
 ## Acknowledgements
 
 This work was supported by the National Institute for Health Research

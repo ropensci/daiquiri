@@ -1,9 +1,10 @@
 Package: daiquiri
 Type: Package
-Title: Data quality reporting for temporal datasets
-Version: 0.7.0
+Title: Data Quality Reporting for Temporal Datasets
+Version: 0.7.0.9000
+Date: 2022-04-20
 Authors@R: c(
-    person("T. Phuong", "Quan", email = "phuong.quan@ndm.ox.ac.uk",
+    person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
     person("Jack", "Cregan", role = "ctb"),
     person(family = "University of Oxford", role = "cph"),
@@ -36,6 +37,6 @@ RoxygenNote: 7.1.2
 Suggests:
     covr,
     knitr,
-    testthat
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3

@@ -61,6 +61,12 @@ Alternatively, you can install the current development version from GitHub (thou
 remotes::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 ```
 
+## How to cite this package
+
+Please remember to update the version number to match the version you used.
+
+> Quan TP (2022). daiquiri: Data quality reporting for temporal datasets. R package version v0.7.0. Zenodo. https://doi.org/10.5281/zenodo.6334341. URL: https://github.com/phuongquan/daiquiri
+
 ## Acknowledgements
 
 This work was supported by the National Institute for Health Research Health Protection Research Unit (NIHR HPRU) in Healthcare Associated Infections and Antimicrobial Resistance at the University of Oxford in partnership with Public Health England (PHE) (NIHR200915), and by the NIHR Oxford Biomedical Research Centre.
