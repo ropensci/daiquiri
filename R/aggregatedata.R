@@ -22,7 +22,7 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 	n <- value <- values <- timepointgroup <- NULL
 
 	log_message(paste0("Preparing..."), showprogress)
-	functionlist = datafield$fieldtype$aggfunctions
+	functionlist <- datafield$fieldtype$aggfunctions
 
 	# TODO: validate functionlist at the start
 	#stop(paste("Unrecognised aggregation type:", f), call. = FALSE)
@@ -275,7 +275,7 @@ aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogres
 	# sourcedata<-outpatsourcedata
 	# aggregation_timeunit = "day"
 	# NOTE: Changepoints functionality disabled until we find a method that works
-	changepointmethods = "none"
+	changepointmethods <- "none"
 	# showprogress = TRUE
 
 	log_function_start(match.call()[[1]])
