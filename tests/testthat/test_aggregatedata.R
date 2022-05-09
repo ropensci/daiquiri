@@ -145,3 +145,70 @@ test_that("aggregatedata object prints to console ok", {
 })
 
 
+test_that("aggregated values contain NAs instead of Infs or NaNs", {
+	testdf <- data.table::data.table("col_timepoint" = paste0("2022-01-", 10 + c(seq(1,3), seq(6,21))),
+																	 "col_numeric" = c("","",seq(from = 2, to = 3, length.out = 17)),
+																	 "col_datetime" = c("","",rep("2022-01-01 00:00:00",17)),
+																	 "col_uniqueidentifier" = c("","",seq(1,17))
+	)
+	testsourcedata <- prepare_data(testdf,
+																 fieldtypes = fieldtypes(col_timepoint = ft_timepoint(),
+																 												col_numeric = ft_numeric(),
+																 												col_datetime = ft_datetime(includes_time = TRUE),
+																 												col_uniqueidentifier = ft_uniqueidentifier()
+																 ),
+																 override_columnnames = FALSE,
+																 na = c("","NULL"),
+																 showprogress=FALSE)
+	testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_numeric$values$min)))
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_numeric$values$max)))
+	expect_false(any(is.nan(testdata_byday$aggregatefields$col_numeric$values$mean)))
+
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_datetime$values$min)))
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_datetime$values$max)))
+	expect_false(any(is.nan(testdata_byday$aggregatefields$col_datetime$values$midnight_perc)))
+
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_uniqueidentifier$values$minlength)))
+	expect_false(any(is.infinite(testdata_byday$aggregatefields$col_uniqueidentifier$values$maxlength)))
+	expect_false(any(is.nan(testdata_byday$aggregatefields$col_uniqueidentifier$values$meanlength)))
+
+})
+
+test_that("aggregated values contain all NAs when datafield values are all NA (except for 'n' which should be 0)", {
+	testdf <- data.table::data.table("col_timepoint" = paste0("2022-01-", 10 + c(seq(1,3), seq(6,21))),
+																	 "col_numeric_allna" = "",
+																	 "col_datetime_allna" = "",
+																	 "col_uniqueidentifier_allna" = "",
+																	 "col_categorical_allna" = ""
+	)
+	testsourcedata <- prepare_data(testdf,
+																 fieldtypes = fieldtypes(col_timepoint = ft_timepoint(),
+																 												col_numeric_allna = ft_numeric(),
+																 												col_datetime_allna = ft_datetime(),
+																 												col_uniqueidentifier_allna = ft_uniqueidentifier(),
+																 												col_categorical_allna = ft_categorical()
+																 ),
+																 override_columnnames = FALSE,
+																 na = c("","NULL"),
+																 showprogress=FALSE)
+	testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = FALSE)
+
+	expect_true(all(testdata_byday$aggregatefields$col_numeric_allna$values$n == 0))
+
+	fieldstotest <- names(testdata_byday$aggregatefields)[-1]
+	fieldstotest <- fieldstotest[which(fieldstotest != "[DUPLICATES]")]
+	for( dcol in fieldstotest ){
+		aggtypestotest <- names(testdata_byday$aggregatefields[[dcol]]$values)[-1]
+		aggtypestotest <- aggtypestotest[which(aggtypestotest != "n")]
+		for( aggtype in aggtypestotest ){
+			expect_true(all(is.na(testdata_byday$aggregatefields[[dcol]]$values[[aggtype]])),
+									label = paste0(dcol, "$", aggtype, " is all NA"))
+			expect_false(any(is.infinite(testdata_byday$aggregatefields[[dcol]]$values[[aggtype]])),
+									 label = paste0(dcol, "$", aggtype, " contains Inf"))
+			expect_false(any(is.nan(testdata_byday$aggregatefields[[dcol]]$values[[aggtype]])),
+									 label = paste0(dcol, "$", aggtype, " contains NaN"))
+		}
+	}
+})
