@@ -172,18 +172,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 																								message = "Missing or invalid value in Timepoint field"
 		)
 		warningsdt <- rbind(warningsdt, timepointwarnings)
-		# NOTE: Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
-		# NOTE: Need copy() because otherwise when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
-		cols <- data.table::copy(names(clean_dt))
-		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!navector])
-		names(clean_dt_temp)[1] <- cols[1]
-		clean_dt[, (cols[1]) := NULL]
-		for (col in cols[2:length(cols)]){
-			clean_dt_temp[, (col) := clean_dt[[col]][!navector]]
-			clean_dt[, (col) := NULL]
-		}
-		clean_dt <- clean_dt_temp
-		rm(clean_dt_temp)
+		clean_dt <- remove_rows(clean_dt, navector)
 		timepoint_missing_n <- sum(navector)
 	} else{
 		timepoint_missing_n <- 0
@@ -196,39 +185,8 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 											warningsdt[, list(colindex, rowindex, message)])
 	warnings_summary <- warningsdt[, list(instances = data.table::fifelse(anyNA(rowindex), NA_integer_, .N)), by = list(fieldname, message)]
 
-	log_message(paste0("Checking for duplicates..."), showprogress)
-	# sort by timepoint field then by everything else, so that we can batch the data
-	# TODO: try using setkey as well to see if it makes a difference
-	log_message(paste0("  Sorting data..."), showprogress)
-	data.table::setorderv(clean_dt, c(timepoint_fieldname, names(clean_dt)[-timepoint_index]))
-
-	# check for duplicate rows and remove them here
-	# They may skew other agg stats if left in, but would still be useful to see if dups change over time
-	# Need to chunk up large datasets
-	# estimate total size and limit size of each chunk
-	dtsize <- utils::object.size(clean_dt)
-	if (dtsize > 200000000){
-		numrows <- nrow(clean_dt)
-		numchunks <- as.numeric(ceiling(dtsize/200000000))
-		chunkrows <- ceiling(numrows/numchunks)
-		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
-		timepoint_vector <- clean_dt[[(timepoint_fieldname)]]
-		duprowsvector <- logical(numrows)
-		for (chunk in 1:numchunks){
-			log_message(paste0("  Batch ", chunk), showprogress)
-			chunkstart <- which.max(timepoint_vector >= timepoint_vector[((chunk-1)*chunkrows) + 1])
-			if( chunk < numchunks){
-				# end on the previous (unique) date that the chunk lands on
-				chunkend <- which.max(timepoint_vector >= timepoint_vector[chunk*chunkrows]) - 1
-			} else{
-				# or else to the end of the dataset
-				chunkend <- numrows
-			}
-			duprowsvector[chunkstart:chunkend] <- duplicated(clean_dt[chunkstart:chunkend, ])
-		}
-	}	else{
-		duprowsvector <- duplicated(clean_dt)
-	}
+	# check for duplicate rows
+	duprowsvector <- identify_duplicaterows(clean_dt, batchby_fieldname = timepoint_fieldname, showprogress = showprogress)
 	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
 	duprowsindex <- c(duprowsvector[-1], FALSE)
 	duprowsindex <- duprowsindex & !duprowsvector
@@ -236,23 +194,8 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	dpruns <- rle(duprowsvector)
 	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
 	duprowsindex <- data.table::data.table("[DUPLICATES]" = duprowsindex[!duprowsvector])
-
-	# and remove the duplicates from the final clean dataset
-	# TODO: see if can consolidate this with navector removal so only do it once
-	#clean_dt <- clean_dt[which(!duprowsvector),]
-	if( any(duprowsvector) ){
-		# NOTE: Need copy() because otherwise when using cols <- names(clean_dt), cols updates when columns are removed from clean_dt
-		cols <- data.table::copy(names(clean_dt))
-		clean_dt_temp <- data.table::data.table("Col1" = clean_dt[[1]][!duprowsvector])
-		names(clean_dt_temp)[1] <- cols[1]
-		clean_dt[, (cols[1]) := NULL]
-		for (col in cols[2:length(cols)]){
-			clean_dt_temp[, (col) := clean_dt[[col]][!duprowsvector]]
-			clean_dt[, (col) := NULL]
-		}
-		clean_dt <- clean_dt_temp
-		rm(clean_dt_temp)
-	}
+	# lastly remove the duplicates from the final clean dataset
+	clean_dt <- remove_rows(clean_dt, duprowsvector)
 
 	# basic summary info
 	rows_imported_n <- nrow(clean_dt)
@@ -518,3 +461,59 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 
 }
 
+#############################################################################
+# identify any duplicate rows in a memory-efficient way
+# returns a logical vector indicating which rows are duplicates
+# batchby_fieldname should be a field with well-spread data in order to get evenly-sized batches (i.e. the timepoint field)
+identify_duplicaterows <- function(dt, batchby_fieldname, batchsize_mb = 200, showprogress = TRUE){
+	log_message(paste0("Checking for duplicates..."), showprogress)
+	# sort by batchby_fieldname then by everything else, so that we can batch the data
+	# TODO: try using setkey as well to see if it makes a difference
+	log_message(paste0("  Sorting data..."), showprogress)
+	data.table::setorderv(dt, c(batchby_fieldname, names(dt)[-which(names(dt) == batchby_fieldname)]))
+
+	# Need to chunk up large datasets
+	# estimate total size and limit size of each chunk
+	dtsize <- utils::object.size(dt)/1000000
+	if (dtsize > batchsize_mb){
+		numrows <- nrow(dt)
+		numchunks <- as.numeric(ceiling(dtsize/batchsize_mb))
+		chunkrows <- ceiling(numrows/numchunks)
+		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
+		batchby_vector <- dt[[(batchby_fieldname)]]
+		duprowsvector <- logical(numrows)
+		for (chunk in 1:numchunks){
+			log_message(paste0("  Batch ", chunk), showprogress)
+			chunkstart <- which.max(batchby_vector >= batchby_vector[((chunk-1)*chunkrows) + 1])
+			if( chunk < numchunks){
+				# end on the previous (unique) field value that the chunk lands on
+				chunkend <- which.max(batchby_vector >= batchby_vector[chunk*chunkrows]) - 1
+			} else{
+				# or else to the end of the dataset
+				chunkend <- numrows
+			}
+			duprowsvector[chunkstart:chunkend] <- duplicated(dt[chunkstart:chunkend, ])
+		}
+	}	else{
+		duprowsvector <- duplicated(dt)
+	}
+
+	duprowsvector
+}
+
+# Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
+remove_rows <- function(dt, rowindicator){
+	if( any(rowindicator) ){
+		# NOTE: Need copy() because otherwise when using cols <- names(dt), cols updates when columns are removed from dt
+		cols <- data.table::copy(names(dt))
+		dt_temp <- data.table::data.table("Col1" = dt[[1]][!rowindicator])
+		names(dt_temp)[1] <- cols[1]
+		dt[, (cols[1]) := NULL]
+		for (col in cols[2:length(cols)]){
+			dt_temp[, (col) := dt[[col]][!rowindicator]]
+			dt[, (col) := NULL]
+		}
+		dt <- dt_temp
+	}
+	dt
+}

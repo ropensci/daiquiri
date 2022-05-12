@@ -175,3 +175,52 @@ test_that("sourcedata object prints to console ok", {
 	expect_snapshot_output(print(testsourcedata))
 })
 
+test_that("remove_rows() removes specified rows", {
+	numrows <- 2000000
+	testdt <- data.table::data.table(col1 = rep("2022-01-01", numrows), col2 = seq(1, numrows), col3 = rep("XXXXXXXXXXX", numrows))
+	#object.size(testdt)
+	rowstoremove <- c(1,4,5,6,numrows)
+	rowindicator <- rep(FALSE, numrows)
+	rowindicator[rowstoremove] <- TRUE
+	postdt <- remove_rows(data.table::copy(testdt), rowindicator = rowindicator)
+
+	# correct no. of rows removed
+	expect_equal(nrow(postdt), numrows - length(rowstoremove))
+	# correct rows removed
+	expect_false(any(postdt$col2 %in% rowstoremove))
+	# all columns still present
+	expect_equal(names(testdt), names(postdt))
+	# the contents of the first non-deleted row is the same before and after
+	expect_equal(unlist(testdt[which(!rowindicator)[1]]), unlist(postdt[1]))
+
+})
+
+test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
+	# unbatched
+	numrows <- 200000
+	testdt <- data.table::data.table(col1 = rep("2022-01-01", numrows), col2 = seq(1, numrows), col3 = rep("XXXXXXXXXXX", numrows))
+#	object.size(testdt)
+	duplicaterows <- c(2,5,6,7,numrows)
+	duplicatevals <- c(1,4,4,4,numrows - 1)
+	testdt$col2[duplicaterows] <- duplicatevals
+
+	result <- identify_duplicaterows(testdt, "col2", showprogress = FALSE)
+
+	expect_true(all(result[duplicaterows]))
+	expect_true(all(!result[-duplicaterows]))
+
+	# batched
+	numrows <- 20000000
+	testdt <- data.table::data.table(col1 = rep("2022-01-01", numrows), col2 = seq(1, numrows), col3 = rep("XXXXXXXXXXX", numrows))
+#	object.size(testdt)
+	duplicaterows <- c(2,5,6,7,numrows)
+	duplicatevals <- c(1,4,4,4,numrows - 1)
+	testdt$col2[duplicaterows] <- duplicatevals
+
+	result <- identify_duplicaterows(testdt, "col2", showprogress = FALSE)
+
+	expect_true(all(result[duplicaterows]))
+	expect_true(all(!result[-duplicaterows]))
+
+})
+
