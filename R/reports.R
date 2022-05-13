@@ -125,7 +125,7 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 		minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
 		aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
 		g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks,
-																				 limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
+																				 limits = c(min(minval, aggbreaks[1]), max(maxval, aggbreaks[length(aggbreaks)])))
 
 		# NOTE: Changepoints functionality disabled until we find a method that works
 		# # add changepoint lines if requested
@@ -183,10 +183,8 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 
 		# specify y axis scale
 		maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
-		minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
-		aggbreaks <- yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
-		g <- g + ggplot2::scale_y_continuous(breaks = aggbreaks,
-																				 limits = c(aggbreaks[1], max(maxval, aggbreaks[length(aggbreaks)])))
+		g <- g + ggplot2::scale_y_continuous(n.breaks = 6,
+																				 limits = c(0, max(maxval, 10)))
 	}
 
 	g
@@ -297,34 +295,32 @@ plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, l
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 	breaks <- NULL
 
-	if( aggtype %in% c("distinct","n","sum") || endsWith(aggtype, "_n") || startsWith(aggtype, "subcat_n") ){
-		rangesize <- floor(log10(maxval))
-		if( rangesize == 0 || maxval == 0){
-			breaks <- seq(0, max(maxval, 10))
+	if( aggtype %in% c("distinct","n","sum","minlength","maxlength","meanlength")
+			|| endsWith(aggtype, "_n") || startsWith(aggtype, "subcat_n") ){
+		# frequency/length aggtypes should always start at zero and be shown on a range of 0-10 at a minimum
+		if( maxval <= 10){
+			breaks <- seq(0, 10)
 		}
 		else{
-			ymax <- ceiling(maxval/10^(rangesize-1))*10^(rangesize-1)
-			breaks <- seq(0, ymax, by = 10^rangesize)
+			breaks <- pretty(c(0, maxval))
 		}
 	} else if( endsWith(aggtype, "_perc") || startsWith(aggtype, "subcat_perc") ){
+		# percentage aggtypes should always be shown on a range of 0-100
 		breaks <- seq(0, 100, by = 10)
 	} else{
-		if( is.fieldtype_numeric(fieldtype) ){
-			if( maxval < minval ){
-				# TODO: maybe better to return a warning and/or a graph with the error written on it rather than stopping altogether
-				stop(paste0("Invalid parameter(s) supplied: minval [", toString(minval),"] is greater than maxval [", toString(maxval),"]"), call. = FALSE)
-			}
-			rangesize <- floor(log10(maxval - minval))
-			if( rangesize == 0 || (maxval == 0 && minval == 0) ) {
-				breaks <- seq(floor(minval), max(ceiling(maxval), 5))
+		if( is.fieldtype_datetime(fieldtype) ){
+			# dates should be left to base
+			breaks <- pretty(c(minval, maxval))
+		} else{
+			# otherwise set range based on min/max values
+			rangesize <- max(floor(log10(maxval - minval)), 0)
+			if( maxval == minval ) {
+				# if all values are the same, plot them somewhere in the middle
+				breaks <- seq(floor(minval - 1), ceiling(maxval + 1))
 			}
 			else{
-				ymin <- floor(minval/10^(rangesize-1))*10^(rangesize-1)
-				ymax <- ceiling(maxval/10^(rangesize-1))*10^(rangesize-1)
-				breaks <- seq(ymin, ymax, by = 10^rangesize)
+				breaks <- pretty(c(minval, maxval))
 			}
-		} else if( is.fieldtype_datetime(fieldtype) ){
-			# date axis seems to magically render itself
 		}
 	}
 	breaks
