@@ -2,7 +2,6 @@ Package: daiquiri
 Type: Package
 Title: Data Quality Reporting for Temporal Datasets
 Version: 0.7.0.9000
-Date: 2022-04-20
 Authors@R: c(
     person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
@@ -32,7 +31,9 @@ Imports:
     scales (>= 1.1.0),
     cowplot (>= 0.9.3),
     rmarkdown,
-    reactable (>= 0.2.3)
+    reactable (>= 0.2.3),
+    utils,
+    stats
 RoxygenNote: 7.1.2
 Suggests:
     covr,

@@ -1,10 +1,9 @@
-year <- sub("-.*", "", meta$Date)
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
          title = "daiquiri: Data quality reporting for temporal datasets",
          author = person(c("T.", "Phuong"), "Quan"),
          doi =  "10.5281/zenodo.6334341",
-         year = year,
+         year = 2022,
          note = note,
          url = "https://github.com/phuongquan/daiquiri")
