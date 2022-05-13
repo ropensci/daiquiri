@@ -1,7 +1,12 @@
 # Generic functions
 
-# check required params have been passed in
-# param_names is a vector
+#' Check all required params have been passed in to the calling function
+#'
+#' Should be called at start of all exported functions to check user has supplied all required arguments
+#' If any are missing, execution is stopped
+#'
+#' @param call call from the function being checked
+#' @noRd
 validate_params_required <- function(call){
 	# get the required arguments from function definition
 	params_defined <- formals(as.character(call[[1]]))
@@ -17,6 +22,14 @@ validate_params_required <- function(call){
 	}
 }
 
+#' Check all params that have been passed in to the calling function are of correct type/class
+#'
+#' Should be called at start of all exported functions to check user has supplied all arguments correctly
+#' Any that are invalid are collated and then execution is stopped
+#'
+#' @param call call from the function being checked
+#' @param ... the parameters that were actually passed into the function being checked, with names
+#' @noRd
 validate_params_type <- function(call, ...){
 	params_defined <- names(formals(as.character(call[[1]])))
 	params_passed <- list(...)
@@ -133,6 +146,7 @@ validate_params_type <- function(call, ...){
 #' If this is not called, no log file is created.
 #'
 #' @param log_directory String containing directory to save log file
+#' @examples log_initialise(".")
 #' @export
 log_initialise <- function(log_directory){
 
@@ -160,6 +174,7 @@ log_initialise <- function(log_directory){
 
 #' Closes any active log file
 #'
+#' @examples log_close()
 #' @export
 log_close <- function(){
 	if( exists("logname", envir = packageenvironment) ){
@@ -167,6 +182,11 @@ log_close <- function(){
 	}
 }
 
+#' Write message to log file (if it exists) and/or print to console
+#'
+#' @param message message to write
+#' @param showprogress Print message to console
+#' @noRd
 # TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
 log_message <- function(message, showprogress = FALSE){
 	if( exists("logname", envir = packageenvironment) ){
@@ -181,16 +201,31 @@ log_message <- function(message, showprogress = FALSE){
 	if(showprogress) cat(message, "\n")
 }
 
+#' Log entry to function
+#'
+#' @param functionname functionname to be written
+#' @noRd
 log_function_start <- function(functionname){
 	log_message(paste("[START FUNCTION]", functionname), FALSE)
 }
 
+#' Log exit from function
+#'
+#' @param functionname functionname to be written
+#' @noRd
 log_function_end <- function(functionname){
 	log_message(paste("[END FUNCTION]", functionname), FALSE)
 }
 
-# custom errors with classes that can be tested for
-# copied from https://adv-r.hadley.nz/conditions.html#custom-conditions
+#' Raise a custom error with a class that can be tested for
+#'
+#' Copied from https://adv-r.hadley.nz/conditions.html#custom-conditions
+#'
+#' @param .subclass category of error
+#' @param message error message
+#' @param call calling function
+#' @param ... other items to pass to condition object
+#' @noRd
 stop_custom <- function(.subclass, message, call = NULL, ...) {
   err <- structure(
     list(
@@ -204,13 +239,23 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
 }
 
 ######################################################
-# dummy functions set up for unit testing. testthat can't find them when they are defined in the test_xxx files
+# dummy functions set up purely for unit testing. testthat can't find them when they are defined in the test_xxx files
 
-# test_utilities
+#' Dummy function to assist unit testing of validate_params_required()
+#'
+#' @param p1 required param
+#' @param p2 required param
+#' @param p3 optional param
+#' @noRd
 testfn_params_required <- function(p1, p2, p3 = NULL){
 	validate_params_required(match.call())
 }
 
+#' Dummy function to assist unit testing of validate_params_type()
+#'
+#' This should contain every parameter defined in an exported function
+#'
+#' @noRd
 testfn_params_type <- function(df, fieldtypes, sourcedata, aggregatedata, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = "shortdesc", aggregation_timeunit = "day", save_directory = ".", save_filename = "filename", showprogress = TRUE, log_directory = NULL, format = "html", save_filetype = "csv", save_fileprefix = "", default_fieldtype = ft_ignore()){
 		if(missing(df)){
 			df <- data.frame("Fieldname" = 123)

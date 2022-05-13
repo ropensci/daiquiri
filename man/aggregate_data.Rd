@@ -20,6 +20,33 @@ An \code{aggregatedata} object
 Aggregates sourcedata object based on fieldtypes specified at load time.
 Default time period for aggregation is a calendar day
 }
+\examples{
+rawdata <- read_data(
+  system.file("extdata", "example_data.csv", package = "daiquiri"),
+  delim = ",",
+  col_names = TRUE
+)
+
+sourcedataobj <- prepare_data(
+  rawdata,
+  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    Location = ft_categorical(aggregate_by_each_category=TRUE)),
+  override_columnnames = FALSE,
+  na = c("","NULL")
+)
+
+aggregatedataobj <- aggregate_data(
+  sourcedataobj,
+  aggregation_timeunit = "day"
+)
+
+}
 \seealso{
 \code{\link{prepare_data}}, \code{\link{report_data}}
 }

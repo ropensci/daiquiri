@@ -2,10 +2,13 @@
 #   which contains both the (vector) data for the field and the relevant metadata
 
 # -----------------------------------------------------------------------------
-# individual datafields
-# allowable datafield types match field_types
-
-# NOTE: not sure if better for object to be the data vector or a list
+#' Constructor for individual datafields within sourcedata object
+#'
+#' @param x vector of cleaned values for datafield
+#' @param fieldtype fieldtype object specified for the datafield
+#' @param validation_warnings data.table containing any parser/package-specific warnings
+#' @noRd
+#' @return A \code{datafield} object
 # TODO: not sure if better to store the entire fieldtype or just its name or even as a separate list in the sourcedata
 datafield <- function(x, fieldtype, validation_warnings = NULL) {
   structure(list(values = x,
@@ -209,13 +212,6 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	dfs <- vector("list", cols_source_n + 1)
 	cols_imported_indexes <- vector("integer")
 
-	# TODO: can't add NULL to class structure and can't seem to add an empty vector either
-
-	# not sure this vectorisation is working correctly, do I need to rewrite datafield() in a vectorised way too?
-	# is_fieldtype_ignore <- vapply(fieldtypes, is.fieldtype_ignore, logical(1))
-	# dfs[[is_fieldtype_ignore]] <- datafield(as.vector("ignored"), fieldtypes[is_fieldtype_ignore])
-	# dfs[[!is_fieldtype_ignore]] <- datafield(clean_dt[names(fieldtypes[!is_fieldtype_ignore])], fieldtypes[[!is_fieldtype_ignore]])
-
 	for (i in 1:cols_source_n){
 		currentfield <- names(fieldtypes[i])
 		log_message(paste0("  ", currentfield), showprogress)
@@ -258,6 +254,11 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	)
 }
 
+#' Test if object is a sourcedata object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.sourcedata <- function(x) inherits(x, "sourcedata")
 
 #' @export
@@ -292,7 +293,14 @@ print.sourcedata <- function(x, ...){
 
 }
 
-# summarise data
+#' Create an object containing a high-level summary of a sourcedata object
+#'
+#' This can be used by other functions later for displaying info to user
+#'
+#' @param sourcedata sourcedata object
+#' @param showprogress Print progress to console. Default = TRUE
+#' @return A list of 1. overall dataset properties, 2. properties of each datafield, 3. any validation warnings
+#' @noRd
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Consider adding a warning if a categorical field has "too many" different values
@@ -321,7 +329,7 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 	datafields <-
 		data.frame(fieldname = format(names(sourcedata$datafields[1:sourcedata$cols_source_n])),
 							 fieldtype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-							 													get_fieldtype_name.datafield, character(1))),
+							 													get_datafield_fieldtype_name, character(1))),
 							 datatype = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
 							 												 get_datafield_basetype, character(1))),
 							 count = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
@@ -353,14 +361,23 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 
 }
 
-# TODO: really not sure about naming convention used here. Not sure if worth setting up a generic
-get_fieldtype_name.datafield <- function(datafield){
-    datafield$fieldtype$type
-}
-
 #####################################################################
 # functions to get info about each individual datafield
 
+#' Get fieldtype (short string) of datafield
+#'
+#' @param datafield datafield object
+#' @return string denoting fieldtype
+#' @noRd
+get_datafield_fieldtype_name <- function(datafield){
+	datafield$fieldtype$type
+}
+
+#' Get data vector of datafield
+#'
+#' @param datafield datafield object
+#' @return vector of data values
+#' @noRd
 get_datafield_vector <- function(datafield){
   if (is.fieldtype_ignore(datafield$fieldtype)){
     NA
@@ -370,6 +387,11 @@ get_datafield_vector <- function(datafield){
   }
 }
 
+#' Get data storage type of datafield
+#'
+#' @param datafield datafield object
+#' @return string denoting storage type
+#' @noRd
 get_datafield_basetype <- function(datafield){
   if (is.fieldtype_ignore(datafield$fieldtype)){
     NA_character_
@@ -379,6 +401,11 @@ get_datafield_basetype <- function(datafield){
   }
 }
 
+#' Get minimum data value of datafield
+#'
+#' @param datafield datafield object
+#' @return minimum data value, excluding NAs
+#' @noRd
 get_datafield_min <- function(datafield){
   if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
     NA_real_
@@ -388,6 +415,11 @@ get_datafield_min <- function(datafield){
   }
 }
 
+#' Get maximum data value of datafield
+#'
+#' @param datafield datafield object
+#' @return maximum data value, excluding NAs
+#' @noRd
 get_datafield_max <- function(datafield){
   if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
     NA_real_
@@ -397,6 +429,11 @@ get_datafield_max <- function(datafield){
   }
 }
 
+#' Get number/percentage of missing values in datafield
+#'
+#' @param datafield datafield object
+#' @return numeric list of 1. frequency, 2. percentage
+#' @noRd
 get_datafield_missing <- function(datafield){
   if (is.fieldtype_ignore(datafield$fieldtype)){
     list("frequency" = NA_integer_, "percentage" = NA_real_)
@@ -406,6 +443,11 @@ get_datafield_missing <- function(datafield){
   }
 }
 
+#' Get number of validation warnings for datafield
+#'
+#' @param datafield datafield object
+#' @return number of validation warnings
+#' @noRd
 get_datafield_validation_warnings_n <- function(datafield){
 	if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
 		NA_integer_
@@ -415,6 +457,11 @@ get_datafield_validation_warnings_n <- function(datafield){
 	}
 }
 
+#' Get number of values present in datafield
+#'
+#' @param datafield datafield object
+#' @return number of non-missing values
+#' @noRd
 get_datafield_count <- function(datafield){
 	if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
 		NA_integer_
@@ -426,7 +473,15 @@ get_datafield_count <- function(datafield){
 
 
 # -----------------------------------------------------------------------------
-# Validate column names against specification
+#' Compare column names to fieldtypes specification
+#'
+#' If there are any validation errors, these are all compiled before calling a single stop()
+#'
+#' @param source_names vector of column names in dataset
+#' @param spec_names vector of column names that should be there
+#' @param check_length_only logical denoting that we only want to check the number of names
+#'   and not the actual names (since we plan to override the names anyway)
+#' @noRd
 validate_columnnames <- function(source_names, spec_names, check_length_only = FALSE){
 	# source_names <- c("nonsense","set","of","nonsense","names")
 	# spec_names <- c("nonsense","set","of","stuff")
@@ -462,9 +517,14 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 }
 
 #############################################################################
-# identify any duplicate rows in a memory-efficient way
-# returns a logical vector indicating which rows are duplicates
-# batchby_fieldname should be a field with well-spread data in order to get evenly-sized batches (i.e. the timepoint field)
+#' Identify any duplicate rows in a memory-efficient way
+#'
+#' @param dt data.table potentially containing duplicate rows
+#' @param batchby_fieldname should be a field with well-spread data in order to get evenly-sized batches (i.e. the timepoint field)
+#' @param batchsize_mb approximate size in Mb over which dt will be split into batches
+#' @param showprogress Print progress to console
+#' @return logical vector indicating which rows are duplicates
+#' @noRd
 identify_duplicaterows <- function(dt, batchby_fieldname, batchsize_mb = 200, showprogress = TRUE){
 	log_message(paste0("Checking for duplicates..."), showprogress)
 	# sort by batchby_fieldname then by everything else, so that we can batch the data
@@ -501,7 +561,14 @@ identify_duplicaterows <- function(dt, batchby_fieldname, batchsize_mb = 200, sh
 	duprowsvector
 }
 
-# Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
+#' Remove rows from data.table in a memory-efficient way
+#'
+#' Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
+#'
+#' @param dt data.table
+#' @param rowindicator logical vector indicating which rows should be removed
+#' @return data.table with rows removed
+#' @noRd
 remove_rows <- function(dt, rowindicator){
 	if( any(rowindicator) ){
 		# NOTE: Need copy() because otherwise when using cols <- names(dt), cols updates when columns are removed from dt

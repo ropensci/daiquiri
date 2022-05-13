@@ -9,3 +9,6 @@ log_close()
 \description{
 Closes any active log file
 }
+\examples{
+log_close()
+}

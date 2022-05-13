@@ -6,14 +6,21 @@
 # we try to guess the field types (based on all or only a subset of the rows?)
 #
 # NOTE: want classes to inherit, e.g. all fieldtypes (except "ignored" ones should implement a function for checking missing data)
-# if user specifies a factor type should we load it up as a factor or load it as a string and do factor-checking ourselves?
 #
 # copying structure used in readr
 
 # -----------------------------------------------------------------------------
 # SPECIFY ALLOWABLE TYPES
 
-# `collector' is readr `collector'
+#' Constructor for individual fieldtype object
+#'
+#' @param type string denoting the fieldtype
+#' @param collector readr `collector' to use when parsing the data
+#' @param dataclass type of data, e.g. character or POSIXct
+#' @param aggfunctions aggfunctions to apply to the data in this field
+#' @param options additional options for certain aggfunctions
+#' @return fieldtype object
+#' @noRd
 # TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones
 fieldtype <- function(type, collector, dataclass, aggfunctions = c("n", "missing_n", "missing_perc"), options = NULL) {
 	structure(list(type = type,
@@ -319,9 +326,19 @@ fieldtypes_template <- function(df, default_fieldtype = ft_ignore()){
 }
 
 # -----------------------------------------------------------------------------
-# MAP ALLOWABLE TYPES TO:
-# 	readr::col_types
-#		read.table::colClasses
+# HELPER FUNCTIONS
+
+#' Map fieldtypes to parser's coltypes
+#'
+#' See
+#' 	readr::col_types
+#'  read.table::colClasses
+#'
+#' @param fieldtypes fieldtypes object
+#' @param readfunction package that will be used to read in the data, i.e. readr, data.table, or read.table
+#' @param alltostring Set to TRUE if want parser to read everything as character
+#' @return list or vector of coltypes as appropriate to the chosen parser
+#' @noRd
 fieldtypes_to_cols <- function(fieldtypes, readfunction, alltostring = FALSE){
   # validate
   if (missing(fieldtypes) || !is.fieldtypes(fieldtypes)) {
@@ -345,20 +362,38 @@ fieldtypes_to_cols <- function(fieldtypes, readfunction, alltostring = FALSE){
 	}
 }
 
+#' Get the fieldtype's collector
+#'
+#' @param fieldtype fieldtype object
+#' @return coltype as appropriate to the chosen parser
+#' @noRd
 get_collector <- function(fieldtype){
   fieldtype$collector
 }
 
+#' Get the fieldtype's dataclass
+#'
+#' @param fieldtype fieldtype object
+#' @return type of data e.g. character or POSIXct
+#' @noRd
 get_dataclass <- function(fieldtype){
 	fieldtype$dataclass
 }
 
+#' Get the fieldtype's type as a string
+#'
+#' @param fieldtype fieldtype object
+#' @return string
+#' @noRd
 get_fieldtype_name <- function(fieldtype){
   fieldtype$type
 }
 
-
-# -----------------------------------------------------------------------------
+#' Get the fieldtype's aggfunctions
+#'
+#' @param fieldtype fieldtype object
+#' @return vector of aggfunctions
+#' @noRd
 get_aggfunctions <- function(fieldtype){
   fieldtype$aggfunctions
 }

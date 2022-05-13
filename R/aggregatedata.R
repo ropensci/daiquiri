@@ -6,10 +6,15 @@
 # NOTE: Partitionfield functionality disabled until we work out how to present it (creating aligned plots only works if small no. of partitions)
 
 # -----------------------------------------------------------------------------
-# individual aggregatefields
-# returns a data.table where the first column is the timepoint group, then one
-#  column per aggregationfunction
-# NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
+#' Constructor for an individual aggregatefield object
+#'
+#' NOTE: keep datafield and timepointfieldvalues separate as timepointfieldvalues are updated for subaggregates before being passed in
+#'
+#' @param datafield datafield object
+#' @param timepointfieldvalues all values in timepoint field
+#' @return aggregatefield object, including a data.table where the first column
+#'   is the timepoint group, then one column per aggregationfunction
+#' @noRd
 #' @importFrom data.table ':=' .EACHI
 aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggregation_timeunit, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
 	#temp assignment
@@ -226,11 +231,26 @@ aggregatefield <- function(datafield, timepointfieldvalues, alltimepoints, aggre
 						class = "aggregatefield")
 }
 
+#' Test if object is an aggregatefield object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 
 # -----------------------------------------------------------------------------
-# aggregatefield for all fields combined
-# uses results from already-aggregated individual fields rather than doing it all again
+#' Constructor for the [ALLFIELDSCOMBINED] aggregatefield object
+#'
+#' Uses results from already-aggregated individual fields rather than doing it all again
+#'
+#' @param aggfields all aggregatefield objects from data (i.e. excluding calculated aggfields)
+#' @param changepointmethods currently disabled
+#' @param partitionfieldname currently disabled
+#' @param partitionfieldvalue currently disabled
+#' @param showprogress Print progress to console
+#' @return aggregatefield object, including a data.table where the first column
+#'   is the timepoint group, then one column per aggregationfunction
+#' @noRd
 # TODO: do we want to include duplicates in here too?
 # TODO: this field has a numeric datatype whereas individual fields have an int datatype, decide if need to make them all the same
 aggregateallfields <- function(aggfields, changepointmethods = "none", partitionfieldname = NULL, partitionfieldvalue = NULL, showprogress = TRUE) {
@@ -267,11 +287,6 @@ aggregateallfields <- function(aggfields, changepointmethods = "none", partition
 	groupedvals[, "missing_perc" := 100*missing_n/(n + missing_n + nonconformant_n)]
 	groupedvals[, "nonconformant_perc" := 100*nonconformant_n/(n + missing_n + nonconformant_n)]
 
-	# duplicates
-	# need to recreate clean_df
-	# x < data.frame()
-	# groupedvals <- merge(groupedvals, stats::aggregate(x, by = groupbylist, FUN = function(x){sum(duplicated(x))}, drop = FALSE), by.x = names(alltimepointslist), by.y = "Group.1", all = TRUE)
-
 	# NOTE: Changepoints functionality disabled until we find a method that works
 #	cpts <- find_changepoints(groupedvals, method = changepointmethods, showprogress = showprogress)[[1]]
 
@@ -300,6 +315,31 @@ aggregateallfields <- function(aggfields, changepointmethods = "none", partition
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return An \code{aggregatedata} object
+#' @examples rawdata <- read_data(
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
+#'   delim = ",",
+#'   col_names = TRUE
+#' )
+#'
+#' sourcedataobj <- prepare_data(
+#'   rawdata,
+#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'     PrescriptionDate = ft_timepoint(),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     Drug = ft_freetext(),
+#'     Dose = ft_numeric(),
+#'     DoseUnit = ft_categorical(),
+#'     PatientID = ft_ignore(),
+#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
+#'   override_columnnames = FALSE,
+#'   na = c("","NULL")
+#' )
+#'
+#' aggregatedataobj <- aggregate_data(
+#'   sourcedataobj,
+#'   aggregation_timeunit = "day"
+#' )
+#'
 #' @seealso \code{\link{prepare_data}}, \code{\link{report_data}}
 #' @export
 aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogress = TRUE){
@@ -455,6 +495,11 @@ aggregate_data <- function(sourcedata, aggregation_timeunit = "day", showprogres
 	)
 }
 
+#' Test if object is an aggregatedata object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 
 # -----------------------------------------------------------------------------
@@ -466,6 +511,42 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #' @param save_directory String. Full or relative path for save folder
 #' @param save_fileprefix String. Optional prefix for the exported filenames
 #' @param save_filetype String. Filetype extension supported by \code{readr}, currently only csv allowed
+#' @examples rawdata <- read_data(
+#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
+#'   delim = ",",
+#'   col_names = TRUE
+#' )
+#'
+#' sourcedataobj <- prepare_data(
+#'   rawdata,
+#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'     PrescriptionDate = ft_timepoint(),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     Drug = ft_freetext(),
+#'     Dose = ft_numeric(),
+#'     DoseUnit = ft_categorical(),
+#'     PatientID = ft_ignore(),
+#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
+#'   override_columnnames = FALSE,
+#'   na = c("","NULL")
+#' )
+#'
+#' aggregatedataobj <- aggregate_data(
+#'   sourcedataobj,
+#'   aggregation_timeunit = "day"
+#' )
+#'
+#' export_aggregated_data(
+#'   aggregatedataobj,
+#'   save_directory = ".",
+#'   save_fileprefix = "ex_"
+#' )
+#'
+#' \dontshow{
+#' f <- list.files(".", "^ex_.*csv$")
+#' file.remove(f)
+#' }
+#'
 #' @export
 export_aggregated_data <- function(aggregatedata, save_directory, save_fileprefix = "", save_filetype = "csv"){
 	#temp assignment
@@ -533,7 +614,13 @@ print.aggregatedata <- function(x, ...){
 	# }
 }
 
-# summarise aggregated data
+#' Create an object containing a high-level summary of an aggregatedata object
+#'
+#' This can be used by other functions later for displaying info to user
+#'
+#' @param aggregatedata aggregatedata object
+#' @return A list of 1. overall dataset properties
+#' @noRd
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 summarise_aggregated_data <- function(aggregatedata){
@@ -619,7 +706,14 @@ summarise_aggregated_data <- function(aggregatedata){
 
 }
 
-# convert timepoint value to desired aggregation unit
+#' Convert vector of timepoint values to desired aggregation unit
+#'
+#' Allocate timepoint values to appropriate day/week/month etc. for later grouping
+#'
+#' @param x vector of original timepoint values
+#' @param aggregation_timeunit desired aggregation granularity
+#' @return vector of new timepoint values, same length as before but discretized values
+#' @noRd
 timepoint_as_aggregationunit <- function(x, aggregation_timeunit){
 	if( aggregation_timeunit == "day" ){
 		as.Date(x)
@@ -646,8 +740,15 @@ timepoint_as_aggregationunit <- function(x, aggregation_timeunit){
 # -----------------------------------------------------------------------------
 # TODO: Define set of allowed aggregation functions similarly to fieldtypes, with each object containing formula for aggregation as well as friendly names
 
-# Set user-friendly names
-# this works using the resulting columnname rather than the original aggregationfunction (relevant for subcats)
+#' Set user-friendly names for aggtypes
+#'
+#' This uses the aggfield columnnames rather than the original aggregationfunction (relevant for subcats)
+#'
+#' @param aggtype string name of aggtype (from aggfield columnname)
+#' @param type "short" or "long"
+#' @return string containing friendly name
+#' @noRd
+# TODO: come up with some friendlier short names, currently just the aggtype itself
 aggtype_friendlyname <- function(aggtype, type){
 	if( startsWith(aggtype, "subcat_" ) ){
 		catval <- substring(gsub('^(?:[^_]*_){3}','_', aggtype), 2)

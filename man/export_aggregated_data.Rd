@@ -23,3 +23,41 @@ export_aggregated_data(
 \description{
 Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset.
 }
+\examples{
+rawdata <- read_data(
+  system.file("extdata", "example_data.csv", package = "daiquiri"),
+  delim = ",",
+  col_names = TRUE
+)
+
+sourcedataobj <- prepare_data(
+  rawdata,
+  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    Location = ft_categorical(aggregate_by_each_category=TRUE)),
+  override_columnnames = FALSE,
+  na = c("","NULL")
+)
+
+aggregatedataobj <- aggregate_data(
+  sourcedataobj,
+  aggregation_timeunit = "day"
+)
+
+export_aggregated_data(
+  aggregatedataobj,
+  save_directory = ".",
+  save_fileprefix = "ex_"
+)
+
+\dontshow{
+f <- list.files(".", "^ex_.*csv$")
+file.remove(f)
+}
+
+}

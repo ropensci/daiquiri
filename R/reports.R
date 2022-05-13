@@ -92,8 +92,13 @@ report_data <- function(sourcedata, aggregatedata, save_directory = ".", save_fi
 }
 
 # -----------------------------------------------------------------------------
-# create an individual plot according to aggregatetype
-# optionally plot changepoints - "all"/"none"/vectorofmethodnames
+#' Create a scatter plot for an individual time series
+#'
+#' @param aggfield aggregatefield object
+#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param changepoint_methods currently disabled
+#' @return ggplot
+#' @noRd
 plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "none"){
 	#temp assignment
 	# aggfield<-testdata_byday$aggregatefields[[3]]
@@ -144,7 +149,14 @@ plot_timeseries_static <- function(aggfield, aggtype, changepoint_methods = "non
 }
 
 # -----------------------------------------------------------------------------
-# create a plot to show overall numbers per timepoint
+#' Create a filled line plot to show overall numbers per timepoint
+#'
+#' @param aggfield aggregatefield object
+#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param fillcolour colour to use below the line
+#' @param title optional title for the plot
+#' @return ggplot
+#' @noRd
 # TODO: automatically choose to draw a lineplot or barplot depending on number of timepoints (as barplots don't render well with lots of timepoints)
 plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, title = NULL){
 	#temp assignment
@@ -192,7 +204,13 @@ plot_overview_totals_static <- function(aggfield, aggtype, fillcolour = NA, titl
 }
 
 # -----------------------------------------------------------------------------
-# create a heatmap showing a particular aggtype value across all fields
+#' Create a heatmap showing a particular aggtype value across all fields
+#'
+#' @param aggfields all aggregatefields object
+#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param fillcolour colour to use for the tiles
+#' @return ggplot
+#' @noRd
 # TODO: Decide whether or not to include the timepoint field in the heatmap
 plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkred"){
 	#temp assignment
@@ -265,7 +283,16 @@ plot_overview_heatmap_static <- function(aggfields, aggtype, fillcolour = "darkr
 }
 
 # -----------------------------------------------------------------------------
-# combine a lineplot and heatmap to show as an overall summary for a particular aggtype
+#' Combine a lineplot and heatmap to show as an overall summary for a particular aggtype
+#'
+#' @param aggfields all aggregatefields to be included
+#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param lineplot_fieldname which aggfield to use for the lineplot
+#' @param lineplot_fillcolour colour to use below the line
+#' @param heatmap_fillcolour colour to use for the tiles
+#' @param title optional title for the combined plot
+#' @return cowplot::plot_grid
+#' @noRd
 plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, lineplot_fillcolour, heatmap_fillcolour, title = NULL){
 	# aggfields = testcpddata_byday2$aggregatefields
 	# aggtype = "nonconformant_n"
@@ -292,6 +319,14 @@ plot_overview_combo_static <- function(aggfields, aggtype, lineplot_fieldname, l
 # -----------------------------------------------------------------------------
 # HELPER FUNCTIONS
 
+#' Set the breaks for the y-axis depending on the fieldtype and aggtype
+#'
+#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param maxval maximum data value
+#' @param minval minimum data value
+#' @param fieldtype fieldtype object
+#' @return numeric vector containing locations of limits and breaks
+#' @noRd
 yscale_breaks <- function(aggtype, maxval, minval = 0, fieldtype = NULL){
 	breaks <- NULL
 

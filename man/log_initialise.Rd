@@ -13,3 +13,6 @@ log_initialise(log_directory)
 Choose a directory in which to save the log file.
 If this is not called, no log file is created.
 }
+\examples{
+log_initialise(".")
+}
