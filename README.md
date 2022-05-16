@@ -8,6 +8,9 @@
 [![R-CMD-check](https://github.com/phuongquan/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/phuongquan/daiquiri/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/phuongquan/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/phuongquan/daiquiri?branch=master)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
 The daiquiri package generates data quality reports that enable quick

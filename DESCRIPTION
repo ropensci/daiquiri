@@ -38,6 +38,7 @@ RoxygenNote: 7.1.2
 Suggests:
     covr,
     knitr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    codemetar
 VignetteBuilder: knitr
 Config/testthat/edition: 3
