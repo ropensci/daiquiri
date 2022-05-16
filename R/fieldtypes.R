@@ -32,27 +32,65 @@ fieldtype <- function(type, collector, dataclass, aggfunctions = c("n", "missing
             )
 }
 
+#' Test if object is a fieldtype object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype <- function(x) inherits(x, "fieldtype")
 
+#' Test if object is a timepoint fieldtype
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype_timepoint <- function(x) inherits(x, "fieldtype_timepoint")
 
+#' Test if object is a ignore fieldtype
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype_ignore <- function(x) inherits(x, "fieldtype_ignore")
 
+#' Test if object is a datetime fieldtype
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype_datetime <- function(x) inherits(x, "fieldtype_datetime")
 
+#' Test if object is a numeric fieldtype
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype_numeric <- function(x) inherits(x, "fieldtype_numeric")
 
 # NOTE: Partitionfield functionality disabled until we work out how to present it
 # is.fieldtype_partition <- function(x) inherits(x, "fieldtype_partition")
 
+#' Test if object is a calculated fieldtype
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fieldtype_duplicates"))
 
 
 #' Available fieldtypes
 #'
-#' Specify the type of data contained in each field of your dataset using a combination of the following
+#' Each column in the source dataset must be assigned to one of these fieldtypes, through a \code{\link{fieldtypes}} specification.
 #' @seealso \code{\link{fieldtypes}}
 #' @name availablefieldtypes
+#' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
+#'                             TestID = ft_ignore(),
+#'                             TestDate = ft_timepoint(),
+#'                             TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'                             TestResult = ft_numeric(),
+#'                             ResultDate = ft_datetime(),
+#'                             ResultComment = ft_freetext(),
+#'                             Location = ft_categorical())
 NULL
 
 #' @section Details:

@@ -39,7 +39,7 @@ format specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is supp
 \item{aggregate_by_each_category}{If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE}
 }
 \description{
-Specify the type of data contained in each field of your dataset using a combination of the following
+Each column in the source dataset must be assigned to one of these fieldtypes, through a \code{\link{fieldtypes}} specification.
 }
 \section{Details}{
 
@@ -70,6 +70,16 @@ Any values which contain non-numeric characters (including grouping marks) will 
 \code{ft_ignore} - identifies data fields which should be ignored.  These will not be loaded.
 }
 
+\examples{
+fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
+                            TestID = ft_ignore(),
+                            TestDate = ft_timepoint(),
+                            TestName = ft_categorical(aggregate_by_each_category = FALSE),
+                            TestResult = ft_numeric(),
+                            ResultDate = ft_datetime(),
+                            ResultComment = ft_freetext(),
+                            Location = ft_categorical())
+}
 \seealso{
 \code{\link{fieldtypes}}
 }
