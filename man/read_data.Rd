@@ -17,20 +17,28 @@ read_data(
 )
 }
 \arguments{
-\item{file}{A string containing path of file containing data to load,
-or a URL starting http://, file://, etc. Compressed files with extension ‘.gz’, ‘.bz2’, ".xz" and ".zip" are supported.}
+\item{file}{A string containing path of file containing data to load, or a
+URL starting http://, file://, etc. Compressed files with extension ‘.gz’,
+‘.bz2’, ".xz" and ".zip" are supported.}
 
-\item{delim}{Single character used to separate fields within a record. E.g. \code{","} or \code{"\t"}}
+\item{delim}{Single character used to separate fields within a record. E.g.
+\code{","} or \code{"\t"}}
 
-\item{col_names}{Either TRUE, FALSE or a character vector of column names. If TRUE, the first row of the input will be used as the column names, and will not be included in the data frame. If FALSE, column names will be generated automatically: X1, X2, X3 etc. Default = TRUE}
+\item{col_names}{Either TRUE, FALSE or a character vector of column names. If
+TRUE, the first row of the input will be used as the column names, and will
+not be included in the data frame. If FALSE, column names will be generated
+automatically: X1, X2, X3 etc. Default = TRUE}
 
 \item{quote}{Single character used to quote strings.}
 
-\item{trim_ws}{Should leading and trailing whitespace be trimmed from each field?}
+\item{trim_ws}{Should leading and trailing whitespace be trimmed from each
+field?}
 
-\item{comment}{A string used to identify comments. Any text after the comment characters will be silently ignored}
+\item{comment}{A string used to identify comments. Any text after the comment
+characters will be silently ignored}
 
-\item{skip}{Number of lines to skip before reading data. If \code{comment} is supplied any commented lines are ignored after skipping}
+\item{skip}{Number of lines to skip before reading data. If \code{comment} is
+supplied any commented lines are ignored after skipping}
 
 \item{n_max}{Maximum number of lines to read.}
 
@@ -40,8 +48,9 @@ or a URL starting http://, file://, etc. Compressed files with extension ‘.gz�
 A data frame
 }
 \description{
-Read rectangular data from a delimited file, with all columns read in as character type so that the package can later detect any non-conformant values.
-Operates as a restricted implementation of \code{readr::read_delim}.
+Read rectangular data from a delimited file, with all columns read in as
+character type so that the package can later detect any non-conformant
+values. Operates as a restricted implementation of \code{readr::read_delim}.
 }
 \examples{
 rawdata <- read_data(
@@ -51,5 +60,7 @@ rawdata <- read_data(
 )
 }
 \seealso{
-\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{report_data}}, \code{\link{create_report}}
+\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
+  \code{\link{aggregate_data}}, \code{\link{report_data}},
+  \code{\link{create_report}}
 }

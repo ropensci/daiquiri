@@ -14,14 +14,18 @@ report_data(
 )
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
+\item{sourcedata}{A \code{sourcedata} object returned from
+\code{\link{prepare_data}} function}
 
-\item{aggregatedata}{An \code{aggregatedata} object returned from \code{\link{aggregate_data}} function}
+\item{aggregatedata}{An \code{aggregatedata} object returned from
+\code{\link{aggregate_data}} function}
 
-\item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
+\item{save_directory}{String specifying directory in which to save the
+report. Default is current directory.}
 
-\item{save_filename}{String specifying filename for the report, excluding any file extension.
-If no filename is supplied, one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.}
+\item{save_filename}{String specifying filename for the report, excluding any
+file extension. If no filename is supplied, one will be automatically
+generated with the format daiquiri_report_YYMMDD_HHMMSS.}
 
 \item{format}{File format of the report. Currently only "html" is supported}
 
@@ -73,5 +77,6 @@ report_data(
 
 }
 \seealso{
-\code{\link{prepare_data}}, \code{\link{aggregate_data}}, \code{\link{create_report}}
+\code{\link{prepare_data}}, \code{\link{aggregate_data}},
+  \code{\link{create_report}}
 }

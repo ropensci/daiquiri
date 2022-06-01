@@ -18,10 +18,12 @@ export_aggregated_data(
 
 \item{save_fileprefix}{String. Optional prefix for the exported filenames}
 
-\item{save_filetype}{String. Filetype extension supported by \code{readr}, currently only csv allowed}
+\item{save_filetype}{String. Filetype extension supported by \code{readr},
+currently only csv allowed}
 }
 \description{
-Export aggregated data to disk.  Creates a separate file for each aggregated field in dataset.
+Export aggregated data to disk.  Creates a separate file for each aggregated
+field in dataset.
 }
 \examples{
 rawdata <- read_data(

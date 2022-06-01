@@ -18,38 +18,58 @@ create_report(
 )
 }
 \arguments{
-\item{df}{A data frame. Rectangular data can be read from file using \code{\link{read_data}}. See details.}
+\item{df}{A data frame. Rectangular data can be read from file using
+\code{\link{read_data}}. See details.}
 
-\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in source data. See also \link{availablefieldtypes}.}
+\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types
+of fields (columns) in source data. See also \link{availablefieldtypes}.}
 
-\item{override_columnnames}{If FALSE, column names must exist in data frame and must match
-the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
-specification. The specification must therefore contain the columns in the correct order. Default = FALSE}
+\item{override_columnnames}{If FALSE, column names must exist in data frame
+and must match the names specified in fieldtypes exactly. If TRUE, column
+names in source will be replaced with names in fieldtypes specification.
+The specification must therefore contain the columns in the correct order.
+Default = FALSE}
 
-\item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NA","NULL")}.}
+\item{na}{vector containing strings that should be interpreted as missing
+values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_shortdesc}{Short description of the dataset being checked. This will appear on the report. If blank, the name of the data frame object will be used}
+\item{dataset_shortdesc}{Short description of the dataset being checked. This
+will appear on the report. If blank, the name of the data frame object will
+be used}
 
-\item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
+\item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
+"day", "week", "month", "quarter", "year". The "week" option is
+Monday-based. Default = "day"}
 
-\item{save_directory}{String specifying directory in which to save the report. Default is current directory.}
+\item{save_directory}{String specifying directory in which to save the
+report. Default is current directory.}
 
-\item{save_filename}{String specifying filename for the report, excluding any file extension.
-If no filename is supplied (i.e. filename = NULL), one will be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.}
+\item{save_filename}{String specifying filename for the report, excluding any
+file extension. If no filename is supplied (i.e. filename = NULL), one will
+be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.}
 
 \item{showprogress}{Print progress to console. Default = TRUE}
 
-\item{log_directory}{String specifying directory in which to save log file. If no directory is supplied, progress is not logged.}
+\item{log_directory}{String specifying directory in which to save log file.
+If no directory is supplied, progress is not logged.}
 }
 \value{
-A list containing information relating to the supplied parameters as well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
+A list containing information relating to the supplied parameters as
+  well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
 }
 \description{
-Accepts record-level data from a data frame, validates it against the expected type of content of each column, generates a collection of time series plots for visual inspection, and saves a report to disk.
+Accepts record-level data from a data frame, validates it against the
+expected type of content of each column, generates a collection of time
+series plots for visual inspection, and saves a report to disk.
 }
 \section{Details}{
-
-In order for the package to detect any non-conformant values in numeric or datetime fields, these should be present in the data frame in their raw character format. Rectangular data from a text file will automatically be read in as character type if you use the \code{\link{read_data}} function. Data frame columns that are not of class character will still be processed according to the fieldtypes specification.
+ In order for the package to detect any non-conformant
+  values in numeric or datetime fields, these should be present in the data
+  frame in their raw character format. Rectangular data from a text file will
+  automatically be read in as character type if you use the
+  \code{\link{read_data}} function. Data frame columns that are not of class
+  character will still be processed according to the fieldtypes
+  specification.
 }
 
 \examples{
@@ -82,5 +102,6 @@ daiqobj <- create_report(
 
 }
 \seealso{
-\code{\link{read_data}}, \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}
+\code{\link{read_data}}, \code{\link{fieldtypes}},
+  \code{\link{availablefieldtypes}}
 }

@@ -10,8 +10,8 @@ log_initialise(log_directory)
 \item{log_directory}{String containing directory to save log file}
 }
 \description{
-Choose a directory in which to save the log file.
-If this is not called, no log file is created.
+Choose a directory in which to save the log file. If this is not called, no
+log file is created.
 }
 \examples{
 log_initialise(".")

@@ -29,45 +29,54 @@ ft_simple()
 ft_ignore()
 }
 \arguments{
-\item{includes_time}{If TRUE, additional aggregated values will be generated using the time portion (and if
-no time portion is present then midnight will be assumed). If FALSE, aggregated values will ignore any time portion. Default = TRUE}
+\item{includes_time}{If TRUE, additional aggregated values will be generated
+using the time portion (and if no time portion is present then midnight
+will be assumed). If FALSE, aggregated values will ignore any time portion.
+Default = TRUE}
 
-\item{format}{Where datetime values are not in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`,
-an alternative format can be specified at the per field level, using readr's \code{\link[readr]{col_datetime}}
-format specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is supplied, it must match the complete string.}
+\item{format}{Where datetime values are not in the format `YYYY-MM-DD` or
+`YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
+field level, using readr's \code{\link[readr]{col_datetime}} format
+specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is
+supplied, it must match the complete string.}
 
-\item{aggregate_by_each_category}{If TRUE, aggregated values will be generated for each distinct subcategory as well as for the field overall. If FALSE, aggregated values will only be generated for the field overall. Default = FALSE}
+\item{aggregate_by_each_category}{If TRUE, aggregated values will be
+generated for each distinct subcategory as well as for the field overall.
+If FALSE, aggregated values will only be generated for the field overall.
+Default = FALSE}
 }
 \description{
-Each column in the source dataset must be assigned to one of these fieldtypes, through a \code{\link{fieldtypes}} specification.
+Each column in the source dataset must be assigned to one of these
+fieldtypes, through a \code{\link{fieldtypes}} specification.
 }
 \section{Details}{
+ \code{ft_timepoint} - identifies the data field which
+  should be used as the independent time variable. There should be one and
+  only one of these specified.
 
-\code{ft_timepoint} - identifies the data field which should be used as the independent time variable.
-  There should be one and only one of these specified.
+ \code{ft_uniqueidentifier} - identifies data fields which
+  contain a (usually computer-generated) identifier for an entity, e.g. a
+  patient. It does not need to be unique within the dataset.
 
-
-\code{ft_uniqueidentifier} - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient.
-It does not need to be unique within the dataset.
-
-
-\code{ft_categorical} - identifies data fields which should be treated as categorical.
+ \code{ft_categorical} - identifies data fields which should
+  be treated as categorical.
 
 
 \code{ft_numeric} - identifies data fields which contain numeric values that should be treated as continuous.
 Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant
 
+ \code{ft_datetime} - identifies data fields which contain
+  date values that should be treated as continuous.
 
-\code{ft_datetime} - identifies data fields which contain date values that should be treated as continuous.
+ \code{ft_freetext} - identifies data fields which contain
+  free text values. Only presence/missingness will be evaluated.
 
+ \code{ft_simple} - identifies data fields where you only
+  want presence/missingness to be evaluated (but which are not necessarily
+  free text).
 
-\code{ft_freetext} - identifies data fields which contain free text values. Only presence/missingness will be evaluated.
-
-
-\code{ft_simple} - identifies data fields where you only want presence/missingness to be evaluated (but which are not necessarily free text).
-
-
-\code{ft_ignore} - identifies data fields which should be ignored.  These will not be loaded.
+ \code{ft_ignore} - identifies data fields which should be
+  ignored.  These will not be loaded.
 }
 
 \examples{

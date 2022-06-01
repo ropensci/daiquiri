@@ -16,15 +16,22 @@ prepare_data(
 \arguments{
 \item{df}{A data frame}
 
-\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types of fields (columns) in the source data. See also \link{availablefieldtypes}.}
+\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types
+of fields (columns) in the source data. See also
+\link{availablefieldtypes}.}
 
-\item{override_columnnames}{If FALSE, column names must exist in data frame and must match
-the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
-specification. The specification must therefore contain the columns in the correct order. Default = FALSE}
+\item{override_columnnames}{If FALSE, column names must exist in data frame
+and must match the names specified in fieldtypes exactly. If TRUE, column
+names in source will be replaced with names in fieldtypes specification.
+The specification must therefore contain the columns in the correct order.
+Default = FALSE}
 
-\item{na}{vector containing strings that should be interpreted as missing values, Default = \code{c("","NA","NULL")}.}
+\item{na}{vector containing strings that should be interpreted as missing
+values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_shortdesc}{Short description of the dataset being checked. This will appear on the report. If blank, the name of the data frame object will be used}
+\item{dataset_shortdesc}{Short description of the dataset being checked. This
+will appear on the report. If blank, the name of the data frame object will
+be used}
 
 \item{showprogress}{Print progress to console. Default = TRUE}
 }
@@ -32,7 +39,8 @@ specification. The specification must therefore contain the columns in the corre
 A \code{sourcedata} object
 }
 \description{
-Validate a data frame against a \code{\link{fieldtypes}} specification, and prepare for aggregation.
+Validate a data frame against a \code{\link{fieldtypes}} specification, and
+prepare for aggregation.
 }
 \examples{
 rawdata <- read_data(
@@ -56,5 +64,7 @@ sourcedataobj <- prepare_data(
 )
 }
 \seealso{
-\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{report_data}}, \code{\link{create_report}}
+\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
+  \code{\link{aggregate_data}}, \code{\link{report_data}},
+  \code{\link{create_report}}
 }

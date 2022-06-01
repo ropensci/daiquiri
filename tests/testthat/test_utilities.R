@@ -2,7 +2,7 @@ test_that("validate_params_required() checks if params are supplied", {
 	# NOTE: testfn_params_required() defined in utilities.R as devtools::test() can't find it when it's defined here
 	# 	Think it is something to do with environments but haven't figured it out
 
-	# testfn_params_required <- function(p1, p2, p3 = NULL){
+	# testfn_params_required <- function(p1, p2, p3 = NULL) {
 	# 	validate_params_required(match.call())
 	# }
 
@@ -37,7 +37,7 @@ test_that("validate_params_type() checks if params are of correct type", {
 							 class = "invalid_param_type")
 	expect_error(testfn_params_type(na = c(NULL)),
 							 class = "invalid_param_type")
-	expect_error(testfn_params_type(na = c(1,2,3)),
+	expect_error(testfn_params_type(na = c(1, 2, 3)),
 							 class = "invalid_param_type")
 
 	expect_silent(testfn_params_type(dataset_shortdesc = ""))

@@ -6,16 +6,23 @@
 #'
 #' @param x vector of cleaned values for datafield
 #' @param fieldtype fieldtype object specified for the datafield
-#' @param validation_warnings data.table containing any parser/package-specific warnings
+#' @param validation_warnings data.table containing any parser/package-specific
+#'   warnings
 #' @noRd
 #' @return A \code{datafield} object
 # TODO: not sure if better to store the entire fieldtype or just its name or even as a separate list in the sourcedata
 datafield <- function(x, fieldtype, validation_warnings = NULL) {
-  structure(list(values = x,
-  							 fieldtype = fieldtype,
-  							 columnname = names(x[1]),
-  							 validation_warnings = validation_warnings),
-            class = c(paste0("datafield_", get_fieldtype_name(fieldtype)), "datafield"))
+	structure(
+		list(
+			values = x,
+			fieldtype = fieldtype,
+			columnname = names(x[1]),
+			validation_warnings = validation_warnings
+		),
+		class = c(paste0(
+			"datafield_", get_fieldtype_name(fieldtype)
+		), "datafield")
+	)
 }
 
 is.datafield <- function(x) inherits(x, "datafield")
@@ -24,15 +31,23 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 #' Prepare source data
 #'
-#' Validate a data frame against a \code{\link{fieldtypes}} specification, and prepare for aggregation.
+#' Validate a data frame against a \code{\link{fieldtypes}} specification, and
+#' prepare for aggregation.
 #'
 #' @param df A data frame
-#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types of fields (columns) in the source data. See also \link{availablefieldtypes}.
-#' @param override_columnnames If FALSE, column names must exist in data frame and must match
-#' the names specified in fieldtypes exactly. If TRUE, column names in source will be replaced with names in fieldtypes
-#' specification. The specification must therefore contain the columns in the correct order. Default = FALSE
-#' @param na vector containing strings that should be interpreted as missing values, Default = \code{c("","NA","NULL")}.
-#' @param dataset_shortdesc Short description of the dataset being checked. This will appear on the report. If blank, the name of the data frame object will be used
+#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types
+#'   of fields (columns) in the source data. See also
+#'   \link{availablefieldtypes}.
+#' @param override_columnnames If FALSE, column names must exist in data frame
+#'   and must match the names specified in fieldtypes exactly. If TRUE, column
+#'   names in source will be replaced with names in fieldtypes specification.
+#'   The specification must therefore contain the columns in the correct order.
+#'   Default = FALSE
+#' @param na vector containing strings that should be interpreted as missing
+#'   values, Default = \code{c("","NA","NULL")}.
+#' @param dataset_shortdesc Short description of the dataset being checked. This
+#'   will appear on the report. If blank, the name of the data frame object will
+#'   be used
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
 #' @examples rawdata <- read_data(
@@ -54,15 +69,17 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'   override_columnnames = FALSE,
 #'   na = c("","NULL")
 #' )
-#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}}, \code{\link{aggregate_data}}, \code{\link{report_data}}, \code{\link{create_report}}
+#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
+#'   \code{\link{aggregate_data}}, \code{\link{report_data}},
+#'   \code{\link{create_report}}
 #' @export
 #' @importFrom data.table .N
-prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c("","NA","NULL"), dataset_shortdesc = NULL, showprogress = TRUE) {
-	# temp assignments
-	# dt<-data.table::setDT(source_df)
-	#	dt<-data.table(source_df)
-	# fieldtypes<-testfile_fieldtypes
-	#	showprogress = TRUE
+prepare_data <- function(df,
+												 fieldtypes,
+												 override_columnnames = FALSE,
+												 na = c("", "NA", "NULL"),
+												 dataset_shortdesc = NULL,
+												 showprogress = TRUE) {
 
 	log_function_start(match.call()[[1]])
 
@@ -79,44 +96,62 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 											 showprogress = showprogress)
 
 	# use dataset_shortdesc if present, otherwise get from call
-	if( is.null(dataset_shortdesc) ){
+	if (is.null(dataset_shortdesc)) {
 		# look for create_report() in the call stack and if present, use the latest one
 		# can't just use sys.function(-1) as that doesn't work inside testthat
 		matchedcalls <- grep("create_report", as.character(sys.calls()))
-		if( length(matchedcalls) > 0 ){
-			dataset_shortdesc <- as.character(enquote(as.list(match.call(definition = sys.function(rev(matchedcalls)[1]),
-																							call = sys.call(sys.parent())))$df))[2]
+		if (length(matchedcalls) > 0) {
+			dataset_shortdesc <-
+				as.character(enquote(
+					as.list(
+						match.call(definition = sys.function(rev(matchedcalls)[1]),
+											 call = sys.call(sys.parent()))
+						)$df
+					))[2]
 		} else{
 			dataset_shortdesc <- as.character(enquote(as.list(match.call())$df))[2]
 		}
 	}
 
-	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)), showprogress)
+	log_message(paste0("Fieldtypes supplied:\n", fieldtypes_to_string(fieldtypes)),
+							showprogress)
 
 	# validate inputs
-	log_message(paste0("Checking column names against fieldtypes..."), showprogress)
-	validate_columnnames(names(df), names(fieldtypes), check_length_only = override_columnnames)
-	if (override_columnnames == TRUE){
+	log_message(paste0("Checking column names against fieldtypes..."),
+							showprogress)
+	validate_columnnames(names(df),
+											 names(fieldtypes),
+											 check_length_only = override_columnnames)
+	if (override_columnnames == TRUE) {
 		names(df) <- names(fieldtypes)
 	}
 
 	# ensure all columns are character type because readr::type_convert won't skip numeric columns
 	df_datatypes <- vapply(df, typeof, character(1))
 	df_nonchar_warnings <- data.table::data.table()
-	if( any(df_datatypes != "character") ){
+	if (any(df_datatypes != "character")) {
 		# Report presence of any non-char columns in source data frame (except ignored ones)
-		df_nonchar_warnings <- data.table::data.table(
-			colindex = which(df_datatypes != "character" & !vapply(fieldtypes, is.fieldtype_ignore, logical(1))),
-			rowindex = NA,
-			message = paste0("Data supplied as ",
-											 df_datatypes[which(df_datatypes != "character" & !vapply(fieldtypes, is.fieldtype_ignore, logical(1)))],
-											 " instead of character, non-conformant values will not be identified")
+		df_nonchar_warnings <-
+			data.table::data.table(
+				colindex = which(
+					df_datatypes != "character" &
+						!vapply(fieldtypes, is.fieldtype_ignore, logical(1))
+				),
+				rowindex = NA,
+				message = paste0(
+					"Data supplied as ",
+					df_datatypes[which(df_datatypes != "character" &
+														 	!vapply(fieldtypes, is.fieldtype_ignore, logical(1)))],
+					" instead of character, non-conformant values will not be identified"
+				)
 			)
 		# update the df
-		df[df_datatypes != "character"] <- lapply(df[df_datatypes != "character"], as.character)
+		df[df_datatypes != "character"] <-
+			lapply(df[df_datatypes != "character"], as.character)
 	}
 
-	log_message(paste0("Importing source data [", dataset_shortdesc, "]..."), showprogress)
+	log_message(paste0("Importing source data [", dataset_shortdesc, "]..."),
+							showprogress)
 
 	# number of rows in source
 	rows_source_n <- nrow(df)
@@ -130,12 +165,16 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# convert to data.table at this point
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
-	clean_dt <- data.table::as.data.table(withCallingHandlers(
-		readr::type_convert(df, fieldtypes_to_cols(fieldtypes, readfunction = "readr"), na = na),
-		warning = function(w) {
-			raw_warnings <<- append(raw_warnings, conditionMessage(w))
-			invokeRestart("muffleWarning")
-		}
+	clean_dt <-
+		data.table::as.data.table(
+			withCallingHandlers(
+				readr::type_convert(df,
+														fieldtypes_to_cols(fieldtypes, readfunction = "readr"),
+														na = na),
+				warning = function(w) {
+					raw_warnings <<- append(raw_warnings, conditionMessage(w))
+					invokeRestart("muffleWarning")
+				}
 	))
 	log_message(paste0("  Selecting relevant warnings..."), showprogress)
 	# TODO: consider removing df at this point, to release memory
@@ -144,35 +183,46 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# NOTE: row indexes for readr::type_convert warnings are zero-based (confusingly)
 	relevant_warnings <- grep("\\[[0-9]*?, [0-9]*?\\]:", raw_warnings, value = TRUE)
 	# list of warnings each with character vector containing row, column, message
-	warningslist <- lapply(strsplit(relevant_warnings, ": "), function(x){c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])})
-	warningsdt <- data.table::data.table(colindex = as.integer(vapply(warningslist, function(x){x[2]}, character(1))),
-																			 rowindex = as.integer(vapply(warningslist, function(x){x[1]}, character(1))) + 1,
-																			 message = vapply(warningslist, function(x){x[3]}, character(1)))
+	warningslist <-
+		lapply(strsplit(relevant_warnings, ": "),
+					 function(x) {
+					 	c(gsub("[^0-9]", "", unlist(strsplit(x[1], ","))), x[2])
+					 })
+	warningsdt <-
+		data.table::data.table(
+			colindex = as.integer(vapply(warningslist, function(x) x[2], character(1))),
+			rowindex = as.integer(vapply(warningslist, function(x) x[1], character(1))) + 1,
+			message = vapply(warningslist, function(x) x[3], character(1)))
 
 	log_message(paste0("  Identifying nonconformant values..."), showprogress)
-	# readr::type_convert replaces nonconformant values with NA. Set them to NaN instead to distinguish them from missing
-	# this seems much harder than it should be
+	# readr::type_convert replaces nonconformant values with NA. Set them to NaN
+	# instead to distinguish them from missing
+	# This seems much harder than it should be
 	warningcols <- unique(warningsdt[, colindex])
-	for(c in warningcols){
+	for (c in warningcols) {
 		warningcolname <- names(df)[c]
 		warningrows <- warningsdt[colindex == c, rowindex]
 		clean_dt[warningrows, (warningcolname) := NaN]
 	}
 
-	log_message(paste0("  Checking and removing missing timepoints..."), showprogress)
+	log_message(paste0("  Checking and removing missing timepoints..."),
+							showprogress)
 	# check and remove rows where timepoint field is null
-	# TODO: should I remove them here or when aggregating?  Summary doesn't look right if remove them here. Rownumbers in warnings no longer matches either
+	# TODO: should I remove them here or when aggregating?  Summary doesn't look
+	# right if remove them here. Rownumbers in warnings no longer matches either
 	# TODO: check don't duplicate any messages from above
-	if (anyNA(clean_dt[[(timepoint_fieldname)]])){
+	if (anyNA(clean_dt[[(timepoint_fieldname)]])) {
 		navector <- is.na(clean_dt[[(timepoint_fieldname)]])
 		# stop if there are no valid timepoint values
-		if(sum(navector) == nrow(df)){
+		if (sum(navector) == nrow(df)) {
 			stop_custom(.subclass = "invalid_param_type",
 									message = "Timepoint field does not contain any valid values. Check the correct date format has been used.")
 		}
-		timepointwarnings <- data.table::data.table(colindex = which(names(df) == timepoint_fieldname),
-																								rowindex = which(navector == TRUE),
-																								message = "Missing or invalid value in Timepoint field"
+		timepointwarnings <-
+			data.table::data.table(
+				colindex = which(names(df) == timepoint_fieldname),
+				rowindex = which(navector == TRUE),
+				message = "Missing or invalid value in Timepoint field"
 		)
 		warningsdt <- rbind(warningsdt, timepointwarnings)
 		clean_dt <- remove_rows(clean_dt, navector)
@@ -186,16 +236,22 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	data.table::setorder(warningsdt, colindex, rowindex)
 	warningsdt <- cbind(data.table::data.table(fieldname = names(df)[warningsdt[, colindex]]),
 											warningsdt[, list(colindex, rowindex, message)])
-	warnings_summary <- warningsdt[, list(instances = data.table::fifelse(anyNA(rowindex), NA_integer_, .N)), by = list(fieldname, message)]
+	warnings_summary <-
+		warningsdt[,
+							 list(instances = data.table::fifelse(anyNA(rowindex), NA_integer_, .N)),
+							 by = list(fieldname, message)]
 
 	# check for duplicate rows
-	duprowsvector <- identify_duplicaterows(clean_dt, batchby_fieldname = timepoint_fieldname, showprogress = showprogress)
+	duprowsvector <-
+		identify_duplicaterows(clean_dt,
+													 batchby_fieldname = timepoint_fieldname,
+													 showprogress = showprogress)
 	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
 	duprowsindex <- c(duprowsvector[-1], FALSE)
 	duprowsindex <- duprowsindex & !duprowsvector
 	# ...and record the no. of duplicates on it
 	dpruns <- rle(duprowsvector)
-	duprowsindex[which(duprowsindex==TRUE)] <- dpruns$lengths[which(dpruns$values==TRUE)]
+	duprowsindex[which(duprowsindex == TRUE)] <- dpruns$lengths[which(dpruns$values == TRUE)]
 	duprowsindex <- data.table::data.table("[DUPLICATES]" = duprowsindex[!duprowsvector])
 	# lastly remove the duplicates from the final clean dataset
 	clean_dt <- remove_rows(clean_dt, duprowsvector)
@@ -212,16 +268,17 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	dfs <- vector("list", cols_source_n + 1)
 	cols_imported_indexes <- vector("integer")
 
-	for (i in 1:cols_source_n){
+	for (i in 1:cols_source_n) {
 		currentfield <- names(fieldtypes[i])
 		log_message(paste0("  ", currentfield), showprogress)
-		if (is.fieldtype_ignore(fieldtypes[[i]])){
+		if (is.fieldtype_ignore(fieldtypes[[i]])) {
 			dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
 		}
 		else{
 			dfs[[i]] <- datafield(clean_dt[, currentfield, with = FALSE],
 														fieldtypes[[i]],
-														warningsdt[fieldname == currentfield, c("rowindex","message")])
+														warningsdt[fieldname == currentfield,
+																			 c("rowindex", "message")])
 			cols_imported_indexes <- c(cols_imported_indexes, i)
 			names(cols_imported_indexes)[length(cols_imported_indexes)] <- currentfield
 		}
@@ -229,31 +286,32 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 	# Create new datafield to store numbers of dups.
 	dfs[[cols_source_n + 1]] <- datafield(duprowsindex,
 																				ft_duplicates(),
-																				warningsdt[colindex == 0, c("rowindex","message")])
+																				warningsdt[colindex == 0,
+																									 c("rowindex", "message")])
 	names(dfs) <- c(names(fieldtypes), "[DUPLICATES]")
 
 	log_message(paste0("Finished"), showprogress)
 
 	log_function_end(match.call()[[1]])
 
-	structure(list(
-		datafields = dfs,
-		timepoint_fieldname = timepoint_fieldname,
-		timepoint_missing_n = timepoint_missing_n,
-		rows_source_n = rows_source_n,
-		rows_imported_n = rows_imported_n,
-		rows_duplicates_n = rows_duplicates_n,
-		cols_source_n = cols_source_n,
-		cols_imported_n = cols_imported_n,
-		cols_imported_indexes = cols_imported_indexes,
-		validation_warnings = warnings_summary,
-		dataset_shortdesc = dataset_shortdesc,
-		na_values = na
-	),
-	class = "sourcedata"
+	structure(
+		list(
+			datafields = dfs,
+			timepoint_fieldname = timepoint_fieldname,
+			timepoint_missing_n = timepoint_missing_n,
+			rows_source_n = rows_source_n,
+			rows_imported_n = rows_imported_n,
+			rows_duplicates_n = rows_duplicates_n,
+			cols_source_n = cols_source_n,
+			cols_imported_n = cols_imported_n,
+			cols_imported_indexes = cols_imported_indexes,
+			validation_warnings = warnings_summary,
+			dataset_shortdesc = dataset_shortdesc,
+			na_values = na
+		),
+		class = "sourcedata"
 	)
 }
-
 #' Test if object is a sourcedata object
 #'
 #' @param x object to test
@@ -262,7 +320,7 @@ prepare_data <- function(df, fieldtypes, override_columnnames = FALSE, na = c(""
 is.sourcedata <- function(x) inherits(x, "sourcedata")
 
 #' @export
-print.sourcedata <- function(x, ...){
+print.sourcedata <- function(x, ...) {
 	sourcesummary <- summarise_source_data(x, showprogress = FALSE)
 	cat("Class: sourcedata\n")
   cat("Dataset:", x$dataset_shortdesc, "\n")
@@ -285,7 +343,7 @@ print.sourcedata <- function(x, ...){
   cat("\n")
   cat("Validation warnings:\n")
   cat("\n")
-  if (nrow(sourcesummary$validation_warnings) > 0){
+  if (nrow(sourcesummary$validation_warnings) > 0) {
   	print(sourcesummary$validation_warnings)
   } else{
   	cat("None")
@@ -299,15 +357,13 @@ print.sourcedata <- function(x, ...){
 #'
 #' @param sourcedata sourcedata object
 #' @param showprogress Print progress to console. Default = TRUE
-#' @return A list of 1. overall dataset properties, 2. properties of each datafield, 3. any validation warnings
+#' @return A list of 1. overall dataset properties, 2. properties of each
+#'   datafield, 3. any validation warnings
 #' @noRd
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Consider adding a warning if a categorical field has "too many" different values
-summarise_source_data <- function(sourcedata, showprogress = TRUE){
-	#temp assignment
-	#  sourcedata<-testsourcedata
-	# str(sourcedata)
+summarise_source_data <- function(sourcedata, showprogress = TRUE) {
 
 	log_function_start(match.call()[[1]])
 	log_message(paste0("Creating summary of source data..."), showprogress)
@@ -335,18 +391,21 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 							 count = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
 							 											get_datafield_count, integer(1))),
 							 missing = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-							 								 function(x){
-							 								 	gdm <- get_datafield_missing(x)
-							 								 	if( is.na(gdm$frequency) ){
-							 								 		NA_character_
-							 								 	} else{
-							 								 		paste0(gdm$frequency, " (", format(gdm$percentage,  digits = 1), "%)")
-							 								 	}
-							 								 }, character(1))),
+							 												function(x) {
+							 													gdm <- get_datafield_missing(x)
+											 								 	if (is.na(gdm$frequency)) {
+											 								 		NA_character_
+											 								 	} else{
+											 								 		paste0(gdm$frequency, " (", format(gdm$percentage,  digits = 1), "%)")
+											 								 	}
+							 												},
+							 												character(1))),
 							 min = vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-							 						 function(x){format(get_datafield_min(x))}, character(1)),
+							 						 function(x) format(get_datafield_min(x)),
+							 						 character(1)),
 							 max = vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
-							 						 function(x){format(get_datafield_max(x))}, character(1)),
+							 						 function(x) format(get_datafield_max(x)),
+							 						 character(1)),
 							 validation_warnings = format(vapply(sourcedata$datafields[1:sourcedata$cols_source_n],
 							 																		get_datafield_validation_warnings_n, integer(1))),
 							 stringsAsFactors = FALSE,
@@ -369,7 +428,7 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE){
 #' @param datafield datafield object
 #' @return string denoting fieldtype
 #' @noRd
-get_datafield_fieldtype_name <- function(datafield){
+get_datafield_fieldtype_name <- function(datafield) {
 	datafield$fieldtype$type
 }
 
@@ -378,13 +437,13 @@ get_datafield_fieldtype_name <- function(datafield){
 #' @param datafield datafield object
 #' @return vector of data values
 #' @noRd
-get_datafield_vector <- function(datafield){
-  if (is.fieldtype_ignore(datafield$fieldtype)){
-    NA
-  }
-  else{
-    datafield$values[[1]]
-  }
+get_datafield_vector <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype)) {
+		NA
+	}
+	else{
+		datafield$values[[1]]
+	}
 }
 
 #' Get data storage type of datafield
@@ -392,13 +451,13 @@ get_datafield_vector <- function(datafield){
 #' @param datafield datafield object
 #' @return string denoting storage type
 #' @noRd
-get_datafield_basetype <- function(datafield){
-  if (is.fieldtype_ignore(datafield$fieldtype)){
-    NA_character_
-  }
-  else{
-    typeof(datafield$values[[1]])
-  }
+get_datafield_basetype <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype)) {
+		NA_character_
+	}
+	else{
+		typeof(datafield$values[[1]])
+	}
 }
 
 #' Get minimum data value of datafield
@@ -406,13 +465,14 @@ get_datafield_basetype <- function(datafield){
 #' @param datafield datafield object
 #' @return minimum data value, excluding NAs
 #' @noRd
-get_datafield_min <- function(datafield){
-  if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
-    NA_real_
-  }
-  else{
-    min(datafield$values[[1]], na.rm = TRUE)
-  }
+get_datafield_min <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype) ||
+			all(is.na(datafield$values[[1]]))) {
+		NA_real_
+	}
+	else{
+		min(datafield$values[[1]], na.rm = TRUE)
+	}
 }
 
 #' Get maximum data value of datafield
@@ -420,13 +480,14 @@ get_datafield_min <- function(datafield){
 #' @param datafield datafield object
 #' @return maximum data value, excluding NAs
 #' @noRd
-get_datafield_max <- function(datafield){
-  if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
-    NA_real_
-  }
-  else{
-    max(datafield$values[[1]], na.rm = TRUE)
-  }
+get_datafield_max <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype) ||
+			all(is.na(datafield$values[[1]]))) {
+		NA_real_
+	}
+	else{
+		max(datafield$values[[1]], na.rm = TRUE)
+	}
 }
 
 #' Get number/percentage of missing values in datafield
@@ -434,13 +495,16 @@ get_datafield_max <- function(datafield){
 #' @param datafield datafield object
 #' @return numeric list of 1. frequency, 2. percentage
 #' @noRd
-get_datafield_missing <- function(datafield){
-  if (is.fieldtype_ignore(datafield$fieldtype)){
-    list("frequency" = NA_integer_, "percentage" = NA_real_)
-  }
-  else{
-    list("frequency" = sum(is.na(datafield$values[[1]])), "percentage" = 100*sum(is.na(datafield$values[[1]]))/length(datafield$values[[1]]))
-  }
+get_datafield_missing <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype)) {
+		list("frequency" = NA_integer_, "percentage" = NA_real_)
+	}
+	else{
+		list(
+			"frequency" = sum(is.na(datafield$values[[1]])),
+			"percentage" = 100 * sum(is.na(datafield$values[[1]])) / length(datafield$values[[1]])
+		)
+	}
 }
 
 #' Get number of validation warnings for datafield
@@ -448,8 +512,9 @@ get_datafield_missing <- function(datafield){
 #' @param datafield datafield object
 #' @return number of validation warnings
 #' @noRd
-get_datafield_validation_warnings_n <- function(datafield){
-	if (is.fieldtype_ignore(datafield$fieldtype) || is.fieldtype_calculated(datafield$fieldtype)){
+get_datafield_validation_warnings_n <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype) ||
+			is.fieldtype_calculated(datafield$fieldtype)) {
 		NA_integer_
 	}
 	else{
@@ -462,8 +527,9 @@ get_datafield_validation_warnings_n <- function(datafield){
 #' @param datafield datafield object
 #' @return number of non-missing values
 #' @noRd
-get_datafield_count <- function(datafield){
-	if (is.fieldtype_ignore(datafield$fieldtype) || all(is.na(datafield$values[[1]]))){
+get_datafield_count <- function(datafield) {
+	if (is.fieldtype_ignore(datafield$fieldtype) ||
+			all(is.na(datafield$values[[1]]))) {
 		NA_integer_
 	}
 	else{
@@ -475,36 +541,70 @@ get_datafield_count <- function(datafield){
 # -----------------------------------------------------------------------------
 #' Compare column names to fieldtypes specification
 #'
-#' If there are any validation errors, these are all compiled before calling a single stop()
+#' If there are any validation errors, these are all compiled before calling a
+#' single stop()
 #'
 #' @param source_names vector of column names in dataset
 #' @param spec_names vector of column names that should be there
-#' @param check_length_only logical denoting that we only want to check the number of names
-#'   and not the actual names (since we plan to override the names anyway)
+#' @param check_length_only logical denoting that we only want to check the
+#'   number of names and not the actual names (since we plan to override the
+#'   names anyway)
 #' @noRd
-validate_columnnames <- function(source_names, spec_names, check_length_only = FALSE){
-	# source_names <- c("nonsense","set","of","nonsense","names")
-	# spec_names <- c("nonsense","set","of","stuff")
+validate_columnnames <-	function(source_names,
+																 spec_names,
+																 check_length_only = FALSE) {
 
 	# validate - collect all errors together and return only once
 	err_validation <- character()
 
-	if (check_length_only == TRUE){
-		if (length(source_names) != length(spec_names)){
-			err_validation <- append(err_validation, paste0("Different number of columns in data vs fieldtypes specification: ", length(source_names), " in source, ", length(spec_names), " in specification"))
+	if (check_length_only == TRUE) {
+		if (length(source_names) != length(spec_names)) {
+			err_validation <-
+				append(
+					err_validation,
+					paste0(
+						"Different number of columns in data vs fieldtypes specification: ",
+						length(source_names),
+						" in source, ",
+						length(spec_names),
+						" in specification"
+					)
+				)
 		}
 	} else{
 		# check for duplicates (spec_names should already have been checked in fieldtypes constructor)
-		if (anyDuplicated(source_names) > 0){
-			err_validation <- append(err_validation, paste("Duplicate column names in data: [", paste(source_names[duplicated(source_names)], collapse = ", "), "]"))
+		if (anyDuplicated(source_names) > 0) {
+			err_validation <-
+				append(err_validation,
+							 paste(
+							 	"Duplicate column names in data: [",
+							 	paste(source_names[duplicated(source_names)], collapse = ", "),
+							 	"]"
+							 ))
 		}
 		# names must be identical
 		# TODO: do we want to allow names to be in a different order? Need to consider downstream effects.
 		if (length(setdiff(source_names, spec_names)) > 0) {
-			err_validation <- append(err_validation, paste("Column names in data but not in fieldtypes specification: [", paste(setdiff(source_names, spec_names), collapse = ", "), "]"))
+			err_validation <-
+				append(
+					err_validation,
+					paste(
+						"Column names in data but not in fieldtypes specification: [",
+						paste(setdiff(source_names, spec_names), collapse = ", "),
+						"]"
+					)
+				)
 		}
 		if (length(setdiff(spec_names, source_names)) > 0) {
-			err_validation <- append(err_validation, paste("Column names in fieldtypes specification but not in data: [", paste(setdiff(spec_names, source_names), collapse = ", "), "]"))
+			err_validation <-
+				append(
+					err_validation,
+					paste(
+						"Column names in fieldtypes specification but not in data: [",
+						paste(setdiff(spec_names, source_names), collapse = ", "),
+						"]"
+					)
+				)
 		}
 	}
 
@@ -520,34 +620,43 @@ validate_columnnames <- function(source_names, spec_names, check_length_only = F
 #' Identify any duplicate rows in a memory-efficient way
 #'
 #' @param dt data.table potentially containing duplicate rows
-#' @param batchby_fieldname should be a field with well-spread data in order to get evenly-sized batches (i.e. the timepoint field)
-#' @param batchsize_mb approximate size in Mb over which dt will be split into batches
+#' @param batchby_fieldname should be a field with well-spread data in order to
+#'   get evenly-sized batches (i.e. the timepoint field)
+#' @param batchsize_mb approximate size in Mb over which dt will be split into
+#'   batches
 #' @param showprogress Print progress to console
 #' @return logical vector indicating which rows are duplicates
 #' @noRd
-identify_duplicaterows <- function(dt, batchby_fieldname, batchsize_mb = 200, showprogress = TRUE){
+identify_duplicaterows <- function(dt,
+																	 batchby_fieldname,
+																	 batchsize_mb = 200,
+																	 showprogress = TRUE) {
+
 	log_message(paste0("Checking for duplicates..."), showprogress)
 	# sort by batchby_fieldname then by everything else, so that we can batch the data
 	# TODO: try using setkey as well to see if it makes a difference
 	log_message(paste0("  Sorting data..."), showprogress)
-	data.table::setorderv(dt, c(batchby_fieldname, names(dt)[-which(names(dt) == batchby_fieldname)]))
+	data.table::setorderv(dt,
+												c(batchby_fieldname,
+													names(dt)[-which(names(dt) == batchby_fieldname)]))
 
 	# Need to chunk up large datasets
 	# estimate total size and limit size of each chunk
-	dtsize <- utils::object.size(dt)/1000000
-	if (dtsize > batchsize_mb){
+	dtsize <- utils::object.size(dt) / 1000000
+	if (dtsize > batchsize_mb) {
 		numrows <- nrow(dt)
-		numchunks <- as.numeric(ceiling(dtsize/batchsize_mb))
-		chunkrows <- ceiling(numrows/numchunks)
-		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."), showprogress)
+		numchunks <- as.numeric(ceiling(dtsize / batchsize_mb))
+		chunkrows <- ceiling(numrows / numchunks)
+		log_message(paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."),
+								showprogress)
 		batchby_vector <- dt[[(batchby_fieldname)]]
 		duprowsvector <- logical(numrows)
-		for (chunk in 1:numchunks){
+		for (chunk in 1:numchunks) {
 			log_message(paste0("  Batch ", chunk), showprogress)
-			chunkstart <- which.max(batchby_vector >= batchby_vector[((chunk-1)*chunkrows) + 1])
-			if( chunk < numchunks){
+			chunkstart <- which.max(batchby_vector >= batchby_vector[((chunk - 1) * chunkrows) + 1])
+			if (chunk < numchunks) {
 				# end on the previous (unique) field value that the chunk lands on
-				chunkend <- which.max(batchby_vector >= batchby_vector[chunk*chunkrows]) - 1
+				chunkend <- which.max(batchby_vector >= batchby_vector[chunk * chunkrows]) - 1
 			} else{
 				# or else to the end of the dataset
 				chunkend <- numrows
@@ -559,24 +668,26 @@ identify_duplicaterows <- function(dt, batchby_fieldname, batchsize_mb = 200, sh
 	}
 
 	duprowsvector
+
 }
 
 #' Remove rows from data.table in a memory-efficient way
 #'
-#' Row deletion by reference doesn't exist in data.table yet. Interim memory-efficient solution
+#' Row deletion by reference doesn't exist in data.table yet. Interim
+#' memory-efficient solution
 #'
 #' @param dt data.table
 #' @param rowindicator logical vector indicating which rows should be removed
 #' @return data.table with rows removed
 #' @noRd
-remove_rows <- function(dt, rowindicator){
-	if( any(rowindicator) ){
+remove_rows <- function(dt, rowindicator) {
+	if (any(rowindicator)) {
 		# NOTE: Need copy() because otherwise when using cols <- names(dt), cols updates when columns are removed from dt
 		cols <- data.table::copy(names(dt))
 		dt_temp <- data.table::data.table("Col1" = dt[[1]][!rowindicator])
 		names(dt_temp)[1] <- cols[1]
 		dt[, (cols[1]) := NULL]
-		for (col in cols[2:length(cols)]){
+		for (col in cols[2:length(cols)]) {
 			dt_temp[, (col) := dt[[col]][!rowindicator]]
 			dt[, (col) := NULL]
 		}

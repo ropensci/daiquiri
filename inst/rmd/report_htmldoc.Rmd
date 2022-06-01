@@ -53,27 +53,29 @@ sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 
 ```{r fields-imported}
 
-reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype != "ignore"),],
-				sortable = TRUE,
-				filterable = FALSE,
-				searchable = FALSE,
-				rownames = FALSE,
-				pagination = FALSE,
-				striped = TRUE,
-				highlight = TRUE,
-				columns = list(
-					fieldname = reactable::colDef(name = "Field name",
-														 style = list(fontWeight = "bold")),
-					fieldtype = reactable::colDef(name = "Field type"),
-					datatype = reactable::colDef(show = FALSE),
-					count = reactable::colDef(name = "Total values"),
-					missing = reactable::colDef(name = "Missing values"),
-					min = reactable::colDef(name = "Min value"),
-					max = reactable::colDef(name = "Max value"),
-					validation_warnings = reactable::colDef(name = "Validation warnings"),
-					ordinal_position = reactable::colDef(name = "Column position")
-					)
-				)
+reactable::reactable(
+	sourcedatafields[which(sourcesummary$datafields$fieldtype != "ignore"), ],
+	sortable = TRUE,
+	filterable = FALSE,
+	searchable = FALSE,
+	rownames = FALSE,
+	pagination = FALSE,
+	striped = TRUE,
+	highlight = TRUE,
+	columns = list(
+		fieldname = reactable::colDef(name = "Field name",
+																	style = list(fontWeight = "bold")),
+		fieldtype = reactable::colDef(name = "Field type"),
+		datatype = reactable::colDef(show = FALSE),
+		count = reactable::colDef(name = "Total values"),
+		missing = reactable::colDef(name = "Missing values"),
+		min = reactable::colDef(name = "Min value"),
+		max = reactable::colDef(name = "Max value"),
+		validation_warnings = reactable::colDef(name = "Validation warnings"),
+		ordinal_position = reactable::colDef(name = "Column position")
+	)
+)
+
 ```
 
 
@@ -81,98 +83,114 @@ reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype !
 
 ```{r fields-ignored}
 
-reactable::reactable(sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), c("fieldname","fieldtype","ordinal_position")],
-				sortable = TRUE,
-				filterable = FALSE,
-				searchable = FALSE,
-				pagination = FALSE,
-				rownames = FALSE,
-				compact = TRUE,
-				fullWidth = FALSE,
-				columns = list(
-					fieldname = reactable::colDef(name = "Field name",
-														 minWidth = 200),
-					fieldtype = reactable::colDef(name = "Field type",
-														 minWidth = 100),
-					ordinal_position = reactable::colDef(name = "Column position")
-					)
-				)
+reactable::reactable(
+	sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), 
+									 c("fieldname", "fieldtype", "ordinal_position")],
+	sortable = TRUE,
+	filterable = FALSE,
+	searchable = FALSE,
+	pagination = FALSE,
+	rownames = FALSE,
+	compact = TRUE,
+	fullWidth = FALSE,
+	columns = list(
+		fieldname = reactable::colDef(name = "Field name",
+																	minWidth = 200),
+		fieldtype = reactable::colDef(name = "Field type",
+																	minWidth = 100),
+		ordinal_position = reactable::colDef(name = "Column position")
+	)
+)
+
 ```
 
 
 ### Validation warnings
 
 ```{r validation-warnings}
-reactable::reactable(sourcesummary$validation_warnings,
-				sortable = TRUE,
-				filterable = FALSE,
-				searchable = FALSE,
-				rownames = FALSE,
-				pagination = FALSE,
-				striped = TRUE,
-				highlight = TRUE,
-				compact = TRUE,
-				fullWidth = FALSE,
-				columns = list(
-					fieldname = reactable::colDef(name = "Field name",
-														 style = list(fontWeight = "bold"),
-														 minWidth = 200),
-					message = reactable::colDef(name = "Details",
-													 minWidth = 500),
-					instances = reactable::colDef(name = "Instances")
-					)
-				)
+
+reactable::reactable(
+	sourcesummary$validation_warnings,
+	sortable = TRUE,
+	filterable = FALSE,
+	searchable = FALSE,
+	rownames = FALSE,
+	pagination = FALSE,
+	striped = TRUE,
+	highlight = TRUE,
+	compact = TRUE,
+	fullWidth = FALSE,
+	columns = list(
+		fieldname = reactable::colDef(
+			name = "Field name",
+			style = list(fontWeight = "bold"),
+			minWidth = 200
+		),
+		message = reactable::colDef(name = "Details",
+																minWidth = 500),
+		instances = reactable::colDef(name = "Instances")
+	)
+)
 
 ```
 
 ### Summary
 
 ```{r sourcedata-summary}
-summarydf <- data.frame("Item" = c("Columns in source",
-																	"Columns imported",
-																	"Column used for timepoint",
-																	"Min timepoint value",
-																	"Max timepoint value",
-																	"Rows in source",
-																	"Duplicate rows",
-																	"Rows missing timepoint values",
-																	"Rows imported",
-																	"Strings interpreted as missing values",
-																	"Total validation warnings"),
-												"Value" = c(sourcesummary$overall["cols_source_n"],
-																		sourcesummary$overall["cols_imported_n"],
-																		sourcesummary$overall["timepoint_fieldname"],
-																		sourcesummary$overall["timepoint_min"],
-																		sourcesummary$overall["timepoint_max"],
-																		sourcesummary$overall["rows_source_n"],
-																		sourcesummary$overall["rows_duplicates_n"],
-																		sourcesummary$overall["timepoint_missing_n"],
-																		sourcesummary$overall["rows_imported_n"],
-																		sourcesummary$overall["na_values"],
-																		sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
-																			sum(is.na(sourcesummary$validation_warnings$instances))),
-												stringsAsFactors = FALSE
+
+summarydf <- data.frame(
+	"Item" = c(
+		"Columns in source",
+		"Columns imported",
+		"Column used for timepoint",
+		"Min timepoint value",
+		"Max timepoint value",
+		"Rows in source",
+		"Duplicate rows",
+		"Rows missing timepoint values",
+		"Rows imported",
+		"Strings interpreted as missing values",
+		"Total validation warnings"
+	),
+	"Value" = c(
+		sourcesummary$overall["cols_source_n"],
+		sourcesummary$overall["cols_imported_n"],
+		sourcesummary$overall["timepoint_fieldname"],
+		sourcesummary$overall["timepoint_min"],
+		sourcesummary$overall["timepoint_max"],
+		sourcesummary$overall["rows_source_n"],
+		sourcesummary$overall["rows_duplicates_n"],
+		sourcesummary$overall["timepoint_missing_n"],
+		sourcesummary$overall["rows_imported_n"],
+		sourcesummary$overall["na_values"],
+		sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
+			sum(is.na(
+				sourcesummary$validation_warnings$instances
+			))
+	),
+	stringsAsFactors = FALSE
 )
-									 
 
-
-reactable::reactable(summarydf,
-					sortable = FALSE,
-					filterable = FALSE,
-					searchable = FALSE,
-					pagination = FALSE,
-					rownames = FALSE,
-					striped = TRUE,
-					compact = TRUE,
-					fullWidth = FALSE,
-					columns = list(
-						Item = reactable::colDef(name = "",
-													style = list(fontWeight = "bold"),
-													minWidth = 300),
-						Value = reactable::colDef(name = "",
-													 minWidth = 200)
-						)
-					)
+reactable::reactable(
+	summarydf,
+	sortable = FALSE,
+	filterable = FALSE,
+	searchable = FALSE,
+	pagination = FALSE,
+	rownames = FALSE,
+	striped = TRUE,
+	compact = TRUE,
+	fullWidth = FALSE,
+	columns = list(
+		Item = reactable::colDef(
+			name = "",
+			style = list(fontWeight = "bold"),
+			minWidth = 300
+		),
+		Value = reactable::colDef(name = "",
+															minWidth = 200)
+	)
+)
 
 ```
 
@@ -181,7 +199,7 @@ reactable::reactable(summarydf,
 
 
 ```{r aggregatedata}
-	aggsummary <- summarise_aggregated_data(params$aggregatedata)
+aggsummary <- summarise_aggregated_data(params$aggregatedata)
 ```
 
 
@@ -190,13 +208,14 @@ reactable::reactable(summarydf,
 ```{r overview-presence}
 #, fig.height = 0.5*as.numeric(aggsummary$overall["n_fields"])+3
 
-plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields, 
-													 aggtype = "n", 
-													 lineplot_fieldname = params$aggregatedata$timepoint_fieldname,
-													 lineplot_fillcolour = "pink", 
-													 heatmap_fillcolour = "darkred", 
-													 title = paste("Records per", params$aggregatedata$aggregation_timeunit))
-	
+plot_overview_combo_static(
+	aggfields = params$aggregatedata$aggregatefields,
+	aggtype = "n",
+	lineplot_fieldname = params$aggregatedata$timepoint_fieldname,
+	lineplot_fillcolour = "pink",
+	heatmap_fillcolour = "darkred",
+	title = paste("Records per", params$aggregatedata$aggregation_timeunit)
+)
 
 ```
 
@@ -204,13 +223,17 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 ```{r overview-missing}
 
-plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields, 
-													 aggtype = "missing_n", 
-													 lineplot_fieldname = "[ALLFIELDSCOMBINED]",
-													 lineplot_fillcolour = "lightblue", 
-													 heatmap_fillcolour = "darkblue", 
-													 title = paste("Total missing values per", params$aggregatedata$aggregation_timeunit))
-
+plot_overview_combo_static(
+	aggfields = params$aggregatedata$aggregatefields,
+	aggtype = "missing_n",
+	lineplot_fieldname = "[ALLFIELDSCOMBINED]",
+	lineplot_fillcolour = "lightblue",
+	heatmap_fillcolour = "darkblue",
+	title = paste(
+		"Total missing values per",
+		params$aggregatedata$aggregation_timeunit
+	)
+)
 
 ```
 
@@ -218,13 +241,17 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 ```{r overview-nonconformant}
 
-plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields, 
-													 aggtype = "nonconformant_n", 
-													 lineplot_fieldname = "[ALLFIELDSCOMBINED]",
-													 lineplot_fillcolour = "lightgreen", 
-													 heatmap_fillcolour = "darkgreen", 
-													 title = paste("Total nonconformant values per", params$aggregatedata$aggregation_timeunit))
-
+plot_overview_combo_static(
+	aggfields = params$aggregatedata$aggregatefields,
+	aggtype = "nonconformant_n",
+	lineplot_fieldname = "[ALLFIELDSCOMBINED]",
+	lineplot_fillcolour = "lightgreen",
+	heatmap_fillcolour = "darkgreen",
+	title = paste(
+		"Total nonconformant values per",
+		params$aggregatedata$aggregation_timeunit
+	)
+)
 
 ```
 
@@ -232,57 +259,68 @@ plot_overview_combo_static(aggfields = params$aggregatedata$aggregatefields,
 
 ```{r overview-duplicates}
 
-plot_overview_totals_static(aggfield = params$aggregatedata$aggregatefields[["[DUPLICATES]"]], 
-													aggtype = "sum",
-													fillcolour = "yellow",
-													title = paste("Total duplicate records per", params$aggregatedata$aggregation_timeunit))
-
+plot_overview_totals_static(
+	aggfield = params$aggregatedata$aggregatefields[["[DUPLICATES]"]],
+	aggtype = "sum",
+	fillcolour = "yellow",
+	title = paste(
+		"Total duplicate records per",
+		params$aggregatedata$aggregation_timeunit
+	)
+)
 
 ```
 
 ### Summary
 
 ```{r aggregatedata-summary}
-aggsummarydf <- data.frame("Item" = c("Column used for timepoint",
-																			"Min timepoint value",
-																			"Max timepoint value",
-																			"Timepoint aggregation unit",
-																			"Total number of timepoints",
-																			"Number of empty timepoints",
-																			"Number of data fields"
-																			# NOTE: Partitionfield functionality disabled until we work out how to present it
-																			# "Column(s) used as partitionfield"
-																			),
-													 "Value" = c(aggsummary$overall["timepoint_fieldname"],
-													 						aggsummary$overall["timepoint_min"],
-													 						aggsummary$overall["timepoint_max"],
-													 						aggsummary$overall["aggregation_timeunit"],
-													 						aggsummary$overall["n_timepoints"],
-													 						aggsummary$overall["n_empty_timepoints"],
-													 						aggsummary$overall["n_fields"]
-													 						# NOTE: Partitionfield functionality disabled until we work out how to present it
-													 						# aggsummary$overall["partitionfield_fieldnames"]
-													 						),
-													 stringsAsFactors = FALSE
+
+aggsummarydf <- data.frame(
+	"Item" = c(
+		"Column used for timepoint",
+		"Min timepoint value",
+		"Max timepoint value",
+		"Timepoint aggregation unit",
+		"Total number of timepoints",
+		"Number of empty timepoints",
+		"Number of data fields"
+		# NOTE: Partitionfield functionality disabled until we work out how to present it
+		# "Column(s) used as partitionfield"
+	),
+	"Value" = c(
+		aggsummary$overall["timepoint_fieldname"],
+		aggsummary$overall["timepoint_min"],
+		aggsummary$overall["timepoint_max"],
+		aggsummary$overall["aggregation_timeunit"],
+		aggsummary$overall["n_timepoints"],
+		aggsummary$overall["n_empty_timepoints"],
+		aggsummary$overall["n_fields"]
+		# NOTE: Partitionfield functionality disabled until we work out how to present it
+		# aggsummary$overall["partitionfield_fieldnames"]
+	),
+	stringsAsFactors = FALSE
 )
 
-reactable::reactable(aggsummarydf,
-					sortable = FALSE,
-					filterable = FALSE,
-					searchable = FALSE,
-					pagination = FALSE,
-					rownames = FALSE,
-					striped = TRUE,
-					compact = TRUE,
-					fullWidth = FALSE,
-					columns = list(
-						Item = reactable::colDef(name = "",
-													style = list(fontWeight = "bold"),
-													minWidth = 300),
-						Value = reactable::colDef(name = "",
-													 minWidth = 200)
-						)
-					)
+reactable::reactable(
+	aggsummarydf,
+	sortable = FALSE,
+	filterable = FALSE,
+	searchable = FALSE,
+	pagination = FALSE,
+	rownames = FALSE,
+	striped = TRUE,
+	compact = TRUE,
+	fullWidth = FALSE,
+	columns = list(
+		Item = reactable::colDef(
+			name = "",
+			style = list(fontWeight = "bold"),
+			minWidth = 300
+		),
+		Value = reactable::colDef(name = "",
+															minWidth = 200)
+	)
+)
 
 ```
 
@@ -291,16 +329,22 @@ reactable::reactable(aggsummarydf,
 ```{r individual-fields, results = 'asis'}
 #params$aggregatedata <- testcpddata_byday
 #aggtype <- "n"
-for(i in seq_along(names(params$aggregatedata$aggregatefields))){
-  cat('\n###', names(params$aggregatedata$aggregatefields)[i], ' {.tabset}\n')
-	aggtypes <- names(params$aggregatedata$aggregatefields[[i]]$values)[-1]
-	for(aggtype in aggtypes){
-	  cat('\n####', aggtype_friendlyname(aggtype, "short"), '\n')
-	  p <- plot_timeseries_static(aggfield = params$aggregatedata$aggregatefields[[i]], aggtype = aggtype)
-	  											 
-	  print(p)
-	  cat('\n')
+for(i in seq_along(names(params$aggregatedata$aggregatefields))) {
+	cat('\n###',
+			names(params$aggregatedata$aggregatefields)[i],
+			' {.tabset}\n')
+	aggtypes <-
+		names(params$aggregatedata$aggregatefields[[i]]$values)[-1]
+	for (aggtype in aggtypes) {
+		cat('\n####', aggtype_friendlyname(aggtype, "short"), '\n')
+		p <-
+			plot_timeseries_static(aggfield = params$aggregatedata$aggregatefields[[i]],
+														 aggtype = aggtype)
+		
+		print(p)
+		cat('\n')
 	}
 }
+
 ```
 

@@ -7,9 +7,12 @@
 aggregate_data(sourcedata, aggregation_timeunit = "day", showprogress = TRUE)
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from \code{\link{prepare_data}} function}
+\item{sourcedata}{A \code{sourcedata} object returned from
+\code{\link{prepare_data}} function}
 
-\item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of "day", "week", "month", "quarter", "year". The "week" option is Monday-based. Default = "day"}
+\item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
+"day", "week", "month", "quarter", "year". The "week" option is
+Monday-based. Default = "day"}
 
 \item{showprogress}{Print progress to console. Default = TRUE}
 }
