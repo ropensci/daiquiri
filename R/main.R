@@ -16,7 +16,7 @@
 #'
 #' The best place to start is the \code{\link{create_report}} function, and the
 #' walkthrough vignette:
-#' \href{../doc/walkthrough.html}{\code{vignette("walkthrough", package =
+#' \href{../doc/daiquiri.html}{\code{vignette("daiquiri", package =
 #' "daiquiri")}}.
 #'
 #'
