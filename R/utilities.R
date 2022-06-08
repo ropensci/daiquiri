@@ -276,7 +276,14 @@ validate_params_type <- function(call, ...) {
 #' log file is created.
 #'
 #' @param log_directory String containing directory to save log file
-#' @examples log_initialise(".")
+#' @return Character string containing the full path to the newly-created log file
+#' @examples
+#'   logname <- log_initialise(".")
+#'
+#'   \dontshow{
+#'   log_close()
+#'   file.remove(logname)
+#'   }
 #' @export
 log_initialise <- function(log_directory) {
 

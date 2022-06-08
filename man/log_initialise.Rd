@@ -9,10 +9,18 @@ log_initialise(log_directory)
 \arguments{
 \item{log_directory}{String containing directory to save log file}
 }
+\value{
+Character string containing the full path to the newly-created log file
+}
 \description{
 Choose a directory in which to save the log file. If this is not called, no
 log file is created.
 }
 \examples{
-log_initialise(".")
+  logname <- log_initialise(".")
+
+  \dontshow{
+  log_close()
+  file.remove(logname)
+  }
 }
