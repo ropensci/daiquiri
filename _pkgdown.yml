@@ -1,0 +1,9 @@
+url: ~
+template:
+  bootstrap: 5
+
+authors:
+  footer:
+    roles: [cre, cph]
+  sidebar:
+    roles: [cre, cph]

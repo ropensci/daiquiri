@@ -1,7 +1,7 @@
 Package: daiquiri
 Type: Package
 Title: Data Quality Reporting for Temporal Datasets
-Version: 0.7.1.9000
+Version: 0.7.2
 Authors@R: c(
     person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
@@ -22,7 +22,7 @@ Description: Generate reports that enable quick visual review of
     contain any associated values for the event).
 URL: https://github.com/phuongquan/daiquiri
 BugReports: https://github.com/phuongquan/daiquiri/issues
-License: GPL (>=3)
+License: GPL (>= 3)
 Encoding: UTF-8
 Imports:
     data.table (>= 1.12.8),
