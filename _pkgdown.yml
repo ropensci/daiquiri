@@ -11,6 +11,28 @@ navbar:
       text: Example report
       href: misc/example_data_report.html
 
+reference:
+- title: Basic usage
+  contents:
+  - daiquiri
+  - read_data
+  - create_report
+
+- title: Specifying the type of data in each field
+  contents:
+  - availablefieldtypes
+  - fieldtypes
+  - fieldtypes_template
+
+- title: Advanced usage
+  contents:
+  - prepare_data
+  - aggregate_data
+  - report_data
+  - export_aggregated_data
+  - log_initialise
+  - log_close
+
 authors:
   footer:
     roles: [cre, cph]
