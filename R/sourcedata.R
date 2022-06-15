@@ -50,12 +50,15 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'   be used
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A \code{sourcedata} object
-#' @examples rawdata <- read_data(
+#' @examples
+#' # load example data into a data.frame
+#' rawdata <- read_data(
 #'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
 #'
+#' # validate and prepare the data for aggregation
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -67,7 +70,8 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'     PatientID = ft_ignore(),
 #'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
 #'   override_columnnames = FALSE,
-#'   na = c("","NULL")
+#'   na = c("","NULL"),
+#'   dataset_shortdesc = "Example data provided with package"
 #' )
 #' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
 #'   \code{\link{aggregate_data}}, \code{\link{report_data}},

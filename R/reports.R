@@ -18,12 +18,15 @@
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return A string containing the name and path of the saved report
 #' @examples
+#' \donttest{
+#' # load example data into a data.frame
 #' rawdata <- read_data(
 #'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
 #'
+#' # validate and prepare the data for aggregation
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -36,15 +39,18 @@
 #'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
 #'   override_columnnames = FALSE,
 #'   na = c("","NULL"),
+#'   dataset_shortdesc = "Example data provided with package",
 #'   showprogress = TRUE
 #' )
 #'
+#' # aggregate the data
 #' aggregatedataobj <- aggregate_data(
 #'   sourcedataobj,
 #'   aggregation_timeunit = "day",
 #'   showprogress = TRUE
 #' )
 #'
+#' # save a report in the current directory using the previously-created objects
 #' report_data(
 #'   sourcedataobj,
 #'   aggregatedataobj,
@@ -54,6 +60,7 @@
 #' )
 #'
 #' \dontshow{file.remove("./example_data_report.html")}
+#' }
 #'
 #' @seealso \code{\link{prepare_data}}, \code{\link{aggregate_data}},
 #'   \code{\link{create_report}}

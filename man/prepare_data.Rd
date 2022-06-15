@@ -43,12 +43,14 @@ Validate a data frame against a \code{\link{fieldtypes}} specification, and
 prepare for aggregation.
 }
 \examples{
+# load example data into a data.frame
 rawdata <- read_data(
   system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
+# validate and prepare the data for aggregation
 sourcedataobj <- prepare_data(
   rawdata,
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -60,7 +62,8 @@ sourcedataobj <- prepare_data(
     PatientID = ft_ignore(),
     Location = ft_categorical(aggregate_by_each_category=TRUE)),
   override_columnnames = FALSE,
-  na = c("","NULL")
+  na = c("","NULL"),
+  dataset_shortdesc = "Example data provided with package"
 )
 }
 \seealso{

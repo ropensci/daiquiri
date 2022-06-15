@@ -73,12 +73,15 @@ series plots for visual inspection, and saves a report to disk.
 }
 
 \examples{
+\donttest{
+# load example data into a data.frame
 rawdata <- read_data(
   system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
+# create a report in the current directory
 daiqobj <- create_report(
   rawdata,
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -91,6 +94,7 @@ daiqobj <- create_report(
     Location = ft_categorical(aggregate_by_each_category=TRUE)),
   override_columnnames = FALSE,
   na = c("","NULL"),
+  dataset_shortdesc = "Example data provided with package",
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_data_report",
@@ -99,6 +103,7 @@ daiqobj <- create_report(
 )
 
 \dontshow{file.remove("./example_data_report.html")}
+}
 
 }
 \seealso{

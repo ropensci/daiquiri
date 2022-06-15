@@ -371,12 +371,15 @@ aggregateallfields <- function(aggfields,
 #'   Monday-based. Default = "day"
 #' @param showprogress Print progress to console. Default = TRUE
 #' @return An \code{aggregatedata} object
-#' @examples rawdata <- read_data(
+#' @examples
+#' # load example data into a data.frame
+#' rawdata <- read_data(
 #'   system.file("extdata", "example_data.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
 #'
+#' # validate and prepare the data for aggregation
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
 #'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -391,6 +394,7 @@ aggregateallfields <- function(aggfields,
 #'   na = c("","NULL")
 #' )
 #'
+#' # aggregate the data
 #' aggregatedataobj <- aggregate_data(
 #'   sourcedataobj,
 #'   aggregation_timeunit = "day"

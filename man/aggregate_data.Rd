@@ -24,12 +24,14 @@ Aggregates sourcedata object based on fieldtypes specified at load time.
 Default time period for aggregation is a calendar day
 }
 \examples{
+# load example data into a data.frame
 rawdata <- read_data(
   system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
+# validate and prepare the data for aggregation
 sourcedataobj <- prepare_data(
   rawdata,
   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
@@ -44,6 +46,7 @@ sourcedataobj <- prepare_data(
   na = c("","NULL")
 )
 
+# aggregate the data
 aggregatedataobj <- aggregate_data(
   sourcedataobj,
   aggregation_timeunit = "day"
