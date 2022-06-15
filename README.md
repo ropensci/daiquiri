@@ -69,23 +69,11 @@ trust in the scientific process.
 ## Installation
 
 The intention is to make daiquiri available in CRAN but until then, you
-can install the latest release by running the following:
+can install the current development version from GitHub:
 
 ``` r
-# install dependencies
-install.packages(c("data.table", "readr", "ggplot2", "scales", "cowplot", "rmarkdown", "reactable"))
-
-# install daiquiri with pre-built vignettes
-install.packages("https://github.com/phuongquan/daiquiri/releases/download/v0.7.0/daiquiri_0.7.0.tar.gz", 
-                                 repos = NULL, type = "source")
-```
-
-Alternatively, you can install the current development version from
-GitHub (though this may be more buggy):
-
-``` r
-#install.packages("devtools")
-devtools::install_github("phuongquan/daiquiri")
+# install.packages("devtools")
+devtools::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 ```
 
 ## Usage
@@ -93,15 +81,15 @@ devtools::install_github("phuongquan/daiquiri")
 ``` r
 library(daiquiri)
 
+# load example data into a data.frame
 rawdata <- read_data(
   system.file("extdata", "example_data.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
-daiqobj <- create_report(
-  rawdata,
-  fieldtypes = fieldtypes(
+# specify the type of data expected in each column of the data.frame
+fts <- fieldtypes(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -109,7 +97,13 @@ daiqobj <- create_report(
     Dose = ft_numeric(),
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
-    Location = ft_categorical(aggregate_by_each_category=TRUE)),
+    Location = ft_categorical(aggregate_by_each_category=TRUE)
+)
+
+# create a report in the current directory
+daiqobj <- create_report(
+  rawdata,
+  fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example data for illustration",
@@ -121,7 +115,8 @@ daiqobj <- create_report(
 )
 ```
 
-More detailed guidance can be found in the walkthrough vignette:
+More detailed guidance can be found in the [walkthrough
+vignette](https://phuongquan.github.io/daiquiri/articles/daiquiri.html):
 
 ``` r
 vignette("daiquiri", package = "daiquiri")
