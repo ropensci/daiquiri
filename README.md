@@ -115,6 +115,11 @@ daiqobj <- create_report(
 )
 ```
 
+An [example
+report](https://phuongquan.github.io/daiquiri/misc/example_data_report.html)
+is available from the [package
+website](https://phuongquan.github.io/daiquiri/index.html).
+
 More detailed guidance can be found in the [walkthrough
 vignette](https://phuongquan.github.io/daiquiri/articles/daiquiri.html):
 
