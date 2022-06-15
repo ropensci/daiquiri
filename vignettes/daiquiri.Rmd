@@ -47,7 +47,7 @@ library(daiquiri)
 # this is where the example file is located
 filename <- system.file("extdata", "example_data.csv", package = "daiquiri")
 
-# read in the data
+# load the data into a data.frame
 example_data <- read_data(
   filename,
   delim = ",",
@@ -105,8 +105,6 @@ fts <- fieldtypes(
 
 This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
 
-NOTE ABOUT COLUMN NAMES: If you will be passing in a csv filename directly, and the csv file does not contain the column names, the names used in the `fieldtypes()` specification will be used. You can also choose to override any existing column names (in the csv file or the dataframe) with those in the `fieldtypes()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes()` specification must match exactly to those in the dataset.
-
 ## Generating a data quality report
 
 The simplest way to create a data quality report is to use the `create_report()` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `sourcedata` and `aggregatedata` objects, which can be reused to create further reports without needing to run everything all over again.
@@ -116,6 +114,8 @@ At this point we need to decide what level of aggregation granularity we want to
 We also need to decide where to save the report, and optionally specify a filename (excluding file extension). The filename can only contain alphanumeric, `-` and `_` characters. If a filename is not supplied, one will be automatically generated. We can also optionally specify a short description for the dataset, which will appear on the report.
 
 If you specify a log directory, details of all the processing steps will be saved into a text file.
+
+NOTE ABOUT COLUMN NAMES: You can choose to override the existing column names in the dataframe with those in the `fieldtypes()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes()` specification must match exactly to those in the dataframe.
 
 **Example:**
 
