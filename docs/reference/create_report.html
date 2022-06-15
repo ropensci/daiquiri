@@ -14,7 +14,7 @@ series plots for visual inspection, and saves a report to disk."><!-- mathjax --
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,9 @@ series plots for visual inspection, and saves a report to disk."><!-- mathjax --
 </li>
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../misc/example_data_report.html">Example report</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -79,42 +82,63 @@ series plots for visual inspection, and saves a report to disk.</p>
     <dl><dt>df</dt>
 <dd><p>A data frame. Rectangular data can be read from file using
 <code><a href="read_data.html">read_data</a></code>. See details.</p></dd>
+
+
 <dt>fieldtypes</dt>
 <dd><p><code><a href="fieldtypes.html">fieldtypes</a></code> object specifying names and types
 of fields (columns) in source data. See also <a href="availablefieldtypes.html">availablefieldtypes</a>.</p></dd>
+
+
 <dt>override_columnnames</dt>
 <dd><p>If FALSE, column names must exist in data frame
 and must match the names specified in fieldtypes exactly. If TRUE, column
 names in source will be replaced with names in fieldtypes specification.
 The specification must therefore contain the columns in the correct order.
 Default = FALSE</p></dd>
+
+
 <dt>na</dt>
 <dd><p>vector containing strings that should be interpreted as missing
 values, Default = <code>c("","NA","NULL")</code>.</p></dd>
+
+
 <dt>dataset_shortdesc</dt>
 <dd><p>Short description of the dataset being checked. This
 will appear on the report. If blank, the name of the data frame object will
 be used</p></dd>
+
+
 <dt>aggregation_timeunit</dt>
 <dd><p>Unit of time to aggregate over. Specify one of
 "day", "week", "month", "quarter", "year". The "week" option is
 Monday-based. Default = "day"</p></dd>
+
+
 <dt>save_directory</dt>
 <dd><p>String specifying directory in which to save the
 report. Default is current directory.</p></dd>
+
+
 <dt>save_filename</dt>
 <dd><p>String specifying filename for the report, excluding any
 file extension. If no filename is supplied (i.e. filename = NULL), one will
 be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
+
+
 <dt>showprogress</dt>
 <dd><p>Print progress to console. Default = TRUE</p></dd>
+
+
 <dt>log_directory</dt>
 <dd><p>String specifying directory in which to save log file.
 If no directory is supplied, progress is not logged.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list containing information relating to the supplied parameters as
+    
+
+<p>A list containing information relating to the supplied parameters as
   well as the resulting <code>sourcedata</code> and <code>aggregatedata</code> objects.</p>
     </div>
     <div class="section level2">
@@ -135,12 +159,15 @@ If no directory is supplied, progress is not logged.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">rawdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="co"># load example data into a data.frame</span></span>
+<span class="r-in"><span class="va">rawdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span>
 <span class="r-in">  delim <span class="op">=</span> <span class="st">","</span>,</span>
 <span class="r-in">  col_names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
+<span class="r-in"><span class="co"># create a report in the current directory</span></span>
 <span class="r-in"><span class="va">daiqobj</span> <span class="op">&lt;-</span> <span class="fu">create_report</span><span class="op">(</span></span>
 <span class="r-in">  <span class="va">rawdata</span>,</span>
 <span class="r-in">  fieldtypes <span class="op">=</span> <span class="fu"><a href="fieldtypes.html">fieldtypes</a></span><span class="op">(</span>PrescriptionID <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -153,6 +180,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-in">    Location <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span class="r-in">  override_columnnames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span class="r-in">  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span class="r-in">  dataset_shortdesc <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span>
 <span class="r-in">  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
 <span class="r-in">  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
 <span class="r-in">  save_filename <span class="op">=</span> <span class="st">"example_data_report"</span>,</span>
@@ -170,7 +198,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;fieldtype_categorical&gt;	options: aggregate_by_each_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against fieldtypes... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [rawdata]... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [Example data provided with package]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking data against fieldtypes... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Selecting relevant warnings... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Identifying nonconformant values... </span>
@@ -360,13 +388,14 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: report_htmldoc.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc6dec78a03bb9.html --lua-filter "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --include-in-header "C:\Users\phuongq\AppData\Local\Temp\Rtmp0mi0DU\rmarkdown-str6dec3de06fe9.html" --mathjax --variable "mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc4768f8968ca.html --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\phuongq\AppData\Local\Temp\RtmpMBS1Bs\rmarkdown-str4768439b2ae7.html" </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Output created: example_data_report.html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Report saved to: ./example_data_report.html </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -379,7 +408,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

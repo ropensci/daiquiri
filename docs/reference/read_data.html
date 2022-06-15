@@ -14,7 +14,7 @@ values. Operates as a restricted implementation of readr::read_delim."><!-- math
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,9 @@ values. Operates as a restricted implementation of readr::read_delim."><!-- math
 </li>
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../misc/example_data_report.html">Example report</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -79,33 +82,52 @@ values. Operates as a restricted implementation of <code><a href="https://readr.
 <dd><p>A string containing path of file containing data to load, or a
 URL starting http://, file://, etc. Compressed files with extension ‘.gz’,
 ‘.bz2’, ".xz" and ".zip" are supported.</p></dd>
+
+
 <dt>delim</dt>
 <dd><p>Single character used to separate fields within a record. E.g.
 <code>","</code> or <code>"\t"</code></p></dd>
+
+
 <dt>col_names</dt>
 <dd><p>Either TRUE, FALSE or a character vector of column names. If
 TRUE, the first row of the input will be used as the column names, and will
 not be included in the data frame. If FALSE, column names will be generated
 automatically: X1, X2, X3 etc. Default = TRUE</p></dd>
+
+
 <dt>quote</dt>
 <dd><p>Single character used to quote strings.</p></dd>
+
+
 <dt>trim_ws</dt>
 <dd><p>Should leading and trailing whitespace be trimmed from each
 field?</p></dd>
+
+
 <dt>comment</dt>
 <dd><p>A string used to identify comments. Any text after the comment
 characters will be silently ignored</p></dd>
+
+
 <dt>skip</dt>
 <dd><p>Number of lines to skip before reading data. If <code>comment</code> is
 supplied any commented lines are ignored after skipping</p></dd>
+
+
 <dt>n_max</dt>
 <dd><p>Maximum number of lines to read.</p></dd>
+
+
 <dt>showprogress</dt>
 <dd><p>Display a progress bar? Default = TRUE</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame</p>
+    
+
+<p>A data frame</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -132,7 +154,7 @@ supplied any commented lines are ignored after skipping</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

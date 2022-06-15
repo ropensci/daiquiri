@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,9 @@
 </li>
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../misc/example_data_report.html">Example report</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -69,24 +72,37 @@
     <dl><dt>sourcedata</dt>
 <dd><p>A <code>sourcedata</code> object returned from
 <code><a href="prepare_data.html">prepare_data</a></code> function</p></dd>
+
+
 <dt>aggregatedata</dt>
 <dd><p>An <code>aggregatedata</code> object returned from
 <code><a href="aggregate_data.html">aggregate_data</a></code> function</p></dd>
+
+
 <dt>save_directory</dt>
 <dd><p>String specifying directory in which to save the
 report. Default is current directory.</p></dd>
+
+
 <dt>save_filename</dt>
 <dd><p>String specifying filename for the report, excluding any
 file extension. If no filename is supplied, one will be automatically
 generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
+
+
 <dt>format</dt>
 <dd><p>File format of the report. Currently only "html" is supported</p></dd>
+
+
 <dt>showprogress</dt>
 <dd><p>Print progress to console. Default = TRUE</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A string containing the name and path of the saved report</p>
+    
+
+<p>A string containing the name and path of the saved report</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -96,12 +112,15 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">rawdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="co"># load example data into a data.frame</span></span>
+<span class="r-in"><span class="va">rawdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span>
 <span class="r-in">  delim <span class="op">=</span> <span class="st">","</span>,</span>
 <span class="r-in">  col_names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
+<span class="r-in"><span class="co"># validate and prepare the data for aggregation</span></span>
 <span class="r-in"><span class="va">sourcedataobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="va">rawdata</span>,</span>
 <span class="r-in">  fieldtypes <span class="op">=</span> <span class="fu"><a href="fieldtypes.html">fieldtypes</a></span><span class="op">(</span>PrescriptionID <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -114,6 +133,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-in">    Location <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span class="r-in">  override_columnnames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span class="r-in">  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span class="r-in">  dataset_shortdesc <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span>
 <span class="r-in">  showprogress <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Fieldtypes supplied:</span>
@@ -127,7 +147,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;fieldtype_categorical&gt;	options: aggregate_by_each_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against fieldtypes... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [NULL]... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [Example data provided with package]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking data against fieldtypes... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Selecting relevant warnings... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Identifying nonconformant values... </span>
@@ -145,6 +165,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Location </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-in"></span>
+<span class="r-in"><span class="co"># aggregate the data</span></span>
 <span class="r-in"><span class="va">aggregatedataobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_data.html">aggregate_data</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="va">sourcedataobj</span>,</span>
 <span class="r-in">  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
@@ -235,6 +256,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [ALLFIELDSCOMBINED]: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-in"></span>
+<span class="r-in"><span class="co"># save a report in the current directory using the previously-created objects</span></span>
 <span class="r-in"><span class="fu">report_data</span><span class="op">(</span></span>
 <span class="r-in">  <span class="va">sourcedataobj</span>,</span>
 <span class="r-in">  <span class="va">aggregatedataobj</span>,</span>
@@ -331,7 +353,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: report_htmldoc.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc6dec39041d51.html --lua-filter "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\AppData\Local\renv\cache\v5\R-4.1\x86_64-w64-mingw32\rmarkdown\2.11\320017b52d05a943981272b295750388\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --include-in-header "C:\Users\phuongq\AppData\Local\Temp\Rtmp0mi0DU\rmarkdown-str6dec74524d11.html" --mathjax --variable "mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc476866243f02.html --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\phuongq\AppData\Local\Temp\RtmpMBS1Bs\rmarkdown-str47682c204d19.html" </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Output created: example_data_report.html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Report saved to: ./example_data_report.html </span>
@@ -339,6 +361,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 <span class="r-in"></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>
@@ -351,7 +374,7 @@ generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

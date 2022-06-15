@@ -2,6 +2,15 @@ url: ~
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left:  [intro, reference, example-report, news]
+    right: [search, github]
+  components:
+    example-report:
+      text: Example report
+      href: misc/example_data_report.html
+
 authors:
   footer:
     roles: [cre, cph]
