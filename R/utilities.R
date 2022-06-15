@@ -445,3 +445,16 @@ testfn_params_type <- function(df,
 		default_fieldtype = default_fieldtype
 	)
 }
+
+
+######################################################
+
+#' Dummy function set up purely for R CMD Check Namespace bug
+#'
+#' Addresses R CMD Check NOTE: Namespace in Imports field not imported from: ‘reactable’
+#' In some situations the check misses the fact that reactable is used in the Rmd file in ./inst/rmd
+#' Call it here to stop the NOTE
+#' @noRd
+dummy_reactable_call <- function(){
+	x <- reactable::colDef()
+}
