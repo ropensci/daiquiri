@@ -1,3 +1,10 @@
+# daiquiri (development version)
+
+## Bug fixes and minor improvements
+
+* Fixed error when user passes in a data.table (to `create_report()` or `prepare_data()`) that contains non-character columns.
+
+
 # daiquiri 0.7.0 (2022-04-20)
 
 This release moves the reading of csv files out into a separate function in order to make it more configurable and to handle the parsing of all fields as character data for the user.

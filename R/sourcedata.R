@@ -77,7 +77,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'   \code{\link{aggregate_data}}, \code{\link{report_data}},
 #'   \code{\link{create_report}}
 #' @export
-#' @importFrom data.table .N
+#' @importFrom data.table .N .SD
 prepare_data <- function(df,
 												 fieldtypes,
 												 override_columnnames = FALSE,
@@ -126,33 +126,6 @@ prepare_data <- function(df,
 	validate_columnnames(names(df),
 											 names(fieldtypes),
 											 check_length_only = override_columnnames)
-	if (override_columnnames == TRUE) {
-		names(df) <- names(fieldtypes)
-	}
-
-	# ensure all columns are character type because readr::type_convert won't skip numeric columns
-	df_datatypes <- vapply(df, typeof, character(1))
-	df_nonchar_warnings <- data.table::data.table()
-	if (any(df_datatypes != "character")) {
-		# Report presence of any non-char columns in source data frame (except ignored ones)
-		df_nonchar_warnings <-
-			data.table::data.table(
-				colindex = which(
-					df_datatypes != "character" &
-						!vapply(fieldtypes, is.fieldtype_ignore, logical(1))
-				),
-				rowindex = NA,
-				message = paste0(
-					"Data supplied as ",
-					df_datatypes[which(df_datatypes != "character" &
-														 	!vapply(fieldtypes, is.fieldtype_ignore, logical(1)))],
-					" instead of character, non-conformant values will not be identified"
-				)
-			)
-		# update the df
-		df[df_datatypes != "character"] <-
-			lapply(df[df_datatypes != "character"], as.character)
-	}
 
 	log_message(paste0("Importing source data [", dataset_shortdesc, "]..."),
 							showprogress)
@@ -161,27 +134,57 @@ prepare_data <- function(df,
 	rows_source_n <- nrow(df)
 	# number of columns in source
 	cols_source_n <- length(df)
-	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
-	timepoint_fieldname <- names(timepoint_index)
+
+	# take a copy of the df so that their original doesn't get updated unknowingly
+	# and convert df to data.table to ensure consistency hereonwards whether user
+	# passes in a data.frame or a data.table
+	# TODO: consider removing df at this point, to release memory
+	dt <- data.table::as.data.table(df)
+
+	if (override_columnnames == TRUE) {
+		names(dt) <- names(fieldtypes)
+	}
 
 	# Validate data against specification, store warnings instead of printing them
 	# use readr::type_convert for now.  Ideally want to store original values and describe action taken too
-	# convert to data.table at this point
+
+	# ensure all columns are character type because readr::type_convert won't skip numeric columns
+	dt_datatypes <- vapply(dt, typeof, character(1))
+	dt_nonchar_warnings <- data.table::data.table()
+	if (any(dt_datatypes != "character")) {
+		# Report presence of any non-char columns in source data frame (except ignored ones)
+		dt_nonchar_warnings <-
+			data.table::data.table(
+				colindex = which(
+					dt_datatypes != "character" &
+						!vapply(fieldtypes, is.fieldtype_ignore, logical(1))
+				),
+				rowindex = NA,
+				message = paste0(
+					"Data supplied as ",
+					dt_datatypes[which(dt_datatypes != "character" &
+														 	!vapply(fieldtypes, is.fieldtype_ignore, logical(1)))],
+					" instead of character, non-conformant values will not be identified"
+				)
+			)
+		# update the dt
+		changecols <- names(fieldtypes)[dt_datatypes != "character"]
+		dt[, (changecols) := lapply(.SD, as.character), .SDcols = changecols]
+	}
+
 	log_message(paste0("Checking data against fieldtypes..."), showprogress)
 	raw_warnings <- NULL
-	clean_dt <-
-		data.table::as.data.table(
-			withCallingHandlers(
-				readr::type_convert(df,
-														fieldtypes_to_cols(fieldtypes, readfunction = "readr"),
-														na = na),
-				warning = function(w) {
-					raw_warnings <<- append(raw_warnings, conditionMessage(w))
-					invokeRestart("muffleWarning")
-				}
-	))
+	dt <-
+		withCallingHandlers(
+			readr::type_convert(dt,
+													fieldtypes_to_cols(fieldtypes, readfunction = "readr"),
+													na = na),
+			warning = function(w) {
+				raw_warnings <<- append(raw_warnings, conditionMessage(w))
+				invokeRestart("muffleWarning")
+			}
+	)
 	log_message(paste0("  Selecting relevant warnings..."), showprogress)
-	# TODO: consider removing df at this point, to release memory
 	# extract items of interest from warnings
 	# NOTE: column indexes for readr::type_convert warnings correspond to original data file and are 1-based
 	# NOTE: row indexes for readr::type_convert warnings are zero-based (confusingly)
@@ -204,9 +207,9 @@ prepare_data <- function(df,
 	# This seems much harder than it should be
 	warningcols <- unique(warningsdt[, colindex])
 	for (c in warningcols) {
-		warningcolname <- names(df)[c]
+		warningcolname <- names(fieldtypes)[c]
 		warningrows <- warningsdt[colindex == c, rowindex]
-		clean_dt[warningrows, (warningcolname) := NaN]
+		dt[warningrows, (warningcolname) := NaN]
 	}
 
 	log_message(paste0("  Checking and removing missing timepoints..."),
@@ -215,30 +218,32 @@ prepare_data <- function(df,
 	# TODO: should I remove them here or when aggregating?  Summary doesn't look
 	# right if remove them here. Rownumbers in warnings no longer matches either
 	# TODO: check don't duplicate any messages from above
-	if (anyNA(clean_dt[[(timepoint_fieldname)]])) {
-		navector <- is.na(clean_dt[[(timepoint_fieldname)]])
+	timepoint_index <- which(vapply(fieldtypes, is.fieldtype_timepoint, logical(1)))
+	timepoint_fieldname <- names(timepoint_index)
+	if (anyNA(dt[[(timepoint_fieldname)]])) {
+		navector <- is.na(dt[[(timepoint_fieldname)]])
 		# stop if there are no valid timepoint values
-		if (sum(navector) == nrow(df)) {
+		if (sum(navector) == nrow(dt)) {
 			stop_custom(.subclass = "invalid_param_type",
 									message = "Timepoint field does not contain any valid values. Check the correct date format has been used.")
 		}
 		timepointwarnings <-
 			data.table::data.table(
-				colindex = which(names(df) == timepoint_fieldname),
+				colindex = which(names(fieldtypes) == timepoint_fieldname),
 				rowindex = which(navector == TRUE),
 				message = "Missing or invalid value in Timepoint field"
 		)
 		warningsdt <- rbind(warningsdt, timepointwarnings)
-		clean_dt <- remove_rows(clean_dt, navector)
+		dt <- remove_rows(dt, navector)
 		timepoint_missing_n <- sum(navector)
 	} else{
 		timepoint_missing_n <- 0
 	}
 
 	# tidy up warnings
-	warningsdt <- rbind(warningsdt, df_nonchar_warnings)
+	warningsdt <- rbind(warningsdt, dt_nonchar_warnings)
 	data.table::setorder(warningsdt, colindex, rowindex)
-	warningsdt <- cbind(data.table::data.table(fieldname = names(df)[warningsdt[, colindex]]),
+	warningsdt <- cbind(data.table::data.table(fieldname = names(fieldtypes)[warningsdt[, colindex]]),
 											warningsdt[, list(colindex, rowindex, message)])
 	warnings_summary <-
 		warningsdt[,
@@ -247,7 +252,7 @@ prepare_data <- function(df,
 
 	# check for duplicate rows
 	duprowsvector <-
-		identify_duplicaterows(clean_dt,
+		identify_duplicaterows(dt,
 													 batchby_fieldname = timepoint_fieldname,
 													 showprogress = showprogress)
 	# find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
@@ -258,12 +263,13 @@ prepare_data <- function(df,
 	duprowsindex[which(duprowsindex == TRUE)] <- dpruns$lengths[which(dpruns$values == TRUE)]
 	duprowsindex <- data.table::data.table("[DUPLICATES]" = duprowsindex[!duprowsvector])
 	# lastly remove the duplicates from the final clean dataset
-	clean_dt <- remove_rows(clean_dt, duprowsvector)
+	dt <- remove_rows(dt, duprowsvector)
 
 	# basic summary info
-	rows_imported_n <- nrow(clean_dt)
+	# number of rows imported
+	rows_imported_n <- nrow(dt)
 	# number of columns imported
-	cols_imported_n <- length(clean_dt)
+	cols_imported_n <- length(dt)
 	# number of duplicate rows removed
 	rows_duplicates_n <- sum(duprowsvector, na.rm = TRUE)
 
@@ -279,7 +285,7 @@ prepare_data <- function(df,
 			dfs[[i]] <- datafield(as.vector("ignored"), fieldtypes[[i]])
 		}
 		else{
-			dfs[[i]] <- datafield(clean_dt[, currentfield, with = FALSE],
+			dfs[[i]] <- datafield(dt[, currentfield, with = FALSE],
 														fieldtypes[[i]],
 														warningsdt[fieldname == currentfield,
 																			 c("rowindex", "message")])

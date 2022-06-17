@@ -127,6 +127,7 @@ test_that("prepare_data() creates sourcedata object correctly", {
 
 })
 
+
 test_that("prepare_data() ignores nonchar columns (since readr::type_convert fails to skip nonchar cols)", {
 	testsourcedata <- prepare_data(df = data.frame(col1 = rep("2022-01-01", 5),
 																								 col2 = rep(1, 5),
@@ -134,11 +135,51 @@ test_that("prepare_data() ignores nonchar columns (since readr::type_convert fai
 																 fieldtypes = fieldtypes(col1 = ft_timepoint(),
 																 												col2 = ft_simple(),
 																 												col3 = ft_ignore()),
-																 dataset_shortdesc = "nonchar columns",
+																 dataset_shortdesc = "ignore nonchar columns",
 																 showprogress = FALSE)
 
 	expect_equal(testsourcedata$cols_imported_n, 2)
 })
+
+
+test_that("prepare_data() generates a validation warning when nonchar columns are provided", {
+	testsourcedata <- prepare_data(df = data.frame(col1 = rep("2022-01-01", 5),
+																								 col2 = 1:5),
+																 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																 												col2 = ft_numeric()),
+																 dataset_shortdesc = "nonchar columns",
+																 showprogress = FALSE)
+
+	expect_equal(testsourcedata$validation_warnings$fieldname, "col2")
+	expect_match(testsourcedata$validation_warnings$message, "instead of character")
+})
+
+
+test_that("prepare_data() overrides column names correctly", {
+	testsourcedata <- prepare_data(df = data.frame(col1 = rep("2022-01-01", 5),
+																								 col2 = rep("1", 5)),
+																 fieldtypes = fieldtypes(cola = ft_timepoint(),
+																 												colb = ft_simple()),
+																 override_columnnames = TRUE,
+																 dataset_shortdesc = "override colnames",
+																 showprogress = FALSE)
+
+	expect_equal(names(testsourcedata$datafields)[1:2], c("cola", "colb"))
+})
+
+
+test_that("prepare_data() can accept a data.table with nonchar cols without error", {
+	testsourcedata <- prepare_data(df = data.table::data.table(col1 = rep("2022-01-01", 5),
+																								 col2 = rep(1, 5)),
+																 fieldtypes = fieldtypes(col1 = ft_timepoint(),
+																 												col2 = ft_simple()),
+																 override_columnnames = TRUE,
+																 dataset_shortdesc = "pass in nonchar data.table",
+																 showprogress = FALSE)
+
+	expect_equal(testsourcedata$cols_imported_n, 2)
+})
+
 
 test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) passed in", {
 	dfobj <- data.frame(col1 = rep("2022-01-01", 5),

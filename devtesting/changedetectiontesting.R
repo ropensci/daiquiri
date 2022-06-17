@@ -65,3 +65,30 @@ testsourcedata <- prepare_data(testdf,
 															 dataset_shortdesc = "completetestset",
 															 showprogress = FALSE
 )
+
+
+# test modification of df passed into function
+df <- data.frame(a=1:5, b = "hi")
+testmodset <- function(df){
+	dt <- setDT(df)
+	dt
+}
+tracemem(df)
+res <- testmod(df)
+class(df)
+tracemem(df)
+class(res)
+tracemem(res)
+
+df <- data.frame(a=1:5, b = "hi")
+testmodas <- function(df){
+	dt <- as.data.table(df)
+	dt
+}
+tracemem(df)
+res <- testmodas(df)
+class(df)
+tracemem(df)
+class(res)
+tracemem(res)
+
