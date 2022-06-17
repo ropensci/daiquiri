@@ -54,7 +54,8 @@ sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 ```{r fields-imported}
 
 reactable::reactable(
-	sourcedatafields[which(sourcesummary$datafields$fieldtype != "ignore"), ],
+	# NOTE: trimws() needed as summarise_source_data() is optimised for console printout
+	sourcedatafields[which(trimws(sourcesummary$datafields$fieldtype) != "ignore"), ],
 	sortable = TRUE,
 	filterable = FALSE,
 	searchable = FALSE,
@@ -84,7 +85,8 @@ reactable::reactable(
 ```{r fields-ignored}
 
 reactable::reactable(
-	sourcedatafields[which(sourcesummary$datafields$fieldtype == "ignore"), 
+	# NOTE: trimws() needed as summarise_source_data() is optimised for console printout
+	sourcedatafields[which(trimws(sourcesummary$datafields$fieldtype) == "ignore"), 
 									 c("fieldname", "fieldtype", "ordinal_position")],
 	sortable = TRUE,
 	filterable = FALSE,
