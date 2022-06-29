@@ -81,13 +81,25 @@ devtools::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 ``` r
 library(daiquiri)
 
-# load example data into a data.frame
-rawdata <- read_data(
-  system.file("extdata", "example_data.csv", package = "daiquiri"),
-  delim = ",",
-  col_names = TRUE
-)
+# load delimited file into a data.frame without doing any datatype conversion
+path <- system.file("extdata", "example_data.csv", package = "daiquiri")
+rawdata <- read_data(path, showprogress = FALSE)
 
+head(rawdata)
+```
+
+    ## # A tibble: 6 × 8
+    ##   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID
+    ##   <chr>          <chr>              <chr>         <chr> <chr> <chr>    <chr>    
+    ## 1 6000           2021-01-01 00:00:… 2020-12-31    Ceft… 500   mg       4993679  
+    ## 2 6001           NULL               2020-12-31    Fluc… 1000  mg       819452   
+    ## 3 6002           NULL               2020-12-30    Teic… 400   mg       275597   
+    ## 4 6003           2021-01-01 01:00:… 2020-12-31    Fluc… 1000  NULL     819452   
+    ## 5 6004           2021-01-01 02:00:… 2020-12-20    Fluc… 1000  NULL     528071   
+    ## 6 6005           2021-01-01 03:00:… 2020-12-30    Co-a… 1.2   g        1001434  
+    ## # … with 1 more variable: Location <chr>
+
+``` r
 # specify the type of data expected in each column of the data.frame
 fts <- fieldtypes(
     PrescriptionID = ft_uniqueidentifier(),
@@ -99,19 +111,13 @@ fts <- fieldtypes(
     PatientID = ft_ignore(),
     Location = ft_categorical(aggregate_by_each_category=TRUE)
 )
+```
 
+``` r
 # create a report in the current directory
 daiqobj <- create_report(
   rawdata,
-  fieldtypes = fts,
-  override_columnnames = FALSE,
-  na = c("", "NULL"),
-  dataset_shortdesc = "Example data for illustration",
-  aggregation_timeunit = "day",
-  save_directory = ".",
-  save_filename = "example_data_report",
-  showprogress = TRUE,
-  log_directory = NULL
+  fieldtypes = fts
 )
 ```
 

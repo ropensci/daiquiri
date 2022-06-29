@@ -49,15 +49,14 @@ devtools::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 
 ## Usage
 
-```{r, eval = FALSE}
+```{r}
 library(daiquiri)
 
-# load example data into a data.frame
-rawdata <- read_data(
-  system.file("extdata", "example_data.csv", package = "daiquiri"),
-  delim = ",",
-  col_names = TRUE
-)
+# load delimited file into a data.frame without doing any datatype conversion
+path <- system.file("extdata", "example_data.csv", package = "daiquiri")
+rawdata <- read_data(path, showprogress = FALSE)
+
+head(rawdata)
 
 # specify the type of data expected in each column of the data.frame
 fts <- fieldtypes(
@@ -70,19 +69,13 @@ fts <- fieldtypes(
     PatientID = ft_ignore(),
     Location = ft_categorical(aggregate_by_each_category=TRUE)
 )
+```
 
+```{r, eval = FALSE}
 # create a report in the current directory
 daiqobj <- create_report(
   rawdata,
-  fieldtypes = fts,
-  override_columnnames = FALSE,
-  na = c("", "NULL"),
-  dataset_shortdesc = "Example data for illustration",
-  aggregation_timeunit = "day",
-  save_directory = ".",
-  save_filename = "example_data_report",
-  showprogress = TRUE,
-  log_directory = NULL
+  fieldtypes = fts
 )
 ```
 
