@@ -208,7 +208,7 @@ print.daiquiri_object <- function(x, ...) {
 }
 
 
-#' Read data from delimited file
+#' Read data from delimited file without doing any datatype conversion
 #'
 #' Read rectangular data from a delimited file, with all columns read in as
 #' character type so that the package can later detect any non-conformant

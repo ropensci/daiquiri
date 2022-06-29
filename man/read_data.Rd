@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{read_data}
 \alias{read_data}
-\title{Read data from delimited file}
+\title{Read data from delimited file without doing any datatype conversion}
 \usage{
 read_data(
   file,
