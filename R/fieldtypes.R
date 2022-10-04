@@ -452,10 +452,10 @@ print.fieldtypes <- function(x, ...) {
 #' @examples
 #' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
 #'
-#' fieldtypes_template(df, default_fieldtype = ft_numeric())
+#' print_fieldtypes_template(df, default_fieldtype = ft_numeric())
 #' @seealso \code{\link{fieldtypes}}
 #' @export
-fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
+print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
 	validate_params_required(match.call())
 	validate_params_type(match.call(),
 											 df = df,

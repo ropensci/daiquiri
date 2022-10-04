@@ -278,14 +278,14 @@ validate_params_type <- function(call, ...) {
 #' @param log_directory String containing directory to save log file
 #' @return Character string containing the full path to the newly-created log file
 #' @examples
-#'   logname <- log_initialise(".")
+#'   logname <- initialise_log(".")
 #'
 #'   \dontshow{
-#'   log_close()
+#'   close_log()
 #'   file.remove(logname)
 #'   }
 #' @export
-log_initialise <- function(log_directory) {
+initialise_log <- function(log_directory) {
 
 	validate_params_required(match.call())
 	validate_params_type(match.call(),
@@ -314,9 +314,9 @@ log_initialise <- function(log_directory) {
 
 #' Closes any active log file
 #'
-#' @examples log_close()
+#' @examples close_log()
 #' @export
-log_close <- function() {
+close_log <- function() {
 	if (exists("logname", envir = packageenvironment)) {
 		rm("logname", envir = packageenvironment)
 	}

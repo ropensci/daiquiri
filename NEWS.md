@@ -1,5 +1,13 @@
 # daiquiri (development version)
 
+## Breaking changes
+
+* `initialise_log()` replaces `log_initialise()`.
+
+* `close_log()` replaces `log_close()`.
+
+* `print_fieldtypes_template()` replaces `fieldtypes_template()` 
+
 ## Bug fixes and minor improvements
 
 * Fixed error when user passes in a data.table (to `create_report()` or `prepare_data()`) that contains non-character columns.
