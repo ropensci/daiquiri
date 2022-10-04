@@ -100,23 +100,23 @@ test_that("validate_params_type() checks if params are of correct type", {
 })
 
 
-test_that("log_initialise() params are present and of correct type", {
-	expect_error(log_initialise(),
+test_that("initialise_log() params are present and of correct type", {
+	expect_error(initialise_log(),
 							 class = "invalid_param_missing")
 
-	expect_error(log_initialise(log_directory = "hello"),
+	expect_error(initialise_log(log_directory = "hello"),
 							 class = "invalid_param_type")
 
 })
 
-test_that("log_initialise() creates a file", {
-	log_filename <- log_initialise(log_directory = tempdir())
+test_that("initialise_log() creates a file", {
+	log_filename <- initialise_log(log_directory = tempdir())
 	# clean up
 	expect_true(file.remove(log_filename))
 })
 
 test_that("log_message() writes to log", {
-	log_filename <- log_initialise(log_directory = tempdir())
+	log_filename <- initialise_log(log_directory = tempdir())
 	expect_silent(log_message("test message", showprogress = FALSE))
 	log_text <- readLines(log_filename)
 	expect_true(any(grepl("test message", log_text)))

@@ -114,9 +114,9 @@ create_report <- function(df,
 
 	# if a log directory is supplied, start a new log. Otherwise, close any existing log
 	if (!is.null(log_directory)) {
-		log_filename <- log_initialise(log_directory)
+		log_filename <- initialise_log(log_directory)
 	} else{
-		log_close()
+		close_log()
 		log_filename <- NULL
 	}
 
@@ -164,7 +164,7 @@ create_report <- function(df,
 
 	log_function_end(match.call()[[1]])
 
-	log_close()
+	close_log()
 
 	structure(
 		list(
