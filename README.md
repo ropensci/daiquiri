@@ -43,17 +43,19 @@ Events occurring at the institutional level such as software updates,
 new machinery or processes can cause temporal artefacts that, if not
 identified and taken into account, can lead to biased results and
 incorrect conclusions. For example, the figures below show real data
-from a large hospital in the UK.
+from a large hospital in the UK, and how it has changed over time.
 
 <img src="man/figures/antibiotics_day_DurationEnteredByPrescriber_missing_perc.png" width="350" /><img src="man/figures/bchem_creatinine_day_Value_mean.png" width="350" />
 
 The first figure shows the percentage of missing values in the
 ‘Duration’ field of a dataset containing antibiotic prescriptions, and
 the second figure shows the mean value of all laboratory tests checking
-for levels of ‘creatinine’ in the blood. As you can see, these values
-can sometimes change suddenly and unnaturally, and researchers need to
-take this into account if comparing or combining the data before and
-after these ‘change points’.
+for levels of ‘creatinine’ in the blood. As you can see, there are
+points in time where these values shift up or down suddenly and
+unnaturally, indicating that something changed in the way the data was
+collected or processed. A careful researcher needs to take these sudden
+changes into account, particularly if comparing or combining the data
+before and after these ‘change points’.
 
 While these checks should theoretically be conducted by the researcher
 at the initial data analysis stage, in practice it is unclear to what
