@@ -124,12 +124,10 @@ report_data <- function(sourcedata,
 #'
 #' @param aggfield aggregatefield object
 #' @param aggtype string denoting aggregatetype (from aggfield columnname)
-#' @param changepoint_methods currently disabled
 #' @return ggplot
 #' @noRd
 plot_timeseries_static <- function(aggfield,
-																	 aggtype,
-																	 changepoint_methods = "none") {
+																	 aggtype) {
 
 	timepointcolname <- names(aggfield$values)[1]
 	# set up universal plot characteristics
@@ -172,16 +170,6 @@ plot_timeseries_static <- function(aggfield,
 																				 					 max(maxval, aggbreaks[length(aggbreaks)]))
 																				 )
 
-		# NOTE: Changepoints functionality disabled until we find a method that works
-		# # add changepoint lines if requested
-		# if( changepoint_methods != "none"){
-		# 	cpts <- aggfield$changepoints[[aggtype]]
-		# 	for(k in 1:length(cpts)){
-		# 		if( names(cpts[k]) %in% changepoint_methods || changepoint_methods == "all" ){
-		# 			g <- g + ggplot2::geom_vline(xintercept=cpts[[k]]$changepoint_timepoints, colour = changepoint_colour(names(cpts[k])))
-		# 		}
-		# 	}
-		# }
 	}
 
 	g
