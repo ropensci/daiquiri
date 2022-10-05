@@ -1,14 +1,9 @@
 # Code for creation of aggregatedata object
 # These contain both the (vector) data for the aggregated field and the relevant metadata
 # TODO: decide whether better to store values as a dataframe or a list of ts/zoo objects
-# NOTE: Partitionfield functionality disabled until we work out how to present
-# it (creating aligned plots only works if small no. of partitions)
 
 # -----------------------------------------------------------------------------
 #' Constructor for an individual aggregatefield object
-#'
-#' NOTE: keep datafield and timepointfieldvalues separate as
-#' timepointfieldvalues are updated for subaggregates before being passed in
 #'
 #' @param datafield datafield object
 #' @param timepointfieldvalues all values in timepoint field
@@ -20,8 +15,6 @@ aggregatefield <- function(datafield,
 													 timepointfieldvalues,
 													 alltimepoints,
 													 aggregation_timeunit,
-													 partitionfieldname = NULL,
-													 partitionfieldvalue = NULL,
 													 showprogress = TRUE) {
 
 	# initialise known column names to prevent R CMD check notes
@@ -245,9 +238,6 @@ aggregatefield <- function(datafield,
 			functionlist = functionlist,
 			fieldtype = datafield$fieldtype,
 			columnname = datafield$columnname
-			# NOTE: Partitionfield functionality disabled until we work out how to present it
-			# partitionfieldname = partitionfieldname,
-			# partitionfieldvalue = partitionfieldvalue
 		),
 		class = "aggregatefield"
 	)
@@ -268,8 +258,6 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 #'
 #' @param aggfields all aggregatefield objects from data (i.e. excluding
 #'   calculated aggfields)
-#' @param partitionfieldname currently disabled
-#' @param partitionfieldvalue currently disabled
 #' @param showprogress Print progress to console
 #' @return aggregatefield object, including a data.table where the first column
 #'   is the timepoint group, then one column per aggregationfunction
@@ -278,8 +266,6 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # TODO: this field has a numeric datatype whereas individual fields have an int
 # datatype, decide if need to make them all the same
 aggregateallfields <- function(aggfields,
-															 partitionfieldname = NULL,
-															 partitionfieldvalue = NULL,
 															 showprogress = TRUE) {
 
 	# initialise known column names to prevent R CMD check notes
@@ -329,9 +315,6 @@ aggregateallfields <- function(aggfields,
 			functionlist = functionlist,
 			fieldtype = ft,
 			columnname = "[ALLFIELDSCOMBINED]"
-			# NOTE: Partitionfield functionality disabled until we work out how to present it
-			# partitionfieldname = partitionfieldname,
-			# partitionfieldvalue = partitionfieldvalue
 		),
 		class = "aggregatefield"
 	)
@@ -449,7 +432,6 @@ aggregate_data <- function(sourcedata,
 	agg[[sourcedata$cols_imported_n + 2]] <-
 		aggregateallfields(
 			agg[1:sourcedata$cols_imported_n],
-			aggregation_timeunit,
 			showprogress = showprogress
 		)
 	names(agg) <-
@@ -457,68 +439,6 @@ aggregate_data <- function(sourcedata,
 			"[DUPLICATES]",
 			"[ALLFIELDSCOMBINED]")
 
-
-	# NOTE: Partitionfield functionality disabled until we work out how to present it
-	# ### AGGREGATE BY EACH PARTITIONFIELD SUBGROUP
-	# # set up lists of correct size first
-	# log_message(paste0("Checking for fields of type 'partition'..."), showprogress)
-	# partitionfield_fieldnames <- character()
-	# partitionfield_indexes <- numeric()
-	# # NOTE: could probably just loop through all datafields here, not sure of value of only checking the imported ones
-	# for (i in 1:sourcedata$cols_imported_n){
-	# 	fieldindex = sourcedata$cols_imported_indexes[[i]]
-	# 	if (is.fieldtype_partition(sourcedata$datafields[[fieldindex]]$fieldtype)){
-	# 		partitionfield_indexes <- c(partitionfield_indexes, fieldindex)
-	# 		partitionfield_fieldnames <- c(partitionfield_fieldnames, sourcedata$datafields[[fieldindex]]$columnname)
-	# 	}
-	# }
-	# subaggregate <- vector("list", length(partitionfield_indexes))
-	# if( length(partitionfield_indexes)==0 ){
-	# 	log_message(paste0("None found"), showprogress)
-	# } else{
-	# 	for (i in seq_along(partitionfield_indexes)){
-	# 		partitionfield_name <- sourcedata$datafields[[partitionfield_indexes[[i]]]]$columnname
-	# 		log_message(paste0("Aggregating by ", partitionfield_name, "..."), showprogress)
-	# 		# create factor of partitionfield subgroups
-	# 		# TODO: not sure what's going to happen if NA values are present
-	# 		partitionfield_levels <- unlist(unique(sourcedata$datafields[[partitionfield_indexes[[i]]]]$values))
-	# 		# if there is only one value then don't bother
-	# 		if( length(partitionfield_levels) <= 1 ){
-	# 			log_message(paste0(length(partitionfield_levels), " unique value(s) found. Skip."), showprogress)
-	# 		} else{
-	# 			subaggregate[[i]] <- vector("list", length(partitionfield_levels))
-	# 			for (j in seq_along(partitionfield_levels)){
-	# 				log_message(paste0("  Filter on ", partitionfield_name, "=", partitionfield_levels[j], ":"), showprogress)
-	# 				# set timepoint vector to ignore other levels
-	# 				partitionfield_levelindicator <- which(sourcedata$datafields[[partitionfield_indexes[[i]]]]$values != partitionfield_levels[j])
-	# 				timepointsubvalues <- get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]])
-	# 				timepointsubvalues[partitionfield_levelindicator] <- NA
-	# 				log_message(paste0("    Aggregating each datafield in turn..."), showprogress)
-	# 				subaggregate[[i]][[j]]$aggregatefields <- vector("list", sourcedata$cols_imported_n + 1)
-	# 				nextindex <- 1
-	# 				for (k in 1:sourcedata$cols_imported_n){
-	# 					log_message(paste0("      ", k, ": ", names(sourcedata$cols_imported_indexes)[k]), showprogress)
-	# 					fieldindex = sourcedata$cols_imported_indexes[[k]]
-	# 					if (fieldindex != partitionfield_indexes[[i]]){
-	# 						subaggregate[[i]][[j]]$aggregatefields[[nextindex]] <- aggregatefield(sourcedata$datafields[[fieldindex]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit = aggregation_timeunit, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-	# 						nextindex <- nextindex + 1
-	# 					}
-	# 				}
-	# 				log_message(paste0("Aggregating calculated datafields..."), showprogress)
-	# 				log_message(paste0("DUPLICATES:"), showprogress)
-	# 				subaggregate[[i]][[j]]$aggregatefields[[sourcedata$cols_imported_n]] <- aggregatefield(sourcedata$datafields[[sourcedata$cols_source_n]], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, aggregation_timeunit, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-	# 				log_message(paste0("ALLFIELDSCOMBINED:"), showprogress)
-	# 				subaggregate[[i]][[j]]$aggregatefields[[sourcedata$cols_imported_n+1]] <- aggregateallfields(subaggregate[[i]][[j]]$aggregatefields[1:sourcedata$cols_imported_n - 1], timepointfieldvalues = timepointsubvalues, alltimepoints = alltimepoints, partitionfieldname = partitionfield_name, partitionfieldvalue = partitionfield_levels[[j]], showprogress = showprogress)
-	# 				names(subaggregate[[i]][[j]]$aggregatefields) <- c(names(sourcedata$cols_imported_indexes)[-which(sourcedata$cols_imported_indexes==partitionfield_indexes[[i]])], "DUPLICATES", "ALLFIELDSCOMBINED")
-	#
-	#
-	# 				subaggregate[[i]][[j]]$timepoint_fieldname <- sourcedata$timepoint_fieldname
-	# 				subaggregate[[i]][[j]]$aggregation_timeunit <- aggregation_timeunit
-	# 			}
-	# 			names(subaggregate[[i]]) <- partitionfield_levels
-	# 		}
-	# 	}
-	# 	names(subaggregate) <- names(sourcedata$cols_imported_indexes)[which(sourcedata$cols_imported_indexes %in% partitionfield_indexes)]
 
 	log_function_end(match.call()[[1]])
 
@@ -529,9 +449,6 @@ aggregate_data <- function(sourcedata,
 			# not sure if this should be set at overall object level or allow it to
 			# differ per aggregatefield
 			aggregation_timeunit = aggregation_timeunit
-			# NOTE: Partitionfield functionality disabled until we work out how to present it
-			# partitionfield_fieldnames = partitionfield_fieldnames,
-			# subaggregates = subaggregate
 		),
 		class = "aggregatedata"
 	)
@@ -621,20 +538,6 @@ export_aggregated_data <- function(aggregatedata,
 										 )))
 	}
 
-	# NOTE: Partitionfield functionality disabled until we work out how to present it
-	# for(p in seq_along(aggregatedata$subaggregates)){
-	# 	for( q in seq_along(aggregatedata$subaggregates[[p]]) ){
-	# 		for( i in seq_along(aggregatedata$subaggregates[[p]][[q]]$aggregatefields) ){
-	# 			readr::write_csv(aggregatedata$subaggregates[[p]][[q]]$aggregatefields[[i]]$values,
-	# 											 file.path(save_directory, paste0(
-	# 											 			 names(aggregatedata$aggregatefields[i]),
-	# 											 			 "_by_", names(aggregatedata$subaggregates),
-	# 											 			 "_", names(aggregatedata$subaggregates[[p]][q]),
-	# 											 			 ".csv")))
-	# 		}
-	# 	}
-	# }
-
 }
 
 #' @export
@@ -650,8 +553,6 @@ print.aggregatedata <- function(x, ...) {
 	cat("Max timepoint value:", aggsummary$overall["timepoint_max"], "\n")
 	cat("Total number of timepoints:", aggsummary$overall["n_timepoints"], "\n")
 	cat("Number of empty timepoints:", aggsummary$overall["n_empty_timepoints"], "\n")
-	# NOTE: Partitionfield functionality disabled until we work out how to present it
-	# cat("Column(s) used as partitionfield:", aggsummary$overall["partitionfield_fieldnames"], "\n")
 	cat("\n")
 }
 
@@ -680,31 +581,11 @@ summarise_aggregated_data <- function(aggregatedata) {
 							 	max(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]])),
 							 n_timepoints = length(aggfields[[aggregatedata$timepoint_fieldname]]$values[[1]]),
 							 n_empty_timepoints = sum(aggfields[[aggregatedata$timepoint_fieldname]]$values[["n"]] == 0)
-							 # NOTE: Partitionfield functionality disabled until we work out how to present it
-							 # partitionfield_fieldnames = toString(aggregatedata$partitionfield_fieldnames)
 	)
-
-	# NOTE: Partitionfield functionality disabled until we work out how to present it
-	# if( length(aggregatedata$subaggregates) > 0 ){
-	# 	subaggs <- vector("list", length(aggregatedata$subaggregates))
-	# 	for(p in seq_along(aggregatedata$subaggregates)){
-	# 		numlevels <- length(aggregatedata$subaggregates[[p]])
-	# 		subaggs[[p]] <- vector("list", numlevels)
-	# 		for(q in 1:numlevels){
-	# 			subaggs[[p]][[q]] <- summarise_aggregated_data(aggregatedata$subaggregates[[p]][[q]])
-	# 			subaggs[[p]][[q]]$overall <- c(subaggs[[p]][[q]]$overall, partitionfield_fieldname=aggregatedata$partitionfield_fieldnames[[p]], partitionfield_fieldvalue=names(aggregatedata$subaggregates[[p]][q]))
-	# 		}
-	# 	}
-	# }
-	# else{
-	# 	subaggs <- NA
-	# }
 
 	structure(
 		list(
 			overall = overall
-			# NOTE: Partitionfield functionality disabled until we work out how to present it
-			# bypartitionfield = subaggs
 		),
 		class = "summary_aggregated_data"
 	)

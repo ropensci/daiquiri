@@ -286,8 +286,6 @@ aggsummarydf <- data.frame(
 		"Total number of timepoints",
 		"Number of empty timepoints",
 		"Number of data fields"
-		# NOTE: Partitionfield functionality disabled until we work out how to present it
-		# "Column(s) used as partitionfield"
 	),
 	"Value" = c(
 		aggsummary$overall["timepoint_fieldname"],
@@ -297,8 +295,6 @@ aggsummarydf <- data.frame(
 		aggsummary$overall["n_timepoints"],
 		aggsummary$overall["n_empty_timepoints"],
 		aggsummary$overall["n_fields"]
-		# NOTE: Partitionfield functionality disabled until we work out how to present it
-		# aggsummary$overall["partitionfield_fieldnames"]
 	),
 	stringsAsFactors = FALSE
 )

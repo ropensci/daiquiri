@@ -3,8 +3,6 @@ test_that("Valid fieldtypes can be specified", {
 		fieldtypes(
 			Col_tp = ft_timepoint(),
 			Col_uid = ft_uniqueidentifier(),
-			# NOTE: Partitionfield functionality disabled until we work out how to present it
-			#Col_part = ft_partition(),
 			Col_cat = ft_categorical(),
 			Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
 			Col_num = ft_numeric(),
@@ -78,8 +76,6 @@ test_that("fieldtypes object prints to console ok", {
 	testfieldtypes <- fieldtypes(
 		Col_tp = ft_timepoint(),
 		Col_uid = ft_uniqueidentifier(),
-		# NOTE: Partitionfield functionality disabled until we work out how to present it
-		#Col_part = ft_partition(),
 		Col_cat = ft_categorical(),
 		Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
 		Col_num = ft_numeric(),
