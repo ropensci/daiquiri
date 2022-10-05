@@ -460,46 +460,33 @@ print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
 
 #' Map fieldtypes to parser's coltypes
 #'
-#' See readr::col_types read.table::colClasses
+#' Parser used is readr. See readr::col_types
 #'
 #' @param fieldtypes fieldtypes object
-#' @param readfunction package that will be used to read in the data, i.e.
-#'   readr, data.table, or read.table
 #' @param alltostring Set to TRUE if want parser to read everything as character
-#' @return list or vector of coltypes as appropriate to the chosen parser
+#' @return list of coltypes
 #' @noRd
 fieldtypes_to_cols <-
-	function(fieldtypes, readfunction, alltostring = FALSE) {
+	function(fieldtypes, alltostring = FALSE) {
 		# validate
 		if (missing(fieldtypes) || !is.fieldtypes(fieldtypes)) {
 			stop("Invalid parameter(s) supplied:",
 					 "`fieldtypes'", call. = FALSE)
 		}
-		if (readfunction == "readr") {
-			if (alltostring == TRUE) {
-				do.call(readr::cols, lapply(fieldtypes, function(x) {
-					readr::col_character()
-				}))
-			}
-			else{
-				do.call(readr::cols, lapply(fieldtypes, get_collector))
-			}
-		} else if (readfunction %in% c("read.table", "data.table")) {
-			if (alltostring == TRUE) {
-				unlist(lapply(fieldtypes, function(x) {
-					"character"
-				}))
-			}
-			else{
-				unlist(lapply(fieldtypes, get_dataclass))
-			}
+		if (alltostring == TRUE) {
+			do.call(readr::cols, lapply(fieldtypes, function(x) {
+				readr::col_character()
+			}))
+		}
+		else{
+			do.call(readr::cols, lapply(fieldtypes, get_collector))
 		}
 	}
 
 #' Get the fieldtype's collector
 #'
 #' @param fieldtype fieldtype object
-#' @return coltype as appropriate to the chosen parser
+#' @return coltype as appropriate to the chosen parser (readr)
 #' @noRd
 get_collector <- function(fieldtype) {
 	fieldtype$collector

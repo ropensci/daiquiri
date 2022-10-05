@@ -177,7 +177,7 @@ prepare_data <- function(df,
 	dt <-
 		withCallingHandlers(
 			readr::type_convert(dt,
-													fieldtypes_to_cols(fieldtypes, readfunction = "readr"),
+													fieldtypes_to_cols(fieldtypes),
 													na = na),
 			warning = function(w) {
 				raw_warnings <<- append(raw_warnings, conditionMessage(w))
