@@ -208,7 +208,6 @@ aggsummary <- summarise_aggregated_data(params$aggregatedata)
 ### Values present
 
 ```{r overview-presence}
-#, fig.height = 0.5*as.numeric(aggsummary$overall["n_fields"])+3
 
 plot_overview_combo_static(
 	aggfields = params$aggregatedata$aggregatefields,
@@ -325,8 +324,6 @@ reactable::reactable(
 ## Individual data fields {.tabset}
 
 ```{r individual-fields, results = 'asis'}
-#params$aggregatedata <- testcpddata_byday
-#aggtype <- "n"
 for(i in seq_along(names(params$aggregatedata$aggregatefields))) {
 	cat('\n###',
 			names(params$aggregatedata$aggregatefields)[i],

@@ -332,11 +332,6 @@ plot_overview_heatmap_static <- function(aggfields,
 			),
 			axis.text.y = ggplot2::element_text(size = 7),
 			legend.position = "none",
-			# legend.key.size = ggplot2::unit(0.32,"cm"),
-			# legend.justification = "top",
-			# legend.title = ggplot2::element_text(size = 8, face = "bold"),
-			# legend.text = ggplot2::element_text(size=7),
-			# legend.background = ggplot2::element_rect(colour = "black", size = 0.25),
 		)
 
 	g
