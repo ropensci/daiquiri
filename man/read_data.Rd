@@ -54,7 +54,7 @@ values. Operates as a restricted implementation of \code{readr::read_delim}.
 }
 \examples{
 rawdata <- read_data(
-  system.file("extdata", "example_data.csv", package = "daiquiri"),
+  system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )

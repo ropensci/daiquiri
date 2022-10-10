@@ -22,11 +22,11 @@ for missing values, non-conformant values, and duplicated rows.
 
 Essentially, it takes input such as this:
 
-<img src="man/figures/example_data_head.png" width="700" />
+<img src="man/figures/example_prescriptions_head.png" width="700" />
 
 And outputs this:
 
-<img src="man/figures/example_data_aggregated_valuespresent.png" width="350" /><img src="man/figures/example_data_allfields_missing_perc.png" width="350" />
+<img src="man/figures/example_prescriptions_aggregated_valuespresent.png" width="350" /><img src="man/figures/example_prescriptions_allfields_missing_perc.png" width="350" />
 
 The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process. It is designed with
@@ -84,7 +84,7 @@ devtools::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
 library(daiquiri)
 
 # load delimited file into a data.frame without doing any datatype conversion
-path <- system.file("extdata", "example_data.csv", package = "daiquiri")
+path <- system.file("extdata", "example_prescriptions.csv", package = "daiquiri")
 rawdata <- read_data(path, showprogress = FALSE)
 
 head(rawdata)
@@ -124,7 +124,7 @@ daiqobj <- create_report(
 ```
 
 An [example
-report](https://phuongquan.github.io/daiquiri/misc/example_data_report.html)
+report](https://phuongquan.github.io/daiquiri/misc/example_prescriptions_report.html)
 is available from the [package
 website](https://phuongquan.github.io/daiquiri/index.html).
 

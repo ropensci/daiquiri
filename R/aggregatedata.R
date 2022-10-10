@@ -336,7 +336,7 @@ aggregateallfields <- function(aggfields,
 #' @examples
 #' # load example data into a data.frame
 #' rawdata <- read_data(
-#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
@@ -473,7 +473,7 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #' @param save_filetype String. Filetype extension supported by \code{readr},
 #'   currently only csv allowed
 #' @examples rawdata <- read_data(
-#'   system.file("extdata", "example_data.csv", package = "daiquiri"),
+#'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )

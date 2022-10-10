@@ -27,7 +27,7 @@ Dates are expected to be in the format `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`, th
 
 **Example:**
 
-The `example_data` dataset is provided with this package as a csv file, and contains (synthetic) examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
+The `example_prescriptions` dataset is provided with this package as a csv file, and contains (synthetic) examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:
 
 * PrescriptionID - the uniqueidentifier for the row
 * PrescriptionDate - The date the prescription was given
@@ -45,17 +45,17 @@ There are some missing values which are represented by the string 'NULL'. String
 library(daiquiri)
 
 # this is where the example file is located
-path <- system.file("extdata", "example_data.csv", package = "daiquiri")
+path <- system.file("extdata", "example_prescriptions.csv", package = "daiquiri")
 
 # load the data into a data.frame without doing any datatype conversion
-example_data <- read_data(
+example_prescriptions <- read_data(
   path,
   delim = ",",
   col_names = TRUE,
   showprogress = FALSE
 )
 
-head(example_data)
+head(example_prescriptions)
 ```
 
 ## Specification of data fields
@@ -89,7 +89,7 @@ If your data is already aggregated (e.g. one column contains a date and the othe
 
 **Example:**
 
-For the `example_data` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
+For the `example_prescriptions` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
 # set up a datafields specification for use later
@@ -124,38 +124,38 @@ You can choose to override the existing column names in the dataframe with those
 
 **Example:**
 
-For the `example_data` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
+For the `example_prescriptions` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
 
 ```{r, include=FALSE}
 # quietly check can create the report but show the code in the next chunk in the vignette
 daiqobj <- create_report(
-  df = example_data,
+  df = example_prescriptions,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
-  save_filename = "example_data_report",
+  save_filename = "example_prescriptions_report",
   showprogress = FALSE,
   log_directory = NULL
 )
 
 # clean up
-file.remove("./example_data_report.html")
+file.remove("./example_prescriptions_report.html")
 
 ```
 
 ```{r, eval=FALSE}
 daiqobj <- create_report(
-  df = example_data,
+  df = example_prescriptions,
   fieldtypes = fts,
   override_columnnames = FALSE,
   na = c("","NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
-  save_filename = "example_data_report",
+  save_filename = "example_prescriptions_report",
   showprogress = TRUE,
   log_directory = NULL
 )
@@ -170,19 +170,19 @@ The html reports created by this package can be opened in a browser and/or attac
 
 This contains child tabs which provide an overall summary of the data imported, plus a complete list of validation warnings (such as any values identified as non-conformant)
 
-<img src="../man/figures/example_data_source_fieldsimported.png" width="500" />
+<img src="../man/figures/example_prescriptions_source_fieldsimported.png" width="500" />
 
 ### Aggregated data
 
 This contains child tabs which display plots showing overall numbers of records, missing values, non-conformant values, and duplicate records per timepoint, across the dataset as a whole. Fields and timepoints where these values are not applicable are coloured in grey.
 
-<img src="../man/figures/example_data_aggregated_valuespresent.png" width="500" />
+<img src="../man/figures/example_prescriptions_aggregated_valuespresent.png" width="500" />
 
 ### Individual data fields
 
 This contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created
 
-<img src="../man/figures/example_data_allfields_missing_perc.png" width="500" />
+<img src="../man/figures/example_prescriptions_allfields_missing_perc.png" width="500" />
 
 ## Advanced usage details
 
@@ -191,7 +191,7 @@ The simplest way to use this package is to use the `create_report()` function as
 ```{r, eval=FALSE}
 # load your dataset into a sourcedata object
 examplesourcedata <- prepare_data(
-  example_data, 
+  example_prescriptions, 
   fieldtypes = fts, 
   na=c("","NULL")
 )
@@ -213,14 +213,14 @@ report_data(
   sourcedata = examplesourcedata,
   aggregatedata = exampleaggregate_byday,
   save_directory = ".",
-  save_filename = "example_data_byday"
+  save_filename = "example_prescriptions_byday"
 )
 
 report_data(
   sourcedata = examplesourcedata,
   aggregatedata = exampleaggregate_byweek,
   save_directory = ".",
-  save_filename = "example_data_byweek"
+  save_filename = "example_prescriptions_byweek"
 )
 
 ```
