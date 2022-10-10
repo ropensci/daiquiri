@@ -81,9 +81,11 @@ Lastly, a number of time series will be generated for the dataset as a whole, na
 * The number of records (after duplicates have been removed)
 * The total number and percentage of missing and of non-conformant values (where relevant) across all data fields
 
-NOTE ABOUT DATES: The `ft_timepoint()` and `ft_datetime()` field types accept a `format` parameter for when the values in the column are not in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format. These must follow the `col_datetime` format specifications from the `readr` package, e.g. "%d/%m/%Y". When a format is supplied, it must match the complete string. User-specified locales are not currently supported.
+NOTES:
 
-NOTE: If your data is already aggregated (e.g. one column contains a date and the other columns contain the number of inpatient admissions, outpatient appointments, and emergency department attendances on that date), you can still use this package if you restrict to the `ft_timepoint()`, `ft_numeric()`, and `ft_simple()` field types.
+The `ft_timepoint()` and `ft_datetime()` field types accept a `format` parameter for when the values in the column are not in `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS` format. These must follow the `col_datetime` format specifications from the `readr` package, e.g. "%d/%m/%Y". When a format is supplied, it must match the complete string. User-specified locales are not currently supported.
+
+If your data is already aggregated (e.g. one column contains a date and the other columns contain the number of inpatient admissions, outpatient appointments, and emergency department attendances on that date), you can still use this package if you restrict to the `ft_timepoint()`, `ft_numeric()`, and `ft_simple()` field types.
 
 **Example:**
 
@@ -118,7 +120,7 @@ We also need to decide where to save the report, and optionally specify a filena
 
 If you specify a log directory, details of all the processing steps will be saved into a text file.
 
-NOTE ABOUT COLUMN NAMES: You can choose to override the existing column names in the dataframe with those in the `fieldtypes()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes()` specification must match exactly to those in the dataframe.
+You can choose to override the existing column names in the dataframe with those in the `fieldtypes()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes()` specification must match exactly to those in the dataframe.
 
 **Example:**
 
