@@ -13,6 +13,9 @@ specification}
 \item{default_fieldtype}{fieldtype to be used for each column. Default =
 \code{ft_ignore()}. See  \code{\link{availablefieldtypes}}}
 }
+\value{
+(invisibly) character string containing the template code
+}
 \description{
 Helper function to generate template code for a fieldtypes() specification,
 based on the supplied data frame. All fields (columns) in the specification

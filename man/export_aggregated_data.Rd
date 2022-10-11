@@ -21,6 +21,9 @@ export_aggregated_data(
 \item{save_filetype}{String. Filetype extension supported by \code{readr},
 currently only csv allowed}
 }
+\value{
+(invisibly) The \code{aggregatedata} object that was passed in
+}
 \description{
 Export aggregated data to disk.  Creates a separate file for each aggregated
 field in dataset.

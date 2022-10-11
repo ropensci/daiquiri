@@ -472,6 +472,7 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #' @param save_fileprefix String. Optional prefix for the exported filenames
 #' @param save_filetype String. Filetype extension supported by \code{readr},
 #'   currently only csv allowed
+#' @return (invisibly) The \code{aggregatedata} object that was passed in
 #' @examples rawdata <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
@@ -537,6 +538,8 @@ export_aggregated_data <- function(aggregatedata,
 										 	".csv"
 										 )))
 	}
+
+	invisible(aggregatedata)
 
 }
 

@@ -45,6 +45,9 @@ generated for each distinct subcategory as well as for the field overall.
 If FALSE, aggregated values will only be generated for the field overall.
 Default = FALSE}
 }
+\value{
+fieldtype object denoting the type of data in the column
+}
 \description{
 Each column in the source dataset must be assigned to one of these
 fieldtypes, through a \code{\link{fieldtypes}} specification.

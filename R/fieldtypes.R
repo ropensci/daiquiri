@@ -88,6 +88,7 @@ is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fie
 #' fieldtypes, through a \code{\link{fieldtypes}} specification.
 #' @seealso \code{\link{fieldtypes}}
 #' @name availablefieldtypes
+#' @return A \code{fieldtype} object denoting the type of data in the column
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
 #'                             TestID = ft_ignore(),
 #'                             TestDate = ft_timepoint(),
@@ -426,10 +427,12 @@ print.fieldtypes <- function(x, ...) {
 #' will be defined using the default_fieldtype, and the console output can be
 #' copied and edited before being used as input to \code{\link{create_report}}()
 #' or \code{\link{prepare_data}}().
+#'
 #' @param df data frame including the column names for the template
 #'   specification
 #' @param default_fieldtype fieldtype to be used for each column. Default =
 #'   \code{ft_ignore()}. See  \code{\link{availablefieldtypes}}
+#' @return (invisibly) Character string containing the template code
 #' @examples
 #' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
 #'
@@ -443,16 +446,23 @@ print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
 											 default_fieldtype = default_fieldtype)
 
 	fieldnames <- names(df)
-	cat(
-		"fieldtypes(",
-		paste0(
-			"\"", fieldnames, "\"",
-			" = ft_", default_fieldtype$type, "()",
-			ifelse(fieldnames == rev(fieldnames)[1], "", ","),
-			collapse = "\n\t"
-		),
-		")"
-	)
+	template_string <-
+		paste(
+			"fieldtypes(",
+			paste0(
+				"\"",
+				fieldnames,
+				"\"",
+				" = ft_",
+				default_fieldtype$type,
+				"()",
+				ifelse(fieldnames == rev(fieldnames)[1], "", ","),
+				collapse = "\n\t"
+			),
+			")"
+		)
+	cat(template_string)
+	invisible(template_string)
 }
 
 # -----------------------------------------------------------------------------
