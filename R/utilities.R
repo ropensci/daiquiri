@@ -312,14 +312,24 @@ initialise_log <- function(log_directory) {
 
 }
 
+
 #' Closes any active log file
 #'
+#' @return If a log file was found, the path to the log file that was closed,
+#'   otherwise an empty string
 #' @examples close_log()
 #' @export
 close_log <- function() {
 	if (exists("logname", envir = packageenvironment)) {
+		log_message("Log file closed")
+		logname <- packageenvironment$logname
 		rm("logname", envir = packageenvironment)
+		message(paste0("Log file closed: ", logname))
+	} else{
+		logname <- ""
+		message("No active log found")
 	}
+	logname
 }
 
 #' Write message to log file (if it exists) and/or print to console

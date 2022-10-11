@@ -119,3 +119,13 @@ test_that("log_message() writes to log", {
 	# clean up
 	expect_true(file.remove(log_filename))
 })
+
+test_that("close_log() returns the name of the closed log file", {
+	log_filename <- initialise_log(log_directory = tempdir())
+	expect_equal(close_log(), log_filename)
+})
+
+test_that("close_log() returns empty string if no log file found", {
+	expect_equal(close_log(), "")
+})
+
