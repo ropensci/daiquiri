@@ -1,30 +1,3 @@
-#' Data quality reporting for temporal datasets
-#'
-#' Generate reports that enable quick visual review of temporal shifts in
-#' record-level data. Time series plots showing aggregated values are
-#' automatically created for each data field (column) depending on its contents
-#' (e.g. min/max/mean values for numeric data, no. of distinct values for
-#' categorical data), as well as overviews for missing values, non-conformant
-#' values, and duplicated rows. The resulting reports are sharable and can
-#' contribute to forming a transparent record of the entire analysis process. It
-#' is designed with electronic health records in mind, but can be used for any
-#' type of record-level temporal data (i.e. tabular data where each row
-#' represents a single “event”, one column contains the "event date", and other
-#' columns contain any associated values for the event).
-#'
-#' Classes are S3
-#'
-#' The best place to start is the \code{\link{create_report}} function, and the
-#' walkthrough vignette:
-#' \href{../doc/daiquiri.html}{\code{vignette("daiquiri", package =
-#' "daiquiri")}}.
-#'
-#'
-#' @docType package
-#' @name daiquiri
-NULL
-
-
 #' Create a data quality report from a data frame
 #'
 #' Accepts record-level data from a data frame, validates it against the
