@@ -16,15 +16,15 @@ prepare_data(
 \arguments{
 \item{df}{A data frame}
 
-\item{fieldtypes}{\code{\link{fieldtypes}} object specifying names and types
-of fields (columns) in the source data. See also
+\item{fieldtypes}{\code{\link[=fieldtypes]{fieldtypes()}} object specifying names and types
+of fields (columns) in the supplied \code{df}. See also
 \link{availablefieldtypes}.}
 
-\item{override_columnnames}{If FALSE, column names must exist in data frame
-and must match the names specified in fieldtypes exactly. If TRUE, column
-names in source will be replaced with names in fieldtypes specification.
+\item{override_columnnames}{If \code{FALSE}, column names in the supplied \code{df}
+must match the names specified in \code{fieldtypes} exactly. If \code{TRUE}, column
+names in the supplied \code{df} will be replaced with the names specified in \code{fieldtypes}.
 The specification must therefore contain the columns in the correct order.
-Default = FALSE}
+Default = \code{FALSE}}
 
 \item{na}{vector containing strings that should be interpreted as missing
 values, Default = \code{c("","NA","NULL")}.}
@@ -33,13 +33,13 @@ values, Default = \code{c("","NA","NULL")}.}
 will appear on the report. If blank, the name of the data frame object will
 be used}
 
-\item{showprogress}{Print progress to console. Default = TRUE}
+\item{showprogress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
 A \code{sourcedata} object
 }
 \description{
-Validate a data frame against a \code{\link{fieldtypes}} specification, and
+Validate a data frame against a \code{\link[=fieldtypes]{fieldtypes()}} specification, and
 prepare for aggregation.
 }
 \examples{
@@ -67,7 +67,7 @@ sourcedataobj <- prepare_data(
 )
 }
 \seealso{
-\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
-  \code{\link{aggregate_data}}, \code{\link{report_data}},
-  \code{\link{create_report}}
+\code{\link[=fieldtypes]{fieldtypes()}}, \code{\link[=availablefieldtypes]{availablefieldtypes()}},
+\code{\link[=aggregate_data]{aggregate_data()}}, \code{\link[=report_data]{report_data()}},
+\code{\link[=create_report]{create_report()}}
 }

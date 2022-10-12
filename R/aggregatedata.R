@@ -323,16 +323,16 @@ aggregateallfields <- function(aggfields,
 # -----------------------------------------------------------------------------
 #' Aggregate source data
 #'
-#' Aggregates sourcedata object based on fieldtypes specified at load time.
+#' Aggregates a `sourcedata` object based on the [fieldtypes()] specified at load time.
 #' Default time period for aggregation is a calendar day
 #'
-#' @param sourcedata A \code{sourcedata} object returned from
-#'   \code{\link{prepare_data}} function
+#' @param sourcedata A `sourcedata` object returned from
+#'   [prepare_data()] function
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
-#'   "day", "week", "month", "quarter", "year". The "week" option is
-#'   Monday-based. Default = "day"
-#' @param showprogress Print progress to console. Default = TRUE
-#' @return An \code{aggregatedata} object
+#'   `"day"`, `"week"`, `"month"`, `"quarter"`, `"year"`. The `"week"` option is
+#'   Monday-based. Default = `"day"`
+#' @param showprogress Print progress to console. Default = `TRUE`
+#' @return An `aggregatedata` object
 #' @examples
 #' # load example data into a data.frame
 #' rawdata <- read_data(
@@ -362,7 +362,7 @@ aggregateallfields <- function(aggfields,
 #'   aggregation_timeunit = "day"
 #' )
 #'
-#' @seealso \code{\link{prepare_data}}, \code{\link{report_data}}
+#' @seealso [prepare_data()], [report_data()]
 #' @export
 aggregate_data <- function(sourcedata,
 													 aggregation_timeunit = "day",
@@ -467,12 +467,12 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #' Export aggregated data to disk.  Creates a separate file for each aggregated
 #' field in dataset.
 #'
-#' @param aggregatedata A \code{aggregatedata} object
+#' @param aggregatedata A `aggregatedata` object
 #' @param save_directory String. Full or relative path for save folder
 #' @param save_fileprefix String. Optional prefix for the exported filenames
-#' @param save_filetype String. Filetype extension supported by \code{readr},
+#' @param save_filetype String. Filetype extension supported by `readr`,
 #'   currently only csv allowed
-#' @return (invisibly) The \code{aggregatedata} object that was passed in
+#' @return (invisibly) The `aggregatedata` object that was passed in
 #' @examples rawdata <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",

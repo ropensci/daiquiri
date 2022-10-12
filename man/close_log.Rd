@@ -8,7 +8,7 @@ close_log()
 }
 \value{
 If a log file was found, the path to the log file that was closed,
-  otherwise an empty string
+otherwise an empty string
 }
 \description{
 Closes any active log file

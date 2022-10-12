@@ -8,19 +8,19 @@ aggregate_data(sourcedata, aggregation_timeunit = "day", showprogress = TRUE)
 }
 \arguments{
 \item{sourcedata}{A \code{sourcedata} object returned from
-\code{\link{prepare_data}} function}
+\code{\link[=prepare_data]{prepare_data()}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
-"day", "week", "month", "quarter", "year". The "week" option is
-Monday-based. Default = "day"}
+\code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"}, \code{"year"}. The \code{"week"} option is
+Monday-based. Default = \code{"day"}}
 
-\item{showprogress}{Print progress to console. Default = TRUE}
+\item{showprogress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
 An \code{aggregatedata} object
 }
 \description{
-Aggregates sourcedata object based on fieldtypes specified at load time.
+Aggregates a \code{sourcedata} object based on the \code{\link[=fieldtypes]{fieldtypes()}} specified at load time.
 Default time period for aggregation is a calendar day
 }
 \examples{
@@ -54,5 +54,5 @@ aggregatedataobj <- aggregate_data(
 
 }
 \seealso{
-\code{\link{prepare_data}}, \code{\link{report_data}}
+\code{\link[=prepare_data]{prepare_data()}}, \code{\link[=report_data]{report_data()}}
 }

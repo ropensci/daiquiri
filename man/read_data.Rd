@@ -18,16 +18,16 @@ read_data(
 }
 \arguments{
 \item{file}{A string containing path of file containing data to load, or a
-URL starting http://, file://, etc. Compressed files with extension ‘.gz’,
-‘.bz2’, ".xz" and ".zip" are supported.}
+URL starting \verb{http://}, \verb{file://}, etc. Compressed files with extension \code{.gz},
+\code{.bz2}, \code{.xz} and \code{.zip} are supported.}
 
 \item{delim}{Single character used to separate fields within a record. E.g.
-\code{","} or \code{"\t"}}
+\code{","} or \code{"\\t"}}
 
-\item{col_names}{Either TRUE, FALSE or a character vector of column names. If
-TRUE, the first row of the input will be used as the column names, and will
-not be included in the data frame. If FALSE, column names will be generated
-automatically: X1, X2, X3 etc. Default = TRUE}
+\item{col_names}{Either \code{TRUE}, \code{FALSE} or a character vector of column names. If
+\code{TRUE}, the first row of the input will be used as the column names, and will
+not be included in the data frame. If \code{FALSE}, column names will be generated
+automatically. Default = \code{TRUE}}
 
 \item{quote}{Single character used to quote strings.}
 
@@ -42,7 +42,7 @@ supplied any commented lines are ignored after skipping}
 
 \item{n_max}{Maximum number of lines to read.}
 
-\item{showprogress}{Display a progress bar? Default = TRUE}
+\item{showprogress}{Display a progress bar? Default = \code{TRUE}}
 }
 \value{
 A data frame
@@ -50,7 +50,7 @@ A data frame
 \description{
 Read rectangular data from a delimited file, with all columns read in as
 character type so that the package can later detect any non-conformant
-values. Operates as a restricted implementation of \code{readr::read_delim}.
+values. Operates as a restricted implementation of \code{\link[readr:read_delim]{readr::read_delim()}}.
 }
 \examples{
 rawdata <- read_data(
@@ -60,7 +60,7 @@ rawdata <- read_data(
 )
 }
 \seealso{
-\code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
-  \code{\link{aggregate_data}}, \code{\link{report_data}},
-  \code{\link{create_report}}
+\code{\link[=fieldtypes]{fieldtypes()}}, \code{\link[=availablefieldtypes]{availablefieldtypes()}},
+\code{\link[=aggregate_data]{aggregate_data()}}, \code{\link[=report_data]{report_data()}},
+\code{\link[=create_report]{create_report()}}
 }

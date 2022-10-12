@@ -5,39 +5,39 @@
 #' series plots for visual inspection, and saves a report to disk.
 #'
 #' @param df A data frame. Rectangular data can be read from file using
-#'   \code{\link{read_data}}. See details.
-#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types
-#'   of fields (columns) in source data. See also \link{availablefieldtypes}.
-#' @param override_columnnames If FALSE, column names must exist in data frame
-#'   and must match the names specified in fieldtypes exactly. If TRUE, column
-#'   names in source will be replaced with names in fieldtypes specification.
+#'   [read_data()]. See Details.
+#' @param fieldtypes [fieldtypes()] object specifying names and types
+#'   of fields (columns) in the supplied `df`. See also [availablefieldtypes].
+#' @param override_columnnames If `FALSE`, column names in the supplied `df`
+#'   must match the names specified in `fieldtypes` exactly. If `TRUE`, column
+#'   names in the supplied `df` will be replaced with the names specified in `fieldtypes`.
 #'   The specification must therefore contain the columns in the correct order.
-#'   Default = FALSE
+#'   Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
-#'   values, Default = \code{c("","NA","NULL")}.
+#'   values, Default = `c("","NA","NULL")`.
 #' @param dataset_shortdesc Short description of the dataset being checked. This
 #'   will appear on the report. If blank, the name of the data frame object will
 #'   be used
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
-#'   "day", "week", "month", "quarter", "year". The "week" option is
-#'   Monday-based. Default = "day"
+#'   `"day"`, `"week"`, `"month"`, `"quarter"`, `"year"`. The `"week"` option is
+#'   Monday-based. Default = `"day"`
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any
-#'   file extension. If no filename is supplied (i.e. filename = NULL), one will
-#'   be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.
-#' @param showprogress Print progress to console. Default = TRUE
+#'   file extension. If no filename is supplied, one will
+#'   be automatically generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
+#' @param showprogress Print progress to console. Default = `TRUE`
 #' @param log_directory String specifying directory in which to save log file.
 #'   If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as
-#'   well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
+#'   well as the resulting `sourcedata` and `aggregatedata` objects.
 #' @section Details: In order for the package to detect any non-conformant
 #'   values in numeric or datetime fields, these should be present in the data
 #'   frame in their raw character format. Rectangular data from a text file will
 #'   automatically be read in as character type if you use the
-#'   \code{\link{read_data}} function. Data frame columns that are not of class
-#'   character will still be processed according to the fieldtypes
-#'   specification.
+#'   [read_data()] function. Data frame columns that are not of class
+#'   character will still be processed according to the `fieldtypes`
+#'   specified.
 #' @examples
 #' \donttest{
 #' # load example data into a data.frame
@@ -71,8 +71,8 @@
 #' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
-#' @seealso \code{\link{read_data}}, \code{\link{fieldtypes}},
-#'   \code{\link{availablefieldtypes}}
+#' @seealso [read_data()], [fieldtypes()],
+#'   [availablefieldtypes()]
 #' @export
 create_report <- function(df,
 													fieldtypes,
@@ -185,35 +185,35 @@ print.daiquiri_object <- function(x, ...) {
 #'
 #' Read rectangular data from a delimited file, with all columns read in as
 #' character type so that the package can later detect any non-conformant
-#' values. Operates as a restricted implementation of \code{readr::read_delim}.
+#' values. Operates as a restricted implementation of [readr::read_delim()].
 #'
 #' @param file A string containing path of file containing data to load, or a
-#'   URL starting http://, file://, etc. Compressed files with extension ‘.gz’,
-#'   ‘.bz2’, ".xz" and ".zip" are supported.
+#'   URL starting `http://`, `file://`, etc. Compressed files with extension `.gz`,
+#'   `.bz2`, `.xz` and `.zip` are supported.
 #' @param delim Single character used to separate fields within a record. E.g.
-#'   \code{","} or \code{"\t"}
-#' @param col_names Either TRUE, FALSE or a character vector of column names. If
-#'   TRUE, the first row of the input will be used as the column names, and will
-#'   not be included in the data frame. If FALSE, column names will be generated
-#'   automatically: X1, X2, X3 etc. Default = TRUE
+#'   `","` or `"\t"`
+#' @param col_names Either `TRUE`, `FALSE` or a character vector of column names. If
+#'   `TRUE`, the first row of the input will be used as the column names, and will
+#'   not be included in the data frame. If `FALSE`, column names will be generated
+#'   automatically. Default = `TRUE`
 #' @param quote Single character used to quote strings.
 #' @param trim_ws Should leading and trailing whitespace be trimmed from each
 #'   field?
 #' @param comment A string used to identify comments. Any text after the comment
 #'   characters will be silently ignored
-#' @param skip Number of lines to skip before reading data. If \code{comment} is
+#' @param skip Number of lines to skip before reading data. If `comment` is
 #'   supplied any commented lines are ignored after skipping
 #' @param n_max Maximum number of lines to read.
-#' @param showprogress Display a progress bar? Default = TRUE
+#' @param showprogress Display a progress bar? Default = `TRUE`
 #' @return A data frame
 #' @examples rawdata <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
-#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
-#'   \code{\link{aggregate_data}}, \code{\link{report_data}},
-#'   \code{\link{create_report}}
+#' @seealso [fieldtypes()], [availablefieldtypes()],
+#'   [aggregate_data()], [report_data()],
+#'   [create_report()]
 #' @export
 read_data <- function(file,
 											delim = NULL,

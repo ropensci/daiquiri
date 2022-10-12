@@ -3,19 +3,19 @@
 # -----------------------------------------------------------------------------
 #' Generate report from existing objects
 #'
-#' Generate report from previously-created sourcedata and aggregatedata objects
+#' Generate report from previously-created `sourcedata` and `aggregatedata` objects
 #'
-#' @param sourcedata A \code{sourcedata} object returned from
-#'   \code{\link{prepare_data}} function
-#' @param aggregatedata An \code{aggregatedata} object returned from
-#'   \code{\link{aggregate_data}} function
+#' @param sourcedata A `sourcedata` object returned from
+#'   [prepare_data()] function
+#' @param aggregatedata An `aggregatedata` object returned from
+#'   [aggregate_data()] function
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any
 #'   file extension. If no filename is supplied, one will be automatically
-#'   generated with the format daiquiri_report_YYMMDD_HHMMSS.
-#' @param format File format of the report. Currently only "html" is supported
-#' @param showprogress Print progress to console. Default = TRUE
+#'   generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
+#' @param format File format of the report. Currently only `"html"` is supported
+#' @param showprogress Print progress to console. Default = `TRUE`
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' \donttest{
@@ -62,8 +62,8 @@
 #' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
-#' @seealso \code{\link{prepare_data}}, \code{\link{aggregate_data}},
-#'   \code{\link{create_report}}
+#' @seealso [prepare_data()], [aggregate_data()],
+#'   [create_report()]
 #' @export
 report_data <- function(sourcedata,
 												aggregatedata,

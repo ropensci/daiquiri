@@ -84,11 +84,12 @@ is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fie
 
 #' Available fieldtypes
 #'
-#' Each column in the source dataset must be assigned to one of these
-#' fieldtypes, through a \code{\link{fieldtypes}} specification.
-#' @seealso \code{\link{fieldtypes}}
+#' Each column in the source dataset must be assigned to a particular `ft_xx`
+#' depending on the type of data that it contains. This is done through a
+#' [fieldtypes()] specification.
+#' @seealso [fieldtypes()]
 #' @name availablefieldtypes
-#' @return A \code{fieldtype} object denoting the type of data in the column
+#' @return A `fieldtype` object denoting the type of data in the column
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
 #'                             TestID = ft_ignore(),
 #'                             TestDate = ft_timepoint(),
@@ -99,17 +100,17 @@ is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fie
 #'                             Location = ft_categorical())
 NULL
 
-#' @section Details: \code{ft_timepoint} - identifies the data field which
+#' @section Details: `ft_timepoint()` - identifies the data field which
 #'   should be used as the independent time variable. There should be one and
 #'   only one of these specified.
-#' @param includes_time If TRUE, additional aggregated values will be generated
+#' @param includes_time If `TRUE`, additional aggregated values will be generated
 #'   using the time portion (and if no time portion is present then midnight
-#'   will be assumed). If FALSE, aggregated values will ignore any time portion.
-#'   Default = TRUE
+#'   will be assumed). If `FALSE`, aggregated values will ignore any time portion.
+#'   Default = `TRUE`
 #' @param format Where datetime values are not in the format `YYYY-MM-DD` or
 #'   `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
-#'   field level, using readr's \code{\link[readr]{col_datetime}} format
-#'   specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is
+#'   field level, using [readr::col_datetime()] format
+#'   specifications, e.g. `format = "%d/%m/%Y"`. When a format is
 #'   supplied, it must match the complete string.
 #' @rdname availablefieldtypes
 #' @export
@@ -132,7 +133,7 @@ ft_timepoint <- function(includes_time = TRUE,
 	)
 }
 
-#' @section Details: \code{ft_uniqueidentifier} - identifies data fields which
+#' @section Details: `ft_uniqueidentifier()` - identifies data fields which
 #'   contain a (usually computer-generated) identifier for an entity, e.g. a
 #'   patient. It does not need to be unique within the dataset.
 #' @rdname availablefieldtypes
@@ -152,12 +153,12 @@ ft_uniqueidentifier <- function() {
 
 }
 
-#' @section Details: \code{ft_categorical} - identifies data fields which should
+#' @section Details: `ft_categorical()` - identifies data fields which should
 #'   be treated as categorical.
-#' @param aggregate_by_each_category If TRUE, aggregated values will be
+#' @param aggregate_by_each_category If `TRUE`, aggregated values will be
 #'   generated for each distinct subcategory as well as for the field overall.
-#'   If FALSE, aggregated values will only be generated for the field overall.
-#'   Default = FALSE
+#'   If `FALSE`, aggregated values will only be generated for the field overall.
+#'   Default = `FALSE`
 #' @rdname availablefieldtypes
 #' @export
 ft_categorical <- function(aggregate_by_each_category = FALSE) {
@@ -178,7 +179,7 @@ ft_categorical <- function(aggregate_by_each_category = FALSE) {
 }
 
 #' @section Details:
-#' \code{ft_numeric} - identifies data fields which contain numeric values that should be treated as continuous.
+#' `ft_numeric()` - identifies data fields which contain numeric values that should be treated as continuous.
 #' Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant
 #' @rdname availablefieldtypes
 #' @export
@@ -200,16 +201,16 @@ ft_numeric <- function() {
   )
 }
 
-#' @section Details: \code{ft_datetime} - identifies data fields which contain
+#' @section Details: `ft_datetime()` - identifies data fields which contain
 #'   date values that should be treated as continuous.
-#' @param includes_time If TRUE, additional aggregated values will be generated
+#' @param includes_time If `TRUE`, additional aggregated values will be generated
 #'   using the time portion (and if no time portion is present then midnight
-#'   will be assumed). If FALSE, aggregated values will ignore any time portion.
-#'   Default = TRUE
+#'   will be assumed). If `FALSE`, aggregated values will ignore any time portion.
+#'   Default = `TRUE`
 #' @param format Where datetime values are not in the format `YYYY-MM-DD` or
 #'   `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
-#'   field level, using readr's \code{\link[readr]{col_datetime}} format
-#'   specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is
+#'   field level, using [readr::col_datetime()] format
+#'   specifications, e.g. `format = "%d/%m/%Y"`. When a format is
 #'   supplied, it must match the complete string.
 #' @rdname availablefieldtypes
 #' @export
@@ -240,7 +241,7 @@ ft_datetime <- function(includes_time = TRUE,
 	)
 }
 
-#' @section Details: \code{ft_freetext} - identifies data fields which contain
+#' @section Details: `ft_freetext()` - identifies data fields which contain
 #'   free text values. Only presence/missingness will be evaluated.
 #' @rdname availablefieldtypes
 #' @export
@@ -258,7 +259,7 @@ ft_freetext <- function() {
 #   fieldtype("guess", readr::col_guess())
 # }
 
-#' @section Details: \code{ft_simple} - identifies data fields where you only
+#' @section Details: `ft_simple()` - identifies data fields where you only
 #'   want presence/missingness to be evaluated (but which are not necessarily
 #'   free text).
 #' @rdname availablefieldtypes
@@ -272,7 +273,7 @@ ft_simple <- function() {
 	)
 }
 
-#' @section Details: \code{ft_ignore} - identifies data fields which should be
+#' @section Details: `ft_ignore()` - identifies data fields which should be
 #'   ignored.  These will not be loaded.
 #' @rdname availablefieldtypes
 #' @export
@@ -319,9 +320,9 @@ ft_duplicates <- function() {
 #'
 #' Specify the names and types of fields in the source data frame. This is
 #' important because the data in each field will be aggregated in different
-#' ways, depending on its fieldtype.  See \link{availablefieldtypes}
+#' ways, depending on its `fieldtype`.  See [availablefieldtypes]
 #' @param ... names and types of fields (columns) in source data.
-#' @return A \code{fieldtypes} object
+#' @return A `fieldtypes` object
 #' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
 #'                             TestID = ft_ignore(),
 #'                             TestDate = ft_timepoint(),
@@ -330,7 +331,7 @@ ft_duplicates <- function() {
 #'                             ResultDate = ft_datetime(),
 #'                             ResultComment = ft_freetext(),
 #'                             Location = ft_categorical())
-#' @seealso \code{\link{availablefieldtypes}}
+#' @seealso [availablefieldtypes()]
 #' @export
 fieldtypes <- function(...) {
 	fts <- list(...)
@@ -420,24 +421,24 @@ print.fieldtypes <- function(x, ...) {
 	cat(fieldtypes_to_string(x))
 }
 
-#' Print a template fieldtypes specification to console
+#' Print a template fieldtypes() specification to console
 #'
-#' Helper function to generate template code for a fieldtypes() specification,
+#' Helper function to generate template code for a [fieldtypes()] specification,
 #' based on the supplied data frame. All fields (columns) in the specification
-#' will be defined using the default_fieldtype, and the console output can be
-#' copied and edited before being used as input to \code{\link{create_report}}()
-#' or \code{\link{prepare_data}}().
+#' will be defined using the `default_fieldtype`, and the console output can be
+#' copied and edited before being used as input to [create_report()]()
+#' or [prepare_data()]().
 #'
 #' @param df data frame including the column names for the template
 #'   specification
-#' @param default_fieldtype fieldtype to be used for each column. Default =
-#'   \code{ft_ignore()}. See  \code{\link{availablefieldtypes}}
+#' @param default_fieldtype `fieldtype` to be used for each column. Default =
+#'   [ft_ignore()]. See  [availablefieldtypes()]
 #' @return (invisibly) Character string containing the template code
 #' @examples
 #' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
 #'
 #' print_fieldtypes_template(df, default_fieldtype = ft_numeric())
-#' @seealso \code{\link{fieldtypes}}
+#' @seealso [fieldtypes()]
 #' @export
 print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
 	validate_params_required(match.call())

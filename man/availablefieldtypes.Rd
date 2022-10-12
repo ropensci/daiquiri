@@ -29,57 +29,58 @@ ft_simple()
 ft_ignore()
 }
 \arguments{
-\item{includes_time}{If TRUE, additional aggregated values will be generated
+\item{includes_time}{If \code{TRUE}, additional aggregated values will be generated
 using the time portion (and if no time portion is present then midnight
-will be assumed). If FALSE, aggregated values will ignore any time portion.
-Default = TRUE}
+will be assumed). If \code{FALSE}, aggregated values will ignore any time portion.
+Default = \code{TRUE}}
 
-\item{format}{Where datetime values are not in the format `YYYY-MM-DD` or
-`YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
-field level, using readr's \code{\link[readr]{col_datetime}} format
+\item{format}{Where datetime values are not in the format \code{YYYY-MM-DD} or
+\verb{YYYY-MM-DD HH:MM:SS}, an alternative format can be specified at the per
+field level, using \code{\link[readr:parse_datetime]{readr::col_datetime()}} format
 specifications, e.g. \code{format = "\%d/\%m/\%Y"}. When a format is
 supplied, it must match the complete string.}
 
-\item{aggregate_by_each_category}{If TRUE, aggregated values will be
+\item{aggregate_by_each_category}{If \code{TRUE}, aggregated values will be
 generated for each distinct subcategory as well as for the field overall.
-If FALSE, aggregated values will only be generated for the field overall.
-Default = FALSE}
+If \code{FALSE}, aggregated values will only be generated for the field overall.
+Default = \code{FALSE}}
 }
 \value{
-fieldtype object denoting the type of data in the column
+A \code{fieldtype} object denoting the type of data in the column
 }
 \description{
-Each column in the source dataset must be assigned to one of these
-fieldtypes, through a \code{\link{fieldtypes}} specification.
+Each column in the source dataset must be assigned to a particular \code{ft_xx}
+depending on the type of data that it contains. This is done through a
+\code{\link[=fieldtypes]{fieldtypes()}} specification.
 }
 \section{Details}{
- \code{ft_timepoint} - identifies the data field which
-  should be used as the independent time variable. There should be one and
-  only one of these specified.
+ \code{ft_timepoint()} - identifies the data field which
+should be used as the independent time variable. There should be one and
+only one of these specified.
 
- \code{ft_uniqueidentifier} - identifies data fields which
-  contain a (usually computer-generated) identifier for an entity, e.g. a
-  patient. It does not need to be unique within the dataset.
+ \code{ft_uniqueidentifier()} - identifies data fields which
+contain a (usually computer-generated) identifier for an entity, e.g. a
+patient. It does not need to be unique within the dataset.
 
- \code{ft_categorical} - identifies data fields which should
-  be treated as categorical.
+ \code{ft_categorical()} - identifies data fields which should
+be treated as categorical.
 
 
-\code{ft_numeric} - identifies data fields which contain numeric values that should be treated as continuous.
+\code{ft_numeric()} - identifies data fields which contain numeric values that should be treated as continuous.
 Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant
 
- \code{ft_datetime} - identifies data fields which contain
-  date values that should be treated as continuous.
+ \code{ft_datetime()} - identifies data fields which contain
+date values that should be treated as continuous.
 
- \code{ft_freetext} - identifies data fields which contain
-  free text values. Only presence/missingness will be evaluated.
+ \code{ft_freetext()} - identifies data fields which contain
+free text values. Only presence/missingness will be evaluated.
 
- \code{ft_simple} - identifies data fields where you only
-  want presence/missingness to be evaluated (but which are not necessarily
-  free text).
+ \code{ft_simple()} - identifies data fields where you only
+want presence/missingness to be evaluated (but which are not necessarily
+free text).
 
- \code{ft_ignore} - identifies data fields which should be
-  ignored.  These will not be loaded.
+ \code{ft_ignore()} - identifies data fields which should be
+ignored.  These will not be loaded.
 }
 
 \examples{
@@ -93,5 +94,5 @@ fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
                             Location = ft_categorical())
 }
 \seealso{
-\code{\link{fieldtypes}}
+\code{\link[=fieldtypes]{fieldtypes()}}
 }

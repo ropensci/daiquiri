@@ -9,7 +9,7 @@
 #' @param validation_warnings data.table containing any parser/package-specific
 #'   warnings
 #' @noRd
-#' @return A \code{datafield} object
+#' @return A `datafield` object
 # TODO: not sure if better to store the entire fieldtype or just its name or even as a separate list in the sourcedata
 datafield <- function(x, fieldtype, validation_warnings = NULL) {
 	structure(
@@ -31,25 +31,25 @@ is.datafield <- function(x) inherits(x, "datafield")
 # -----------------------------------------------------------------------------
 #' Prepare source data
 #'
-#' Validate a data frame against a \code{\link{fieldtypes}} specification, and
+#' Validate a data frame against a [fieldtypes()] specification, and
 #' prepare for aggregation.
 #'
 #' @param df A data frame
-#' @param fieldtypes \code{\link{fieldtypes}} object specifying names and types
-#'   of fields (columns) in the source data. See also
-#'   \link{availablefieldtypes}.
-#' @param override_columnnames If FALSE, column names must exist in data frame
-#'   and must match the names specified in fieldtypes exactly. If TRUE, column
-#'   names in source will be replaced with names in fieldtypes specification.
+#' @param fieldtypes [fieldtypes()] object specifying names and types
+#'   of fields (columns) in the supplied `df`. See also
+#'   [availablefieldtypes].
+#' @param override_columnnames If `FALSE`, column names in the supplied `df`
+#'   must match the names specified in `fieldtypes` exactly. If `TRUE`, column
+#'   names in the supplied `df` will be replaced with the names specified in `fieldtypes`.
 #'   The specification must therefore contain the columns in the correct order.
-#'   Default = FALSE
+#'   Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
-#'   values, Default = \code{c("","NA","NULL")}.
+#'   values, Default = `c("","NA","NULL")`.
 #' @param dataset_shortdesc Short description of the dataset being checked. This
 #'   will appear on the report. If blank, the name of the data frame object will
 #'   be used
-#' @param showprogress Print progress to console. Default = TRUE
-#' @return A \code{sourcedata} object
+#' @param showprogress Print progress to console. Default = `TRUE`
+#' @return A `sourcedata` object
 #' @examples
 #' # load example data into a data.frame
 #' rawdata <- read_data(
@@ -73,9 +73,9 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'   na = c("","NULL"),
 #'   dataset_shortdesc = "Example data provided with package"
 #' )
-#' @seealso \code{\link{fieldtypes}}, \code{\link{availablefieldtypes}},
-#'   \code{\link{aggregate_data}}, \code{\link{report_data}},
-#'   \code{\link{create_report}}
+#' @seealso [fieldtypes()], [availablefieldtypes()],
+#'   [aggregate_data()], [report_data()],
+#'   [create_report()]
 #' @export
 #' @importFrom data.table .N .SD
 prepare_data <- function(df,
