@@ -1,13 +1,25 @@
 
-test_that("report_data() params are present and of correct type", {
-	expect_error(report_data(),
+test_that("report_data() requires a sourcedata param", {
+	expect_error(report_data(aggregatedata = structure(list(datafields = NA),
+													 													class = "aggregatedata")),
 							 class = "invalid_param_missing")
+})
 
+test_that("report_data() requires a aggregatedata param", {
+	expect_error(report_data(sourcedata = structure(list(datafields = NA),
+																									class = "sourcedata")),
+							 class = "invalid_param_missing")
+})
+
+test_that("report_data() requires sourcedata param to be a sourcedata object", {
 	expect_error(report_data(sourcedata = data.frame("Fieldname" = 123),
 													 aggregatedata = structure(list(datafields = NA),
 													 													class = "aggregatedata")),
 							 class = "invalid_param_type")
 
+})
+
+test_that("report_data() requires aggregatedata param to be an aggregatedata object", {
 	expect_error(report_data(sourcedata = structure(list(datafields = NA),
 																									class = "sourcedata"),
 													 aggregatedata = data.frame("Fieldname" = 123)),

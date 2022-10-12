@@ -1,5 +1,4 @@
-test_that("Test read_data() on csv file created using Excel", {
-	# read file correctly
+test_that("read_data() reads csv file created using Excel correctly when col_names = TRUE", {
 	rawdata <- read_data(
 		test_path("testdata", "specialchars_excel.csv"),
 		delim = ",",
@@ -7,8 +6,9 @@ test_that("Test read_data() on csv file created using Excel", {
 	)
 	expect_equal(nrow(rawdata), 8)
 	expect_equal(length(rawdata), 4)
+})
 
-	# read file assuming no column names
+test_that("read_data() reads csv file created using Excel correctly when col_names = FALSE", {
 	rawdata <- read_data(
 	  test_path("testdata", "specialchars_excel.csv"),
 	  delim = ",",
@@ -16,7 +16,9 @@ test_that("Test read_data() on csv file created using Excel", {
 	  )
 	expect_equal(nrow(rawdata), 9)
 	expect_equal(length(rawdata), 4)
+})
 
+test_that("read_data() raises a warning when there are parsing issues", {
 	# read file without acknowledging quotes
 	rawdata <- read_data(
 	  test_path("testdata", "specialchars_excel.csv"),
@@ -30,17 +32,25 @@ test_that("Test read_data() on csv file created using Excel", {
 
 })
 
-test_that("create_report() params are present and of correct type", {
+test_that("create_report() requires a df param", {
 	expect_error(create_report(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("create_report() requires a fieldtypes param", {
 	expect_error(create_report(df = data.frame("Fieldname" = 123)),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("create_report() requires df param to be a data frame", {
 	expect_error(create_report(df = c("Fieldname", 123),
 														fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
 							 class = "invalid_param_type")
+})
 
+test_that("create_report() requires fieldtypes param to be a fieldtypes object", {
 	expect_error(create_report(df = data.frame("Fieldname" = 123),
 														fieldtypes = TRUE),
 							 class = "invalid_param_type")

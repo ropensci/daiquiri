@@ -1,26 +1,28 @@
-test_that("validate_columnnames() checks that colnames match fieldtypes spec", {
-	# Column names in data and fieldtypes match exactly
+test_that("validate_columnnames() checks that column names in data and fieldtypes can match exactly", {
 	expect_silent(validate_columnnames(c("nonsense", "set", "of"),
 																		 c("nonsense", "set", "of"),
 																		 check_length_only = FALSE))
+})
 
-	# Column names in data and fieldtypes match in different order
+test_that("validate_columnnames() checks that column names in data and fieldtypes can match in different order", {
 	expect_silent(validate_columnnames(c("nonsense", "set", "of"),
 																		 c("nonsense", "of", "set"),
 																		 check_length_only = FALSE))
+})
 
-	# Column names in data and fieldtypes match in length only
+test_that("validate_columnnames() checks that column names in data and fieldtypes must match in length if check_length_only = TRUE", {
 	expect_silent(validate_columnnames(c("nonsense", "set"),
 																		 c("nonsense", "names"),
 																		 check_length_only = TRUE))
 
-	# Column names in data and fieldtypes don't match in length only
 	expect_error(validate_columnnames(c("nonsense", "set", "of"),
 																		c("nonsense", "set"),
 																		check_length_only = TRUE),
 							 class = "invalid_columnnames")
 
-	# Duplicate column names in data not allowed
+})
+
+test_that("validate_columnnames() checks that duplicate column names in data not allowed", {
 	expect_error(
 		validate_columnnames(
 			c("nonsense", "set", "of", "nonsense", "names"),
@@ -28,37 +30,48 @@ test_that("validate_columnnames() checks that colnames match fieldtypes spec", {
 			check_length_only = FALSE),
 		class = "invalid_columnnames")
 
-	# Column names in data not in fieldtypes not allowed
+})
+
+test_that("validate_columnnames() checks that column names in data but not in fieldtypes is not allowed", {
 	expect_error(validate_columnnames(
 		c("nonsense", "set", "of", "stuff", "names"),
 		c("nonsense", "set", "of", "stuff"),
 		check_length_only = FALSE
 	),
 	class = "invalid_columnnames")
+})
 
-	# Column names in fieldtypes not in data not allowed
+test_that("validate_columnnames() checks that column names in fieldtypes but not in data is not allowed", {
 	expect_error(validate_columnnames(
 		c("nonsense", "set", "of"),
 		c("nonsense", "set", "of", "stuff"),
 		check_length_only = FALSE
 	),
 	class = "invalid_columnnames")
-
 })
 
 
 
-test_that("prepare_data() params are present and of correct type", {
+test_that("prepare_data() requires a df param", {
 	expect_error(prepare_data(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("prepare_data() requires a fieldtypes param", {
 	expect_error(prepare_data(df = data.frame("Fieldname" = 123)),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("prepare_data() requires df param to be a data frame", {
 	expect_error(prepare_data(c("Fieldname", 123),
 														fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
 							 class = "invalid_param_type")
 
+})
+
+test_that("prepare_data() requires fieldtypes param to be a fieldtypes object", {
 	expect_error(prepare_data(df = data.frame("Fieldname" = 123),
 														fieldtypes = TRUE),
 							 class = "invalid_param_type")

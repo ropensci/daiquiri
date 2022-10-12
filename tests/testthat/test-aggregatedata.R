@@ -1,11 +1,16 @@
 
-test_that("aggregate_data() params are present and of correct type", {
+test_that("aggregate_data() requires a sourcedata param", {
 	expect_error(aggregate_data(),
 							 class = "invalid_param_missing")
+})
 
+test_that("aggregate_data() requires sourcedata param to be a sourcedata object", {
 	expect_error(aggregate_data(sourcedata = data.frame("Fieldname" = 123)),
 							 class = "invalid_param_type")
 
+})
+
+test_that("aggregate_data() requires aggregation_timeunit param to be one of day/week/month/quarter/year", {
 	expect_error(aggregate_data(
 								sourcedata = structure(list(datafields = NA), class = "sourcedata"),
 								aggregation_timeunit = "hello"
@@ -87,16 +92,23 @@ test_that("aggregate_data() creates aggregate object correctly", {
 
 })
 
-test_that("export_aggregated_data() params are present and of correct type", {
+
+test_that("export_aggregated_data() requires a aggregatedata param", {
 	expect_error(export_aggregated_data(save_directory = tempdir()),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("export_aggregated_data() requires a save_directory param", {
 	expect_error(export_aggregated_data(
 								aggregatedata = structure(list(datafields = NA), class = "aggregatedata")),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("export_aggregated_data() requires aggregatedata param to be an aggregatedata object", {
 	expect_error(export_aggregated_data(
-								data.frame("Fieldname" = 123),
+								aggregatedata = data.frame("Fieldname" = 123),
 								save_directory = tempdir()),
 							 class = "invalid_param_type")
 

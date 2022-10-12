@@ -32,16 +32,19 @@ test_that("Duplicate column names in fieldtypes specification not allowed", {
 							 class = "invalid_fieldtypes")
 })
 
-test_that("Must include one and only one timepoint field", {
+test_that("fieldtypes object must include a timepoint field", {
 	expect_error(fieldtypes(Col_dt = ft_datetime()),
 							 class = "invalid_fieldtypes")
 
+})
+
+test_that("fieldtypes object must not contain more than one timepoint field", {
 	expect_error(fieldtypes(Col_tp1 = ft_timepoint(),
 													Col_tp2 = ft_timepoint()),
 							 class = "invalid_fieldtypes")
 })
 
-test_that("Fieldtype colnames cannot include reserved words", {
+test_that("[DUPLICATES] cannot be used as a fieldtype colname as it is a reserved word", {
 	expect_error(fieldtypes("[DUPLICATES]" = ft_timepoint()),
 							 class = "invalid_fieldtypes")
 
@@ -49,18 +52,27 @@ test_that("Fieldtype colnames cannot include reserved words", {
 													"[DUPLICATES]" = ft_simple()),
 							 class = "invalid_fieldtypes")
 
+})
+
+test_that("[ALLFIELDSCOMBINED] cannot be used as a fieldtype colname as it is a reserved word", {
 	expect_error(fieldtypes("[ALLFIELDSCOMBINED]" = ft_timepoint()),
 							 class = "invalid_fieldtypes")
 })
 
 
-test_that("print_fieldtypes_template() params are present and of correct type", {
+test_that("print_fieldtypes_template() requires a df param", {
 	expect_error(print_fieldtypes_template(),
 							 class = "invalid_param_missing")
 
+})
+
+test_that("print_fieldtypes_template() requires df param to be a data frame", {
 	expect_error(print_fieldtypes_template(df = c("Fieldname", 123)),
 							 class = "invalid_param_type")
 
+})
+
+test_that("print_fieldtypes_template() requires default_fieldtype param to be a fieldtype", {
 	expect_error(print_fieldtypes_template(df = data.frame("Fieldname" = 123),
 														default_fieldtype = TRUE),
 							 class = "invalid_param_type")
