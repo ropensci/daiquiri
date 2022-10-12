@@ -324,10 +324,8 @@ close_log <- function() {
 		log_message("Log file closed")
 		logname <- packageenvironment$logname
 		rm("logname", envir = packageenvironment)
-		message(paste0("Log file closed: ", logname))
 	} else{
 		logname <- ""
-		message("No active log found")
 	}
 	logname
 }
