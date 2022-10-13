@@ -117,7 +117,7 @@ test_that("create_report() creates report and returns daiquiri object successful
 })
 
 
-test_that("create_report() works even when columnnames contain special chars", {
+test_that("create_report() works even when column_names contain special chars", {
   testdaiqobj <-
     create_report(
       df = read_data(test_path("testdata", "specialchars_colnames.csv")),

@@ -123,7 +123,7 @@ report_data <- function(sourcedata,
 #' Create a scatter plot for an individual time series
 #'
 #' @param aggfield aggregatefield object
-#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param aggtype string denoting aggregatetype (from aggfield column_name)
 #' @return ggplot
 #' @noRd
 plot_timeseries_static <- function(aggfield,
@@ -148,9 +148,9 @@ plot_timeseries_static <- function(aggfield,
       y = paste0(
         aggtype_friendlyname(aggtype, "long"),
         ifelse(
-          aggfield$columnname == "[DUPLICATES]",
+          aggfield$column_name == "[DUPLICATES]",
           "",
-          paste0("\n(", aggfield$columnname, ")")
+          paste0("\n(", aggfield$column_name, ")")
         )
       ),
       title = NULL
@@ -181,7 +181,7 @@ plot_timeseries_static <- function(aggfield,
 #' Create a filled line plot to show overall numbers per timepoint
 #'
 #' @param aggfield aggregatefield object
-#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param aggtype string denoting aggregatetype (from aggfield column_name)
 #' @param fillcolour colour to use below the line
 #' @param title optional title for the plot
 #' @return ggplot
@@ -248,7 +248,7 @@ plot_overview_totals_static <- function(aggfield,
 #' Create a heatmap showing a particular aggtype value across all fields
 #'
 #' @param aggfields all aggregatefields object
-#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param aggtype string denoting aggregatetype (from aggfield column_name)
 #' @param fillcolour colour to use for the tiles
 #' @return ggplot
 #' @noRd
@@ -346,7 +346,7 @@ plot_overview_heatmap_static <- function(aggfields,
 #' aggtype
 #'
 #' @param aggfields all aggregatefields to be included
-#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param aggtype string denoting aggregatetype (from aggfield column_name)
 #' @param lineplot_fieldname which aggfield to use for the lineplot
 #' @param lineplot_fillcolour colour to use below the line
 #' @param heatmap_fillcolour colour to use for the tiles
@@ -388,7 +388,7 @@ plot_overview_combo_static <- function(aggfields,
 
 #' Set the breaks for the y-axis depending on the field_type and aggtype
 #'
-#' @param aggtype string denoting aggregatetype (from aggfield columnname)
+#' @param aggtype string denoting aggregatetype (from aggfield column_name)
 #' @param maxval maximum data value
 #' @param minval minimum data value
 #' @param field_type field_type object

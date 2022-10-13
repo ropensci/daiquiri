@@ -16,7 +16,7 @@ datafield <- function(x, field_type, validation_warnings = NULL) {
     list(
       values = x,
       field_type = field_type,
-      columnname = names(x[1]),
+      column_name = names(x[1]),
       validation_warnings = validation_warnings
     ),
     class = c(paste0(
@@ -131,7 +131,7 @@ prepare_data <- function(df,
     paste0("Checking column names against field_types..."),
     show_progress
   )
-  validate_columnnames(names(df),
+  validate_column_names(names(df),
     names(field_types),
     check_length_only = override_column_names
   )
@@ -597,7 +597,7 @@ get_datafield_count <- function(datafield) {
 #'   number of names and not the actual names (since we plan to override the
 #'   names anyway)
 #' @noRd
-validate_columnnames <- function(source_names,
+validate_column_names <- function(source_names,
                                  spec_names,
                                  check_length_only = FALSE) {
 
@@ -659,7 +659,7 @@ validate_columnnames <- function(source_names,
 
   if (length(err_validation) > 0) {
     stop_custom(
-      .subclass = "invalid_columnnames",
+      .subclass = "invalid_column_names",
       message = paste0(
         "Invalid column names.\n",
         paste(err_validation, collapse = "\n")

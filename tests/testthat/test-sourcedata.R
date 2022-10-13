@@ -1,59 +1,59 @@
-test_that("validate_columnnames() checks that column names in data and field_types can match exactly", {
-  expect_silent(validate_columnnames(c("nonsense", "set", "of"),
+test_that("validate_column_names() checks that column names in data and field_types can match exactly", {
+  expect_silent(validate_column_names(c("nonsense", "set", "of"),
     c("nonsense", "set", "of"),
     check_length_only = FALSE
   ))
 })
 
-test_that("validate_columnnames() checks that column names in data and field_types can match in different order", {
-  expect_silent(validate_columnnames(c("nonsense", "set", "of"),
+test_that("validate_column_names() checks that column names in data and field_types can match in different order", {
+  expect_silent(validate_column_names(c("nonsense", "set", "of"),
     c("nonsense", "of", "set"),
     check_length_only = FALSE
   ))
 })
 
-test_that("validate_columnnames() checks that column names in data and field_types must match in length if check_length_only = TRUE", {
-  expect_silent(validate_columnnames(c("nonsense", "set"),
+test_that("validate_column_names() checks that column names in data and field_types must match in length if check_length_only = TRUE", {
+  expect_silent(validate_column_names(c("nonsense", "set"),
     c("nonsense", "names"),
     check_length_only = TRUE
   ))
 
-  expect_error(validate_columnnames(c("nonsense", "set", "of"),
+  expect_error(validate_column_names(c("nonsense", "set", "of"),
     c("nonsense", "set"),
     check_length_only = TRUE
   ),
-  class = "invalid_columnnames"
+  class = "invalid_column_names"
   )
 })
 
-test_that("validate_columnnames() checks that duplicate column names in data not allowed", {
+test_that("validate_column_names() checks that duplicate column names in data not allowed", {
   expect_error(
-    validate_columnnames(
+    validate_column_names(
       c("nonsense", "set", "of", "nonsense", "names"),
       c("nonsense", "set", "of", "names"),
       check_length_only = FALSE
     ),
-    class = "invalid_columnnames"
+    class = "invalid_column_names"
   )
 })
 
-test_that("validate_columnnames() checks that column names in data but not in field_types is not allowed", {
-  expect_error(validate_columnnames(
+test_that("validate_column_names() checks that column names in data but not in field_types is not allowed", {
+  expect_error(validate_column_names(
     c("nonsense", "set", "of", "stuff", "names"),
     c("nonsense", "set", "of", "stuff"),
     check_length_only = FALSE
   ),
-  class = "invalid_columnnames"
+  class = "invalid_column_names"
   )
 })
 
-test_that("validate_columnnames() checks that column names in field_types but not in data is not allowed", {
-  expect_error(validate_columnnames(
+test_that("validate_column_names() checks that column names in field_types but not in data is not allowed", {
+  expect_error(validate_column_names(
     c("nonsense", "set", "of"),
     c("nonsense", "set", "of", "stuff"),
     check_length_only = FALSE
   ),
-  class = "invalid_columnnames"
+  class = "invalid_column_names"
   )
 })
 

@@ -302,7 +302,7 @@ aggregatefield <- function(datafield,
       values = groupedvals,
       functionlist = functionlist,
       field_type = datafield$field_type,
-      columnname = datafield$columnname
+      column_name = datafield$column_name
     ),
     class = "aggregatefield"
   )
@@ -381,7 +381,7 @@ aggregateallfields <- function(aggfields,
       values = groupedvals,
       functionlist = functionlist,
       field_type = ft,
-      columnname = "[ALLFIELDSCOMBINED]"
+      column_name = "[ALLFIELDSCOMBINED]"
     ),
     class = "aggregatefield"
   )
@@ -731,10 +731,10 @@ timepoint_as_aggregationunit <- function(x, aggregation_timeunit) {
 
 #' Set user-friendly names for aggtypes
 #'
-#' This uses the aggfield columnnames rather than the original
+#' This uses the aggfield column_names rather than the original
 #' aggregationfunction (relevant for subcats)
 #'
-#' @param aggtype string name of aggtype (from aggfield columnname)
+#' @param aggtype string name of aggtype (from aggfield column_name)
 #' @param type "short" or "long"
 #' @return string containing friendly name
 #' @noRd
