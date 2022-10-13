@@ -85,7 +85,7 @@ library(daiquiri)
 
 # load delimited file into a data.frame without doing any datatype conversion
 path <- system.file("extdata", "example_prescriptions.csv", package = "daiquiri")
-rawdata <- read_data(path, showprogress = FALSE)
+rawdata <- read_data(path, show_progress = FALSE)
 
 head(rawdata)
 ```

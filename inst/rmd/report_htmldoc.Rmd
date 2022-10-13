@@ -43,7 +43,7 @@ Report created on: `r Sys.time()`; Package version `r utils::packageVersion(util
 
 
 ```{r sourcedata}
-sourcesummary <- summarise_source_data(params$sourcedata, showprogress = FALSE)
+sourcesummary <- summarise_source_data(params$sourcedata, show_progress = FALSE)
 sourcedatafields <- sourcesummary$datafields
 sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 ```

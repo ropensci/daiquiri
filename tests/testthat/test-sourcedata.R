@@ -100,7 +100,7 @@ test_that("prepare_data() checks that at least one valid timepoint value is pres
       col2 = ft_simple(),
       col3 = ft_ignore()
     ),
-    showprogress = FALSE
+    show_progress = FALSE
   ),
   class = "invalid_param_type"
   )
@@ -138,7 +138,7 @@ test_that("prepare_data() creates sourcedata object correctly", {
       col_simple = ft_simple()
     ),
     dataset_shortdesc = "completetestset",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_s3_class(testsourcedata, "sourcedata")
@@ -169,7 +169,7 @@ test_that("prepare_data() ignores nonchar columns (since readr::type_convert fai
       col3 = ft_ignore()
     ),
     dataset_shortdesc = "ignore nonchar columns",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(testsourcedata$cols_imported_n, 2)
@@ -187,7 +187,7 @@ test_that("prepare_data() generates a validation warning when nonchar columns ar
       col2 = ft_numeric()
     ),
     dataset_shortdesc = "nonchar columns",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(testsourcedata$validation_warnings$fieldname, "col2")
@@ -207,7 +207,7 @@ test_that("prepare_data() overrides column names correctly", {
     ),
     override_column_names = TRUE,
     dataset_shortdesc = "override colnames",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(names(testsourcedata$datafields)[1:2], c("cola", "colb"))
@@ -226,7 +226,7 @@ test_that("prepare_data() can accept a data.table with nonchar cols without erro
     ),
     override_column_names = TRUE,
     dataset_shortdesc = "pass in nonchar data.table",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(testsourcedata$cols_imported_n, 2)
@@ -246,7 +246,7 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
       col2 = ft_simple(),
       col3 = ft_ignore()
     ),
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(testsourcedata$dataset_shortdesc, "dfobj")
@@ -262,7 +262,7 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
       col2 = ft_simple(),
       col3 = ft_ignore()
     ),
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_equal(
@@ -303,7 +303,7 @@ test_that("sourcedata object prints to console ok", {
       col_simple = ft_simple()
     ),
     dataset_shortdesc = "completetestset",
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_snapshot_output(print(testsourcedata))
@@ -345,7 +345,7 @@ test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals
 
-  result <- identify_duplicaterows(testdt, "col2", showprogress = FALSE)
+  result <- identify_duplicaterows(testdt, "col2", show_progress = FALSE)
 
   expect_true(all(result[duplicaterows]))
   expect_true(all(!result[-duplicaterows]))
@@ -362,7 +362,7 @@ test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals
 
-  result <- identify_duplicaterows(testdt, "col2", showprogress = FALSE)
+  result <- identify_duplicaterows(testdt, "col2", show_progress = FALSE)
 
   expect_true(all(result[duplicaterows]))
   expect_true(all(!result[-duplicaterows]))

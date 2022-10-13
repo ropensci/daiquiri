@@ -139,7 +139,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("override_column_names", "showprogress")) {
+    } else if (params_names[i] %in% c("override_column_names", "show_progress")) {
       if (!is.logical(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
@@ -340,10 +340,10 @@ close_log <- function() {
 #' Write message to log file (if it exists) and/or print to console
 #'
 #' @param message message to write
-#' @param showprogress Print message to console
+#' @param show_progress Print message to console
 #' @noRd
-# TODO: decide if showprogress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
-log_message <- function(message, showprogress = FALSE) {
+# TODO: decide if show_progress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
+log_message <- function(message, show_progress = FALSE) {
   if (exists("logname", envir = packageenvironment)) {
     if (file.access(packageenvironment$logname, mode = 2) == -1) {
       stop(paste0("Cannot write to log file [", packageenvironment$logname, "].
@@ -356,7 +356,7 @@ log_message <- function(message, showprogress = FALSE) {
       close(log_con)
     }
   }
-  if (showprogress) cat(message, "\n")
+  if (show_progress) cat(message, "\n")
 }
 
 #' Log entry to function
@@ -424,7 +424,7 @@ testfn_params_type <- function(df,
                                aggregation_timeunit = "day",
                                save_directory = ".",
                                save_filename = "filename",
-                               showprogress = TRUE,
+                               show_progress = TRUE,
                                log_directory = NULL,
                                format = "html",
                                save_filetype = "csv",
@@ -454,7 +454,7 @@ testfn_params_type <- function(df,
     aggregation_timeunit = aggregation_timeunit,
     save_directory = save_directory,
     save_filename = save_filename,
-    showprogress = showprogress,
+    show_progress = show_progress,
     log_directory = log_directory,
     sourcedata = sourcedata,
     aggregatedata = aggregatedata,

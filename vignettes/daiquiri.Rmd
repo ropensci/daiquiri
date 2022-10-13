@@ -52,7 +52,7 @@ example_prescriptions <- read_data(
   path,
   delim = ",",
   col_names = TRUE,
-  showprogress = FALSE
+  show_progress = FALSE
 )
 
 head(example_prescriptions)
@@ -137,7 +137,7 @@ daiqobj <- create_report(
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
-  showprogress = FALSE,
+  show_progress = FALSE,
   log_directory = NULL
 )
 
@@ -155,7 +155,7 @@ daiqobj <- create_report(
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
-  showprogress = TRUE,
+  show_progress = TRUE,
   log_directory = NULL
 )
 ```

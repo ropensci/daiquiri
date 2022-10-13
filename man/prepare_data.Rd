@@ -10,7 +10,7 @@ prepare_data(
   override_column_names = FALSE,
   na = c("", "NA", "NULL"),
   dataset_shortdesc = NULL,
-  showprogress = TRUE
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -33,7 +33,7 @@ values, Default = \code{c("","NA","NULL")}.}
 will appear on the report. If blank, the name of the data frame object will
 be used}
 
-\item{showprogress}{Print progress to console. Default = \code{TRUE}}
+\item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
 A \code{sourcedata} object

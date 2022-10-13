@@ -4,7 +4,7 @@
 \alias{aggregate_data}
 \title{Aggregate source data}
 \usage{
-aggregate_data(sourcedata, aggregation_timeunit = "day", showprogress = TRUE)
+aggregate_data(sourcedata, aggregation_timeunit = "day", show_progress = TRUE)
 }
 \arguments{
 \item{sourcedata}{A \code{sourcedata} object returned from
@@ -14,7 +14,7 @@ aggregate_data(sourcedata, aggregation_timeunit = "day", showprogress = TRUE)
 \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"}, \code{"year"}. The \code{"week"} option is
 Monday-based. Default = \code{"day"}}
 
-\item{showprogress}{Print progress to console. Default = \code{TRUE}}
+\item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
 An \code{aggregatedata} object

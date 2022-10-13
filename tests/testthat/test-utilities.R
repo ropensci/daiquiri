@@ -123,8 +123,8 @@ test_that("validate_params_type() checks save_filename params are not allowed to
   )
 })
 
-test_that("validate_params_type() checks showprogress params are of correct type", {
-  expect_error(testfn_params_type(showprogress = 1),
+test_that("validate_params_type() checks show_progress params are of correct type", {
+  expect_error(testfn_params_type(show_progress = 1),
     class = "invalid_param_type"
   )
 })
@@ -169,7 +169,7 @@ test_that("initialise_log() creates a file", {
 
 test_that("log_message() writes to log", {
   log_filename <- initialise_log(log_directory = tempdir())
-  expect_silent(log_message("test message", showprogress = FALSE))
+  expect_silent(log_message("test message", show_progress = FALSE))
   log_text <- readLines(log_filename)
   expect_true(any(grepl("test message", log_text)))
   # clean up

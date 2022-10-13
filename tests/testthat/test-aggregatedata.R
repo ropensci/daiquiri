@@ -52,12 +52,12 @@ test_that("aggregate_data() creates aggregate object correctly", {
         col_simple = ft_simple()
       ),
       dataset_shortdesc = "completetestset",
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testaggregatedata <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "week",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_s3_class(testaggregatedata, "aggregatedata")
@@ -135,11 +135,11 @@ test_that("export_aggregated_data() generates csv files", {
         col3 = ft_ignore()
       ),
       dataset_shortdesc = "exporttestset",
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testaggregatedata <- aggregate_data(testsourcedata,
     aggregation_timeunit = "day",
-    showprogress = FALSE
+    show_progress = FALSE
   )
   export_aggregated_data(testaggregatedata,
     save_directory = tempdir(),
@@ -179,12 +179,12 @@ test_that("aggregateallfields() removes NAs when rowsumming", {
       dataset_shortdesc = "blankplottest",
       override_column_names = FALSE,
       na = c("", "NULL"),
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testdata_byday <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "day",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_true(identical(
@@ -207,12 +207,12 @@ test_that("aggregatedata object prints to console ok", {
         col2 = ft_simple(),
         col3 = ft_ignore()
       ),
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testdata_byday <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "day",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_snapshot_output(print(testdata_byday))
@@ -242,12 +242,12 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
       ),
       override_column_names = FALSE,
       na = c("", "NULL"),
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testdata_byday <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "day",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_false(any(is.infinite(testdata_byday$aggregatefields$col_numeric$values$min)))
@@ -284,12 +284,12 @@ test_that("aggregated values contain all NAs when datafield values are all NA (e
       ),
       override_column_names = FALSE,
       na = c("", "NULL"),
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testdata_byday <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "day",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_true(all(testdata_byday$aggregatefields$col_numeric_allna$values$n == 0))

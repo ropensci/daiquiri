@@ -13,7 +13,7 @@ read_data(
   comment = "",
   skip = 0,
   n_max = Inf,
-  showprogress = TRUE
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -42,7 +42,7 @@ supplied any commented lines are ignored after skipping}
 
 \item{n_max}{Maximum number of lines to read.}
 
-\item{showprogress}{Display a progress bar? Default = \code{TRUE}}
+\item{show_progress}{Display a progress bar? Default = \code{TRUE}}
 }
 \value{
 A data frame

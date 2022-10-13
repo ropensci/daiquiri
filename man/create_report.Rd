@@ -13,7 +13,7 @@ create_report(
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = NULL,
-  showprogress = TRUE,
+  show_progress = TRUE,
   log_directory = NULL
 )
 }
@@ -48,7 +48,7 @@ report. Default is current directory.}
 file extension. If no filename is supplied, one will
 be automatically generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 
-\item{showprogress}{Print progress to console. Default = \code{TRUE}}
+\item{show_progress}{Print progress to console. Default = \code{TRUE}}
 
 \item{log_directory}{String specifying directory in which to save log file.
 If no directory is supplied, progress is not logged.}
@@ -100,7 +100,7 @@ daiqobj <- create_report(
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_data_report",
-  showprogress = TRUE,
+  show_progress = TRUE,
   log_directory = NULL
 )
 \dontshow{file.remove("./example_data_report.html")}

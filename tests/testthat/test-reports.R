@@ -68,12 +68,12 @@ test_that("report_data() creates report and returns path successfully", {
       col_simple = ft_simple()
     ),
     dataset_shortdesc = "completetestset",
-    showprogress = FALSE
+    show_progress = FALSE
   )
   testaggregatedata <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "week",
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testreportpath <-
     report_data(
@@ -81,7 +81,7 @@ test_that("report_data() creates report and returns path successfully", {
       testaggregatedata,
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_type(testreportpath, "character")
@@ -106,12 +106,12 @@ test_that("plots still work when all values are missing", {
       dataset_shortdesc = "blankplottest",
       override_column_names = FALSE,
       na = c("", "NULL"),
-      showprogress = FALSE
+      show_progress = FALSE
     )
   testdata_byday <-
     aggregate_data(testsourcedata,
       aggregation_timeunit = "day",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_s3_class(

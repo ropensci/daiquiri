@@ -15,17 +15,17 @@ aggregatefield <- function(datafield,
                            timepointfieldvalues,
                            alltimepoints,
                            aggregation_timeunit,
-                           showprogress = TRUE) {
+                           show_progress = TRUE) {
 
   # initialise known column names to prevent R CMD check notes
   n <- value <- values <- timepointgroup <- NULL
 
-  log_message(paste0("Preparing..."), showprogress)
+  log_message(paste0("Preparing..."), show_progress)
   functionlist <- datafield$field_type$aggfunctions
 
   log_message(
     paste0("Aggregating ", get_datafield_basetype(datafield), " field..."),
-    showprogress
+    show_progress
   )
 
   # TODO: consider doing this by reference
@@ -44,7 +44,7 @@ aggregatefield <- function(datafield,
 
   for (i in seq_along(functionlist)) {
     f <- functionlist[i]
-    log_message(paste0("  By ", f), showprogress)
+    log_message(paste0("  By ", f), show_progress)
     if (f == "n") {
       # number of values present (including non-conformant ones)
       groupedvals[datafield_dt[, list("value" = sum(!(is.na(values) &
@@ -125,12 +125,12 @@ aggregatefield <- function(datafield,
       # create a separate column per category value
       distinctcategories <-
         sort(datafield_dt[is.na(values) == FALSE, unique(values)])
-      log_message(paste0("    ", length(distinctcategories), " categories found"), showprogress)
+      log_message(paste0("    ", length(distinctcategories), " categories found"), show_progress)
       # If there is only one category, don't bother
       if (length(distinctcategories) > 1) {
         # TODO: consider setting a max number of categories
         for (j in seq_along(distinctcategories)) {
-          log_message(paste0("    ", j, ": ", distinctcategories[j]), showprogress)
+          log_message(paste0("    ", j, ": ", distinctcategories[j]), show_progress)
           catval <- distinctcategories[j]
           catname <-
             paste0(f, "_", j, "_", gsub("([[:punct:]])|\\s+", "_", catval))
@@ -295,7 +295,7 @@ aggregatefield <- function(datafield,
     }
   }
 
-  log_message(paste0("Finished"), showprogress)
+  log_message(paste0("Finished"), show_progress)
 
   structure(
     list(
@@ -323,7 +323,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 #'
 #' @param aggfields all aggregatefield objects from data (i.e. excluding
 #'   calculated aggfields)
-#' @param showprogress Print progress to console
+#' @param show_progress Print progress to console
 #' @return aggregatefield object, including a data.table where the first column
 #'   is the timepoint group, then one column per aggregationfunction
 #' @noRd
@@ -331,7 +331,7 @@ is.aggregatefield <- function(x) inherits(x, "aggregatefield")
 # TODO: this field has a numeric datatype whereas individual fields have an int
 # datatype, decide if need to make them all the same
 aggregateallfields <- function(aggfields,
-                               showprogress = TRUE) {
+                               show_progress = TRUE) {
 
   # initialise known column names to prevent R CMD check notes
   n <- missing_n <- nonconformant_n <- NULL
@@ -374,7 +374,7 @@ aggregateallfields <- function(aggfields,
   groupedvals[, "missing_perc" := 100 * missing_n / (n + missing_n + nonconformant_n)]
   groupedvals[, "nonconformant_perc" := 100 * nonconformant_n / (n + missing_n + nonconformant_n)]
 
-  log_message(paste0("Finished"), showprogress)
+  log_message(paste0("Finished"), show_progress)
 
   structure(
     list(
@@ -398,7 +398,7 @@ aggregateallfields <- function(aggfields,
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
 #'   `"day"`, `"week"`, `"month"`, `"quarter"`, `"year"`. The `"week"` option is
 #'   Monday-based. Default = `"day"`
-#' @param showprogress Print progress to console. Default = `TRUE`
+#' @param show_progress Print progress to console. Default = `TRUE`
 #' @return An `aggregatedata` object
 #' @examples
 #' # load example data into a data.frame
@@ -435,7 +435,7 @@ aggregateallfields <- function(aggfields,
 #' @export
 aggregate_data <- function(sourcedata,
                            aggregation_timeunit = "day",
-                           showprogress = TRUE) {
+                           show_progress = TRUE) {
   # TODO: allow user to override existing aggfunctions?
   # TODO: Use something better than seq() to calculate weeks and months, so that
   # it works when the first date is not the first of the month
@@ -446,14 +446,14 @@ aggregate_data <- function(sourcedata,
   validate_params_type(match.call(),
     sourcedata = sourcedata,
     aggregation_timeunit = aggregation_timeunit,
-    showprogress = showprogress
+    show_progress = show_progress
   )
 
   # create column to group by
   # TODO: raise an error/warning if data is less granular than aggregation_timeunit
   log_message(
     paste0("Aggregating [", sourcedata$sourcename, "] by [", aggregation_timeunit, "]..."),
-    showprogress
+    show_progress
   )
   # need to ensure have all possible timepoint values, even if they are missing in the dataset
   alltimepoints_min <-
@@ -477,12 +477,12 @@ aggregate_data <- function(sourcedata,
     )
 
   ### AGGREGATE OVERALL DATASET
-  log_message(paste0("Aggregating overall dataset..."), showprogress)
+  log_message(paste0("Aggregating overall dataset..."), show_progress)
   # load aggregated data into new vector
-  log_message(paste0("Aggregating each datafield in turn..."), showprogress)
+  log_message(paste0("Aggregating each datafield in turn..."), show_progress)
   agg <- vector("list", sourcedata$cols_imported_n + 2)
   for (i in 1:sourcedata$cols_imported_n) {
-    log_message(paste0(i, ": ", names(sourcedata$cols_imported_indexes)[i]), showprogress)
+    log_message(paste0(i, ": ", names(sourcedata$cols_imported_indexes)[i]), show_progress)
     fieldindex <- sourcedata$cols_imported_indexes[[i]]
     agg[[i]] <-
       aggregatefield(
@@ -490,24 +490,24 @@ aggregate_data <- function(sourcedata,
         get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]]),
         alltimepoints,
         aggregation_timeunit,
-        showprogress = showprogress
+        show_progress = show_progress
       )
   }
-  log_message(paste0("Aggregating calculated fields..."), showprogress)
-  log_message(paste0("[DUPLICATES]:"), showprogress)
+  log_message(paste0("Aggregating calculated fields..."), show_progress)
+  log_message(paste0("[DUPLICATES]:"), show_progress)
   agg[[sourcedata$cols_imported_n + 1]] <-
     aggregatefield(
       sourcedata$datafields[[sourcedata$cols_source_n + 1]],
       get_datafield_vector(sourcedata$datafields[[sourcedata$timepoint_fieldname]]),
       alltimepoints,
       aggregation_timeunit,
-      showprogress = showprogress
+      show_progress = show_progress
     )
-  log_message(paste0("[ALLFIELDSCOMBINED]:"), showprogress)
+  log_message(paste0("[ALLFIELDSCOMBINED]:"), show_progress)
   agg[[sourcedata$cols_imported_n + 2]] <-
     aggregateallfields(
       agg[1:sourcedata$cols_imported_n],
-      showprogress = showprogress
+      show_progress = show_progress
     )
   names(agg) <-
     c(

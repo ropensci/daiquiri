@@ -48,7 +48,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #' @param dataset_shortdesc Short description of the dataset being checked. This
 #'   will appear on the report. If blank, the name of the data frame object will
 #'   be used
-#' @param showprogress Print progress to console. Default = `TRUE`
+#' @param show_progress Print progress to console. Default = `TRUE`
 #' @return A `sourcedata` object
 #' @examples
 #' # load example data into a data.frame
@@ -85,7 +85,7 @@ prepare_data <- function(df,
                          override_column_names = FALSE,
                          na = c("", "NA", "NULL"),
                          dataset_shortdesc = NULL,
-                         showprogress = TRUE) {
+                         show_progress = TRUE) {
   log_function_start(match.call()[[1]])
 
   # initialise known column names to prevent R CMD check notes
@@ -98,7 +98,7 @@ prepare_data <- function(df,
     override_column_names = override_column_names,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
-    showprogress = showprogress
+    show_progress = show_progress
   )
 
   # use dataset_shortdesc if present, otherwise get from call
@@ -123,13 +123,13 @@ prepare_data <- function(df,
 
   log_message(
     paste0("field_types supplied:\n", field_types_to_string(field_types)),
-    showprogress
+    show_progress
   )
 
   # validate inputs
   log_message(
     paste0("Checking column names against field_types..."),
-    showprogress
+    show_progress
   )
   validate_columnnames(names(df),
     names(field_types),
@@ -138,7 +138,7 @@ prepare_data <- function(df,
 
   log_message(
     paste0("Importing source data [", dataset_shortdesc, "]..."),
-    showprogress
+    show_progress
   )
 
   # number of rows in source
@@ -183,7 +183,7 @@ prepare_data <- function(df,
     dt[, (changecols) := lapply(.SD, as.character), .SDcols = changecols]
   }
 
-  log_message(paste0("Checking data against field_types..."), showprogress)
+  log_message(paste0("Checking data against field_types..."), show_progress)
   raw_warnings <- NULL
   dt <-
     withCallingHandlers(
@@ -196,7 +196,7 @@ prepare_data <- function(df,
         invokeRestart("muffleWarning")
       }
     )
-  log_message(paste0("  Selecting relevant warnings..."), showprogress)
+  log_message(paste0("  Selecting relevant warnings..."), show_progress)
   # extract items of interest from warnings
   # NOTE: column indexes for readr::type_convert warnings correspond to original data file and are 1-based
   # NOTE: row indexes for readr::type_convert warnings are zero-based (confusingly)
@@ -216,7 +216,7 @@ prepare_data <- function(df,
       message = vapply(warningslist, function(x) x[3], character(1))
     )
 
-  log_message(paste0("  Identifying nonconformant values..."), showprogress)
+  log_message(paste0("  Identifying nonconformant values..."), show_progress)
   # readr::type_convert replaces nonconformant values with NA. Set them to NaN
   # instead to distinguish them from missing
   # This seems much harder than it should be
@@ -229,7 +229,7 @@ prepare_data <- function(df,
 
   log_message(
     paste0("  Checking and removing missing timepoints..."),
-    showprogress
+    show_progress
   )
   # check and remove rows where timepoint field is null
   # TODO: should I remove them here or when aggregating?  Summary doesn't look
@@ -276,7 +276,7 @@ prepare_data <- function(df,
   duprowsvector <-
     identify_duplicaterows(dt,
       batchby_fieldname = timepoint_fieldname,
-      showprogress = showprogress
+      show_progress = show_progress
     )
   # find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
   duprowsindex <- c(duprowsvector[-1], FALSE)
@@ -296,14 +296,14 @@ prepare_data <- function(df,
   # number of duplicate rows removed
   rows_duplicates_n <- sum(duprowsvector, na.rm = TRUE)
 
-  log_message(paste0("Loading into sourcedata structure..."), showprogress)
+  log_message(paste0("Loading into sourcedata structure..."), show_progress)
   # load data into datafield classes
   dfs <- vector("list", cols_source_n + 1)
   cols_imported_indexes <- vector("integer")
 
   for (i in 1:cols_source_n) {
     currentfield <- names(field_types[i])
-    log_message(paste0("  ", currentfield), showprogress)
+    log_message(paste0("  ", currentfield), show_progress)
     if (is.field_type_ignore(field_types[[i]])) {
       dfs[[i]] <- datafield(as.vector("ignored"), field_types[[i]])
     } else {
@@ -330,7 +330,7 @@ prepare_data <- function(df,
   )
   names(dfs) <- c(names(field_types), "[DUPLICATES]")
 
-  log_message(paste0("Finished"), showprogress)
+  log_message(paste0("Finished"), show_progress)
 
   log_function_end(match.call()[[1]])
 
@@ -361,7 +361,7 @@ is.sourcedata <- function(x) inherits(x, "sourcedata")
 
 #' @export
 print.sourcedata <- function(x, ...) {
-  sourcesummary <- summarise_source_data(x, showprogress = FALSE)
+  sourcesummary <- summarise_source_data(x, show_progress = FALSE)
   cat("Class: sourcedata\n")
   cat("Dataset:", x$dataset_shortdesc, "\n")
   cat("\n")
@@ -395,18 +395,18 @@ print.sourcedata <- function(x, ...) {
 #' This can be used by other functions later for displaying info to user
 #'
 #' @param sourcedata sourcedata object
-#' @param showprogress Print progress to console. Default = TRUE
+#' @param show_progress Print progress to console. Default = TRUE
 #' @return A list of 1. overall dataset properties, 2. properties of each
 #'   datafield, 3. any validation warnings
 #' @noRd
 # TODO: consider making this a generic summary() method instead.
 #       Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Consider adding a warning if a categorical field has "too many" different values
-summarise_source_data <- function(sourcedata, showprogress = TRUE) {
+summarise_source_data <- function(sourcedata, show_progress = TRUE) {
   log_function_start(match.call()[[1]])
-  log_message(paste0("Creating summary of source data..."), showprogress)
+  log_message(paste0("Creating summary of source data..."), show_progress)
 
-  log_message(paste0("  For overall dataset..."), showprogress)
+  log_message(paste0("  For overall dataset..."), show_progress)
   overall <- c(
     cols_source_n = format(sourcedata$cols_source_n),
     cols_imported_n = format(sourcedata$cols_imported_n),
@@ -420,7 +420,7 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE) {
     na_values = paste(dQuote(sourcedata$na_values, q = FALSE), collapse = ",")
   )
 
-  log_message(paste0("  For each column in dataset..."), showprogress)
+  log_message(paste0("  For each column in dataset..."), show_progress)
   datafields <-
     data.frame(
       fieldname = format(names(sourcedata$datafields[1:sourcedata$cols_source_n])),
@@ -466,7 +466,7 @@ summarise_source_data <- function(sourcedata, showprogress = TRUE) {
       row.names = NULL
     )
 
-  log_message(paste0("  Validation errors on loading dataset..."), showprogress)
+  log_message(paste0("  Validation errors on loading dataset..."), show_progress)
   validation_warnings <- sourcedata$validation_warnings
 
   log_function_end(match.call()[[1]])
@@ -676,17 +676,17 @@ validate_columnnames <- function(source_names,
 #'   get evenly-sized batches (i.e. the timepoint field)
 #' @param batchsize_mb approximate size in Mb over which dt will be split into
 #'   batches
-#' @param showprogress Print progress to console
+#' @param show_progress Print progress to console
 #' @return logical vector indicating which rows are duplicates
 #' @noRd
 identify_duplicaterows <- function(dt,
                                    batchby_fieldname,
                                    batchsize_mb = 200,
-                                   showprogress = TRUE) {
-  log_message(paste0("Checking for duplicates..."), showprogress)
+                                   show_progress = TRUE) {
+  log_message(paste0("Checking for duplicates..."), show_progress)
   # sort by batchby_fieldname then by everything else, so that we can batch the data
   # TODO: try using setkey as well to see if it makes a difference
-  log_message(paste0("  Sorting data..."), showprogress)
+  log_message(paste0("  Sorting data..."), show_progress)
   data.table::setorderv(
     dt,
     c(
@@ -704,12 +704,12 @@ identify_duplicaterows <- function(dt,
     chunkrows <- ceiling(numrows / numchunks)
     log_message(
       paste0("  Running ", numchunks, " batches of roughly ", chunkrows, " rows each..."),
-      showprogress
+      show_progress
     )
     batchby_vector <- dt[[(batchby_fieldname)]]
     duprowsvector <- logical(numrows)
     for (chunk in 1:numchunks) {
-      log_message(paste0("  Batch ", chunk), showprogress)
+      log_message(paste0("  Batch ", chunk), show_progress)
       chunkstart <- which.max(batchby_vector >= batchby_vector[((chunk - 1) * chunkrows) + 1])
       if (chunk < numchunks) {
         # end on the previous (unique) field value that the chunk lands on

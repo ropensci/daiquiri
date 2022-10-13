@@ -15,7 +15,7 @@
 #'   file extension. If no filename is supplied, one will be automatically
 #'   generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
 #' @param format File format of the report. Currently only `"html"` is supported
-#' @param showprogress Print progress to console. Default = `TRUE`
+#' @param show_progress Print progress to console. Default = `TRUE`
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' \donttest{
@@ -42,14 +42,14 @@
 #'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
 #'   dataset_shortdesc = "Example data provided with package",
-#'   showprogress = TRUE
+#'   show_progress = TRUE
 #' )
 #'
 #' # aggregate the data
 #' aggregatedataobj <- aggregate_data(
 #'   sourcedataobj,
 #'   aggregation_timeunit = "day",
-#'   showprogress = TRUE
+#'   show_progress = TRUE
 #' )
 #'
 #' # save a report in the current directory using the previously-created objects
@@ -58,7 +58,7 @@
 #'   aggregatedataobj,
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
-#'   showprogress = TRUE
+#'   show_progress = TRUE
 #' )
 #' \dontshow{file.remove("./example_data_report.html")}
 #' }
@@ -71,7 +71,7 @@ report_data <- function(sourcedata,
                         save_directory = ".",
                         save_filename = NULL,
                         format = "html",
-                        showprogress = TRUE) {
+                        show_progress = TRUE) {
   log_function_start(match.call()[[1]])
 
   validate_params_required(match.call())
@@ -80,7 +80,7 @@ report_data <- function(sourcedata,
     aggregatedata = aggregatedata,
     save_directory = save_directory,
     save_filename = save_filename,
-    showprogress = showprogress,
+    show_progress = show_progress,
     format = format
   )
 
@@ -92,7 +92,7 @@ report_data <- function(sourcedata,
   fileandpath <- file.path(save_directory, paste0(save_filename, ".html"))
 
   if (format == "html") {
-    log_message("Generating html report...", showprogress)
+    log_message("Generating html report...", show_progress)
     rmarkdown::render(
       input = system.file(
         "rmd",
@@ -103,7 +103,7 @@ report_data <- function(sourcedata,
       output_file = paste0(save_filename, ".html"),
       output_dir = save_directory,
       params = list(sourcedata = sourcedata, aggregatedata = aggregatedata),
-      quiet = !showprogress
+      quiet = !show_progress
     )
   } else {
     stop(paste(
@@ -112,7 +112,7 @@ report_data <- function(sourcedata,
     ))
   }
 
-  log_message(paste0("Report saved to: ", fileandpath), showprogress)
+  log_message(paste0("Report saved to: ", fileandpath), show_progress)
 
   log_function_end(match.call()[[1]])
 

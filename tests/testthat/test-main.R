@@ -98,7 +98,7 @@ test_that("create_report() creates report and returns daiquiri object successful
     save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
     log_directory = tempdir(),
-    showprogress = FALSE
+    show_progress = FALSE
   )
 
   expect_s3_class(testdaiqobj, "daiquiri_object")
@@ -138,7 +138,7 @@ test_that("create_report() works even when columnnames contain special chars", {
       aggregation_timeunit = "day",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
-      showprogress = FALSE
+      show_progress = FALSE
     )
   # clean up
   expect_true(file.remove(testdaiqobj$report_filename))
@@ -162,7 +162,7 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
     aggregation_timeunit = "day",
     save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
-    showprogress = FALSE
+    show_progress = FALSE
   )
   expect_equal(testdaiqobj$sourcedata$dataset_shortdesc, "dfobj")
   # clean up
@@ -183,7 +183,7 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
       aggregation_timeunit = "day",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_equal(
@@ -211,7 +211,7 @@ test_that("daiquiri_object prints to console ok", {
       aggregation_timeunit = "day",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
-      showprogress = FALSE
+      show_progress = FALSE
     )
 
   expect_snapshot_output(print(testdaiqobj))

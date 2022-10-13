@@ -26,7 +26,7 @@
 #' @param save_filename String specifying filename for the report, excluding any
 #'   file extension. If no filename is supplied, one will
 #'   be automatically generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
-#' @param showprogress Print progress to console. Default = `TRUE`
+#' @param show_progress Print progress to console. Default = `TRUE`
 #' @param log_directory String specifying directory in which to save log file.
 #'   If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as
@@ -66,7 +66,7 @@
 #'   aggregation_timeunit = "day",
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
-#'   showprogress = TRUE,
+#'   show_progress = TRUE,
 #'   log_directory = NULL
 #' )
 #' \dontshow{file.remove("./example_data_report.html")}
@@ -83,7 +83,7 @@ create_report <- function(df,
                           aggregation_timeunit = "day",
                           save_directory = ".",
                           save_filename = NULL,
-                          showprogress = TRUE,
+                          show_progress = TRUE,
                           log_directory = NULL) {
 
   # if a log directory is supplied, start a new log. Otherwise, close any existing log
@@ -108,7 +108,7 @@ create_report <- function(df,
     aggregation_timeunit = aggregation_timeunit,
     save_directory = save_directory,
     save_filename = save_filename,
-    showprogress = showprogress,
+    show_progress = show_progress,
     log_directory = log_directory
   )
 
@@ -119,13 +119,13 @@ create_report <- function(df,
       override_column_names = override_column_names,
       dataset_shortdesc = dataset_shortdesc,
       na = na,
-      showprogress = showprogress
+      show_progress = show_progress
     )
 
   aggregatedata <-
     aggregate_data(sourcedata,
       aggregation_timeunit = aggregation_timeunit,
-      showprogress = showprogress
+      show_progress = show_progress
     )
 
   reportfilename <-
@@ -134,7 +134,7 @@ create_report <- function(df,
       aggregatedata,
       save_directory = save_directory,
       save_filename = save_filename,
-      showprogress = showprogress
+      show_progress = show_progress
     )
 
   log_function_end(match.call()[[1]])
@@ -210,7 +210,7 @@ print.daiquiri_object <- function(x, ...) {
 #' @param skip Number of lines to skip before reading data. If `comment` is
 #'   supplied any commented lines are ignored after skipping
 #' @param n_max Maximum number of lines to read.
-#' @param showprogress Display a progress bar? Default = `TRUE`
+#' @param show_progress Display a progress bar? Default = `TRUE`
 #' @return A data frame
 #' @examples rawdata <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
@@ -229,7 +229,7 @@ read_data <- function(file,
                       comment = "",
                       skip = 0,
                       n_max = Inf,
-                      showprogress = TRUE) {
+                      show_progress = TRUE) {
   validate_params_required(match.call())
   # NOTE: let readr do its own param validation
 
@@ -246,7 +246,7 @@ read_data <- function(file,
     skip = skip,
     n_max = n_max,
     name_repair = "unique",
-    progress = showprogress,
+    progress = show_progress,
     skip_empty_rows = TRUE,
     lazy = TRUE
   )

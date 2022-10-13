@@ -10,7 +10,7 @@ report_data(
   save_directory = ".",
   save_filename = NULL,
   format = "html",
-  showprogress = TRUE
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 
 \item{format}{File format of the report. Currently only \code{"html"} is supported}
 
-\item{showprogress}{Print progress to console. Default = \code{TRUE}}
+\item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
 A string containing the name and path of the saved report
@@ -62,14 +62,14 @@ sourcedataobj <- prepare_data(
   override_column_names = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example data provided with package",
-  showprogress = TRUE
+  show_progress = TRUE
 )
 
 # aggregate the data
 aggregatedataobj <- aggregate_data(
   sourcedataobj,
   aggregation_timeunit = "day",
-  showprogress = TRUE
+  show_progress = TRUE
 )
 
 # save a report in the current directory using the previously-created objects
@@ -78,7 +78,7 @@ report_data(
   aggregatedataobj,
   save_directory = ".",
   save_filename = "example_data_report",
-  showprogress = TRUE
+  show_progress = TRUE
 )
 \dontshow{file.remove("./example_data_report.html")}
 }
