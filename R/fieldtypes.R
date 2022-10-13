@@ -254,11 +254,6 @@ ft_freetext <- function() {
 	)
 }
 
-# # try to guess the type
-# ft_guess <- function() {
-#   fieldtype("guess", readr::col_guess())
-# }
-
 #' @section Details: `ft_simple()` - identifies data fields where you only
 #'   want presence/missingness to be evaluated (but which are not necessarily
 #'   free text).

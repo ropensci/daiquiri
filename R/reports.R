@@ -137,7 +137,6 @@ plot_timeseries_static <- function(aggfield,
 		ggplot2::scale_x_date(
 			breaks = scales::breaks_pretty(12),
 			labels = scales::label_date_short(sep = " "),
-			# breaks = "1 year", labels = scales::date_format("%Y")
 			expand = c(0, 0)
 		) +
 		ggplot2::theme_bw() +
@@ -203,7 +202,6 @@ plot_overview_totals_static <- function(aggfield,
 		ggplot2::scale_x_date(
 			breaks = scales::breaks_pretty(12),
 			labels = scales::label_date_short(sep = " "),
-			# breaks = "1 year", labels = scales::date_format("%Y")
 			expand = c(0, 0)
 		) +
 		ggplot2::labs(y = NULL, x = NULL, title = title) +
