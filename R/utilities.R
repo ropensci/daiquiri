@@ -54,11 +54,13 @@ validate_params_type <- function(call, ...) {
     stop_custom(
       .subclass = "invalid_call",
       message = paste0(
-        "Invalid call for function.
-											 Different set of params in parent function definition than were passed in to validate_params_type().
-											 In validate_params_type() but not in parent function: ",
+        "Invalid call for function. Different set of params in parent function
+        definition than were passed in to validate_params_type().",
+        "\n",
+        "In validate_params_type() but not in parent function: ",
         paste(setdiff(params_names, params_defined), collapse = ", "),
-        "; In parent function but not in validate_params_type(): ",
+        "\n",
+        "In parent function but not in validate_params_type(): ",
         paste(setdiff(params_defined, params_names), collapse = ", ")
       )
     )
@@ -394,7 +396,8 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
 }
 
 ######################################################
-# dummy functions set up purely for unit testing. testthat can't find them when they are defined in the test_xxx files
+# dummy functions set up purely for unit testing.
+# testthat can't find them when they are defined in the test_xxx files
 
 #' Dummy function to assist unit testing of validate_params_required()
 #'

@@ -1,11 +1,7 @@
 # Create field specification (don't know whether to call them fields or columns)
 #
-# Three options:
-# user passes in a specification for the entire dataset, every field is required
-# User passes in a specification for only the fields they explicitly want to include (by name), ignoring all others
-# we try to guess the field types (based on all or only a subset of the rows?)
-#
-# NOTE: want classes to inherit, e.g. all fieldtypes (except "ignored" ones should implement a function for checking missing data)
+# NOTE: ideally want classes to inherit, e.g. all fieldtypes (except "ignored"
+# ones should implement a function for checking missing data)
 #
 # copying structure used in readr
 

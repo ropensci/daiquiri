@@ -187,7 +187,8 @@ plot_timeseries_static <- function(aggfield,
 #' @param title optional title for the plot
 #' @return ggplot
 #' @noRd
-# TODO: automatically choose to draw a lineplot or barplot depending on number of timepoints (as barplots don't render well with lots of timepoints)
+# TODO: automatically choose to draw a lineplot or barplot depending on number
+# of timepoints (as barplots don't render well with lots of timepoints)
 plot_overview_totals_static <- function(aggfield,
                                         aggtype,
                                         fillcolour = NA,
