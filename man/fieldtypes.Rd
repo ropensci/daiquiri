@@ -18,14 +18,16 @@ important because the data in each field will be aggregated in different
 ways, depending on its \code{fieldtype}.  See \link{availablefieldtypes}
 }
 \examples{
-fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
-                            TestID = ft_ignore(),
-                            TestDate = ft_timepoint(),
-                            TestName = ft_categorical(aggregate_by_each_category = FALSE),
-                            TestResult = ft_numeric(),
-                            ResultDate = ft_datetime(),
-                            ResultComment = ft_freetext(),
-                            Location = ft_categorical())
+fts <- fieldtypes(
+  PatientID = ft_uniqueidentifier(),
+  TestID = ft_ignore(),
+  TestDate = ft_timepoint(),
+  TestName = ft_categorical(aggregate_by_each_category = FALSE),
+  TestResult = ft_numeric(),
+  ResultDate = ft_datetime(),
+  ResultComment = ft_freetext(),
+  Location = ft_categorical()
+)
 }
 \seealso{
 \code{\link[=availablefieldtypes]{availablefieldtypes()}}

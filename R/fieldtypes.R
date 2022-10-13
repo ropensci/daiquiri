@@ -23,20 +23,20 @@
 #' @noRd
 # TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones
 fieldtype <- function(type,
-											collector,
-											dataclass,
-											aggfunctions = c("n", "missing_n", "missing_perc"),
-											options = NULL) {
-	structure(
-		list(
-			type = type,
-			collector = collector,
-			dataclass = dataclass,
-			aggfunctions = aggfunctions,
-			options = options
-		),
-		class = c(paste0("fieldtype_", type), "fieldtype")
-	)
+                      collector,
+                      dataclass,
+                      aggfunctions = c("n", "missing_n", "missing_perc"),
+                      options = NULL) {
+  structure(
+    list(
+      type = type,
+      collector = collector,
+      dataclass = dataclass,
+      aggfunctions = aggfunctions,
+      options = options
+    ),
+    class = c(paste0("fieldtype_", type), "fieldtype")
+  )
 }
 
 #' Test if object is a fieldtype object
@@ -90,14 +90,16 @@ is.fieldtype_calculated <- function(x) inherits(x, c("fieldtype_allfields", "fie
 #' @seealso [fieldtypes()]
 #' @name availablefieldtypes
 #' @return A `fieldtype` object denoting the type of data in the column
-#' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
-#'                             TestID = ft_ignore(),
-#'                             TestDate = ft_timepoint(),
-#'                             TestName = ft_categorical(aggregate_by_each_category = FALSE),
-#'                             TestResult = ft_numeric(),
-#'                             ResultDate = ft_datetime(),
-#'                             ResultComment = ft_freetext(),
-#'                             Location = ft_categorical())
+#' @examples fts <- fieldtypes(
+#'   PatientID = ft_uniqueidentifier(),
+#'   TestID = ft_ignore(),
+#'   TestDate = ft_timepoint(),
+#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'   TestResult = ft_numeric(),
+#'   ResultDate = ft_datetime(),
+#'   ResultComment = ft_freetext(),
+#'   Location = ft_categorical()
+#' )
 NULL
 
 #' @section Details: `ft_timepoint()` - identifies the data field which
@@ -115,22 +117,22 @@ NULL
 #' @rdname availablefieldtypes
 #' @export
 ft_timepoint <- function(includes_time = TRUE,
-												 format = "") {
-	# NOTE: nonconformant values appear in validation warnings
-	aggfn <- c("n")
-	options <- NULL
-	if (includes_time) {
-		aggfn <- c(aggfn, "midnight_n", "midnight_perc")
-		# TODO: can probably do something more sophisticated here with match.call()
-		options <- "includes_time"
-	}
-	fieldtype(
-		type = "timepoint",
-		collector = readr::col_datetime(format = format),
-		dataclass = "POSIXct",
-		aggfunctions = aggfn,
-		options = options
-	)
+                         format = "") {
+  # NOTE: nonconformant values appear in validation warnings
+  aggfn <- c("n")
+  options <- NULL
+  if (includes_time) {
+    aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+    # TODO: can probably do something more sophisticated here with match.call()
+    options <- "includes_time"
+  }
+  fieldtype(
+    type = "timepoint",
+    collector = readr::col_datetime(format = format),
+    dataclass = "POSIXct",
+    aggfunctions = aggfn,
+    options = options
+  )
 }
 
 #' @section Details: `ft_uniqueidentifier()` - identifies data fields which
@@ -139,18 +141,20 @@ ft_timepoint <- function(includes_time = TRUE,
 #' @rdname availablefieldtypes
 #' @export
 ft_uniqueidentifier <- function() {
-	# TODO: potential additional aggfunctions: proportion numeric; distinct first chars
-  fieldtype(type = "uniqueidentifier",
-  					collector = readr::col_character(),
-  					dataclass = "character",
-  					aggfunctions = c("n",
-  													 "missing_n",
-  													 "missing_perc",
-  													 "minlength",
-  													 "maxlength",
-  													 "meanlength")
-            )
-
+  # TODO: potential additional aggfunctions: proportion numeric; distinct first chars
+  fieldtype(
+    type = "uniqueidentifier",
+    collector = readr::col_character(),
+    dataclass = "character",
+    aggfunctions = c(
+      "n",
+      "missing_n",
+      "missing_perc",
+      "minlength",
+      "maxlength",
+      "meanlength"
+    )
+  )
 }
 
 #' @section Details: `ft_categorical()` - identifies data fields which should
@@ -162,19 +166,20 @@ ft_uniqueidentifier <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_categorical <- function(aggregate_by_each_category = FALSE) {
-	# TODO: allow more options for aggregate_by_each_category, e.g. topx (bysize), or accept a vector of values
-	aggfn <- c("n", "missing_n", "missing_perc", "distinct")
-	options <- NULL
-	if (aggregate_by_each_category) {
-		aggfn <- c(aggfn, "subcat_n", "subcat_perc")
-		# TODO: can probably do something more sophisticated here with match.call()
-		options <- "aggregate_by_each_category"
-	}
-	fieldtype(type = "categorical",
-  					collector = readr::col_character(),
-  					dataclass = "character",
-  					aggfunctions = aggfn,
-  					options = options
+  # TODO: allow more options for aggregate_by_each_category, e.g. topx (bysize), or accept a vector of values
+  aggfn <- c("n", "missing_n", "missing_perc", "distinct")
+  options <- NULL
+  if (aggregate_by_each_category) {
+    aggfn <- c(aggfn, "subcat_n", "subcat_perc")
+    # TODO: can probably do something more sophisticated here with match.call()
+    options <- "aggregate_by_each_category"
+  }
+  fieldtype(
+    type = "categorical",
+    collector = readr::col_character(),
+    dataclass = "character",
+    aggfunctions = aggfn,
+    options = options
   )
 }
 
@@ -184,20 +189,21 @@ ft_categorical <- function(aggregate_by_each_category = FALSE) {
 #' @rdname availablefieldtypes
 #' @export
 ft_numeric <- function() {
-  fieldtype(type = "numeric",
-  					collector = readr::col_double(),
-  					dataclass = "numeric",
-  					aggfunctions = c(
-								  						"n",
-								  						"missing_n",
-								  						"missing_perc",
-								  						"nonconformant_n",
-								  						"nonconformant_perc",
-								  						"min",
-								  						"max",
-								  						"mean",
-								  						"median"
-								  					)
+  fieldtype(
+    type = "numeric",
+    collector = readr::col_double(),
+    dataclass = "numeric",
+    aggfunctions = c(
+      "n",
+      "missing_n",
+      "missing_perc",
+      "nonconformant_n",
+      "nonconformant_perc",
+      "min",
+      "max",
+      "mean",
+      "median"
+    )
   )
 }
 
@@ -215,30 +221,30 @@ ft_numeric <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_datetime <- function(includes_time = TRUE,
-												format = "") {
-	aggfn <-
-		c(
-			"n",
-			"missing_n",
-			"missing_perc",
-			"nonconformant_n",
-			"nonconformant_perc",
-			"min",
-			"max"
-		)
-	options <- NULL
-	if (includes_time) {
-		aggfn <- c(aggfn, "midnight_n", "midnight_perc")
-		# TODO: can probably do something more sophisticated here with match.call()
-		options <- "includes_time"
-	}
-	fieldtype(
-		type = "datetime",
-		collector = readr::col_datetime(format = format),
-		dataclass = "POSIXct",
-		aggfunctions = aggfn,
-		options = options
-	)
+                        format = "") {
+  aggfn <-
+    c(
+      "n",
+      "missing_n",
+      "missing_perc",
+      "nonconformant_n",
+      "nonconformant_perc",
+      "min",
+      "max"
+    )
+  options <- NULL
+  if (includes_time) {
+    aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+    # TODO: can probably do something more sophisticated here with match.call()
+    options <- "includes_time"
+  }
+  fieldtype(
+    type = "datetime",
+    collector = readr::col_datetime(format = format),
+    dataclass = "POSIXct",
+    aggfunctions = aggfn,
+    options = options
+  )
 }
 
 #' @section Details: `ft_freetext()` - identifies data fields which contain
@@ -246,12 +252,12 @@ ft_datetime <- function(includes_time = TRUE,
 #' @rdname availablefieldtypes
 #' @export
 ft_freetext <- function() {
-	fieldtype(
-		type = "freetext",
-		collector = readr::col_character(),
-		dataclass = "character",
-		aggfunctions = c("n", "missing_n", "missing_perc")
-	)
+  fieldtype(
+    type = "freetext",
+    collector = readr::col_character(),
+    dataclass = "character",
+    aggfunctions = c("n", "missing_n", "missing_perc")
+  )
 }
 
 #' @section Details: `ft_simple()` - identifies data fields where you only
@@ -260,12 +266,12 @@ ft_freetext <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_simple <- function() {
-	fieldtype(
-		type = "simple",
-		collector = readr::col_character(),
-		dataclass = "character",
-		aggfunctions = c("n", "missing_n", "missing_perc")
-	)
+  fieldtype(
+    type = "simple",
+    collector = readr::col_character(),
+    dataclass = "character",
+    aggfunctions = c("n", "missing_n", "missing_perc")
+  )
 }
 
 #' @section Details: `ft_ignore()` - identifies data fields which should be
@@ -273,37 +279,37 @@ ft_simple <- function() {
 #' @rdname availablefieldtypes
 #' @export
 ft_ignore <- function() {
-	fieldtype(
-		type = "ignore",
-		collector = readr::col_skip(),
-		dataclass = "NULL"
-	)
+  fieldtype(
+    type = "ignore",
+    collector = readr::col_skip(),
+    dataclass = "NULL"
+  )
 }
 
 # this is an internal fieldtype for calculating stats across all fields combined and should not be set explicitly by user
 ft_allfields <- function() {
-	fieldtype(
-		type = "allfields",
-		collector = readr::col_skip(),
-		dataclass = "NULL",
-		aggfunctions = c(
-			"n",
-			"missing_n",
-			"missing_perc",
-			"nonconformant_n",
-			"nonconformant_perc"
-		)
-	)
+  fieldtype(
+    type = "allfields",
+    collector = readr::col_skip(),
+    dataclass = "NULL",
+    aggfunctions = c(
+      "n",
+      "missing_n",
+      "missing_perc",
+      "nonconformant_n",
+      "nonconformant_perc"
+    )
+  )
 }
 
 # this is an internal fieldtype for calculating duplicates and should not be set explicitly by user
 ft_duplicates <- function() {
-	fieldtype(
-		type = "duplicates",
-		collector = readr::col_skip(),
-		dataclass = "NULL",
-		aggfunctions = c("sum", "nonzero_perc")
-	)
+  fieldtype(
+    type = "duplicates",
+    collector = readr::col_skip(),
+    dataclass = "NULL",
+    aggfunctions = c("sum", "nonzero_perc")
+  )
 }
 
 # -----------------------------------------------------------------------------
@@ -318,102 +324,106 @@ ft_duplicates <- function() {
 #' ways, depending on its `fieldtype`.  See [availablefieldtypes]
 #' @param ... names and types of fields (columns) in source data.
 #' @return A `fieldtypes` object
-#' @examples fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
-#'                             TestID = ft_ignore(),
-#'                             TestDate = ft_timepoint(),
-#'                             TestName = ft_categorical(aggregate_by_each_category = FALSE),
-#'                             TestResult = ft_numeric(),
-#'                             ResultDate = ft_datetime(),
-#'                             ResultComment = ft_freetext(),
-#'                             Location = ft_categorical())
+#' @examples fts <- fieldtypes(
+#'   PatientID = ft_uniqueidentifier(),
+#'   TestID = ft_ignore(),
+#'   TestDate = ft_timepoint(),
+#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'   TestResult = ft_numeric(),
+#'   ResultDate = ft_datetime(),
+#'   ResultComment = ft_freetext(),
+#'   Location = ft_categorical()
+#' )
 #' @seealso [availablefieldtypes()]
 #' @export
 fieldtypes <- function(...) {
-	fts <- list(...)
+  fts <- list(...)
 
-	# validate - collect all errors together and return only once
-	err_validation <- character()
-	is_fieldtype <- vapply(fts, is.fieldtype, logical(1))
-	if (any(!is_fieldtype)) {
-		err_validation <-
-			append(
-				err_validation,
-				paste(
-					"Unrecognised fieldtype(s) in positions: [",
-					paste(which(!is_fieldtype), collapse = ", "),
-					"]",
-					"names: [",
-					paste(names(fts)[which(!is_fieldtype)], collapse = ", "),
-					"]"
-				)
-			)
-	}
-	is_timepoint <- vapply(fts, is.fieldtype_timepoint, logical(1))
-	if (sum(is_timepoint) != 1) {
-		err_validation <-
-			append(
-				err_validation,
-				paste(
-					"Must specify one and only one timepoint field. Timepoints currently in positions: [",
-					paste(which(is_timepoint), collapse = ", "),
-					"]",
-					"names: [",
-					paste(names(fts)[which(is_timepoint)], collapse = ", "),
-					"]"
-				)
-			)
-	}
-	if (anyDuplicated(names(fts)) > 0) {
-		err_validation <-
-			append(err_validation,
-						 paste(
-						 	"Duplicate column names not allowed: [",
-						 	paste(names(fts)[duplicated(names(fts))], collapse = ", "),
-						 	"]"
-						 ))
-	}
-	# check for reserved names
-	if (any(names(fts) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]"))) {
-		err_validation <-
-			append(
-				err_validation,
-				paste(
-					"'[DUPLICATES]' and '[ALLFIELDSCOMBINED]' are names reserved for calculated columns.
+  # validate - collect all errors together and return only once
+  err_validation <- character()
+  is_fieldtype <- vapply(fts, is.fieldtype, logical(1))
+  if (any(!is_fieldtype)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Unrecognised fieldtype(s) in positions: [",
+          paste(which(!is_fieldtype), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(!is_fieldtype)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_timepoint <- vapply(fts, is.fieldtype_timepoint, logical(1))
+  if (sum(is_timepoint) != 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Must specify one and only one timepoint field. Timepoints currently in positions: [",
+          paste(which(is_timepoint), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_timepoint)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  if (anyDuplicated(names(fts)) > 0) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Duplicate column names not allowed: [",
+          paste(names(fts)[duplicated(names(fts))], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  # check for reserved names
+  if (any(names(fts) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]"))) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "'[DUPLICATES]' and '[ALLFIELDSCOMBINED]' are names reserved for calculated columns.
 					Please rename these columns in your data."
-				)
-			)
-	}
-	if (length(err_validation) > 0) {
-		stop_custom(
-			.subclass = "invalid_fieldtypes",
-			message = paste0(
-				"Invalid `fieldtypes' specification.\n",
-				paste(err_validation, collapse = "\n")
-			)
-		)
-	}
+        )
+      )
+  }
+  if (length(err_validation) > 0) {
+    stop_custom(
+      .subclass = "invalid_fieldtypes",
+      message = paste0(
+        "Invalid `fieldtypes' specification.\n",
+        paste(err_validation, collapse = "\n")
+      )
+    )
+  }
 
-	structure(fts, class = "fieldtypes")
+  structure(fts, class = "fieldtypes")
 }
 
 is.fieldtypes <- function(x) inherits(x, "fieldtypes")
 
 fieldtypes_to_string <- function(fieldtypes) {
-	s <- ""
-	for (ft in seq_along(fieldtypes)) {
-		s <-
-			paste0(s, names(fieldtypes[ft]), "\t", "<", class(fieldtypes[[ft]])[1], ">")
-		if (!is.null(fieldtypes[[ft]]$options)) {
-			s <- paste0(s, "\t", "options: ", fieldtypes[[ft]]$options)
-		}
-		s <- paste0(s, "\n")
-	}
-	s
+  s <- ""
+  for (ft in seq_along(fieldtypes)) {
+    s <-
+      paste0(s, names(fieldtypes[ft]), "\t", "<", class(fieldtypes[[ft]])[1], ">")
+    if (!is.null(fieldtypes[[ft]]$options)) {
+      s <- paste0(s, "\t", "options: ", fieldtypes[[ft]]$options)
+    }
+    s <- paste0(s, "\n")
+  }
+  s
 }
 
 #' @export
 print.fieldtypes <- function(x, ...) {
-	cat(fieldtypes_to_string(x))
+  cat(fieldtypes_to_string(x))
 }
 
 #' Print a template fieldtypes() specification to console
@@ -436,29 +446,30 @@ print.fieldtypes <- function(x, ...) {
 #' @seealso [fieldtypes()]
 #' @export
 print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
-	validate_params_required(match.call())
-	validate_params_type(match.call(),
-											 df = df,
-											 default_fieldtype = default_fieldtype)
+  validate_params_required(match.call())
+  validate_params_type(match.call(),
+    df = df,
+    default_fieldtype = default_fieldtype
+  )
 
-	fieldnames <- names(df)
-	template_string <-
-		paste(
-			"fieldtypes(",
-			paste0(
-				"\"",
-				fieldnames,
-				"\"",
-				" = ft_",
-				default_fieldtype$type,
-				"()",
-				ifelse(fieldnames == rev(fieldnames)[1], "", ","),
-				collapse = "\n\t"
-			),
-			")"
-		)
-	cat(template_string)
-	invisible(template_string)
+  fieldnames <- names(df)
+  template_string <-
+    paste(
+      "fieldtypes(",
+      paste0(
+        "\"",
+        fieldnames,
+        "\"",
+        " = ft_",
+        default_fieldtype$type,
+        "()",
+        ifelse(fieldnames == rev(fieldnames)[1], "", ","),
+        collapse = "\n\t"
+      ),
+      ")"
+    )
+  cat(template_string)
+  invisible(template_string)
 }
 
 # -----------------------------------------------------------------------------
@@ -473,21 +484,22 @@ print_fieldtypes_template <- function(df, default_fieldtype = ft_ignore()) {
 #' @return list of coltypes
 #' @noRd
 fieldtypes_to_cols <-
-	function(fieldtypes, alltostring = FALSE) {
-		# validate
-		if (missing(fieldtypes) || !is.fieldtypes(fieldtypes)) {
-			stop("Invalid parameter(s) supplied:",
-					 "`fieldtypes'", call. = FALSE)
-		}
-		if (alltostring == TRUE) {
-			do.call(readr::cols, lapply(fieldtypes, function(x) {
-				readr::col_character()
-			}))
-		}
-		else{
-			do.call(readr::cols, lapply(fieldtypes, get_collector))
-		}
-	}
+  function(fieldtypes, alltostring = FALSE) {
+    # validate
+    if (missing(fieldtypes) || !is.fieldtypes(fieldtypes)) {
+      stop("Invalid parameter(s) supplied:",
+        "`fieldtypes'",
+        call. = FALSE
+      )
+    }
+    if (alltostring == TRUE) {
+      do.call(readr::cols, lapply(fieldtypes, function(x) {
+        readr::col_character()
+      }))
+    } else {
+      do.call(readr::cols, lapply(fieldtypes, get_collector))
+    }
+  }
 
 #' Get the fieldtype's collector
 #'
@@ -495,7 +507,7 @@ fieldtypes_to_cols <-
 #' @return coltype as appropriate to the chosen parser (readr)
 #' @noRd
 get_collector <- function(fieldtype) {
-	fieldtype$collector
+  fieldtype$collector
 }
 
 #' Get the fieldtype's dataclass
@@ -504,7 +516,7 @@ get_collector <- function(fieldtype) {
 #' @return type of data e.g. character or POSIXct
 #' @noRd
 get_dataclass <- function(fieldtype) {
-	fieldtype$dataclass
+  fieldtype$dataclass
 }
 
 #' Get the fieldtype's type as a string
@@ -513,7 +525,7 @@ get_dataclass <- function(fieldtype) {
 #' @return string
 #' @noRd
 get_fieldtype_name <- function(fieldtype) {
-	fieldtype$type
+  fieldtype$type
 }
 
 #' Get the fieldtype's aggfunctions
@@ -522,5 +534,5 @@ get_fieldtype_name <- function(fieldtype) {
 #' @return vector of aggfunctions
 #' @noRd
 get_aggfunctions <- function(fieldtype) {
-	fieldtype$aggfunctions
+  fieldtype$aggfunctions
 }

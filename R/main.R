@@ -50,16 +50,18 @@
 #' # create a report in the current directory
 #' daiqobj <- create_report(
 #'   rawdata,
-#'   fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+#'   fieldtypes = fieldtypes(
+#'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
 #'     Drug = ft_freetext(),
 #'     Dose = ft_numeric(),
 #'     DoseUnit = ft_categorical(),
 #'     PatientID = ft_ignore(),
-#'     Location = ft_categorical(aggregate_by_each_category=TRUE)),
+#'     Location = ft_categorical(aggregate_by_each_category = TRUE)
+#'   ),
 #'   override_columnnames = FALSE,
-#'   na = c("","NULL"),
+#'   na = c("", "NULL"),
 #'   dataset_shortdesc = "Example data provided with package",
 #'   aggregation_timeunit = "day",
 #'   save_directory = ".",
@@ -75,109 +77,114 @@
 #'   [availablefieldtypes()]
 #' @export
 create_report <- function(df,
-													fieldtypes,
-													override_columnnames = FALSE,
-													na = c("", "NA", "NULL"),
-													dataset_shortdesc = NULL,
-													aggregation_timeunit = "day",
-													save_directory = ".",
-													save_filename = NULL,
-													showprogress = TRUE,
-													log_directory = NULL) {
+                          fieldtypes,
+                          override_columnnames = FALSE,
+                          na = c("", "NA", "NULL"),
+                          dataset_shortdesc = NULL,
+                          aggregation_timeunit = "day",
+                          save_directory = ".",
+                          save_filename = NULL,
+                          showprogress = TRUE,
+                          log_directory = NULL) {
 
-	# if a log directory is supplied, start a new log. Otherwise, close any existing log
-	if (!is.null(log_directory)) {
-		log_filename <- initialise_log(log_directory)
-	} else{
-		close_log()
-		log_filename <- NULL
-	}
+  # if a log directory is supplied, start a new log. Otherwise, close any existing log
+  if (!is.null(log_directory)) {
+    log_filename <- initialise_log(log_directory)
+  } else {
+    close_log()
+    log_filename <- NULL
+  }
 
-	log_function_start(match.call()[[1]])
+  log_function_start(match.call()[[1]])
 
-	# check params before running anything so that it fails sooner rather than later
-	validate_params_required(match.call())
-	validate_params_type(
-		match.call(),
-		df = df,
-		fieldtypes = fieldtypes,
-		override_columnnames = override_columnnames,
-		na = na,
-		dataset_shortdesc = dataset_shortdesc,
-		aggregation_timeunit = aggregation_timeunit,
-		save_directory = save_directory,
-		save_filename = save_filename,
-		showprogress = showprogress,
-		log_directory = log_directory
-	)
+  # check params before running anything so that it fails sooner rather than later
+  validate_params_required(match.call())
+  validate_params_type(
+    match.call(),
+    df = df,
+    fieldtypes = fieldtypes,
+    override_columnnames = override_columnnames,
+    na = na,
+    dataset_shortdesc = dataset_shortdesc,
+    aggregation_timeunit = aggregation_timeunit,
+    save_directory = save_directory,
+    save_filename = save_filename,
+    showprogress = showprogress,
+    log_directory = log_directory
+  )
 
-	sourcedata <-
-		prepare_data(
-			df,
-			fieldtypes,
-			override_columnnames = override_columnnames,
-			dataset_shortdesc = dataset_shortdesc,
-			na = na,
-			showprogress = showprogress
-		)
+  sourcedata <-
+    prepare_data(
+      df,
+      fieldtypes,
+      override_columnnames = override_columnnames,
+      dataset_shortdesc = dataset_shortdesc,
+      na = na,
+      showprogress = showprogress
+    )
 
-	aggregatedata <-
-		aggregate_data(sourcedata,
-									 aggregation_timeunit = aggregation_timeunit,
-									 showprogress = showprogress)
+  aggregatedata <-
+    aggregate_data(sourcedata,
+      aggregation_timeunit = aggregation_timeunit,
+      showprogress = showprogress
+    )
 
-	reportfilename <-
-		report_data(
-			sourcedata,
-			aggregatedata,
-			save_directory = save_directory,
-			save_filename = save_filename,
-			showprogress = showprogress
-		)
+  reportfilename <-
+    report_data(
+      sourcedata,
+      aggregatedata,
+      save_directory = save_directory,
+      save_filename = save_filename,
+      showprogress = showprogress
+    )
 
-	log_function_end(match.call()[[1]])
+  log_function_end(match.call()[[1]])
 
-	close_log()
+  close_log()
 
-	structure(
-		list(
-			dataset_shortdesc = sourcedata$dataset_shortdesc,
-			fieldtypes = fieldtypes,
-			override_columnnames = override_columnnames,
-			na_values = na,
-			aggregation_timeunit = aggregation_timeunit,
-			report_filename = reportfilename,
-			sourcedata = sourcedata,
-			aggregatedata = aggregatedata,
-			log_filename = log_filename
-		),
-		class = "daiquiri_object"
-	)
+  structure(
+    list(
+      dataset_shortdesc = sourcedata$dataset_shortdesc,
+      fieldtypes = fieldtypes,
+      override_columnnames = override_columnnames,
+      na_values = na,
+      aggregation_timeunit = aggregation_timeunit,
+      report_filename = reportfilename,
+      sourcedata = sourcedata,
+      aggregatedata = aggregatedata,
+      log_filename = log_filename
+    ),
+    class = "daiquiri_object"
+  )
 }
 
 #' @export
 print.daiquiri_object <- function(x, ...) {
-	cat("Class: daiquiri_object\n")
-	cat("Dataset:", x$sourcedata$dataset_shortdesc, "\n")
-	cat("\n")
-	cat("Columns in source:", x$sourcedata$cols_source_n, "\n")
-	cat("Columns imported:", x$sourcedata$cols_imported_n, "\n")
-	cat("Rows in source:", x$sourcedata$rows_source_n, "\n")
-	cat("Duplicate rows removed:", x$sourcedata$rows_duplicates_n, "\n")
-	cat("Rows imported:", x$sourcedata$rows_imported_n, "\n")
-	cat("Column used for timepoint:", x$sourcedata$timepoint_fieldname, "\n")
-	cat("Rows missing timepoint values removed:", x$sourcedata$timepoint_missing_n, "\n")
-	cat("Total validation warnings:", nrow(x$sourcedata$validation_warnings), "\n")
-	cat("\n")
+  cat("Class: daiquiri_object\n")
+  cat("Dataset:", x$sourcedata$dataset_shortdesc, "\n")
+  cat("\n")
+  cat("Columns in source:", x$sourcedata$cols_source_n, "\n")
+  cat("Columns imported:", x$sourcedata$cols_imported_n, "\n")
+  cat("Rows in source:", x$sourcedata$rows_source_n, "\n")
+  cat("Duplicate rows removed:", x$sourcedata$rows_duplicates_n, "\n")
+  cat("Rows imported:", x$sourcedata$rows_imported_n, "\n")
+  cat("Column used for timepoint:", x$sourcedata$timepoint_fieldname, "\n")
+  cat("Rows missing timepoint values removed:", x$sourcedata$timepoint_missing_n, "\n")
+  cat("Total validation warnings:", nrow(x$sourcedata$validation_warnings), "\n")
+  cat("\n")
 
-	aggfields <- x$aggregatedata$aggregatefields
-	cat("Min timepoint value:", format(aggfields[[1]]$values[[1]][1]), "\n")
-	cat("Max timepoint value:", format(rev(aggfields[[1]]$values[[1]])[1]), "\n")
-	cat("Timepoint aggregation unit:", x$aggregatedata$aggregation_timeunit, "\n")
-	cat("Total number of timepoints:",
-			length(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[[1]]),	"\n")
-	cat("Number of empty timepoints:",
-			sum(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[["n"]] == 0),	"\n")
+  aggfields <- x$aggregatedata$aggregatefields
+  cat("Min timepoint value:", format(aggfields[[1]]$values[[1]][1]), "\n")
+  cat("Max timepoint value:", format(rev(aggfields[[1]]$values[[1]])[1]), "\n")
+  cat("Timepoint aggregation unit:", x$aggregatedata$aggregation_timeunit, "\n")
+  cat(
+    "Total number of timepoints:",
+    length(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[[1]]), "\n"
+  )
+  cat(
+    "Number of empty timepoints:",
+    sum(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[["n"]] == 0), "\n"
+  )
 }
 
 
@@ -216,34 +223,32 @@ print.daiquiri_object <- function(x, ...) {
 #'   [create_report()]
 #' @export
 read_data <- function(file,
-											delim = NULL,
-											col_names = TRUE,
-											quote = "\"",
-											trim_ws = TRUE,
-											comment = "",
-											skip = 0,
-											n_max = Inf,
-											showprogress = TRUE) {
+                      delim = NULL,
+                      col_names = TRUE,
+                      quote = "\"",
+                      trim_ws = TRUE,
+                      comment = "",
+                      skip = 0,
+                      n_max = Inf,
+                      showprogress = TRUE) {
+  validate_params_required(match.call())
+  # NOTE: let readr do its own param validation
 
-	validate_params_required(match.call())
-	# NOTE: let readr do its own param validation
-
-	readr::read_delim(
-		file,
-		delim = delim,
-		quote = quote,
-		col_names = col_names,
-		col_types = readr::cols(.default = "c"),
-		col_select = NULL,
-		na = character(),
-		comment = comment,
-		trim_ws = trim_ws,
-		skip = skip,
-		n_max = n_max,
-		name_repair = "unique",
-		progress = showprogress,
-		skip_empty_rows = TRUE,
-		lazy = TRUE
-	)
-
+  readr::read_delim(
+    file,
+    delim = delim,
+    quote = quote,
+    col_names = col_names,
+    col_types = readr::cols(.default = "c"),
+    col_select = NULL,
+    na = character(),
+    comment = comment,
+    trim_ws = trim_ws,
+    skip = skip,
+    n_max = n_max,
+    name_repair = "unique",
+    progress = showprogress,
+    skip_empty_rows = TRUE,
+    lazy = TRUE
+  )
 }

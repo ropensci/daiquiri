@@ -37,16 +37,18 @@ rawdata <- read_data(
 
 sourcedataobj <- prepare_data(
   rawdata,
-  fieldtypes = fieldtypes(PrescriptionID = ft_uniqueidentifier(),
+  fieldtypes = fieldtypes(
+    PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
     Drug = ft_freetext(),
     Dose = ft_numeric(),
     DoseUnit = ft_categorical(),
     PatientID = ft_ignore(),
-    Location = ft_categorical(aggregate_by_each_category=TRUE)),
+    Location = ft_categorical(aggregate_by_each_category = TRUE)
+  ),
   override_columnnames = FALSE,
-  na = c("","NULL")
+  na = c("", "NULL")
 )
 
 aggregatedataobj <- aggregate_data(

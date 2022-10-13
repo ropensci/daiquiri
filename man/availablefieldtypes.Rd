@@ -84,14 +84,16 @@ ignored.  These will not be loaded.
 }
 
 \examples{
-fts <- fieldtypes(PatientID = ft_uniqueidentifier(),
-                            TestID = ft_ignore(),
-                            TestDate = ft_timepoint(),
-                            TestName = ft_categorical(aggregate_by_each_category = FALSE),
-                            TestResult = ft_numeric(),
-                            ResultDate = ft_datetime(),
-                            ResultComment = ft_freetext(),
-                            Location = ft_categorical())
+fts <- fieldtypes(
+  PatientID = ft_uniqueidentifier(),
+  TestID = ft_ignore(),
+  TestDate = ft_timepoint(),
+  TestName = ft_categorical(aggregate_by_each_category = FALSE),
+  TestResult = ft_numeric(),
+  ResultDate = ft_datetime(),
+  ResultComment = ft_freetext(),
+  Location = ft_categorical()
+)
 }
 \seealso{
 \code{\link[=fieldtypes]{fieldtypes()}}

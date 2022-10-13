@@ -101,7 +101,7 @@ fts <- fieldtypes(
   Dose = ft_numeric(),
   DoseUnit = ft_categorical(),
   PatientID = ft_ignore(),
-  Location = ft_categorical(aggregate_by_each_category=TRUE)
+  Location = ft_categorical(aggregate_by_each_category = TRUE)
 )
 ```
 
@@ -132,7 +132,7 @@ daiqobj <- create_report(
   df = example_prescriptions,
   fieldtypes = fts,
   override_columnnames = FALSE,
-  na = c("","NULL"),
+  na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
@@ -143,7 +143,6 @@ daiqobj <- create_report(
 
 # clean up
 file.remove("./example_prescriptions_report.html")
-
 ```
 
 ```{r, eval=FALSE}
@@ -151,7 +150,7 @@ daiqobj <- create_report(
   df = example_prescriptions,
   fieldtypes = fts,
   override_columnnames = FALSE,
-  na = c("","NULL"),
+  na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
@@ -159,7 +158,6 @@ daiqobj <- create_report(
   showprogress = TRUE,
   log_directory = NULL
 )
-
 ```
 
 ## Contents of the report
@@ -191,9 +189,9 @@ The simplest way to use this package is to use the `create_report()` function as
 ```{r, eval=FALSE}
 # load your dataset into a sourcedata object
 examplesourcedata <- prepare_data(
-  example_prescriptions, 
-  fieldtypes = fts, 
-  na=c("","NULL")
+  example_prescriptions,
+  fieldtypes = fts,
+  na = c("", "NULL")
 )
 
 # aggregate the sourcedata object by desired granularity
@@ -222,7 +220,6 @@ report_data(
   save_directory = ".",
   save_filename = "example_prescriptions_byweek"
 )
-
 ```
 
 
