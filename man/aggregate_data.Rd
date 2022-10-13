@@ -44,7 +44,7 @@ sourcedataobj <- prepare_data(
     PatientID = ft_ignore(),
     Location = ft_categorical(aggregate_by_each_category = TRUE)
   ),
-  override_columnnames = FALSE,
+  override_column_names = FALSE,
   na = c("", "NULL")
 )
 

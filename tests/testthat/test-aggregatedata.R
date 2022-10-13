@@ -177,7 +177,7 @@ test_that("aggregateallfields() removes NAs when rowsumming", {
         col_numeric_missing = ft_numeric()
       ),
       dataset_shortdesc = "blankplottest",
-      override_columnnames = FALSE,
+      override_column_names = FALSE,
       na = c("", "NULL"),
       showprogress = FALSE
     )
@@ -240,7 +240,7 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
         col_datetime = ft_datetime(includes_time = TRUE),
         col_uniqueidentifier = ft_uniqueidentifier()
       ),
-      override_columnnames = FALSE,
+      override_column_names = FALSE,
       na = c("", "NULL"),
       showprogress = FALSE
     )
@@ -282,7 +282,7 @@ test_that("aggregated values contain all NAs when datafield values are all NA (e
         col_uniqueidentifier_allna = ft_uniqueidentifier(),
         col_categorical_allna = ft_categorical()
       ),
-      override_columnnames = FALSE,
+      override_column_names = FALSE,
       na = c("", "NULL"),
       showprogress = FALSE
     )

@@ -7,7 +7,7 @@
 create_report(
   df,
   field_types,
-  override_columnnames = FALSE,
+  override_column_names = FALSE,
   na = c("", "NA", "NULL"),
   dataset_shortdesc = NULL,
   aggregation_timeunit = "day",
@@ -24,7 +24,7 @@ create_report(
 \item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types
 of fields (columns) in the supplied \code{df}. See also \link{field_types_available}.}
 
-\item{override_columnnames}{If \code{FALSE}, column names in the supplied \code{df}
+\item{override_column_names}{If \code{FALSE}, column names in the supplied \code{df}
 must match the names specified in \code{field_types} exactly. If \code{TRUE}, column
 names in the supplied \code{df} will be replaced with the names specified in \code{field_types}.
 The specification must therefore contain the columns in the correct order.
@@ -94,7 +94,7 @@ daiqobj <- create_report(
     PatientID = ft_ignore(),
     Location = ft_categorical(aggregate_by_each_category = TRUE)
   ),
-  override_columnnames = FALSE,
+  override_column_names = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example data provided with package",
   aggregation_timeunit = "day",

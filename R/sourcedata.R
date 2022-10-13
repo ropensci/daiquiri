@@ -38,7 +38,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #' @param field_types [field_types()] object specifying names and types
 #'   of fields (columns) in the supplied `df`. See also
 #'   [field_types_available].
-#' @param override_columnnames If `FALSE`, column names in the supplied `df`
+#' @param override_column_names If `FALSE`, column names in the supplied `df`
 #'   must match the names specified in `field_types` exactly. If `TRUE`, column
 #'   names in the supplied `df` will be replaced with the names specified in `field_types`.
 #'   The specification must therefore contain the columns in the correct order.
@@ -71,7 +71,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #'     PatientID = ft_ignore(),
 #'     Location = ft_categorical(aggregate_by_each_category = TRUE)
 #'   ),
-#'   override_columnnames = FALSE,
+#'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
 #'   dataset_shortdesc = "Example data provided with package"
 #' )
@@ -82,7 +82,7 @@ is.datafield <- function(x) inherits(x, "datafield")
 #' @importFrom data.table .N .SD
 prepare_data <- function(df,
                          field_types,
-                         override_columnnames = FALSE,
+                         override_column_names = FALSE,
                          na = c("", "NA", "NULL"),
                          dataset_shortdesc = NULL,
                          showprogress = TRUE) {
@@ -95,7 +95,7 @@ prepare_data <- function(df,
   validate_params_type(match.call(),
     df = df,
     field_types = field_types,
-    override_columnnames = override_columnnames,
+    override_column_names = override_column_names,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
     showprogress = showprogress
@@ -133,7 +133,7 @@ prepare_data <- function(df,
   )
   validate_columnnames(names(df),
     names(field_types),
-    check_length_only = override_columnnames
+    check_length_only = override_column_names
   )
 
   log_message(
@@ -152,7 +152,7 @@ prepare_data <- function(df,
   # TODO: consider removing df at this point, to release memory
   dt <- data.table::as.data.table(df)
 
-  if (override_columnnames == TRUE) {
+  if (override_column_names == TRUE) {
     names(dt) <- names(field_types)
   }
 

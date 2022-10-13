@@ -34,8 +34,8 @@ test_that("validate_params_type() checks df params are of correct type", {
   )
 })
 
-test_that("validate_params_type() checks override_columnnames params are of correct type", {
-  expect_error(testfn_params_type(override_columnnames = c("col1", "col2")),
+test_that("validate_params_type() checks override_column_names params are of correct type", {
+  expect_error(testfn_params_type(override_column_names = c("col1", "col2")),
     class = "invalid_param_type"
   )
 })

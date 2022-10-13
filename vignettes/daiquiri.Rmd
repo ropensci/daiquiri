@@ -120,7 +120,7 @@ We also need to decide where to save the report, and optionally specify a filena
 
 If you specify a log directory, details of all the processing steps will be saved into a text file.
 
-You can choose to override the existing column names in the dataframe with those in the `field_types()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `field_types()` specification must match exactly to those in the dataframe.
+You can choose to override the existing column names in the dataframe with those in the `field_types()` specification by setting the `override_column_names` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_column_names = FALSE` (the default) then the names in the `field_types()` specification must match exactly to those in the dataframe.
 
 **Example:**
 
@@ -131,7 +131,7 @@ For the `example_prescriptions` dataset above, we will set the aggregation granu
 daiqobj <- create_report(
   df = example_prescriptions,
   field_types = fts,
-  override_columnnames = FALSE,
+  override_column_names = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",
@@ -149,7 +149,7 @@ file.remove("./example_prescriptions_report.html")
 daiqobj <- create_report(
   df = example_prescriptions,
   field_types = fts,
-  override_columnnames = FALSE,
+  override_column_names = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",
   aggregation_timeunit = "day",

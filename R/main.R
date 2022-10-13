@@ -8,7 +8,7 @@
 #'   [read_data()]. See Details.
 #' @param field_types [field_types()] object specifying names and types
 #'   of fields (columns) in the supplied `df`. See also [field_types_available].
-#' @param override_columnnames If `FALSE`, column names in the supplied `df`
+#' @param override_column_names If `FALSE`, column names in the supplied `df`
 #'   must match the names specified in `field_types` exactly. If `TRUE`, column
 #'   names in the supplied `df` will be replaced with the names specified in `field_types`.
 #'   The specification must therefore contain the columns in the correct order.
@@ -60,7 +60,7 @@
 #'     PatientID = ft_ignore(),
 #'     Location = ft_categorical(aggregate_by_each_category = TRUE)
 #'   ),
-#'   override_columnnames = FALSE,
+#'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
 #'   dataset_shortdesc = "Example data provided with package",
 #'   aggregation_timeunit = "day",
@@ -77,7 +77,7 @@
 #' @export
 create_report <- function(df,
                           field_types,
-                          override_columnnames = FALSE,
+                          override_column_names = FALSE,
                           na = c("", "NA", "NULL"),
                           dataset_shortdesc = NULL,
                           aggregation_timeunit = "day",
@@ -102,7 +102,7 @@ create_report <- function(df,
     match.call(),
     df = df,
     field_types = field_types,
-    override_columnnames = override_columnnames,
+    override_column_names = override_column_names,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
     aggregation_timeunit = aggregation_timeunit,
@@ -116,7 +116,7 @@ create_report <- function(df,
     prepare_data(
       df,
       field_types,
-      override_columnnames = override_columnnames,
+      override_column_names = override_column_names,
       dataset_shortdesc = dataset_shortdesc,
       na = na,
       showprogress = showprogress
@@ -145,7 +145,7 @@ create_report <- function(df,
     list(
       dataset_shortdesc = sourcedata$dataset_shortdesc,
       field_types = field_types,
-      override_columnnames = override_columnnames,
+      override_column_names = override_column_names,
       na_values = na,
       aggregation_timeunit = aggregation_timeunit,
       report_filename = reportfilename,

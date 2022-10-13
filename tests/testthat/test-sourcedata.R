@@ -205,7 +205,7 @@ test_that("prepare_data() overrides column names correctly", {
       cola = ft_timepoint(),
       colb = ft_simple()
     ),
-    override_columnnames = TRUE,
+    override_column_names = TRUE,
     dataset_shortdesc = "override colnames",
     showprogress = FALSE
   )
@@ -224,7 +224,7 @@ test_that("prepare_data() can accept a data.table with nonchar cols without erro
       col1 = ft_timepoint(),
       col2 = ft_simple()
     ),
-    override_columnnames = TRUE,
+    override_column_names = TRUE,
     dataset_shortdesc = "pass in nonchar data.table",
     showprogress = FALSE
   )

@@ -39,7 +39,7 @@
 #'     PatientID = ft_ignore(),
 #'     Location = ft_categorical(aggregate_by_each_category = TRUE)
 #'   ),
-#'   override_columnnames = FALSE,
+#'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
 #'   dataset_shortdesc = "Example data provided with package",
 #'   showprogress = TRUE

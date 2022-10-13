@@ -104,7 +104,7 @@ test_that("plots still work when all values are missing", {
         col_numeric_missing = ft_numeric()
       ),
       dataset_shortdesc = "blankplottest",
-      override_columnnames = FALSE,
+      override_column_names = FALSE,
       na = c("", "NULL"),
       showprogress = FALSE
     )

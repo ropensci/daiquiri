@@ -139,7 +139,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("override_columnnames", "showprogress")) {
+    } else if (params_names[i] %in% c("override_column_names", "showprogress")) {
       if (!is.logical(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
@@ -418,7 +418,7 @@ testfn_params_type <- function(df,
                                field_types,
                                sourcedata,
                                aggregatedata,
-                               override_columnnames = FALSE,
+                               override_column_names = FALSE,
                                na = c("", "NA", "NULL"),
                                dataset_shortdesc = "shortdesc",
                                aggregation_timeunit = "day",
@@ -448,7 +448,7 @@ testfn_params_type <- function(df,
     match.call(),
     df = df,
     field_types = field_types,
-    override_columnnames = override_columnnames,
+    override_column_names = override_column_names,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
     aggregation_timeunit = aggregation_timeunit,
