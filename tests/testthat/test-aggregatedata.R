@@ -25,7 +25,7 @@ test_that("aggregate_data() creates aggregate object correctly", {
   testsourcedata <-
     prepare_data(
       testdf,
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col_timepoint_err = ft_ignore(),
         col_timepoint = ft_timepoint(),
         col_date_time_err = ft_ignore(),
@@ -129,7 +129,7 @@ test_that("export_aggregated_data() generates csv files", {
         col2 = rep(1, 5),
         col3 = 1:5
       ),
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col1 = ft_timepoint(),
         col2 = ft_simple(),
         col3 = ft_ignore()
@@ -171,7 +171,7 @@ test_that("aggregateallfields() removes NAs when rowsumming", {
   testsourcedata <-
     prepare_data(
       testdf,
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric = ft_numeric(),
         col_numeric_missing = ft_numeric()
@@ -202,7 +202,7 @@ test_that("aggregatedata object prints to console ok", {
         col2 = rep(1, 5),
         col3 = 1:5
       ),
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col1 = ft_timepoint(),
         col2 = ft_simple(),
         col3 = ft_ignore()
@@ -234,7 +234,7 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
   testsourcedata <-
     prepare_data(
       testdf,
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric = ft_numeric(),
         col_datetime = ft_datetime(includes_time = TRUE),
@@ -275,7 +275,7 @@ test_that("aggregated values contain all NAs when datafield values are all NA (e
   testsourcedata <-
     prepare_data(
       testdf,
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric_allna = ft_numeric(),
         col_datetime_allna = ft_datetime(),

@@ -41,7 +41,7 @@ test_that("report_data() creates report and returns path successfully", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
   testsourcedata <- prepare_data(
     testdf,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
       col_date_time_err = ft_ignore(),
@@ -99,7 +99,7 @@ test_that("plots still work when all values are missing", {
   testsourcedata <-
     prepare_data(
       testdf,
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric_missing = ft_numeric()
       ),

@@ -6,7 +6,7 @@
 \usage{
 create_report(
   df,
-  fieldtypes,
+  field_types,
   override_columnnames = FALSE,
   na = c("", "NA", "NULL"),
   dataset_shortdesc = NULL,
@@ -21,12 +21,12 @@ create_report(
 \item{df}{A data frame. Rectangular data can be read from file using
 \code{\link[=read_data]{read_data()}}. See Details.}
 
-\item{fieldtypes}{\code{\link[=fieldtypes]{fieldtypes()}} object specifying names and types
-of fields (columns) in the supplied \code{df}. See also \link{availablefieldtypes}.}
+\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types
+of fields (columns) in the supplied \code{df}. See also \link{field_types_available}.}
 
 \item{override_columnnames}{If \code{FALSE}, column names in the supplied \code{df}
-must match the names specified in \code{fieldtypes} exactly. If \code{TRUE}, column
-names in the supplied \code{df} will be replaced with the names specified in \code{fieldtypes}.
+must match the names specified in \code{field_types} exactly. If \code{TRUE}, column
+names in the supplied \code{df} will be replaced with the names specified in \code{field_types}.
 The specification must therefore contain the columns in the correct order.
 Default = \code{FALSE}}
 
@@ -68,7 +68,7 @@ values in numeric or datetime fields, these should be present in the data
 frame in their raw character format. Rectangular data from a text file will
 automatically be read in as character type if you use the
 \code{\link[=read_data]{read_data()}} function. Data frame columns that are not of class
-character will still be processed according to the \code{fieldtypes}
+character will still be processed according to the \code{field_types}
 specified.
 }
 
@@ -84,7 +84,7 @@ rawdata <- read_data(
 # create a report in the current directory
 daiqobj <- create_report(
   rawdata,
-  fieldtypes = fieldtypes(
+  field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -103,12 +103,11 @@ daiqobj <- create_report(
   showprogress = TRUE,
   log_directory = NULL
 )
-
 \dontshow{file.remove("./example_data_report.html")}
 }
 
 }
 \seealso{
-\code{\link[=read_data]{read_data()}}, \code{\link[=fieldtypes]{fieldtypes()}},
-\code{\link[=availablefieldtypes]{availablefieldtypes()}}
+\code{\link[=read_data]{read_data()}}, \code{\link[=field_types]{field_types()}},
+\code{\link[=field_types_available]{field_types_available()}}
 }

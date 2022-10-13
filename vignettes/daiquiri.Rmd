@@ -93,7 +93,7 @@ For the `example_prescriptions` dataset above, we will use the PrescriptionDate 
 
 ```{r}
 # set up a datafields specification for use later
-fts <- fieldtypes(
+fts <- field_types(
   PrescriptionID = ft_uniqueidentifier(),
   PrescriptionDate = ft_timepoint(),
   AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -107,7 +107,7 @@ fts <- fieldtypes(
 
 This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
 
-TIP: If you have a lot of columns in your dataset you can use the `fieldtypes_template()` function to print a template specification to the console that you can copy and edit.
+TIP: If you have a lot of columns in your dataset you can use the `print_field_types_template()` function to print a template specification to the console that you can copy and edit.
 
 
 ## Generating a data quality report
@@ -120,7 +120,7 @@ We also need to decide where to save the report, and optionally specify a filena
 
 If you specify a log directory, details of all the processing steps will be saved into a text file.
 
-You can choose to override the existing column names in the dataframe with those in the `fieldtypes()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `fieldtypes()` specification must match exactly to those in the dataframe.
+You can choose to override the existing column names in the dataframe with those in the `field_types()` specification by setting the `override_columnnames` parameter to `TRUE`, in which case they must be specified in the correct order. If `override_columnnames = FALSE` (the default) then the names in the `field_types()` specification must match exactly to those in the dataframe.
 
 **Example:**
 
@@ -130,7 +130,7 @@ For the `example_prescriptions` dataset above, we will set the aggregation granu
 # quietly check can create the report but show the code in the next chunk in the vignette
 daiqobj <- create_report(
   df = example_prescriptions,
-  fieldtypes = fts,
+  field_types = fts,
   override_columnnames = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",
@@ -148,7 +148,7 @@ file.remove("./example_prescriptions_report.html")
 ```{r, eval=FALSE}
 daiqobj <- create_report(
   df = example_prescriptions,
-  fieldtypes = fts,
+  field_types = fts,
   override_columnnames = FALSE,
   na = c("", "NULL"),
   dataset_shortdesc = "Example prescription data",

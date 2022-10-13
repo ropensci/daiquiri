@@ -33,12 +33,12 @@ test_that("read_data() raises a warning when there are parsing issues", {
 })
 
 test_that("create_report() requires a df param", {
-  expect_error(create_report(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+  expect_error(create_report(field_types = field_types(Col_tp = ft_timepoint())),
     class = "invalid_param_missing"
   )
 })
 
-test_that("create_report() requires a fieldtypes param", {
+test_that("create_report() requires a field_types param", {
   expect_error(create_report(df = data.frame("Fieldname" = 123)),
     class = "invalid_param_missing"
   )
@@ -47,16 +47,16 @@ test_that("create_report() requires a fieldtypes param", {
 test_that("create_report() requires df param to be a data frame", {
   expect_error(create_report(
     df = c("Fieldname", 123),
-    fieldtypes = fieldtypes(Col_tp = ft_timepoint())
+    field_types = field_types(Col_tp = ft_timepoint())
   ),
   class = "invalid_param_type"
   )
 })
 
-test_that("create_report() requires fieldtypes param to be a fieldtypes object", {
+test_that("create_report() requires field_types param to be a field_types object", {
   expect_error(create_report(
     df = data.frame("Fieldname" = 123),
-    fieldtypes = TRUE
+    field_types = TRUE
   ),
   class = "invalid_param_type"
   )
@@ -67,7 +67,7 @@ test_that("create_report() creates report and returns daiquiri object successful
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
   testdaiqobj <- create_report(
     testdf,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
       col_date_time_err = ft_ignore(),
@@ -121,7 +121,7 @@ test_that("create_report() works even when columnnames contain special chars", {
   testdaiqobj <-
     create_report(
       df = read_data(test_path("testdata", "specialchars_colnames.csv")),
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         "col_underscore" = ft_ignore(),
         "col space" = ft_timepoint(),
         "col-dash" = ft_simple(),
@@ -154,7 +154,7 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
     )
   testdaiqobj <- create_report(
     df = dfobj,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple(),
       col3 = ft_ignore()
@@ -175,7 +175,7 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
         col2 = rep(1, 5),
         col3 = 1:5
       ),
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col1 = ft_timepoint(),
         col2 = ft_simple(),
         col3 = ft_ignore()
@@ -203,7 +203,7 @@ test_that("daiquiri_object prints to console ok", {
         col2 = rep(1, 5),
         col3 = 1:5
       ),
-      fieldtypes = fieldtypes(
+      field_types = field_types(
         col1 = ft_timepoint(),
         col2 = ft_simple(),
         col3 = ft_ignore()

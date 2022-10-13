@@ -83,13 +83,13 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] == "fieldtypes") {
-      if (!is.fieldtypes(params_passed[[i]])) {
+    } else if (params_names[i] == "field_types") {
+      if (!is.field_types(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
             params_names[i],
-            ": Expected a fieldtypes specification but found: [ class = ",
+            ": Expected a field_types specification but found: [ class = ",
             class(params_passed[[i]]),
             "; contents = ",
             substr(toString(params_passed[[i]]), 1, 100),
@@ -97,13 +97,13 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] == "default_fieldtype") {
-      if (!is.fieldtype(params_passed[[i]])) {
+    } else if (params_names[i] == "default_field_type") {
+      if (!is.field_type(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
             params_names[i],
-            ": Expected a fieldtype but found: [ class = ",
+            ": Expected a field_type but found: [ class = ",
             class(params_passed[[i]]),
             "; contents = ",
             substr(toString(params_passed[[i]]), 1, 100),
@@ -415,7 +415,7 @@ testfn_params_required <- function(p1, p2, p3 = NULL) {
 #'
 #' @noRd
 testfn_params_type <- function(df,
-                               fieldtypes,
+                               field_types,
                                sourcedata,
                                aggregatedata,
                                override_columnnames = FALSE,
@@ -429,12 +429,12 @@ testfn_params_type <- function(df,
                                format = "html",
                                save_filetype = "csv",
                                save_fileprefix = "",
-                               default_fieldtype = ft_ignore()) {
+                               default_field_type = ft_ignore()) {
   if (missing(df)) {
     df <- data.frame("Fieldname" = 123)
   }
-  if (missing(fieldtypes)) {
-    fieldtypes <- daiquiri::fieldtypes(Col_tp = ft_timepoint())
+  if (missing(field_types)) {
+    field_types <- daiquiri::field_types(Col_tp = ft_timepoint())
   }
   if (missing(sourcedata)) {
     sourcedata <- structure(list(datafields = NA), class = "sourcedata")
@@ -447,7 +447,7 @@ testfn_params_type <- function(df,
   validate_params_type(
     match.call(),
     df = df,
-    fieldtypes = fieldtypes,
+    field_types = field_types,
     override_columnnames = override_columnnames,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
@@ -461,7 +461,7 @@ testfn_params_type <- function(df,
     format = format,
     save_filetype = save_filetype,
     save_fileprefix = save_fileprefix,
-    default_fieldtype = default_fieldtype
+    default_field_type = default_field_type
   )
 }
 

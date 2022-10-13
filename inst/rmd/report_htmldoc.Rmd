@@ -54,7 +54,7 @@ sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
-  sourcedatafields[which(trimws(sourcesummary$datafields$fieldtype) != "ignore"), ],
+  sourcedatafields[which(trimws(sourcesummary$datafields$field_type) != "ignore"), ],
   sortable = TRUE,
   filterable = FALSE,
   searchable = FALSE,
@@ -67,7 +67,7 @@ reactable::reactable(
       name = "Field name",
       style = list(fontWeight = "bold")
     ),
-    fieldtype = reactable::colDef(name = "Field type"),
+    field_type = reactable::colDef(name = "Field type"),
     datatype = reactable::colDef(show = FALSE),
     count = reactable::colDef(name = "Total values"),
     missing = reactable::colDef(name = "Missing values"),
@@ -87,8 +87,8 @@ reactable::reactable(
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
   sourcedatafields[
-    which(trimws(sourcesummary$datafields$fieldtype) == "ignore"),
-    c("fieldname", "fieldtype", "ordinal_position")
+    which(trimws(sourcesummary$datafields$field_type) == "ignore"),
+    c("fieldname", "field_type", "ordinal_position")
   ],
   sortable = TRUE,
   filterable = FALSE,
@@ -102,7 +102,7 @@ reactable::reactable(
       name = "Field name",
       minWidth = 200
     ),
-    fieldtype = reactable::colDef(
+    field_type = reactable::colDef(
       name = "Field type",
       minWidth = 100
     ),

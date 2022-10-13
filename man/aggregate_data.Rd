@@ -20,7 +20,7 @@ Monday-based. Default = \code{"day"}}
 An \code{aggregatedata} object
 }
 \description{
-Aggregates a \code{sourcedata} object based on the \code{\link[=fieldtypes]{fieldtypes()}} specified at load time.
+Aggregates a \code{sourcedata} object based on the \code{\link[=field_types]{field_types()}} specified at load time.
 Default time period for aggregation is a calendar day
 }
 \examples{
@@ -34,7 +34,7 @@ rawdata <- read_data(
 # validate and prepare the data for aggregation
 sourcedataobj <- prepare_data(
   rawdata,
-  fieldtypes = fieldtypes(
+  field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),

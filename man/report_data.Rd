@@ -49,7 +49,7 @@ rawdata <- read_data(
 # validate and prepare the data for aggregation
 sourcedataobj <- prepare_data(
   rawdata,
-  fieldtypes = fieldtypes(
+  field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -80,7 +80,6 @@ report_data(
   save_filename = "example_data_report",
   showprogress = TRUE
 )
-
 \dontshow{file.remove("./example_data_report.html")}
 }
 

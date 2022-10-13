@@ -6,7 +6,7 @@
 \usage{
 prepare_data(
   df,
-  fieldtypes,
+  field_types,
   override_columnnames = FALSE,
   na = c("", "NA", "NULL"),
   dataset_shortdesc = NULL,
@@ -16,13 +16,13 @@ prepare_data(
 \arguments{
 \item{df}{A data frame}
 
-\item{fieldtypes}{\code{\link[=fieldtypes]{fieldtypes()}} object specifying names and types
+\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types
 of fields (columns) in the supplied \code{df}. See also
-\link{availablefieldtypes}.}
+\link{field_types_available}.}
 
 \item{override_columnnames}{If \code{FALSE}, column names in the supplied \code{df}
-must match the names specified in \code{fieldtypes} exactly. If \code{TRUE}, column
-names in the supplied \code{df} will be replaced with the names specified in \code{fieldtypes}.
+must match the names specified in \code{field_types} exactly. If \code{TRUE}, column
+names in the supplied \code{df} will be replaced with the names specified in \code{field_types}.
 The specification must therefore contain the columns in the correct order.
 Default = \code{FALSE}}
 
@@ -39,7 +39,7 @@ be used}
 A \code{sourcedata} object
 }
 \description{
-Validate a data frame against a \code{\link[=fieldtypes]{fieldtypes()}} specification, and
+Validate a data frame against a \code{\link[=field_types]{field_types()}} specification, and
 prepare for aggregation.
 }
 \examples{
@@ -53,7 +53,7 @@ rawdata <- read_data(
 # validate and prepare the data for aggregation
 sourcedataobj <- prepare_data(
   rawdata,
-  fieldtypes = fieldtypes(
+  field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -69,7 +69,7 @@ sourcedataobj <- prepare_data(
 )
 }
 \seealso{
-\code{\link[=fieldtypes]{fieldtypes()}}, \code{\link[=availablefieldtypes]{availablefieldtypes()}},
+\code{\link[=field_types]{field_types()}}, \code{\link[=field_types_available]{field_types_available()}},
 \code{\link[=aggregate_data]{aggregate_data()}}, \code{\link[=report_data]{report_data()}},
 \code{\link[=create_report]{create_report()}}
 }

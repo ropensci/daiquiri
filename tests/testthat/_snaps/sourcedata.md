@@ -81,7 +81,7 @@
     Total validation warnings: 33 
     
     Datafields:
-                       fieldname        fieldtype  datatype count  missing
+                       fieldname       field_type  datatype count  missing
     1  col_timepoint_err         ignore           NA           NA NA      
     2  col_timepoint             timepoint        double      890 0 (0%)  
     3  col_date_time_err         ignore           NA           NA NA      

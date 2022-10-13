@@ -1,18 +1,18 @@
-test_that("validate_columnnames() checks that column names in data and fieldtypes can match exactly", {
+test_that("validate_columnnames() checks that column names in data and field_types can match exactly", {
   expect_silent(validate_columnnames(c("nonsense", "set", "of"),
     c("nonsense", "set", "of"),
     check_length_only = FALSE
   ))
 })
 
-test_that("validate_columnnames() checks that column names in data and fieldtypes can match in different order", {
+test_that("validate_columnnames() checks that column names in data and field_types can match in different order", {
   expect_silent(validate_columnnames(c("nonsense", "set", "of"),
     c("nonsense", "of", "set"),
     check_length_only = FALSE
   ))
 })
 
-test_that("validate_columnnames() checks that column names in data and fieldtypes must match in length if check_length_only = TRUE", {
+test_that("validate_columnnames() checks that column names in data and field_types must match in length if check_length_only = TRUE", {
   expect_silent(validate_columnnames(c("nonsense", "set"),
     c("nonsense", "names"),
     check_length_only = TRUE
@@ -37,7 +37,7 @@ test_that("validate_columnnames() checks that duplicate column names in data not
   )
 })
 
-test_that("validate_columnnames() checks that column names in data but not in fieldtypes is not allowed", {
+test_that("validate_columnnames() checks that column names in data but not in field_types is not allowed", {
   expect_error(validate_columnnames(
     c("nonsense", "set", "of", "stuff", "names"),
     c("nonsense", "set", "of", "stuff"),
@@ -47,7 +47,7 @@ test_that("validate_columnnames() checks that column names in data but not in fi
   )
 })
 
-test_that("validate_columnnames() checks that column names in fieldtypes but not in data is not allowed", {
+test_that("validate_columnnames() checks that column names in field_types but not in data is not allowed", {
   expect_error(validate_columnnames(
     c("nonsense", "set", "of"),
     c("nonsense", "set", "of", "stuff"),
@@ -60,12 +60,12 @@ test_that("validate_columnnames() checks that column names in fieldtypes but not
 
 
 test_that("prepare_data() requires a df param", {
-  expect_error(prepare_data(fieldtypes = fieldtypes(Col_tp = ft_timepoint())),
+  expect_error(prepare_data(field_types = field_types(Col_tp = ft_timepoint())),
     class = "invalid_param_missing"
   )
 })
 
-test_that("prepare_data() requires a fieldtypes param", {
+test_that("prepare_data() requires a field_types param", {
   expect_error(prepare_data(df = data.frame("Fieldname" = 123)),
     class = "invalid_param_missing"
   )
@@ -73,16 +73,16 @@ test_that("prepare_data() requires a fieldtypes param", {
 
 test_that("prepare_data() requires df param to be a data frame", {
   expect_error(prepare_data(c("Fieldname", 123),
-    fieldtypes = fieldtypes(Col_tp = ft_timepoint())
+    field_types = field_types(Col_tp = ft_timepoint())
   ),
   class = "invalid_param_type"
   )
 })
 
-test_that("prepare_data() requires fieldtypes param to be a fieldtypes object", {
+test_that("prepare_data() requires field_types param to be a field_types object", {
   expect_error(prepare_data(
     df = data.frame("Fieldname" = 123),
-    fieldtypes = TRUE
+    field_types = TRUE
   ),
   class = "invalid_param_type"
   )
@@ -95,7 +95,7 @@ test_that("prepare_data() checks that at least one valid timepoint value is pres
       col2 = rep(1, 5),
       col3 = 1:5
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple(),
       col3 = ft_ignore()
@@ -111,7 +111,7 @@ test_that("prepare_data() creates sourcedata object correctly", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
   testsourcedata <- prepare_data(
     testdf,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
       col_date_time_err = ft_ignore(),
@@ -163,7 +163,7 @@ test_that("prepare_data() ignores nonchar columns (since readr::type_convert fai
       col2 = rep(1, 5),
       col3 = 1:5
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple(),
       col3 = ft_ignore()
@@ -182,7 +182,7 @@ test_that("prepare_data() generates a validation warning when nonchar columns ar
       col1 = rep("2022-01-01", 5),
       col2 = 1:5
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_numeric()
     ),
@@ -201,7 +201,7 @@ test_that("prepare_data() overrides column names correctly", {
       col1 = rep("2022-01-01", 5),
       col2 = rep("1", 5)
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       cola = ft_timepoint(),
       colb = ft_simple()
     ),
@@ -220,7 +220,7 @@ test_that("prepare_data() can accept a data.table with nonchar cols without erro
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5)
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple()
     ),
@@ -241,7 +241,7 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
   )
   testsourcedata <- prepare_data(
     df = dfobj,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple(),
       col3 = ft_ignore()
@@ -257,7 +257,7 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
       col2 = rep(1, 5),
       col3 = 1:5
     ),
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col1 = ft_timepoint(),
       col2 = ft_simple(),
       col3 = ft_ignore()
@@ -276,7 +276,7 @@ test_that("sourcedata object prints to console ok", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
   testsourcedata <- prepare_data(
     testdf,
-    fieldtypes = fieldtypes(
+    field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
       col_date_time_err = ft_ignore(),

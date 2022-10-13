@@ -21,7 +21,7 @@ aggregatefield <- function(datafield,
   n <- value <- values <- timepointgroup <- NULL
 
   log_message(paste0("Preparing..."), showprogress)
-  functionlist <- datafield$fieldtype$aggfunctions
+  functionlist <- datafield$field_type$aggfunctions
 
   log_message(
     paste0("Aggregating ", get_datafield_basetype(datafield), " field..."),
@@ -301,7 +301,7 @@ aggregatefield <- function(datafield,
     list(
       values = groupedvals,
       functionlist = functionlist,
-      fieldtype = datafield$fieldtype,
+      field_type = datafield$field_type,
       columnname = datafield$columnname
     ),
     class = "aggregatefield"
@@ -344,7 +344,7 @@ aggregateallfields <- function(aggfields,
   for (i in seq_along(aggfields)) {
     for (j in 2:length(names(aggfields[[i]][["values"]]))) {
       # TODO: ideally want to use the aggfunctions list from the allfields
-      # fieldtype rather than hard code
+      # field_type rather than hard code
       if (names(aggfields[[i]][["values"]])[j] %in% c("n", "missing_n", "nonconformant_n")) {
         f <- names(aggfields[[i]][["values"]])[j]
         if (f %in% names(groupedvals)) {
@@ -380,7 +380,7 @@ aggregateallfields <- function(aggfields,
     list(
       values = groupedvals,
       functionlist = functionlist,
-      fieldtype = ft,
+      field_type = ft,
       columnname = "[ALLFIELDSCOMBINED]"
     ),
     class = "aggregatefield"
@@ -390,7 +390,7 @@ aggregateallfields <- function(aggfields,
 # -----------------------------------------------------------------------------
 #' Aggregate source data
 #'
-#' Aggregates a `sourcedata` object based on the [fieldtypes()] specified at load time.
+#' Aggregates a `sourcedata` object based on the [field_types()] specified at load time.
 #' Default time period for aggregation is a calendar day
 #'
 #' @param sourcedata A `sourcedata` object returned from
@@ -411,7 +411,7 @@ aggregateallfields <- function(aggfields,
 #' # validate and prepare the data for aggregation
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
-#'   fieldtypes = fieldtypes(
+#'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -558,7 +558,7 @@ is.aggregatedata <- function(x) inherits(x, "aggregatedata")
 #'
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
-#'   fieldtypes = fieldtypes(
+#'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -726,7 +726,7 @@ timepoint_as_aggregationunit <- function(x, aggregation_timeunit) {
 
 
 # -----------------------------------------------------------------------------
-# TODO: Define set of allowed aggregation functions similarly to fieldtypes,
+# TODO: Define set of allowed aggregation functions similarly to field_types,
 # with each object containing formula for aggregation as well as friendly names
 
 #' Set user-friendly names for aggtypes

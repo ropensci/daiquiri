@@ -29,7 +29,7 @@
 #' # validate and prepare the data for aggregation
 #' sourcedataobj <- prepare_data(
 #'   rawdata,
-#'   fieldtypes = fieldtypes(
+#'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -60,7 +60,6 @@
 #'   save_filename = "example_data_report",
 #'   showprogress = TRUE
 #' )
-#'
 #' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
@@ -165,7 +164,7 @@ plot_timeseries_static <- function(aggfield,
     maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
     minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
     aggbreaks <-
-      yscale_breaks(aggtype, maxval, minval, aggfield$fieldtype)
+      yscale_breaks(aggtype, maxval, minval, aggfield$field_type)
     g <- g + ggplot2::scale_y_continuous(
       breaks = aggbreaks,
       limits = c(
@@ -387,18 +386,18 @@ plot_overview_combo_static <- function(aggfields,
 # -----------------------------------------------------------------------------
 # HELPER FUNCTIONS
 
-#' Set the breaks for the y-axis depending on the fieldtype and aggtype
+#' Set the breaks for the y-axis depending on the field_type and aggtype
 #'
 #' @param aggtype string denoting aggregatetype (from aggfield columnname)
 #' @param maxval maximum data value
 #' @param minval minimum data value
-#' @param fieldtype fieldtype object
+#' @param field_type field_type object
 #' @return numeric vector containing locations of limits and breaks
 #' @noRd
 yscale_breaks <- function(aggtype,
                           maxval,
                           minval = 0,
-                          fieldtype = NULL) {
+                          field_type = NULL) {
   breaks <- NULL
 
   if (aggtype %in% c("distinct", "n", "sum", "minlength", "maxlength", "meanlength") ||
@@ -415,7 +414,7 @@ yscale_breaks <- function(aggtype,
     # percentage aggtypes should always be shown on a range of 0-100
     breaks <- seq(0, 100, by = 10)
   } else {
-    if (is.fieldtype_datetime(fieldtype)) {
+    if (is.field_type_datetime(field_type)) {
       # dates should be left to base
       breaks <- pretty(c(minval, maxval))
     } else {

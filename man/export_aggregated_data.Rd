@@ -37,7 +37,7 @@ rawdata <- read_data(
 
 sourcedataobj <- prepare_data(
   rawdata,
-  fieldtypes = fieldtypes(
+  field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),

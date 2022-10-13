@@ -103,7 +103,7 @@ head(rawdata)
 
 ``` r
 # specify the type of data expected in each column of the data.frame
-fts <- fieldtypes(
+fts <- field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -119,7 +119,7 @@ fts <- fieldtypes(
 # create a report in the current directory
 daiqobj <- create_report(
   rawdata,
-  fieldtypes = fts
+  field_types = fts
 )
 ```
 

@@ -1,6 +1,6 @@
-test_that("Valid fieldtypes can be specified", {
+test_that("Valid field_types can be specified", {
   expect_s3_class(
-    fieldtypes(
+    field_types(
       Col_tp = ft_timepoint(),
       Col_uid = ft_uniqueidentifier(),
       Col_cat = ft_categorical(),
@@ -12,98 +12,98 @@ test_that("Valid fieldtypes can be specified", {
       Col_sim = ft_simple(),
       Col_ign = ft_ignore()
     ),
-    "fieldtypes"
+    "field_types"
   )
 })
 
-test_that("Invalid fieldtypes cannot be specified", {
-  expect_error(fieldtypes(Col_bad = readr::col_character()), class = "invalid_fieldtypes")
-  expect_error(fieldtypes(Col_bad = "hello"), class = "invalid_fieldtypes")
+test_that("Invalid field_types cannot be specified", {
+  expect_error(field_types(Col_bad = readr::col_character()), class = "invalid_field_types")
+  expect_error(field_types(Col_bad = "hello"), class = "invalid_field_types")
 })
 
-test_that("Duplicate column names in fieldtypes specification not allowed", {
-  expect_error(fieldtypes(
+test_that("Duplicate column names in field_types specification not allowed", {
+  expect_error(field_types(
     Col_dup = ft_timepoint(),
     Col_dup = ft_uniqueidentifier()
   ),
-  class = "invalid_fieldtypes"
+  class = "invalid_field_types"
   )
 
-  expect_error(fieldtypes(
+  expect_error(field_types(
     Col_tp = ft_timepoint(),
     Col_dup = ft_uniqueidentifier(),
     Col_dup = ft_uniqueidentifier()
   ),
-  class = "invalid_fieldtypes"
+  class = "invalid_field_types"
   )
 })
 
-test_that("fieldtypes object must include a timepoint field", {
-  expect_error(fieldtypes(Col_dt = ft_datetime()),
-    class = "invalid_fieldtypes"
+test_that("field_types object must include a timepoint field", {
+  expect_error(field_types(Col_dt = ft_datetime()),
+    class = "invalid_field_types"
   )
 })
 
-test_that("fieldtypes object must not contain more than one timepoint field", {
-  expect_error(fieldtypes(
+test_that("field_types object must not contain more than one timepoint field", {
+  expect_error(field_types(
     Col_tp1 = ft_timepoint(),
     Col_tp2 = ft_timepoint()
   ),
-  class = "invalid_fieldtypes"
+  class = "invalid_field_types"
   )
 })
 
-test_that("[DUPLICATES] cannot be used as a fieldtype colname as it is a reserved word", {
-  expect_error(fieldtypes("[DUPLICATES]" = ft_timepoint()),
-    class = "invalid_fieldtypes"
+test_that("[DUPLICATES] cannot be used as a field_type colname as it is a reserved word", {
+  expect_error(field_types("[DUPLICATES]" = ft_timepoint()),
+    class = "invalid_field_types"
   )
 
-  expect_error(fieldtypes(
+  expect_error(field_types(
     Col_tp = ft_timepoint(),
     "[DUPLICATES]" = ft_simple()
   ),
-  class = "invalid_fieldtypes"
+  class = "invalid_field_types"
   )
 })
 
-test_that("[ALLFIELDSCOMBINED] cannot be used as a fieldtype colname as it is a reserved word", {
-  expect_error(fieldtypes("[ALLFIELDSCOMBINED]" = ft_timepoint()),
-    class = "invalid_fieldtypes"
+test_that("[ALLFIELDSCOMBINED] cannot be used as a field_type colname as it is a reserved word", {
+  expect_error(field_types("[ALLFIELDSCOMBINED]" = ft_timepoint()),
+    class = "invalid_field_types"
   )
 })
 
 
-test_that("print_fieldtypes_template() requires a df param", {
-  expect_error(print_fieldtypes_template(),
+test_that("print_field_types_template() requires a df param", {
+  expect_error(print_field_types_template(),
     class = "invalid_param_missing"
   )
 })
 
-test_that("print_fieldtypes_template() requires df param to be a data frame", {
-  expect_error(print_fieldtypes_template(df = c("Fieldname", 123)),
+test_that("print_field_types_template() requires df param to be a data frame", {
+  expect_error(print_field_types_template(df = c("Fieldname", 123)),
     class = "invalid_param_type"
   )
 })
 
-test_that("print_fieldtypes_template() requires default_fieldtype param to be a fieldtype", {
-  expect_error(print_fieldtypes_template(
+test_that("print_field_types_template() requires default_field_type param to be a field_type", {
+  expect_error(print_field_types_template(
     df = data.frame("Fieldname" = 123),
-    default_fieldtype = TRUE
+    default_field_type = TRUE
   ),
   class = "invalid_param_type"
   )
 })
 
-test_that("print_fieldtypes_template() generates template fieldtypes output", {
-  expect_snapshot_output(print_fieldtypes_template(df = data.frame(
+test_that("print_field_types_template() generates template field_types output", {
+  expect_snapshot_output(print_field_types_template(df = data.frame(
     "col1" = 123,
     "col2" = 123,
     "col3" = "hello"
   )))
 })
 
-test_that("fieldtypes object prints to console ok", {
-  testfieldtypes <- fieldtypes(
+test_that("field_types object prints to console ok", {
+  testfield_types <- field_types(
     Col_tp = ft_timepoint(),
     Col_uid = ft_uniqueidentifier(),
     Col_cat = ft_categorical(),
@@ -116,5 +116,5 @@ test_that("fieldtypes object prints to console ok", {
     Col_ign = ft_ignore()
   )
 
-  expect_snapshot_output(print(testfieldtypes))
+  expect_snapshot_output(print(testfield_types))
 })

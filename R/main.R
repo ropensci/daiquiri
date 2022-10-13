@@ -6,11 +6,11 @@
 #'
 #' @param df A data frame. Rectangular data can be read from file using
 #'   [read_data()]. See Details.
-#' @param fieldtypes [fieldtypes()] object specifying names and types
-#'   of fields (columns) in the supplied `df`. See also [availablefieldtypes].
+#' @param field_types [field_types()] object specifying names and types
+#'   of fields (columns) in the supplied `df`. See also [field_types_available].
 #' @param override_columnnames If `FALSE`, column names in the supplied `df`
-#'   must match the names specified in `fieldtypes` exactly. If `TRUE`, column
-#'   names in the supplied `df` will be replaced with the names specified in `fieldtypes`.
+#'   must match the names specified in `field_types` exactly. If `TRUE`, column
+#'   names in the supplied `df` will be replaced with the names specified in `field_types`.
 #'   The specification must therefore contain the columns in the correct order.
 #'   Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
@@ -36,7 +36,7 @@
 #'   frame in their raw character format. Rectangular data from a text file will
 #'   automatically be read in as character type if you use the
 #'   [read_data()] function. Data frame columns that are not of class
-#'   character will still be processed according to the `fieldtypes`
+#'   character will still be processed according to the `field_types`
 #'   specified.
 #' @examples
 #' \donttest{
@@ -50,7 +50,7 @@
 #' # create a report in the current directory
 #' daiqobj <- create_report(
 #'   rawdata,
-#'   fieldtypes = fieldtypes(
+#'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
 #'     AdmissionDate = ft_datetime(includes_time = FALSE),
@@ -69,15 +69,14 @@
 #'   showprogress = TRUE,
 #'   log_directory = NULL
 #' )
-#'
 #' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
-#' @seealso [read_data()], [fieldtypes()],
-#'   [availablefieldtypes()]
+#' @seealso [read_data()], [field_types()],
+#'   [field_types_available()]
 #' @export
 create_report <- function(df,
-                          fieldtypes,
+                          field_types,
                           override_columnnames = FALSE,
                           na = c("", "NA", "NULL"),
                           dataset_shortdesc = NULL,
@@ -102,7 +101,7 @@ create_report <- function(df,
   validate_params_type(
     match.call(),
     df = df,
-    fieldtypes = fieldtypes,
+    field_types = field_types,
     override_columnnames = override_columnnames,
     na = na,
     dataset_shortdesc = dataset_shortdesc,
@@ -116,7 +115,7 @@ create_report <- function(df,
   sourcedata <-
     prepare_data(
       df,
-      fieldtypes,
+      field_types,
       override_columnnames = override_columnnames,
       dataset_shortdesc = dataset_shortdesc,
       na = na,
@@ -145,7 +144,7 @@ create_report <- function(df,
   structure(
     list(
       dataset_shortdesc = sourcedata$dataset_shortdesc,
-      fieldtypes = fieldtypes,
+      field_types = field_types,
       override_columnnames = override_columnnames,
       na_values = na,
       aggregation_timeunit = aggregation_timeunit,
@@ -218,7 +217,7 @@ print.daiquiri_object <- function(x, ...) {
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
-#' @seealso [fieldtypes()], [availablefieldtypes()],
+#' @seealso [field_types()], [field_types_available()],
 #'   [aggregate_data()], [report_data()],
 #'   [create_report()]
 #' @export

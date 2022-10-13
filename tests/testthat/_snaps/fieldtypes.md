@@ -1,19 +1,19 @@
-# print_fieldtypes_template() generates template fieldtypes output
+# print_field_types_template() generates template field_types output
 
-    fieldtypes( "col1" = ft_ignore(),
+    field_types( "col1" = ft_ignore(),
     	"col2" = ft_ignore(),
     	"col3" = ft_ignore() )
 
-# fieldtypes object prints to console ok
+# field_types object prints to console ok
 
-    Col_tp	<fieldtype_timepoint>	options: includes_time
-    Col_uid	<fieldtype_uniqueidentifier>
-    Col_cat	<fieldtype_categorical>
-    Col_cat2	<fieldtype_categorical>	options: aggregate_by_each_category
-    Col_num	<fieldtype_numeric>
-    Col_dt	<fieldtype_datetime>	options: includes_time
-    Col_dt2	<fieldtype_datetime>
-    Col_ft	<fieldtype_freetext>
-    Col_sim	<fieldtype_simple>
-    Col_ign	<fieldtype_ignore>
+    Col_tp	<field_type_timepoint>	options: includes_time
+    Col_uid	<field_type_uniqueidentifier>
+    Col_cat	<field_type_categorical>
+    Col_cat2	<field_type_categorical>	options: aggregate_by_each_category
+    Col_num	<field_type_numeric>
+    Col_dt	<field_type_datetime>	options: includes_time
+    Col_dt2	<field_type_datetime>
+    Col_ft	<field_type_freetext>
+    Col_sim	<field_type_simple>
+    Col_ign	<field_type_ignore>
 
