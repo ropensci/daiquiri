@@ -316,7 +316,6 @@ test_that("remove_rows() removes specified rows", {
     col2 = seq(1, numrows),
     col3 = rep("XXXXXXXXXXX", numrows)
   )
-  # object.size(testdt)
   rowstoremove <- c(1, 4, 5, 6, numrows)
   row_indicator <- rep(FALSE, numrows)
   row_indicator[rowstoremove] <- TRUE
@@ -340,7 +339,6 @@ test_that("identify_duplicate_rows() identifies all exactly duplicated rows", {
     col2 = seq(1, numrows),
     col3 = rep("XXXXXXXXXXX", numrows)
   )
-  # 	object.size(testdt)
   duplicaterows <- c(2, 5, 6, 7, numrows)
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals
@@ -357,7 +355,6 @@ test_that("identify_duplicate_rows() identifies all exactly duplicated rows", {
     col2 = seq(1, numrows),
     col3 = rep("XXXXXXXXXXX", numrows)
   )
-  # 	object.size(testdt)
   duplicaterows <- c(2, 5, 6, 7, numrows)
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals

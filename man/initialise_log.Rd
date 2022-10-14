@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{initialise_log}
 \alias{initialise_log}
-\title{Initialise log file}
+\title{Initialise a log file}
 \usage{
 initialise_log(log_directory)
 }

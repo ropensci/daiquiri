@@ -2,7 +2,7 @@
 % Please edit documentation in R/utilities.R
 \name{close_log}
 \alias{close_log}
-\title{Closes any active log file}
+\title{Close any active log file}
 \usage{
 close_log()
 }
@@ -11,7 +11,7 @@ If a log file was found, the path to the log file that was closed,
 otherwise an empty string
 }
 \description{
-Closes any active log file
+Close any active log file
 }
 \examples{
 close_log()
