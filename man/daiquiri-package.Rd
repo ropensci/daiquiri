@@ -12,6 +12,7 @@ Generate reports that enable quick visual review of temporal shifts in record-le
 Useful links:
 \itemize{
   \item \url{https://github.com/phuongquan/daiquiri}
+  \item \url{https://phuongquan.github.io/daiquiri/}
   \item Report bugs at \url{https://github.com/phuongquan/daiquiri/issues}
 }
 
@@ -24,6 +25,8 @@ Other contributors:
   \item Jack Cregan [contributor]
   \item  University of Oxford [copyright holder]
   \item  National Institute for Health Research (NIHR) [funder]
+  \item Mauro Lepore [reviewer]
+  \item Brad Cannell [reviewer]
 }
 
 }

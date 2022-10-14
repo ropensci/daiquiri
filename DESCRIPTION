@@ -7,7 +7,9 @@ Authors@R: c(
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
     person("Jack", "Cregan", role = "ctb"),
     person(family = "University of Oxford", role = "cph"),
-    person(family = "National Institute for Health Research (NIHR)", role = "fnd")
+    person(family = "National Institute for Health Research (NIHR)", role = "fnd"),
+    person("Mauro", "Lepore", role = "rev"),
+    person("Brad", "Cannell", role = "rev")
     )
 Description: Generate reports that enable quick visual review of 
     temporal shifts in record-level data. Time series plots showing aggregated 
@@ -20,7 +22,7 @@ Description: Generate reports that enable quick visual review of
     any type of record-level temporal data (i.e. tabular data where each row represents 
     a single “event”, one column contains the "event date", and other columns 
     contain any associated values for the event).
-URL: https://github.com/phuongquan/daiquiri
+URL: https://github.com/phuongquan/daiquiri, https://phuongquan.github.io/daiquiri/
 BugReports: https://github.com/phuongquan/daiquiri/issues
 License: GPL (>= 3)
 Encoding: UTF-8
