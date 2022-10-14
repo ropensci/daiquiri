@@ -96,6 +96,8 @@ is.field_type_calculated <- function(x) inherits(x, c("field_type_allfields", "f
 #'   ResultComment = ft_freetext(),
 #'   Location = ft_categorical()
 #' )
+#'
+#' ft_simple()
 NULL
 
 #' @section Details: `ft_timepoint()` - identifies the data field which
@@ -330,6 +332,8 @@ ft_duplicates <- function() {
 #'   ResultComment = ft_freetext(),
 #'   Location = ft_categorical()
 #' )
+#'
+#' fts
 #' @seealso [field_types_available()]
 #' @export
 field_types <- function(...) {

@@ -217,6 +217,8 @@ print.daiquiri_object <- function(x, ...) {
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
+#'
+#' head(raw_data)
 #' @seealso [field_types()], [field_types_available()],
 #'   [aggregate_data()], [report_data()],
 #'   [create_report()]

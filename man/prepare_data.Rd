@@ -67,6 +67,8 @@ source_data <- prepare_data(
   na = c("", "NULL"),
   dataset_description = "Example data provided with package"
 )
+
+source_data
 }
 \seealso{
 \code{\link[=field_types]{field_types()}}, \code{\link[=field_types_available]{field_types_available()}},

@@ -285,6 +285,8 @@ validate_params_type <- function(call, ...) {
 #' @return Character string containing the full path to the newly-created log file
 #' @examples
 #' log_name <- initialise_log(".")
+#'
+#' log_name
 #' \dontshow{
 #' close_log()
 #' file.remove(log_name)

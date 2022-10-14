@@ -54,6 +54,7 @@ aggregated_data <- aggregate_data(
   aggregation_timeunit = "day"
 )
 
+aggregated_data
 }
 \seealso{
 \code{\link[=prepare_data]{prepare_data()}}, \code{\link[=report_data]{report_data()}}

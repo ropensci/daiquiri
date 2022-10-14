@@ -94,6 +94,8 @@ fts <- field_types(
   ResultComment = ft_freetext(),
   Location = ft_categorical()
 )
+
+ft_simple()
 }
 \seealso{
 \code{\link[=field_types]{field_types()}}

@@ -75,6 +75,8 @@ is.data_field <- function(x) inherits(x, "data_field")
 #'   na = c("", "NULL"),
 #'   dataset_description = "Example data provided with package"
 #' )
+#'
+#' source_data
 #' @seealso [field_types()], [field_types_available()],
 #'   [aggregate_data()], [report_data()],
 #'   [create_report()]

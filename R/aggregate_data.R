@@ -431,6 +431,7 @@ aggregate_combined_fields <- function(agg_fields,
 #'   aggregation_timeunit = "day"
 #' )
 #'
+#' aggregated_data
 #' @seealso [prepare_data()], [report_data()]
 #' @export
 aggregate_data <- function(source_data,

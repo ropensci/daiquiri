@@ -18,6 +18,8 @@ log file is created.
 }
 \examples{
 log_name <- initialise_log(".")
+
+log_name
 \dontshow{
 close_log()
 file.remove(log_name)

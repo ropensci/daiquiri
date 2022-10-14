@@ -58,6 +58,8 @@ raw_data <- read_data(
   delim = ",",
   col_names = TRUE
 )
+
+head(raw_data)
 }
 \seealso{
 \code{\link[=field_types]{field_types()}}, \code{\link[=field_types_available]{field_types_available()}},
