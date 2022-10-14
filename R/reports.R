@@ -119,6 +119,7 @@ report_data <- function(source_data,
   file_and_path
 }
 
+
 # -----------------------------------------------------------------------------
 #' Create a scatter plot for an individual time series
 #'
@@ -176,6 +177,7 @@ plot_timeseries_static <- function(agg_field,
 
   g
 }
+
 
 # -----------------------------------------------------------------------------
 #' Create a filled line plot to show overall numbers per timepoint
@@ -243,6 +245,7 @@ plot_overview_totals_static <- function(agg_field,
 
   g
 }
+
 
 # -----------------------------------------------------------------------------
 #' Create a heatmap showing a particular agg_fun value across all fields
@@ -341,6 +344,7 @@ plot_overview_heatmap_static <- function(agg_fields,
   g
 }
 
+
 # -----------------------------------------------------------------------------
 #' Combine a lineplot and heatmap to show as an overall summary for a particular
 #' aggregation function
@@ -383,9 +387,8 @@ plot_overview_combo_static <- function(agg_fields,
   )
 }
 
-# -----------------------------------------------------------------------------
-# HELPER FUNCTIONS
 
+# -----------------------------------------------------------------------------
 #' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
 #' @param agg_fun aggregation function being plotted (from agg_field column_name)

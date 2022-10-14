@@ -2,33 +2,6 @@
 #   which contains both the (vector) data for the field and the relevant metadata
 
 # -----------------------------------------------------------------------------
-#' Constructor for individual data_fields within source_data object
-#'
-#' @param x vector of cleaned values for data_field
-#' @param field_type field_type object specified for the data_field
-#' @param validation_warnings data.table containing any parser/package-specific
-#'   warnings
-#' @noRd
-#' @return A `data_field` object
-# TODO: not sure if better to store the entire field_type or just its name or even as a separate list in the source_data
-data_field <- function(x, field_type, validation_warnings = NULL) {
-  structure(
-    list(
-      values = x,
-      field_type = field_type,
-      column_name = names(x[1]),
-      validation_warnings = validation_warnings
-    ),
-    class = c(paste0(
-      "daiquiri_data_field_", field_type_type(field_type)
-    ), "daiquiri_data_field")
-  )
-}
-
-is.data_field <- function(x) inherits(x, "daiquiri_data_field")
-
-
-# -----------------------------------------------------------------------------
 #' Prepare source data
 #'
 #' Validate a data frame against a [field_types()] specification, and
@@ -354,13 +327,9 @@ prepare_data <- function(df,
     class = "daiquiri_source_data"
   )
 }
-#' Test if object is a source_data object
-#'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.source_data <- function(x) inherits(x, "daiquiri_source_data")
 
+
+# -----------------------------------------------------------------------------
 #' @export
 print.daiquiri_source_data <- function(x, ...) {
   source_summary <- summarise_source_data(x, show_progress = FALSE)
@@ -391,6 +360,17 @@ print.daiquiri_source_data <- function(x, ...) {
   }
 }
 
+
+# -----------------------------------------------------------------------------
+#' Test if object is a source_data object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.source_data <- function(x) inherits(x, "daiquiri_source_data")
+
+
+# -----------------------------------------------------------------------------
 #' Create an object containing a high-level summary of a source_data object
 #'
 #' This can be used by other functions later for displaying info to user
@@ -475,8 +455,42 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
   list(overall = overall, data_fields = data_fields, validation_warnings = validation_warnings)
 }
 
-#####################################################################
-# functions to get info about each individual data_field
+# -----------------------------------------------------------------------------
+#' Constructor for individual data_fields within source_data object
+#'
+#' @param x vector of cleaned values for data_field
+#' @param field_type field_type object specified for the data_field
+#' @param validation_warnings data.table containing any parser/package-specific
+#'   warnings
+#' @noRd
+#' @return A `data_field` object
+# TODO: not sure if better to store the entire field_type or just its name or even as a separate list in the source_data
+data_field <- function(x, field_type, validation_warnings = NULL) {
+  structure(
+    list(
+      values = x,
+      field_type = field_type,
+      column_name = names(x[1]),
+      validation_warnings = validation_warnings
+    ),
+    class = c(paste0(
+      "daiquiri_data_field_", field_type_type(field_type)
+    ), "daiquiri_data_field")
+  )
+}
+
+
+# -----------------------------------------------------------------------------
+#' Test if object is a data_field object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.data_field <- function(x) inherits(x, "daiquiri_data_field")
+
+
+# -----------------------------------------------------------------------------
+# PROPERTIES OF INDIVIDUAL data_field OBJECTS
 
 #' Get field_type (short string) of data_field
 #'
@@ -669,7 +683,9 @@ validate_column_names <- function(source_names,
   }
 }
 
-#############################################################################
+
+
+# -----------------------------------------------------------------------------
 #' Identify any duplicate rows in a memory-efficient way
 #'
 #' @param dt data.table potentially containing duplicate rows
@@ -728,6 +744,8 @@ identify_duplicate_rows <- function(dt,
   duprows_vector
 }
 
+
+# -----------------------------------------------------------------------------
 #' Remove rows from data.table in a memory-efficient way
 #'
 #' Row deletion by reference doesn't exist in data.table yet. Interim

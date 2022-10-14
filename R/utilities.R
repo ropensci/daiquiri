@@ -1,5 +1,120 @@
 # Generic functions
 
+###############################################################################
+# FUNCTIONS FOR LOGGING
+
+# -----------------------------------------------------------------------------
+#' Initialise a log file
+#'
+#' Choose a directory in which to save the log file. If this is not called, no
+#' log file is created.
+#'
+#' @param log_directory String containing directory to save log file
+#' @return Character string containing the full path to the newly-created log file
+#' @examples
+#' log_name <- initialise_log(".")
+#'
+#' log_name
+#' \dontshow{
+#' close_log()
+#' file.remove(log_name)
+#' }
+#' @export
+initialise_log <- function(log_directory) {
+  validate_params_required(match.call())
+  validate_params_type(match.call(),
+    log_directory = log_directory
+  )
+
+  file_and_path <-
+    file.path(
+      log_directory,
+      paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log")
+    )
+
+  if (file.create(file_and_path)) {
+    # need to save absolute path so that logging continues correctly from report_htmldoc.Rmd
+    package_environment$log_name <- normalizePath(file_and_path)
+
+    log_message(paste(
+      "Log file initialised.",
+      "Package version",
+      utils::packageVersion(utils::packageName()), ";",
+      R.Version()$version.string
+    ))
+  } else {
+    stop("Log file [", file_and_path, "] could not be created")
+  }
+
+  package_environment$log_name
+}
+
+
+# -----------------------------------------------------------------------------
+#' Close any active log file
+#'
+#' @return If a log file was found, the path to the log file that was closed,
+#'   otherwise an empty string
+#' @examples close_log()
+#' @export
+close_log <- function() {
+  if (exists("log_name", envir = package_environment)) {
+    log_message("Log file closed")
+    log_name <- package_environment$log_name
+    rm("log_name", envir = package_environment)
+  } else {
+    log_name <- ""
+  }
+  log_name
+}
+
+
+# -----------------------------------------------------------------------------
+#' Write message to log file (if it exists) and/or print to console
+#'
+#' @param message message to write
+#' @param show_progress Print message to console
+#' @noRd
+# TODO: decide if show_progress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
+log_message <- function(message, show_progress = FALSE) {
+  if (exists("log_name", envir = package_environment)) {
+    if (file.access(package_environment$log_name, mode = 2) == -1) {
+      stop(paste0("Cannot write to log file [", package_environment$log_name, "].
+									Message not logged: ", message))
+    } else {
+      log_con <- file(package_environment$log_name, open = "a")
+      writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message),
+        con = log_con
+      )
+      close(log_con)
+    }
+  }
+  if (show_progress) cat(message, "\n")
+}
+
+
+# -----------------------------------------------------------------------------
+#' Log entry to function
+#'
+#' @param function_name function_name to be written
+#' @noRd
+log_function_start <- function(function_name) {
+  log_message(paste("[START FUNCTION]", function_name), FALSE)
+}
+
+#' Log exit from function
+#'
+#' @param function_name function_name to be written
+#' @noRd
+log_function_end <- function(function_name) {
+  log_message(paste("[END FUNCTION]", function_name), FALSE)
+}
+
+
+###############################################################################
+# FUNCTIONS FOR PARAMETER VALIDATION
+
+# -----------------------------------------------------------------------------
 #' Check all required params have been passed in to the calling function
 #'
 #' Should be called at start of all exported functions to check user has
@@ -27,6 +142,8 @@ validate_params_required <- function(call) {
   }
 }
 
+
+# -----------------------------------------------------------------------------
 #' Check all params that have been passed in to the calling function are of
 #' correct type/class
 #'
@@ -274,109 +391,10 @@ validate_params_type <- function(call, ...) {
 }
 
 
+###############################################################################
+# MISCELLANEOUS
+
 # -----------------------------------------------------------------------------
-# logging functions
-#' Initialise log file
-#'
-#' Choose a directory in which to save the log file. If this is not called, no
-#' log file is created.
-#'
-#' @param log_directory String containing directory to save log file
-#' @return Character string containing the full path to the newly-created log file
-#' @examples
-#' log_name <- initialise_log(".")
-#'
-#' log_name
-#' \dontshow{
-#' close_log()
-#' file.remove(log_name)
-#' }
-#' @export
-initialise_log <- function(log_directory) {
-  validate_params_required(match.call())
-  validate_params_type(match.call(),
-    log_directory = log_directory
-  )
-
-  file_and_path <-
-    file.path(
-      log_directory,
-      paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log")
-    )
-
-  if (file.create(file_and_path)) {
-    # need to save absolute path so that logging continues correctly from report_htmldoc.Rmd
-    package_environment$log_name <- normalizePath(file_and_path)
-
-    log_message(paste(
-      "Log file initialised.",
-      "Package version",
-      utils::packageVersion(utils::packageName()), ";",
-      R.Version()$version.string
-    ))
-  } else {
-    stop("Log file [", file_and_path, "] could not be created")
-  }
-
-  package_environment$log_name
-}
-
-
-#' Closes any active log file
-#'
-#' @return If a log file was found, the path to the log file that was closed,
-#'   otherwise an empty string
-#' @examples close_log()
-#' @export
-close_log <- function() {
-  if (exists("log_name", envir = package_environment)) {
-    log_message("Log file closed")
-    log_name <- package_environment$log_name
-    rm("log_name", envir = package_environment)
-  } else {
-    log_name <- ""
-  }
-  log_name
-}
-
-#' Write message to log file (if it exists) and/or print to console
-#'
-#' @param message message to write
-#' @param show_progress Print message to console
-#' @noRd
-# TODO: decide if show_progress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
-log_message <- function(message, show_progress = FALSE) {
-  if (exists("log_name", envir = package_environment)) {
-    if (file.access(package_environment$log_name, mode = 2) == -1) {
-      stop(paste0("Cannot write to log file [", package_environment$log_name, "].
-									Message not logged: ", message))
-    } else {
-      log_con <- file(package_environment$log_name, open = "a")
-      writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message),
-        con = log_con
-      )
-      close(log_con)
-    }
-  }
-  if (show_progress) cat(message, "\n")
-}
-
-#' Log entry to function
-#'
-#' @param function_name function_name to be written
-#' @noRd
-log_function_start <- function(function_name) {
-  log_message(paste("[START FUNCTION]", function_name), FALSE)
-}
-
-#' Log exit from function
-#'
-#' @param function_name function_name to be written
-#' @noRd
-log_function_end <- function(function_name) {
-  log_message(paste("[END FUNCTION]", function_name), FALSE)
-}
-
 #' Raise a custom error with a class that can be tested for
 #'
 #' Copied from https://adv-r.hadley.nz/conditions.html#custom-conditions
@@ -397,9 +415,10 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
   stop(err)
 }
 
-######################################################
-# dummy functions set up purely for unit testing.
-# testthat can't find them when they are defined in the test_xxx files
+
+# -----------------------------------------------------------------------------
+# DUMMY FUNCTIONS SET UP PURELY FOR UNIT TESTING
+# testthat can't find them when they are defined in the test-xxx files
 
 #' Dummy function to assist unit testing of validate_params_required()
 #'
@@ -468,8 +487,7 @@ testfn_params_type <- function(df,
 }
 
 
-######################################################
-
+# -----------------------------------------------------------------------------
 #' Dummy function set up purely for R CMD Check Namespace bug
 #'
 #' Addresses R CMD Check NOTE: Namespace in Imports field not imported from: ‘reactable’

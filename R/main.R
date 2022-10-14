@@ -157,6 +157,8 @@ create_report <- function(df,
   )
 }
 
+
+# -----------------------------------------------------------------------------
 #' @export
 print.daiquiri_object <- function(x, ...) {
   cat("Class: daiquiri_object\n")
@@ -187,6 +189,7 @@ print.daiquiri_object <- function(x, ...) {
 }
 
 
+# -----------------------------------------------------------------------------
 #' Read data from delimited file without doing any datatype conversion
 #'
 #' Read rectangular data from a delimited file, with all columns read in as

@@ -5,79 +5,159 @@
 #
 # copying structure used in readr
 
-# -----------------------------------------------------------------------------
-# SPECIFY ALLOWABLE TYPES
 
-#' Constructor for individual field_type object
+# -----------------------------------------------------------------------------
+# TODO: consider allowing simple string specifications, cf `concise'
+# specification from readr need to think about how that would work if want to
+# allow user to define more complicated specifications though
+#' Create field_types specification
 #'
-#' @param type string denoting the field_type
-#' @param collector readr `collector' to use when parsing the data
-#' @param data_class type of data, e.g. character or POSIXct
-#' @param aggregation_functions aggregation_functions to apply to the data in this field
-#' @param options additional options for certain aggregation_functions
-#' @return field_type object
-#' @noRd
-# TODO: decide whether to require all aggregation_functions to be supplied or automatically include the basic ones
-field_type <- function(type,
-                       collector,
-                       data_class,
-                       aggregation_functions = c("n", "missing_n", "missing_perc"),
-                       options = NULL) {
-  structure(
-    list(
-      type = type,
-      collector = collector,
-      data_class = data_class,
-      aggregation_functions = aggregation_functions,
-      options = options
-    ),
-    class = c(paste0("daiquiri_field_type_", type), "daiquiri_field_type")
-  )
+#' Specify the names and types of fields in the source data frame. This is
+#' important because the data in each field will be aggregated in different
+#' ways, depending on its `field_type`.  See [field_types_available]
+#' @param ... names and types of fields (columns) in source data.
+#' @return A `field_types` object
+#' @examples fts <- field_types(
+#'   PatientID = ft_uniqueidentifier(),
+#'   TestID = ft_ignore(),
+#'   TestDate = ft_timepoint(),
+#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'   TestResult = ft_numeric(),
+#'   ResultDate = ft_datetime(),
+#'   ResultComment = ft_freetext(),
+#'   Location = ft_categorical()
+#' )
+#'
+#' fts
+#' @seealso [field_types_available()]
+#' @export
+field_types <- function(...) {
+  fts <- list(...)
+
+  # validate - collect all errors together and return only once
+  err_validation <- character()
+  is_field_type <- vapply(fts, is.field_type, logical(1))
+  if (any(!is_field_type)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Unrecognised field_type(s) in positions: [",
+          paste(which(!is_field_type), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(!is_field_type)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_timepoint <- vapply(fts, is.field_type_timepoint, logical(1))
+  if (sum(is_timepoint) != 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Must specify one and only one timepoint field. Timepoints currently in positions: [",
+          paste(which(is_timepoint), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_timepoint)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  if (anyDuplicated(names(fts)) > 0) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Duplicate column names not allowed: [",
+          paste(names(fts)[duplicated(names(fts))], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  # check for reserved names
+  if (any(names(fts) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "'[DUPLICATES]' and '[ALL_FIELDS_COMBINED]' are names reserved for calculated columns.
+					Please rename these columns in your data."
+        )
+      )
+  }
+  if (length(err_validation) > 0) {
+    stop_custom(
+      .subclass = "invalid_field_types",
+      message = paste0(
+        "Invalid `field_types' specification.\n",
+        paste(err_validation, collapse = "\n")
+      )
+    )
+  }
+
+  structure(fts, class = "daiquiri_field_types")
 }
 
-#' Test if object is a field_type object
+
+# -----------------------------------------------------------------------------
+#' @export
+print.daiquiri_field_types <- function(x, ...) {
+  cat(field_types_to_string(x))
+}
+
+
+# -----------------------------------------------------------------------------
+#' Print a template field_types() specification to console
 #'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type <- function(x) inherits(x, "daiquiri_field_type")
-
-#' Test if object is a timepoint field_type
+#' Helper function to generate template code for a [field_types()] specification,
+#' based on the supplied data frame. All fields (columns) in the specification
+#' will be defined using the `default_field_type`, and the console output can be
+#' copied and edited before being used as input to [create_report()]()
+#' or [prepare_data()]().
 #'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
-
-#' Test if object is a ignore field_type
+#' @param df data frame including the column names for the template
+#'   specification
+#' @param default_field_type `field_type` to be used for each column. Default =
+#'   [ft_ignore()]. See  [field_types_available()]
+#' @return (invisibly) Character string containing the template code
+#' @examples
+#' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
 #'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
+#' print_field_types_template(df, default_field_type = ft_numeric())
+#' @seealso [field_types()]
+#' @export
+print_field_types_template <- function(df, default_field_type = ft_ignore()) {
+  validate_params_required(match.call())
+  validate_params_type(match.call(),
+    df = df,
+    default_field_type = default_field_type
+  )
 
-#' Test if object is a datetime field_type
-#'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
+  field_names <- names(df)
+  template_string <-
+    paste(
+      "field_types(",
+      paste0(
+        "\"",
+        field_names,
+        "\"",
+        " = ft_",
+        default_field_type$type,
+        "()",
+        ifelse(field_names == rev(field_names)[1], "", ","),
+        collapse = "\n\t"
+      ),
+      ")"
+    )
+  cat(template_string)
+  invisible(template_string)
+}
 
-#' Test if object is a numeric field_type
-#'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
-#' Test if object is a calculated field_type
-#'
-#' @param x object to test
-#' @return Logical
-#' @noRd
-is.field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
-
-
+# -----------------------------------------------------------------------------
 #' Types of data fields available for specification
 #'
 #' Each column in the source dataset must be assigned to a particular `ft_xx`
@@ -284,7 +364,12 @@ ft_ignore <- function() {
   )
 }
 
-# this is an internal field_type for calculating stats across all fields combined and should not be set explicitly by user
+
+#' For calculating stats across all fields combined
+#'
+#' Internal calculated field_type that should not be set explicitly by user
+#'
+#' @noRd
 ft_allfields <- function() {
   field_type(
     type = "allfields",
@@ -300,7 +385,11 @@ ft_allfields <- function() {
   )
 }
 
-# this is an internal field_type for calculating duplicates and should not be set explicitly by user
+#' For calculating duplicates
+#'
+#' Internal calculated field_type that should not be set explicitly by user
+#'
+#' @noRd
 ft_duplicates <- function() {
   field_type(
     type = "duplicates",
@@ -310,196 +399,92 @@ ft_duplicates <- function() {
   )
 }
 
+
 # -----------------------------------------------------------------------------
-# OVERALL COLLECTION OF TYPES TODO: consider allowing simple string
-# specifications, cf `concise' specification from readr need to think about how
-# that would work if want to allow user to define more complicated
-# specifications though
-#' Create field_types specification
+#' Test if object is a field_types object
 #'
-#' Specify the names and types of fields in the source data frame. This is
-#' important because the data in each field will be aggregated in different
-#' ways, depending on its `field_type`.  See [field_types_available]
-#' @param ... names and types of fields (columns) in source data.
-#' @return A `field_types` object
-#' @examples fts <- field_types(
-#'   PatientID = ft_uniqueidentifier(),
-#'   TestID = ft_ignore(),
-#'   TestDate = ft_timepoint(),
-#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
-#'   TestResult = ft_numeric(),
-#'   ResultDate = ft_datetime(),
-#'   ResultComment = ft_freetext(),
-#'   Location = ft_categorical()
-#' )
-#'
-#' fts
-#' @seealso [field_types_available()]
-#' @export
-field_types <- function(...) {
-  fts <- list(...)
-
-  # validate - collect all errors together and return only once
-  err_validation <- character()
-  is_field_type <- vapply(fts, is.field_type, logical(1))
-  if (any(!is_field_type)) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Unrecognised field_type(s) in positions: [",
-          paste(which(!is_field_type), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(!is_field_type)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  is_timepoint <- vapply(fts, is.field_type_timepoint, logical(1))
-  if (sum(is_timepoint) != 1) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Must specify one and only one timepoint field. Timepoints currently in positions: [",
-          paste(which(is_timepoint), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(is_timepoint)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  if (anyDuplicated(names(fts)) > 0) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Duplicate column names not allowed: [",
-          paste(names(fts)[duplicated(names(fts))], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  # check for reserved names
-  if (any(names(fts) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "'[DUPLICATES]' and '[ALL_FIELDS_COMBINED]' are names reserved for calculated columns.
-					Please rename these columns in your data."
-        )
-      )
-  }
-  if (length(err_validation) > 0) {
-    stop_custom(
-      .subclass = "invalid_field_types",
-      message = paste0(
-        "Invalid `field_types' specification.\n",
-        paste(err_validation, collapse = "\n")
-      )
-    )
-  }
-
-  structure(fts, class = "daiquiri_field_types")
-}
-
+#' @param x object to test
+#' @return Logical
+#' @noRd
 is.field_types <- function(x) inherits(x, "daiquiri_field_types")
 
-field_types_to_string <- function(field_types) {
-  s <- ""
-  for (ft in seq_along(field_types)) {
-    s <-
-      paste0(s, names(field_types[ft]), "\t", "<", field_type_type(field_types[[ft]]), ">")
-    if (!is.null(field_types[[ft]]$options)) {
-      s <- paste0(s, "\t", "options: ", field_types[[ft]]$options)
-    }
-    s <- paste0(s, "\n")
-  }
-  s
-}
-
-#' @export
-print.daiquiri_field_types <- function(x, ...) {
-  cat(field_types_to_string(x))
-}
-
-#' Print a template field_types() specification to console
-#'
-#' Helper function to generate template code for a [field_types()] specification,
-#' based on the supplied data frame. All fields (columns) in the specification
-#' will be defined using the `default_field_type`, and the console output can be
-#' copied and edited before being used as input to [create_report()]()
-#' or [prepare_data()]().
-#'
-#' @param df data frame including the column names for the template
-#'   specification
-#' @param default_field_type `field_type` to be used for each column. Default =
-#'   [ft_ignore()]. See  [field_types_available()]
-#' @return (invisibly) Character string containing the template code
-#' @examples
-#' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
-#'
-#' print_field_types_template(df, default_field_type = ft_numeric())
-#' @seealso [field_types()]
-#' @export
-print_field_types_template <- function(df, default_field_type = ft_ignore()) {
-  validate_params_required(match.call())
-  validate_params_type(match.call(),
-    df = df,
-    default_field_type = default_field_type
-  )
-
-  field_names <- names(df)
-  template_string <-
-    paste(
-      "field_types(",
-      paste0(
-        "\"",
-        field_names,
-        "\"",
-        " = ft_",
-        default_field_type$type,
-        "()",
-        ifelse(field_names == rev(field_names)[1], "", ","),
-        collapse = "\n\t"
-      ),
-      ")"
-    )
-  cat(template_string)
-  invisible(template_string)
-}
 
 # -----------------------------------------------------------------------------
-# HELPER FUNCTIONS
-
-#' Map field_types to parser's coltypes
+#' Constructor for individual field_type object
 #'
-#' Parser used is readr. See readr::col_types
-#'
-#' @param field_types field_types object
-#' @param all_to_string Set to TRUE if want parser to read everything as character
-#' @return list of coltypes
+#' @param type string denoting the field_type
+#' @param collector readr `collector' to use when parsing the data
+#' @param data_class type of data, e.g. character or POSIXct
+#' @param aggregation_functions aggregation_functions to apply to the data in this field
+#' @param options additional options for certain aggregation_functions
+#' @return field_type object
 #' @noRd
-field_types_to_cols <-
-  function(field_types, all_to_string = FALSE) {
-    # validate
-    if (missing(field_types) || !is.field_types(field_types)) {
-      stop("Invalid parameter(s) supplied:",
-        "`field_types'",
-        call. = FALSE
-      )
-    }
-    if (all_to_string == TRUE) {
-      do.call(readr::cols, lapply(field_types, function(x) {
-        readr::col_character()
-      }))
-    } else {
-      do.call(readr::cols, lapply(field_types, field_type_collector))
-    }
-  }
+# TODO: decide whether to require all aggregation_functions to be supplied or automatically include the basic ones
+field_type <- function(type,
+                       collector,
+                       data_class,
+                       aggregation_functions = c("n", "missing_n", "missing_perc"),
+                       options = NULL) {
+  structure(
+    list(
+      type = type,
+      collector = collector,
+      data_class = data_class,
+      aggregation_functions = aggregation_functions,
+      options = options
+    ),
+    class = c(paste0("daiquiri_field_type_", type), "daiquiri_field_type")
+  )
+}
+
+
+# -----------------------------------------------------------------------------
+#' Test if object is a field_type object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type <- function(x) inherits(x, "daiquiri_field_type")
+
+
+# -----------------------------------------------------------------------------
+# PROPERTIES OF INDIVIDUAL field_type OBJECTS
+
+#' Test if object is a timepoint field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
+
+#' Test if object is a ignore field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
+
+#' Test if object is a datetime field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
+
+#' Test if object is a numeric field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
+
+#' Test if object is a calculated field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is.field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
+
 
 #' Get the field_type's collector
 #'
@@ -536,3 +521,53 @@ field_type_type <- function(field_type) {
 field_type_aggregation_functions <- function(field_type) {
   field_type$aggregation_functions
 }
+
+
+
+# -----------------------------------------------------------------------------
+#' Convert field_types object to string for printing
+#'
+#' @param field_types field_types object
+#' @return string representation of field_types object
+#' @noRd
+field_types_to_string <- function(field_types) {
+  s <- ""
+  for (ft in seq_along(field_types)) {
+    s <-
+      paste0(s, names(field_types[ft]), "\t", "<", field_type_type(field_types[[ft]]), ">")
+    if (!is.null(field_types[[ft]]$options)) {
+      s <- paste0(s, "\t", "options: ", field_types[[ft]]$options)
+    }
+    s <- paste0(s, "\n")
+  }
+  s
+}
+
+
+# -----------------------------------------------------------------------------
+#' Map field_types to parser's coltypes
+#'
+#' Parser used is readr. See readr::col_types
+#'
+#' @param field_types field_types object
+#' @param all_to_string Set to TRUE if want parser to read everything as character
+#' @return list of coltypes
+#' @noRd
+field_types_to_cols <-
+  function(field_types, all_to_string = FALSE) {
+    # validate
+    if (missing(field_types) || !is.field_types(field_types)) {
+      stop("Invalid parameter(s) supplied:",
+        "`field_types'",
+        call. = FALSE
+      )
+    }
+    if (all_to_string == TRUE) {
+      do.call(readr::cols, lapply(field_types, function(x) {
+        readr::col_character()
+      }))
+    } else {
+      do.call(readr::cols, lapply(field_types, field_type_collector))
+    }
+  }
+
