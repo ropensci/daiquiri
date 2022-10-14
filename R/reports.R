@@ -60,6 +60,7 @@
 #'   save_filename = "example_data_report",
 #'   show_progress = TRUE
 #' )
+#' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
 #' @seealso [prepare_data()], [aggregate_data()],
