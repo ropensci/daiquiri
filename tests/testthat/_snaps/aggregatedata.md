@@ -1,6 +1,6 @@
-# aggregatedata object prints to console ok
+# aggregated_data object prints to console ok
 
-    Class: aggregatedata
+    Class: aggregated_data
     
     Overall:
     Number of data fields: 4 

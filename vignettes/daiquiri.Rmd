@@ -58,16 +58,16 @@ example_prescriptions <- read_data(
 head(example_prescriptions)
 ```
 
-## Specification of data fields
+## Specification of data field types
 
 You must specify what type of data is expected in each column, e.g. a date, a number, a nominal category. The package will use this information to calculate the number of values that are not of the expected type, and to decide which summary functions to use for the time series'.
 
 One and only one column must be chosen to be the "timepoint" field (though you could run the package again using a different column as the timepoint field if you so choose). This column will be used as the independent time variable on the x-axis of each time series plot.
 
-Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number values present, as well as the number and percentage of missing values.
+Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number of values present, as well as the number and percentage of missing values.
 
 * `ft_timepoint()` - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series' are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.
-* `ft_uniqueidentifier()` - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for minlength, maxlength, and meanlength of the string.
+* `ft_uniqueidentifier()` - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for min_length, max_length, and mean_length of the string.
 * `ft_categorical()` - identifies data fields which should be treated as categorical. Values are treated as strings. Additional time series are created for the number of "distinct" values, and if the `aggregate_by_each_category` parameter is set to `TRUE`, further time series will be created for the number and percentage of values within each distinct subcategory value.
 * `ft_numeric()` - identifies data fields which contain numeric values that should be treated as continuous. Additional time series are created for the min, max, mean, and median value, and and the number and percentage of non-conformant values.
 * `ft_datetime()` - identifies data fields which contain date (and optionally time) values that should be treated as continuous. Additional time series are created for the min, max, and mean value, and and the number and percentage of non-conformant values. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values).
@@ -92,7 +92,7 @@ If your data is already aggregated (e.g. one column contains a date and the othe
 For the `example_prescriptions` dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:
 
 ```{r}
-# set up a datafields specification for use later
+# set up a field_types specification for use later
 fts <- field_types(
   PrescriptionID = ft_uniqueidentifier(),
   PrescriptionDate = ft_timepoint(),
@@ -112,7 +112,7 @@ TIP: If you have a lot of columns in your dataset you can use the `print_field_t
 
 ## Generating a data quality report
 
-The simplest way to create a data quality report is to use the `create_report()` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `sourcedata` and `aggregatedata` objects, which can be reused to create further reports without needing to run everything all over again.
+The simplest way to create a data quality report is to use the `create_report()` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `source_data` and `aggregated_data` objects, which can be reused to create further reports without needing to run everything all over again.
 
 At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.
 
@@ -128,12 +128,12 @@ For the `example_prescriptions` dataset above, we will set the aggregation granu
 
 ```{r, include=FALSE}
 # quietly check can create the report but show the code in the next chunk in the vignette
-daiqobj <- create_report(
+daiq_obj <- create_report(
   df = example_prescriptions,
   field_types = fts,
   override_column_names = FALSE,
   na = c("", "NULL"),
-  dataset_shortdesc = "Example prescription data",
+  dataset_description = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
@@ -146,12 +146,12 @@ file.remove("./example_prescriptions_report.html")
 ```
 
 ```{r, eval=FALSE}
-daiqobj <- create_report(
+daiq_obj <- create_report(
   df = example_prescriptions,
   field_types = fts,
   override_column_names = FALSE,
   na = c("", "NULL"),
-  dataset_shortdesc = "Example prescription data",
+  dataset_description = "Example prescription data",
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
@@ -184,39 +184,39 @@ This contains two levels of child tabs. The first level consists of one tab per 
 
 ## Advanced usage details
 
-The simplest way to use this package is to use the `create_report()` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `fieldtypes()` specification then the data will need to be re-loaded.
+The simplest way to use this package is to use the `create_report()` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `field_types()` specification then the data will need to be re-loaded.
 
 ```{r, eval=FALSE}
-# load your dataset into a sourcedata object
-examplesourcedata <- prepare_data(
+# load your dataset into a source_data object
+prescriptions_source_data <- prepare_data(
   example_prescriptions,
   fieldtypes = fts,
   na = c("", "NULL")
 )
 
-# aggregate the sourcedata object by desired granularity
-exampleaggregate_byday <- aggregate_data(
-  examplesourcedata,
+# aggregate the source_data object by desired granularity
+prescriptions_byday <- aggregate_data(
+  prescriptions_source_data,
   aggregation_timeunit = "day"
 )
 
-# aggregate the same sourcedata object by a different granularity
-exampleaggregate_byweek <- aggregate_data(
-  examplesourcedata,
+# aggregate the same source_data object by a different granularity
+prescriptions_byweek <- aggregate_data(
+  prescriptions_source_data,
   aggregation_timeunit = "week"
 )
 
 # generate and save the reports
 report_data(
-  sourcedata = examplesourcedata,
-  aggregatedata = exampleaggregate_byday,
+  source_data = prescriptions_source_data,
+  aggregated_data = prescriptions_byday,
   save_directory = ".",
   save_filename = "example_prescriptions_byday"
 )
 
 report_data(
-  sourcedata = examplesourcedata,
-  aggregatedata = exampleaggregate_byweek,
+  source_data = prescriptions_source_data,
+  aggregated_data = prescriptions_byweek,
   save_directory = ".",
   save_filename = "example_prescriptions_byweek"
 )

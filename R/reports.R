@@ -3,11 +3,11 @@
 # -----------------------------------------------------------------------------
 #' Generate report from existing objects
 #'
-#' Generate report from previously-created `sourcedata` and `aggregatedata` objects
+#' Generate report from previously-created `source_data` and `aggregated_data` objects
 #'
-#' @param sourcedata A `sourcedata` object returned from
+#' @param source_data A `source_data` object returned from
 #'   [prepare_data()] function
-#' @param aggregatedata An `aggregatedata` object returned from
+#' @param aggregated_data An `aggregated_data` object returned from
 #'   [aggregate_data()] function
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.
@@ -20,15 +20,15 @@
 #' @examples
 #' \donttest{
 #' # load example data into a data.frame
-#' rawdata <- read_data(
+#' raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
 #'
 #' # validate and prepare the data for aggregation
-#' sourcedataobj <- prepare_data(
-#'   rawdata,
+#' source_data <- prepare_data(
+#'   raw_data,
 #'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
@@ -41,33 +41,32 @@
 #'   ),
 #'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
-#'   dataset_shortdesc = "Example data provided with package",
+#'   dataset_description = "Example data provided with package",
 #'   show_progress = TRUE
 #' )
 #'
 #' # aggregate the data
-#' aggregatedataobj <- aggregate_data(
-#'   sourcedataobj,
+#' aggregated_data <- aggregate_data(
+#'   source_data,
 #'   aggregation_timeunit = "day",
 #'   show_progress = TRUE
 #' )
 #'
 #' # save a report in the current directory using the previously-created objects
 #' report_data(
-#'   sourcedataobj,
-#'   aggregatedataobj,
+#'   source_data,
+#'   aggregated_data,
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
 #'   show_progress = TRUE
 #' )
-#' \dontshow{file.remove("./example_data_report.html")}
 #' }
 #'
 #' @seealso [prepare_data()], [aggregate_data()],
 #'   [create_report()]
 #' @export
-report_data <- function(sourcedata,
-                        aggregatedata,
+report_data <- function(source_data,
+                        aggregated_data,
                         save_directory = ".",
                         save_filename = NULL,
                         format = "html",
@@ -76,8 +75,8 @@ report_data <- function(sourcedata,
 
   validate_params_required(match.call())
   validate_params_type(match.call(),
-    sourcedata = sourcedata,
-    aggregatedata = aggregatedata,
+    source_data = source_data,
+    aggregated_data = aggregated_data,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,
@@ -89,7 +88,7 @@ report_data <- function(sourcedata,
       paste0("daiquiri_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
   }
 
-  fileandpath <- file.path(save_directory, paste0(save_filename, ".html"))
+  file_and_path <- file.path(save_directory, paste0(save_filename, ".html"))
 
   if (format == "html") {
     log_message("Generating html report...", show_progress)
@@ -102,7 +101,7 @@ report_data <- function(sourcedata,
       ),
       output_file = paste0(save_filename, ".html"),
       output_dir = save_directory,
-      params = list(sourcedata = sourcedata, aggregatedata = aggregatedata),
+      params = list(source_data = source_data, aggregated_data = aggregated_data),
       quiet = !show_progress
     )
   } else {
@@ -112,28 +111,28 @@ report_data <- function(sourcedata,
     ))
   }
 
-  log_message(paste0("Report saved to: ", fileandpath), show_progress)
+  log_message(paste0("Report saved to: ", file_and_path), show_progress)
 
   log_function_end(match.call()[[1]])
 
-  fileandpath
+  file_and_path
 }
 
 # -----------------------------------------------------------------------------
 #' Create a scatter plot for an individual time series
 #'
-#' @param aggfield aggregatefield object
-#' @param aggtype string denoting aggregatetype (from aggfield column_name)
+#' @param agg_field aggregated_field object
+#' @param agg_fun which aggregation function to plot (from agg_field column_name)
 #' @return ggplot
 #' @noRd
-plot_timeseries_static <- function(aggfield,
-                                   aggtype) {
-  timepointcolname <- names(aggfield$values)[1]
+plot_timeseries_static <- function(agg_field,
+                                   agg_fun) {
+  timepoint_aggcol_name <- names(agg_field$values)[1]
   # set up universal plot characteristics
   g <-
     ggplot2::ggplot(
-      aggfield$values[, c(timepointcolname, aggtype), with = FALSE],
-      ggplot2::aes_string(timepointcolname, aggtype)
+      agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE],
+      ggplot2::aes_string(timepoint_aggcol_name, agg_fun)
     ) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
@@ -146,30 +145,30 @@ plot_timeseries_static <- function(aggfield,
     ggplot2::labs(
       x = NULL,
       y = paste0(
-        aggtype_friendlyname(aggtype, "long"),
+        agg_fun_friendly_name(agg_fun, "long"),
         ifelse(
-          aggfield$column_name == "[DUPLICATES]",
+          agg_field$column_name == "[DUPLICATES]",
           "",
-          paste0("\n(", aggfield$column_name, ")")
+          paste0("\n(", agg_field$column_name, ")")
         )
       ),
       title = NULL
     )
 
   # if all values are NA, show a blank plot, otherwise plot the values
-  if (!all(is.na(aggfield$values[[aggtype]]))) {
+  if (!all(is.na(agg_field$values[[agg_fun]]))) {
     g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4)
 
     # specify y axis scale
-    maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
-    minval <- min(aggfield$values[[aggtype]], na.rm = TRUE)
-    aggbreaks <-
-      yscale_breaks(aggtype, maxval, minval, aggfield$field_type)
+    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
+    min_val <- min(agg_field$values[[agg_fun]], na.rm = TRUE)
+    y_breaks <-
+      yscale_breaks(agg_fun, max_val, min_val, agg_field$field_type)
     g <- g + ggplot2::scale_y_continuous(
-      breaks = aggbreaks,
+      breaks = y_breaks,
       limits = c(
-        min(minval, aggbreaks[1]),
-        max(maxval, aggbreaks[length(aggbreaks)])
+        min(min_val, y_breaks[1]),
+        max(max_val, y_breaks[length(y_breaks)])
       )
     )
   }
@@ -180,28 +179,28 @@ plot_timeseries_static <- function(aggfield,
 # -----------------------------------------------------------------------------
 #' Create a filled line plot to show overall numbers per timepoint
 #'
-#' @param aggfield aggregatefield object
-#' @param aggtype string denoting aggregatetype (from aggfield column_name)
-#' @param fillcolour colour to use below the line
+#' @param agg_field aggregated_field object
+#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param fill_colour colour to use below the line
 #' @param title optional title for the plot
 #' @return ggplot
 #' @noRd
 # TODO: automatically choose to draw a lineplot or barplot depending on number
 # of timepoints (as barplots don't render well with lots of timepoints)
-plot_overview_totals_static <- function(aggfield,
-                                        aggtype,
-                                        fillcolour = NA,
+plot_overview_totals_static <- function(agg_field,
+                                        agg_fun,
+                                        fill_colour = NA,
                                         title = NULL) {
 
   # initialise known column names to prevent R CMD check notes
   ymin <- NULL
 
-  timepointcolname <- names(aggfield$values)[1]
+  timepoint_aggcol_name <- names(agg_field$values)[1]
   data <-
-    aggfield$values[, c(timepointcolname, aggtype), with = FALSE]
+    agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
 
   g <-
-    ggplot2::ggplot(data, ggplot2::aes_string(timepointcolname, aggtype)) +
+    ggplot2::ggplot(data, ggplot2::aes_string(timepoint_aggcol_name, agg_fun)) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
       labels = scales::label_date_short(sep = " "),
@@ -223,21 +222,21 @@ plot_overview_totals_static <- function(aggfield,
     ggplot2::labs(x = NULL, y = NULL, title = title)
 
   # if all values are NA, show a blank plot, otherwise plot the values
-  if (!all(is.na(aggfield$values[[aggtype]]))) {
+  if (!all(is.na(agg_field$values[[agg_fun]]))) {
     g <- g + ggplot2::geom_line(na.rm = TRUE) +
       # use ribbon instead of area so that NAs don't get interpolated
       ggplot2::geom_ribbon(
-        data = data[!is.na(get(aggtype)), ymin := 0],
-        ggplot2::aes_string(x = timepointcolname, ymin = "ymin", ymax = aggtype),
-        fill = fillcolour,
+        data = data[!is.na(get(agg_fun)), ymin := 0],
+        ggplot2::aes_string(x = timepoint_aggcol_name, ymin = "ymin", ymax = agg_fun),
+        fill = fill_colour,
         alpha = 0.5
       )
 
     # specify y axis scale
-    maxval <- max(aggfield$values[[aggtype]], na.rm = TRUE)
+    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
     g <- g + ggplot2::scale_y_continuous(
       n.breaks = 6,
-      limits = c(0, max(maxval, 10))
+      limits = c(0, max(max_val, 10))
     )
   }
 
@@ -245,58 +244,58 @@ plot_overview_totals_static <- function(aggfield,
 }
 
 # -----------------------------------------------------------------------------
-#' Create a heatmap showing a particular aggtype value across all fields
+#' Create a heatmap showing a particular agg_fun value across all fields
 #'
-#' @param aggfields all aggregatefields object
-#' @param aggtype string denoting aggregatetype (from aggfield column_name)
-#' @param fillcolour colour to use for the tiles
+#' @param agg_fields all aggregated_fields object
+#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param fill_colour colour to use for the tiles
 #' @return ggplot
 #' @noRd
 # TODO: Decide whether or not to include the timepoint field in the heatmap
-plot_overview_heatmap_static <- function(aggfields,
-                                         aggtype,
-                                         fillcolour = "darkred") {
+plot_overview_heatmap_static <- function(agg_fields,
+                                         agg_fun,
+                                         fill_colour = "darkred") {
 
   # initialise known column names to prevent R CMD check notes
-  fieldname <- NULL
+  field_name <- NULL
 
-  timepointcolname <- names(aggfields[[1]]$values)[1]
+  timepoint_aggcol_name <- names(agg_fields[[1]]$values)[1]
 
-  # get aggtype values from each datafield
-  heatmapfields <-
-    names(aggfields)[which(!names(aggfields) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]"))]
+  # get agg_fun values from each data_field
+  heatmap_fields <-
+    names(agg_fields)[which(!names(agg_fields) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))]
   data <- data.table::data.table()
-  for (i in seq_along(heatmapfields)) {
-    f <- heatmapfields[i]
-    if (aggtype %in% names(aggfields[[f]]$values)) {
+  for (i in seq_along(heatmap_fields)) {
+    f <- heatmap_fields[i]
+    if (agg_fun %in% names(agg_fields[[f]]$values)) {
       d <-
-        aggfields[[f]]$values[, c(timepointcolname, aggtype), with = FALSE]
-      d[, fieldname := f]
+        agg_fields[[f]]$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+      d[, field_name := f]
     } else {
-      d <- aggfields[[f]]$values[, timepointcolname, with = FALSE]
-      d[, fieldname := f]
-      d[, (aggtype) := NA_integer_]
+      d <- agg_fields[[f]]$values[, timepoint_aggcol_name, with = FALSE]
+      d[, field_name := f]
+      d[, (agg_fun) := NA_integer_]
     }
     data <- rbind(data, d)
   }
-  data[, fieldname := factor(fieldname, levels = names(aggfields))]
+  data[, field_name := factor(field_name, levels = names(agg_fields))]
 
   # when the only values are zero, make sure the fill colour is white (as
   # geom_tile uses the 'high' colour)
-  if (all(data[, aggtype, with = FALSE] == 0, na.rm = TRUE)) {
-    fillcolour <- "white"
+  if (all(data[, agg_fun, with = FALSE] == 0, na.rm = TRUE)) {
+    fill_colour <- "white"
   }
 
   g <-
     ggplot2::ggplot(
       data,
-      ggplot2::aes_string(timepointcolname, "fieldname", fill = aggtype)
+      ggplot2::aes_string(timepoint_aggcol_name, "field_name", fill = agg_fun)
     ) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(
       "Instances",
       low = "white",
-      high = fillcolour,
+      high = fill_colour,
       na.value = "grey",
       labels = NULL,
       limits = c(0, NA)
@@ -306,9 +305,9 @@ plot_overview_heatmap_static <- function(aggfields,
       labels = scales::label_date_short(sep = " "),
       expand = c(0, 0)
     ) +
-    ggplot2::labs(y = "Instances per fieldname", x = NULL) +
+    ggplot2::labs(y = "Instances per field_name", x = NULL) +
     # facet by variable (field name) to create separate bars
-    ggplot2::facet_grid(fieldname ~ ., scales = "free", space = "free") +
+    ggplot2::facet_grid(field_name ~ ., scales = "free", space = "free") +
     ggplot2::theme_bw() +
     ggplot2::theme(
       # remove grid lines
@@ -343,35 +342,35 @@ plot_overview_heatmap_static <- function(aggfields,
 
 # -----------------------------------------------------------------------------
 #' Combine a lineplot and heatmap to show as an overall summary for a particular
-#' aggtype
+#' aggregation function
 #'
-#' @param aggfields all aggregatefields to be included
-#' @param aggtype string denoting aggregatetype (from aggfield column_name)
-#' @param lineplot_fieldname which aggfield to use for the lineplot
-#' @param lineplot_fillcolour colour to use below the line
-#' @param heatmap_fillcolour colour to use for the tiles
+#' @param agg_fields all aggregated_fields to be included
+#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param lineplot_field_name which aggregated_field to use for the lineplot
+#' @param lineplot_fill_colour colour to use below the line
+#' @param heatmap_fill_colour colour to use for the tiles
 #' @param title optional title for the combined plot
 #' @return cowplot::plot_grid
 #' @noRd
-plot_overview_combo_static <- function(aggfields,
-                                       aggtype,
-                                       lineplot_fieldname,
-                                       lineplot_fillcolour,
-                                       heatmap_fillcolour,
+plot_overview_combo_static <- function(agg_fields,
+                                       agg_fun,
+                                       lineplot_field_name,
+                                       lineplot_fill_colour,
+                                       heatmap_fill_colour,
                                        title = NULL) {
   totals <-
     plot_overview_totals_static(
-      aggfield = aggfields[[lineplot_fieldname]],
-      aggtype = aggtype,
-      fillcolour = lineplot_fillcolour,
+      agg_field = agg_fields[[lineplot_field_name]],
+      agg_fun = agg_fun,
+      fill_colour = lineplot_fill_colour,
       title = title
     )
 
   # TODO: Decide whether or not to include the timepoint field in the heatmap
   heatmap <- plot_overview_heatmap_static(
-    aggfields = aggfields,
-    aggtype = aggtype,
-    fillcolour = heatmap_fillcolour
+    agg_fields = agg_fields,
+    agg_fun = agg_fun,
+    fill_colour = heatmap_fill_colour
   )
 
   cowplot::plot_grid(
@@ -386,44 +385,44 @@ plot_overview_combo_static <- function(aggfields,
 # -----------------------------------------------------------------------------
 # HELPER FUNCTIONS
 
-#' Set the breaks for the y-axis depending on the field_type and aggtype
+#' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
-#' @param aggtype string denoting aggregatetype (from aggfield column_name)
-#' @param maxval maximum data value
-#' @param minval minimum data value
+#' @param agg_fun aggregation function being plotted (from agg_field column_name)
+#' @param max_val maximum data value
+#' @param min_val minimum data value
 #' @param field_type field_type object
 #' @return numeric vector containing locations of limits and breaks
 #' @noRd
-yscale_breaks <- function(aggtype,
-                          maxval,
-                          minval = 0,
+yscale_breaks <- function(agg_fun,
+                          max_val,
+                          min_val = 0,
                           field_type = NULL) {
   breaks <- NULL
 
-  if (aggtype %in% c("distinct", "n", "sum", "minlength", "maxlength", "meanlength") ||
-    endsWith(aggtype, "_n") || startsWith(aggtype, "subcat_n")) {
-    # frequency/length aggtypes should always start at zero and be shown on a
+  if (agg_fun %in% c("distinct", "n", "sum", "min_length", "max_length", "mean_length") ||
+    endsWith(agg_fun, "_n") || startsWith(agg_fun, "subcat_n")) {
+    # frequency/length agg_funs should always start at zero and be shown on a
     # range of 0-10 at a minimum
-    if (maxval <= 10) {
+    if (max_val <= 10) {
       breaks <- seq(0, 10)
     } else {
-      breaks <- pretty(c(0, maxval))
+      breaks <- pretty(c(0, max_val))
     }
-  } else if (endsWith(aggtype, "_perc") ||
-    startsWith(aggtype, "subcat_perc")) {
-    # percentage aggtypes should always be shown on a range of 0-100
+  } else if (endsWith(agg_fun, "_perc") ||
+    startsWith(agg_fun, "subcat_perc")) {
+    # percentage agg_funs should always be shown on a range of 0-100
     breaks <- seq(0, 100, by = 10)
   } else {
     if (is.field_type_datetime(field_type)) {
       # dates should be left to base
-      breaks <- pretty(c(minval, maxval))
+      breaks <- pretty(c(min_val, max_val))
     } else {
       # otherwise set range based on min/max values
-      if (maxval == minval) {
+      if (max_val == min_val) {
         # if all values are the same, plot them somewhere in the middle
-        breaks <- seq(floor(minval - 1), ceiling(maxval + 1))
+        breaks <- seq(floor(min_val - 1), ceiling(max_val + 1))
       } else {
-        breaks <- pretty(c(minval, maxval))
+        breaks <- pretty(c(min_val, max_val))
       }
     }
   }

@@ -1,33 +1,33 @@
 test_that("read_data() reads csv file created using Excel correctly when col_names = TRUE", {
-  rawdata <- read_data(
+  raw_data <- read_data(
     test_path("testdata", "specialchars_excel.csv"),
     delim = ",",
     col_names = TRUE
   )
-  expect_equal(nrow(rawdata), 8)
-  expect_equal(length(rawdata), 4)
+  expect_equal(nrow(raw_data), 8)
+  expect_equal(length(raw_data), 4)
 })
 
 test_that("read_data() reads csv file created using Excel correctly when col_names = FALSE", {
-  rawdata <- read_data(
+  raw_data <- read_data(
     test_path("testdata", "specialchars_excel.csv"),
     delim = ",",
     col_names = FALSE
   )
-  expect_equal(nrow(rawdata), 9)
-  expect_equal(length(rawdata), 4)
+  expect_equal(nrow(raw_data), 9)
+  expect_equal(length(raw_data), 4)
 })
 
 test_that("read_data() raises a warning when there are parsing issues", {
   # read file without acknowledging quotes
-  rawdata <- read_data(
+  raw_data <- read_data(
     test_path("testdata", "specialchars_excel.csv"),
     delim = ",",
     quote = "",
     col_names = TRUE
   )
   expect_warning(
-    expect_warning(as.numeric(rawdata$numeric_good), "NAs introduced by coercion"),
+    expect_warning(as.numeric(raw_data$numeric_good), "NAs introduced by coercion"),
     "One or more parsing issues"
   )
 })
@@ -65,7 +65,7 @@ test_that("create_report() requires field_types param to be a field_types object
 
 test_that("create_report() creates report and returns daiquiri object successfully", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testdaiqobj <- create_report(
+  testdaiq_obj <- create_report(
     testdf,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
@@ -93,7 +93,7 @@ test_that("create_report() creates report and returns daiquiri object successful
       col_simple_err = ft_ignore(),
       col_simple = ft_simple()
     ),
-    dataset_shortdesc = "completetestset",
+    dataset_description = "completetestset",
     aggregation_timeunit = "week",
     save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
@@ -101,24 +101,24 @@ test_that("create_report() creates report and returns daiquiri object successful
     show_progress = FALSE
   )
 
-  expect_s3_class(testdaiqobj, "daiquiri_object")
-  expect_s3_class(testdaiqobj$sourcedata, "sourcedata")
-  expect_s3_class(testdaiqobj$aggregatedata, "aggregatedata")
+  expect_s3_class(testdaiq_obj, "daiquiri_object")
+  expect_s3_class(testdaiq_obj$source_data, "source_data")
+  expect_s3_class(testdaiq_obj$aggregated_data, "aggregated_data")
 
-  expect_equal(testdaiqobj$dataset_shortdesc, "completetestset")
-  expect_equal(testdaiqobj$report_filename, file.path(
+  expect_equal(testdaiq_obj$dataset_description, "completetestset")
+  expect_equal(testdaiq_obj$report_filename, file.path(
     tempdir(),
     "daiquiri_testthatreport.html"
   ))
 
   # clean up
-  expect_true(file.remove(testdaiqobj$report_filename))
-  expect_true(file.remove(testdaiqobj$log_filename))
+  expect_true(file.remove(testdaiq_obj$report_filename))
+  expect_true(file.remove(testdaiq_obj$log_filename))
 })
 
 
 test_that("create_report() works even when column_names contain special chars", {
-  testdaiqobj <-
+  testdaiq_obj <-
     create_report(
       df = read_data(test_path("testdata", "specialchars_colnames.csv")),
       field_types = field_types(
@@ -134,25 +134,25 @@ test_that("create_report() works even when column_names contain special chars", 
         "col[]squarebrackets" = ft_simple(),
         "col()brackets" = ft_simple()
       ),
-      dataset_shortdesc = "specialchars_colnames",
+      dataset_description = "specialchars_colnames",
       aggregation_timeunit = "day",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
       show_progress = FALSE
     )
   # clean up
-  expect_true(file.remove(testdaiqobj$report_filename))
+  expect_true(file.remove(testdaiq_obj$report_filename))
 })
 
 
-test_that("create_report() gets dataset_shortdesc from call if NULL (default) passed in", {
+test_that("create_report() gets dataset_description from call if NULL (default) passed in", {
   dfobj <-
     data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
       col3 = 1:5
     )
-  testdaiqobj <- create_report(
+  testdaiq_obj <- create_report(
     df = dfobj,
     field_types = field_types(
       col1 = ft_timepoint(),
@@ -164,11 +164,11 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
     save_filename = "daiquiri_testthatreport",
     show_progress = FALSE
   )
-  expect_equal(testdaiqobj$sourcedata$dataset_shortdesc, "dfobj")
+  expect_equal(testdaiq_obj$source_data$dataset_description, "dfobj")
   # clean up
-  expect_true(file.remove(testdaiqobj$report_filename))
+  expect_true(file.remove(testdaiq_obj$report_filename))
 
-  testdaiqobj <-
+  testdaiq_obj <-
     create_report(
       df = data.frame(
         col1 = rep("2022-01-01", 5),
@@ -187,16 +187,16 @@ test_that("create_report() gets dataset_shortdesc from call if NULL (default) pa
     )
 
   expect_equal(
-    testdaiqobj$sourcedata$dataset_shortdesc,
+    testdaiq_obj$source_data$dataset_description,
     "data.frame(col1 = rep(\"2022-01-01\", 5), col2 = rep(1, 5), col3 = 1:5)"
   )
   # clean up
-  expect_true(file.remove(testdaiqobj$report_filename))
+  expect_true(file.remove(testdaiq_obj$report_filename))
 })
 
 
 test_that("daiquiri_object prints to console ok", {
-  testdaiqobj <-
+  testdaiq_obj <-
     create_report(
       df = data.frame(
         col1 = rep("2022-01-01", 5),
@@ -214,7 +214,7 @@ test_that("daiquiri_object prints to console ok", {
       show_progress = FALSE
     )
 
-  expect_snapshot_output(print(testdaiqobj))
+  expect_snapshot_output(print(testdaiq_obj))
   # clean up
-  expect_true(file.remove(testdaiqobj$report_filename))
+  expect_true(file.remove(testdaiq_obj$report_filename))
 })

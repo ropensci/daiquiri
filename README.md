@@ -85,9 +85,9 @@ library(daiquiri)
 
 # load delimited file into a data.frame without doing any datatype conversion
 path <- system.file("extdata", "example_prescriptions.csv", package = "daiquiri")
-rawdata <- read_data(path, show_progress = FALSE)
+raw_data <- read_data(path, show_progress = FALSE)
 
-head(rawdata)
+head(raw_data)
 ```
 
     ## # A tibble: 6 × 8
@@ -117,8 +117,8 @@ fts <- field_types(
 
 ``` r
 # create a report in the current directory
-daiqobj <- create_report(
-  rawdata,
+daiq_obj <- create_report(
+  raw_data,
   field_types = fts
 )
 ```

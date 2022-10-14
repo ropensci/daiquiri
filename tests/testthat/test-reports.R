@@ -1,37 +1,37 @@
 
-test_that("report_data() requires a sourcedata param", {
-  expect_error(report_data(aggregatedata = structure(list(datafields = NA),
-    class = "aggregatedata"
+test_that("report_data() requires a source_data param", {
+  expect_error(report_data(aggregated_data = structure(list(data_fields = NA),
+    class = "aggregated_data"
   )),
   class = "invalid_param_missing"
   )
 })
 
-test_that("report_data() requires a aggregatedata param", {
-  expect_error(report_data(sourcedata = structure(list(datafields = NA),
-    class = "sourcedata"
+test_that("report_data() requires a aggregated_data param", {
+  expect_error(report_data(source_data = structure(list(data_fields = NA),
+    class = "source_data"
   )),
   class = "invalid_param_missing"
   )
 })
 
-test_that("report_data() requires sourcedata param to be a sourcedata object", {
+test_that("report_data() requires source_data param to be a source_data object", {
   expect_error(report_data(
-    sourcedata = data.frame("Fieldname" = 123),
-    aggregatedata = structure(list(datafields = NA),
-      class = "aggregatedata"
+    source_data = data.frame("Fieldname" = 123),
+    aggregated_data = structure(list(data_fields = NA),
+      class = "aggregated_data"
     )
   ),
   class = "invalid_param_type"
   )
 })
 
-test_that("report_data() requires aggregatedata param to be an aggregatedata object", {
+test_that("report_data() requires aggregated_data param to be an aggregated_data object", {
   expect_error(report_data(
-    sourcedata = structure(list(datafields = NA),
-      class = "sourcedata"
+    source_data = structure(list(data_fields = NA),
+      class = "source_data"
     ),
-    aggregatedata = data.frame("Fieldname" = 123)
+    aggregated_data = data.frame("Fieldname" = 123)
   ),
   class = "invalid_param_type"
   )
@@ -39,7 +39,7 @@ test_that("report_data() requires aggregatedata param to be an aggregatedata obj
 
 test_that("report_data() creates report and returns path successfully", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     testdf,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
@@ -67,18 +67,18 @@ test_that("report_data() creates report and returns path successfully", {
       col_simple_err = ft_ignore(),
       col_simple = ft_simple()
     ),
-    dataset_shortdesc = "completetestset",
+    dataset_description = "completetestset",
     show_progress = FALSE
   )
-  testaggregatedata <-
-    aggregate_data(testsourcedata,
+  testaggregated_data <-
+    aggregate_data(testsource_data,
       aggregation_timeunit = "week",
       show_progress = FALSE
     )
   testreportpath <-
     report_data(
-      testsourcedata,
-      testaggregatedata,
+      testsource_data,
+      testaggregated_data,
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
       show_progress = FALSE
@@ -96,35 +96,35 @@ test_that("plots still work when all values are missing", {
       "col_timepoint" = paste0("2022-01-", seq(10, 31)),
       "col_numeric_missing" = ""
     )
-  testsourcedata <-
+  testsource_data <-
     prepare_data(
       testdf,
       field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric_missing = ft_numeric()
       ),
-      dataset_shortdesc = "blankplottest",
+      dataset_description = "blankplottest",
       override_column_names = FALSE,
       na = c("", "NULL"),
       show_progress = FALSE
     )
   testdata_byday <-
-    aggregate_data(testsourcedata,
+    aggregate_data(testsource_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
   expect_s3_class(
     plot_timeseries_static(
-      aggfield = testdata_byday$aggregatefields$col_numeric_missing,
-      aggtype = "missing_n"
+      agg_field = testdata_byday$aggregatefields$col_numeric_missing,
+      agg_fun = "missing_n"
     ),
     "ggplot"
   )
   expect_s3_class(
     plot_overview_totals_static(
-      aggfield = testdata_byday$aggregatefields$col_numeric_missing,
-      aggtype = "missing_n"
+      agg_field = testdata_byday$aggregatefields$col_numeric_missing,
+      agg_fun = "missing_n"
     ),
     "ggplot"
   )

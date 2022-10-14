@@ -53,7 +53,7 @@ character type so that the package can later detect any non-conformant
 values. Operates as a restricted implementation of \code{\link[readr:read_delim]{readr::read_delim()}}.
 }
 \examples{
-rawdata <- read_data(
+raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE

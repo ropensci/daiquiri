@@ -111,13 +111,13 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] == "sourcedata") {
-      if (!is.sourcedata(params_passed[[i]])) {
+    } else if (params_names[i] == "source_data") {
+      if (!is.source_data(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
             params_names[i],
-            ": Expected a sourcedata object but found: [ class = ",
+            ": Expected a source_data object but found: [ class = ",
             class(params_passed[[i]]),
             "; contents = ",
             substr(toString(params_passed[[i]]), 1, 100),
@@ -125,13 +125,13 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] == "aggregatedata") {
-      if (!is.aggregatedata(params_passed[[i]])) {
+    } else if (params_names[i] == "aggregated_data") {
+      if (!is.aggregated_data(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
             params_names[i],
-            ": Expected a aggregatedata object but found: [ class = ",
+            ": Expected a aggregated_data object but found: [ class = ",
             class(params_passed[[i]]),
             "; contents = ",
             substr(toString(params_passed[[i]]), 1, 100),
@@ -199,7 +199,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("save_fileprefix")) {
+    } else if (params_names[i] %in% c("save_file_prefix")) {
       if (grepl("[^a-zA-Z0-9_-]", params_passed[[i]])) {
         # NOTE: this is very restrictive and I'm not sure how it works in different locales
         err_validation <- append(
@@ -227,7 +227,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("dataset_shortdesc")) {
+    } else if (params_names[i] %in% c("dataset_description")) {
       if (!is.null(params_passed[[i]]) &&
         (!is.character(params_passed[[i]]) ||
           length(params_passed[[i]]) != 1)) {
@@ -257,7 +257,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("format", "save_filetype")) {
+    } else if (params_names[i] %in% c("format", "save_file_type")) {
       # ignore for now as currently dealt with inside function
     }
   }
@@ -284,10 +284,10 @@ validate_params_type <- function(call, ...) {
 #' @param log_directory String containing directory to save log file
 #' @return Character string containing the full path to the newly-created log file
 #' @examples
-#' logname <- initialise_log(".")
+#' log_name <- initialise_log(".")
 #' \dontshow{
 #' close_log()
-#' file.remove(logname)
+#' file.remove(log_name)
 #' }
 #' @export
 initialise_log <- function(log_directory) {
@@ -296,15 +296,15 @@ initialise_log <- function(log_directory) {
     log_directory = log_directory
   )
 
-  filenameandpath <-
+  file_and_path <-
     file.path(
       log_directory,
       paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log")
     )
 
-  if (file.create(filenameandpath)) {
+  if (file.create(file_and_path)) {
     # need to save absolute path so that logging continues correctly from report_htmldoc.Rmd
-    packageenvironment$logname <- normalizePath(filenameandpath)
+    package_environment$log_name <- normalizePath(file_and_path)
 
     log_message(paste(
       "Log file initialised.",
@@ -313,10 +313,10 @@ initialise_log <- function(log_directory) {
       R.Version()$version.string
     ))
   } else {
-    stop("Log file [", filenameandpath, "] could not be created")
+    stop("Log file [", file_and_path, "] could not be created")
   }
 
-  packageenvironment$logname
+  package_environment$log_name
 }
 
 
@@ -327,14 +327,14 @@ initialise_log <- function(log_directory) {
 #' @examples close_log()
 #' @export
 close_log <- function() {
-  if (exists("logname", envir = packageenvironment)) {
+  if (exists("log_name", envir = package_environment)) {
     log_message("Log file closed")
-    logname <- packageenvironment$logname
-    rm("logname", envir = packageenvironment)
+    log_name <- package_environment$log_name
+    rm("log_name", envir = package_environment)
   } else {
-    logname <- ""
+    log_name <- ""
   }
-  logname
+  log_name
 }
 
 #' Write message to log file (if it exists) and/or print to console
@@ -344,12 +344,12 @@ close_log <- function() {
 #' @noRd
 # TODO: decide if show_progress should be a global setting e.g. package option ( options("mypkg-myval"=3) )
 log_message <- function(message, show_progress = FALSE) {
-  if (exists("logname", envir = packageenvironment)) {
-    if (file.access(packageenvironment$logname, mode = 2) == -1) {
-      stop(paste0("Cannot write to log file [", packageenvironment$logname, "].
+  if (exists("log_name", envir = package_environment)) {
+    if (file.access(package_environment$log_name, mode = 2) == -1) {
+      stop(paste0("Cannot write to log file [", package_environment$log_name, "].
 									Message not logged: ", message))
     } else {
-      log_con <- file(packageenvironment$logname, open = "a")
+      log_con <- file(package_environment$log_name, open = "a")
       writeLines(paste(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ":", message),
         con = log_con
       )
@@ -361,18 +361,18 @@ log_message <- function(message, show_progress = FALSE) {
 
 #' Log entry to function
 #'
-#' @param functionname functionname to be written
+#' @param function_name function_name to be written
 #' @noRd
-log_function_start <- function(functionname) {
-  log_message(paste("[START FUNCTION]", functionname), FALSE)
+log_function_start <- function(function_name) {
+  log_message(paste("[START FUNCTION]", function_name), FALSE)
 }
 
 #' Log exit from function
 #'
-#' @param functionname functionname to be written
+#' @param function_name function_name to be written
 #' @noRd
-log_function_end <- function(functionname) {
-  log_message(paste("[END FUNCTION]", functionname), FALSE)
+log_function_end <- function(function_name) {
+  log_message(paste("[END FUNCTION]", function_name), FALSE)
 }
 
 #' Raise a custom error with a class that can be tested for
@@ -416,19 +416,19 @@ testfn_params_required <- function(p1, p2, p3 = NULL) {
 #' @noRd
 testfn_params_type <- function(df,
                                field_types,
-                               sourcedata,
-                               aggregatedata,
+                               source_data,
+                               aggregated_data,
                                override_column_names = FALSE,
                                na = c("", "NA", "NULL"),
-                               dataset_shortdesc = "shortdesc",
+                               dataset_description = "shortdesc",
                                aggregation_timeunit = "day",
                                save_directory = ".",
                                save_filename = "filename",
                                show_progress = TRUE,
                                log_directory = NULL,
                                format = "html",
-                               save_filetype = "csv",
-                               save_fileprefix = "",
+                               save_file_type = "csv",
+                               save_file_prefix = "",
                                default_field_type = ft_ignore()) {
   if (missing(df)) {
     df <- data.frame("Fieldname" = 123)
@@ -436,12 +436,12 @@ testfn_params_type <- function(df,
   if (missing(field_types)) {
     field_types <- daiquiri::field_types(Col_tp = ft_timepoint())
   }
-  if (missing(sourcedata)) {
-    sourcedata <- structure(list(datafields = NA), class = "sourcedata")
+  if (missing(source_data)) {
+    source_data <- structure(list(data_fields = NA), class = "source_data")
   }
-  if (missing(aggregatedata)) {
-    aggregatedata <-
-      structure(list(datafields = NA), class = "aggregatedata")
+  if (missing(aggregated_data)) {
+    aggregated_data <-
+      structure(list(data_fields = NA), class = "aggregated_data")
   }
 
   validate_params_type(
@@ -450,17 +450,17 @@ testfn_params_type <- function(df,
     field_types = field_types,
     override_column_names = override_column_names,
     na = na,
-    dataset_shortdesc = dataset_shortdesc,
+    dataset_description = dataset_description,
     aggregation_timeunit = aggregation_timeunit,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,
     log_directory = log_directory,
-    sourcedata = sourcedata,
-    aggregatedata = aggregatedata,
+    source_data = source_data,
+    aggregated_data = aggregated_data,
     format = format,
-    save_filetype = save_filetype,
-    save_fileprefix = save_fileprefix,
+    save_file_type = save_file_type,
+    save_file_prefix = save_file_prefix,
     default_field_type = default_field_type
   )
 }

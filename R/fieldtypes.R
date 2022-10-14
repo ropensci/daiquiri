@@ -12,23 +12,23 @@
 #'
 #' @param type string denoting the field_type
 #' @param collector readr `collector' to use when parsing the data
-#' @param dataclass type of data, e.g. character or POSIXct
-#' @param aggfunctions aggfunctions to apply to the data in this field
-#' @param options additional options for certain aggfunctions
+#' @param data_class type of data, e.g. character or POSIXct
+#' @param aggregation_functions aggregation_functions to apply to the data in this field
+#' @param options additional options for certain aggregation_functions
 #' @return field_type object
 #' @noRd
-# TODO: decide whether to require all aggfunctions to be supplied or automatically include the basic ones
+# TODO: decide whether to require all aggregation_functions to be supplied or automatically include the basic ones
 field_type <- function(type,
                        collector,
-                       dataclass,
-                       aggfunctions = c("n", "missing_n", "missing_perc"),
+                       data_class,
+                       aggregation_functions = c("n", "missing_n", "missing_perc"),
                        options = NULL) {
   structure(
     list(
       type = type,
       collector = collector,
-      dataclass = dataclass,
-      aggfunctions = aggfunctions,
+      data_class = data_class,
+      aggregation_functions = aggregation_functions,
       options = options
     ),
     class = c(paste0("field_type_", type), "field_type")
@@ -115,18 +115,18 @@ NULL
 ft_timepoint <- function(includes_time = TRUE,
                          format = "") {
   # NOTE: nonconformant values appear in validation warnings
-  aggfn <- c("n")
+  agg_fun <- c("n")
   options <- NULL
   if (includes_time) {
-    aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
   field_type(
     type = "timepoint",
     collector = readr::col_datetime(format = format),
-    dataclass = "POSIXct",
-    aggfunctions = aggfn,
+    data_class = "POSIXct",
+    aggregation_functions = agg_fun,
     options = options
   )
 }
@@ -137,18 +137,18 @@ ft_timepoint <- function(includes_time = TRUE,
 #' @rdname field_types_available
 #' @export
 ft_uniqueidentifier <- function() {
-  # TODO: potential additional aggfunctions: proportion numeric; distinct first chars
+  # TODO: potential additional aggregation_functions: proportion numeric; distinct first chars
   field_type(
     type = "uniqueidentifier",
     collector = readr::col_character(),
-    dataclass = "character",
-    aggfunctions = c(
+    data_class = "character",
+    aggregation_functions = c(
       "n",
       "missing_n",
       "missing_perc",
-      "minlength",
-      "maxlength",
-      "meanlength"
+      "min_length",
+      "max_length",
+      "mean_length"
     )
   )
 }
@@ -163,18 +163,18 @@ ft_uniqueidentifier <- function() {
 #' @export
 ft_categorical <- function(aggregate_by_each_category = FALSE) {
   # TODO: allow more options for aggregate_by_each_category, e.g. topx (bysize), or accept a vector of values
-  aggfn <- c("n", "missing_n", "missing_perc", "distinct")
+  agg_fun <- c("n", "missing_n", "missing_perc", "distinct")
   options <- NULL
   if (aggregate_by_each_category) {
-    aggfn <- c(aggfn, "subcat_n", "subcat_perc")
+    agg_fun <- c(agg_fun, "subcat_n", "subcat_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "aggregate_by_each_category"
   }
   field_type(
     type = "categorical",
     collector = readr::col_character(),
-    dataclass = "character",
-    aggfunctions = aggfn,
+    data_class = "character",
+    aggregation_functions = agg_fun,
     options = options
   )
 }
@@ -188,8 +188,8 @@ ft_numeric <- function() {
   field_type(
     type = "numeric",
     collector = readr::col_double(),
-    dataclass = "numeric",
-    aggfunctions = c(
+    data_class = "numeric",
+    aggregation_functions = c(
       "n",
       "missing_n",
       "missing_perc",
@@ -218,7 +218,7 @@ ft_numeric <- function() {
 #' @export
 ft_datetime <- function(includes_time = TRUE,
                         format = "") {
-  aggfn <-
+  agg_fun <-
     c(
       "n",
       "missing_n",
@@ -230,15 +230,15 @@ ft_datetime <- function(includes_time = TRUE,
     )
   options <- NULL
   if (includes_time) {
-    aggfn <- c(aggfn, "midnight_n", "midnight_perc")
+    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
   field_type(
     type = "datetime",
     collector = readr::col_datetime(format = format),
-    dataclass = "POSIXct",
-    aggfunctions = aggfn,
+    data_class = "POSIXct",
+    aggregation_functions = agg_fun,
     options = options
   )
 }
@@ -251,8 +251,8 @@ ft_freetext <- function() {
   field_type(
     type = "freetext",
     collector = readr::col_character(),
-    dataclass = "character",
-    aggfunctions = c("n", "missing_n", "missing_perc")
+    data_class = "character",
+    aggregation_functions = c("n", "missing_n", "missing_perc")
   )
 }
 
@@ -265,8 +265,8 @@ ft_simple <- function() {
   field_type(
     type = "simple",
     collector = readr::col_character(),
-    dataclass = "character",
-    aggfunctions = c("n", "missing_n", "missing_perc")
+    data_class = "character",
+    aggregation_functions = c("n", "missing_n", "missing_perc")
   )
 }
 
@@ -278,7 +278,7 @@ ft_ignore <- function() {
   field_type(
     type = "ignore",
     collector = readr::col_skip(),
-    dataclass = "NULL"
+    data_class = "NULL"
   )
 }
 
@@ -287,8 +287,8 @@ ft_allfields <- function() {
   field_type(
     type = "allfields",
     collector = readr::col_skip(),
-    dataclass = "NULL",
-    aggfunctions = c(
+    data_class = "NULL",
+    aggregation_functions = c(
       "n",
       "missing_n",
       "missing_perc",
@@ -303,8 +303,8 @@ ft_duplicates <- function() {
   field_type(
     type = "duplicates",
     collector = readr::col_skip(),
-    dataclass = "NULL",
-    aggfunctions = c("sum", "nonzero_perc")
+    data_class = "NULL",
+    aggregation_functions = c("sum", "nonzero_perc")
   )
 }
 
@@ -379,12 +379,12 @@ field_types <- function(...) {
       )
   }
   # check for reserved names
-  if (any(names(fts) %in% c("[DUPLICATES]", "[ALLFIELDSCOMBINED]"))) {
+  if (any(names(fts) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))) {
     err_validation <-
       append(
         err_validation,
         paste(
-          "'[DUPLICATES]' and '[ALLFIELDSCOMBINED]' are names reserved for calculated columns.
+          "'[DUPLICATES]' and '[ALL_FIELDS_COMBINED]' are names reserved for calculated columns.
 					Please rename these columns in your data."
         )
       )
@@ -448,18 +448,18 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
     default_field_type = default_field_type
   )
 
-  fieldnames <- names(df)
+  field_names <- names(df)
   template_string <-
     paste(
       "field_types(",
       paste0(
         "\"",
-        fieldnames,
+        field_names,
         "\"",
         " = ft_",
         default_field_type$type,
         "()",
-        ifelse(fieldnames == rev(fieldnames)[1], "", ","),
+        ifelse(field_names == rev(field_names)[1], "", ","),
         collapse = "\n\t"
       ),
       ")"
@@ -476,11 +476,11 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
 #' Parser used is readr. See readr::col_types
 #'
 #' @param field_types field_types object
-#' @param alltostring Set to TRUE if want parser to read everything as character
+#' @param all_to_string Set to TRUE if want parser to read everything as character
 #' @return list of coltypes
 #' @noRd
 field_types_to_cols <-
-  function(field_types, alltostring = FALSE) {
+  function(field_types, all_to_string = FALSE) {
     # validate
     if (missing(field_types) || !is.field_types(field_types)) {
       stop("Invalid parameter(s) supplied:",
@@ -488,12 +488,12 @@ field_types_to_cols <-
         call. = FALSE
       )
     }
-    if (alltostring == TRUE) {
+    if (all_to_string == TRUE) {
       do.call(readr::cols, lapply(field_types, function(x) {
         readr::col_character()
       }))
     } else {
-      do.call(readr::cols, lapply(field_types, get_collector))
+      do.call(readr::cols, lapply(field_types, field_type_collector))
     }
   }
 
@@ -502,17 +502,17 @@ field_types_to_cols <-
 #' @param field_type field_type object
 #' @return coltype as appropriate to the chosen parser (readr)
 #' @noRd
-get_collector <- function(field_type) {
+field_type_collector <- function(field_type) {
   field_type$collector
 }
 
-#' Get the field_type's dataclass
+#' Get the field_type's data_class
 #'
 #' @param field_type field_type object
 #' @return type of data e.g. character or POSIXct
 #' @noRd
-get_dataclass <- function(field_type) {
-  field_type$dataclass
+field_type_data_class <- function(field_type) {
+  field_type$data_class
 }
 
 #' Get the field_type's type as a string
@@ -520,15 +520,15 @@ get_dataclass <- function(field_type) {
 #' @param field_type field_type object
 #' @return string
 #' @noRd
-get_field_type_name <- function(field_type) {
+field_type_type <- function(field_type) {
   field_type$type
 }
 
-#' Get the field_type's aggfunctions
+#' Get the field_type's aggregation_functions
 #'
 #' @param field_type field_type object
-#' @return vector of aggfunctions
+#' @return vector of aggregation_functions
 #' @noRd
-get_aggfunctions <- function(field_type) {
-  field_type$aggfunctions
+field_type_aggregation_functions <- function(field_type) {
+  field_type$aggregation_functions
 }

@@ -9,7 +9,7 @@ create_report(
   field_types,
   override_column_names = FALSE,
   na = c("", "NA", "NULL"),
-  dataset_shortdesc = NULL,
+  dataset_description = NULL,
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = NULL,
@@ -33,7 +33,7 @@ Default = \code{FALSE}}
 \item{na}{vector containing strings that should be interpreted as missing
 values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_shortdesc}{Short description of the dataset being checked. This
+\item{dataset_description}{Short description of the dataset being checked. This
 will appear on the report. If blank, the name of the data frame object will
 be used}
 
@@ -55,7 +55,7 @@ If no directory is supplied, progress is not logged.}
 }
 \value{
 A list containing information relating to the supplied parameters as
-well as the resulting \code{sourcedata} and \code{aggregatedata} objects.
+well as the resulting \code{source_data} and \code{aggregated_data} objects.
 }
 \description{
 Accepts record-level data from a data frame, validates it against the
@@ -75,15 +75,15 @@ specified.
 \examples{
 \donttest{
 # load example data into a data.frame
-rawdata <- read_data(
+raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
 # create a report in the current directory
-daiqobj <- create_report(
-  rawdata,
+daiq_obj <- create_report(
+  raw_data,
   field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
@@ -96,7 +96,7 @@ daiqobj <- create_report(
   ),
   override_column_names = FALSE,
   na = c("", "NULL"),
-  dataset_shortdesc = "Example data provided with package",
+  dataset_description = "Example data provided with package",
   aggregation_timeunit = "day",
   save_directory = ".",
   save_filename = "example_data_report",

@@ -66,8 +66,8 @@ test_that("[DUPLICATES] cannot be used as a field_type colname as it is a reserv
   )
 })
 
-test_that("[ALLFIELDSCOMBINED] cannot be used as a field_type colname as it is a reserved word", {
-  expect_error(field_types("[ALLFIELDSCOMBINED]" = ft_timepoint()),
+test_that("[ALL_FIELDS_COMBINED] cannot be used as a field_type colname as it is a reserved word", {
+  expect_error(field_types("[ALL_FIELDS_COMBINED]" = ft_timepoint()),
     class = "invalid_field_types"
   )
 })

@@ -52,13 +52,13 @@ test_that("validate_params_type() checks na params are of correct type", {
   )
 })
 
-test_that("validate_params_type() checks dataset_shortdesc params are of correct type", {
-  expect_silent(testfn_params_type(dataset_shortdesc = ""))
-  expect_silent(testfn_params_type(dataset_shortdesc = NULL))
-  expect_error(testfn_params_type(dataset_shortdesc = 123),
+test_that("validate_params_type() checks dataset_description params are of correct type", {
+  expect_silent(testfn_params_type(dataset_description = ""))
+  expect_silent(testfn_params_type(dataset_description = NULL))
+  expect_error(testfn_params_type(dataset_description = 123),
     class = "invalid_param_type"
   )
-  expect_error(testfn_params_type(dataset_shortdesc = c("col1", "col2")),
+  expect_error(testfn_params_type(dataset_description = c("col1", "col2")),
     class = "invalid_param_type"
   )
 })
@@ -136,14 +136,14 @@ test_that("validate_params_type() checks log_directory params are of correct typ
   )
 })
 
-test_that("validate_params_type() checks sourcedata params are of correct type", {
-  expect_error(testfn_params_type(sourcedata = 1),
+test_that("validate_params_type() checks source_data params are of correct type", {
+  expect_error(testfn_params_type(source_data = 1),
     class = "invalid_param_type"
   )
 })
 
-test_that("validate_params_type() checks aggregatedata params are of correct type", {
-  expect_error(testfn_params_type(aggregatedata = 1),
+test_that("validate_params_type() checks aggregated_data params are of correct type", {
+  expect_error(testfn_params_type(aggregated_data = 1),
     class = "invalid_param_type"
   )
 })

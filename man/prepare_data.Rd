@@ -9,7 +9,7 @@ prepare_data(
   field_types,
   override_column_names = FALSE,
   na = c("", "NA", "NULL"),
-  dataset_shortdesc = NULL,
+  dataset_description = NULL,
   show_progress = TRUE
 )
 }
@@ -29,14 +29,14 @@ Default = \code{FALSE}}
 \item{na}{vector containing strings that should be interpreted as missing
 values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_shortdesc}{Short description of the dataset being checked. This
+\item{dataset_description}{Short description of the dataset being checked. This
 will appear on the report. If blank, the name of the data frame object will
 be used}
 
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
-A \code{sourcedata} object
+A \code{source_data} object
 }
 \description{
 Validate a data frame against a \code{\link[=field_types]{field_types()}} specification, and
@@ -44,15 +44,15 @@ prepare for aggregation.
 }
 \examples{
 # load example data into a data.frame
-rawdata <- read_data(
+raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
 # validate and prepare the data for aggregation
-sourcedataobj <- prepare_data(
-  rawdata,
+source_data <- prepare_data(
+  raw_data,
   field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
@@ -65,7 +65,7 @@ sourcedataobj <- prepare_data(
   ),
   override_column_names = FALSE,
   na = c("", "NULL"),
-  dataset_shortdesc = "Example data provided with package"
+  dataset_description = "Example data provided with package"
 )
 }
 \seealso{

@@ -5,8 +5,8 @@
 \title{Generate report from existing objects}
 \usage{
 report_data(
-  sourcedata,
-  aggregatedata,
+  source_data,
+  aggregated_data,
   save_directory = ".",
   save_filename = NULL,
   format = "html",
@@ -14,10 +14,10 @@ report_data(
 )
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from
+\item{source_data}{A \code{source_data} object returned from
 \code{\link[=prepare_data]{prepare_data()}} function}
 
-\item{aggregatedata}{An \code{aggregatedata} object returned from
+\item{aggregated_data}{An \code{aggregated_data} object returned from
 \code{\link[=aggregate_data]{aggregate_data()}} function}
 
 \item{save_directory}{String specifying directory in which to save the
@@ -35,20 +35,20 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 A string containing the name and path of the saved report
 }
 \description{
-Generate report from previously-created \code{sourcedata} and \code{aggregatedata} objects
+Generate report from previously-created \code{source_data} and \code{aggregated_data} objects
 }
 \examples{
 \donttest{
 # load example data into a data.frame
-rawdata <- read_data(
+raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
 # validate and prepare the data for aggregation
-sourcedataobj <- prepare_data(
-  rawdata,
+source_data <- prepare_data(
+  raw_data,
   field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
@@ -61,21 +61,21 @@ sourcedataobj <- prepare_data(
   ),
   override_column_names = FALSE,
   na = c("", "NULL"),
-  dataset_shortdesc = "Example data provided with package",
+  dataset_description = "Example data provided with package",
   show_progress = TRUE
 )
 
 # aggregate the data
-aggregatedataobj <- aggregate_data(
-  sourcedataobj,
+aggregated_data <- aggregate_data(
+  source_data,
   aggregation_timeunit = "day",
   show_progress = TRUE
 )
 
 # save a report in the current directory using the previously-created objects
 report_data(
-  sourcedataobj,
-  aggregatedataobj,
+  source_data,
+  aggregated_data,
   save_directory = ".",
   save_filename = "example_data_report",
   show_progress = TRUE

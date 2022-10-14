@@ -4,8 +4,8 @@ output:
   html_document:
     df_print: paged
 params:
-  sourcedata: sourcedata
-  aggregatedata: aggregatedata
+  source_data: source_data
+  aggregated_data: aggregated_data
 ---
 
 
@@ -26,11 +26,11 @@ p.compact {
 ```
 
 <p class="compact">
-Dataset: **`r encodeString(params$sourcedata$dataset_shortdesc)`**
+Dataset: **`r encodeString(params$source_data$dataset_description)`**
 </p>
 
 <p class="compact">
-Aggregated by: **`r params$aggregatedata$aggregation_timeunit`**
+Aggregated by: **`r params$aggregated_data$aggregation_timeunit`**
 </p>
 
 <p class="compact">
@@ -42,10 +42,10 @@ Report created on: `r Sys.time()`; Package version `r utils::packageVersion(util
 ## Source data {.tabset}
 
 
-```{r sourcedata}
-sourcesummary <- summarise_source_data(params$sourcedata, show_progress = FALSE)
-sourcedatafields <- sourcesummary$datafields
-sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
+```{r source_data}
+sourcesummary <- summarise_source_data(params$source_data, show_progress = FALSE)
+source_data_fields <- sourcesummary$data_fields
+source_data_fields$ordinal_position <- seq.int(nrow(source_data_fields))
 ```
 
 ### Data fields imported
@@ -54,7 +54,7 @@ sourcedatafields$ordinal_position <- seq.int(nrow(sourcedatafields))
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
-  sourcedatafields[which(trimws(sourcesummary$datafields$field_type) != "ignore"), ],
+  source_data_fields[which(trimws(sourcesummary$data_fields$field_type) != "ignore"), ],
   sortable = TRUE,
   filterable = FALSE,
   searchable = FALSE,
@@ -63,7 +63,7 @@ reactable::reactable(
   striped = TRUE,
   highlight = TRUE,
   columns = list(
-    fieldname = reactable::colDef(
+    field_name = reactable::colDef(
       name = "Field name",
       style = list(fontWeight = "bold")
     ),
@@ -86,9 +86,9 @@ reactable::reactable(
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
-  sourcedatafields[
-    which(trimws(sourcesummary$datafields$field_type) == "ignore"),
-    c("fieldname", "field_type", "ordinal_position")
+  source_data_fields[
+    which(trimws(sourcesummary$data_fields$field_type) == "ignore"),
+    c("field_name", "field_type", "ordinal_position")
   ],
   sortable = TRUE,
   filterable = FALSE,
@@ -98,7 +98,7 @@ reactable::reactable(
   compact = TRUE,
   fullWidth = FALSE,
   columns = list(
-    fieldname = reactable::colDef(
+    field_name = reactable::colDef(
       name = "Field name",
       minWidth = 200
     ),
@@ -128,7 +128,7 @@ reactable::reactable(
   compact = TRUE,
   fullWidth = FALSE,
   columns = list(
-    fieldname = reactable::colDef(
+    field_name = reactable::colDef(
       name = "Field name",
       style = list(fontWeight = "bold"),
       minWidth = 200
@@ -144,7 +144,7 @@ reactable::reactable(
 
 ### Summary
 
-```{r sourcedata-summary}
+```{r source_data-summary}
 
 summarydf <- data.frame(
   "Item" = c(
@@ -163,7 +163,7 @@ summarydf <- data.frame(
   "Value" = c(
     sourcesummary$overall["cols_source_n"],
     sourcesummary$overall["cols_imported_n"],
-    sourcesummary$overall["timepoint_fieldname"],
+    sourcesummary$overall["timepoint_field_name"],
     sourcesummary$overall["timepoint_min"],
     sourcesummary$overall["timepoint_max"],
     sourcesummary$overall["rows_source_n"],
@@ -207,8 +207,8 @@ reactable::reactable(
 ## Aggregated data {.tabset}
 
 
-```{r aggregatedata}
-aggsummary <- summarise_aggregated_data(params$aggregatedata)
+```{r aggregated_data}
+aggsummary <- summarise_aggregated_data(params$aggregated_data)
 ```
 
 
@@ -217,12 +217,12 @@ aggsummary <- summarise_aggregated_data(params$aggregatedata)
 ```{r overview-presence}
 
 plot_overview_combo_static(
-  aggfields = params$aggregatedata$aggregatefields,
-  aggtype = "n",
-  lineplot_fieldname = params$aggregatedata$timepoint_fieldname,
-  lineplot_fillcolour = "pink",
-  heatmap_fillcolour = "darkred",
-  title = paste("Records per", params$aggregatedata$aggregation_timeunit)
+  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fun = "n",
+  lineplot_field_name = params$aggregated_data$timepoint_field_name,
+  lineplot_fill_colour = "pink",
+  heatmap_fill_colour = "darkred",
+  title = paste("Records per", params$aggregated_data$aggregation_timeunit)
 )
 ```
 
@@ -231,14 +231,14 @@ plot_overview_combo_static(
 ```{r overview-missing}
 
 plot_overview_combo_static(
-  aggfields = params$aggregatedata$aggregatefields,
-  aggtype = "missing_n",
-  lineplot_fieldname = "[ALLFIELDSCOMBINED]",
-  lineplot_fillcolour = "lightblue",
-  heatmap_fillcolour = "darkblue",
+  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fun = "missing_n",
+  lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+  lineplot_fill_colour = "lightblue",
+  heatmap_fill_colour = "darkblue",
   title = paste(
     "Total missing values per",
-    params$aggregatedata$aggregation_timeunit
+    params$aggregated_data$aggregation_timeunit
   )
 )
 ```
@@ -248,14 +248,14 @@ plot_overview_combo_static(
 ```{r overview-nonconformant}
 
 plot_overview_combo_static(
-  aggfields = params$aggregatedata$aggregatefields,
-  aggtype = "nonconformant_n",
-  lineplot_fieldname = "[ALLFIELDSCOMBINED]",
-  lineplot_fillcolour = "lightgreen",
-  heatmap_fillcolour = "darkgreen",
+  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fun = "nonconformant_n",
+  lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+  lineplot_fill_colour = "lightgreen",
+  heatmap_fill_colour = "darkgreen",
   title = paste(
     "Total nonconformant values per",
-    params$aggregatedata$aggregation_timeunit
+    params$aggregated_data$aggregation_timeunit
   )
 )
 ```
@@ -265,19 +265,19 @@ plot_overview_combo_static(
 ```{r overview-duplicates}
 
 plot_overview_totals_static(
-  aggfield = params$aggregatedata$aggregatefields[["[DUPLICATES]"]],
-  aggtype = "sum",
-  fillcolour = "yellow",
+  agg_field = params$aggregated_data$aggregated_fields[["[DUPLICATES]"]],
+  agg_fun = "sum",
+  fill_colour = "yellow",
   title = paste(
     "Total duplicate records per",
-    params$aggregatedata$aggregation_timeunit
+    params$aggregated_data$aggregation_timeunit
   )
 )
 ```
 
 ### Summary
 
-```{r aggregatedata-summary}
+```{r aggregated_data-summary}
 
 aggsummarydf <- data.frame(
   "Item" = c(
@@ -290,7 +290,7 @@ aggsummarydf <- data.frame(
     "Number of data fields"
   ),
   "Value" = c(
-    aggsummary$overall["timepoint_fieldname"],
+    aggsummary$overall["timepoint_field_name"],
     aggsummary$overall["timepoint_min"],
     aggsummary$overall["timepoint_max"],
     aggsummary$overall["aggregation_timeunit"],
@@ -328,20 +328,20 @@ reactable::reactable(
 ## Individual data fields {.tabset}
 
 ```{r individual-fields, results = 'asis'}
-for (i in seq_along(names(params$aggregatedata$aggregatefields))) {
+for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
   cat(
     "\n###",
-    names(params$aggregatedata$aggregatefields)[i],
+    names(params$aggregated_data$aggregated_fields)[i],
     " {.tabset}\n"
   )
-  aggtypes <-
-    names(params$aggregatedata$aggregatefields[[i]]$values)[-1]
-  for (aggtype in aggtypes) {
-    cat("\n####", aggtype_friendlyname(aggtype, "short"), "\n")
+  agg_funs <-
+    names(params$aggregated_data$aggregated_fields[[i]]$values)[-1]
+  for (agg_fun in agg_funs) {
+    cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
     p <-
       plot_timeseries_static(
-        aggfield = params$aggregatedata$aggregatefields[[i]],
-        aggtype = aggtype
+        agg_field = params$aggregated_data$aggregated_fields[[i]],
+        agg_fun = agg_fun
       )
 
     print(p)

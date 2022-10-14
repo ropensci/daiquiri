@@ -107,9 +107,9 @@ test_that("prepare_data() checks that at least one valid timepoint value is pres
 })
 
 
-test_that("prepare_data() creates sourcedata object correctly", {
+test_that("prepare_data() creates source_data object correctly", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     testdf,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
@@ -137,27 +137,27 @@ test_that("prepare_data() creates sourcedata object correctly", {
       col_simple_err = ft_ignore(),
       col_simple = ft_simple()
     ),
-    dataset_shortdesc = "completetestset",
+    dataset_description = "completetestset",
     show_progress = FALSE
   )
 
-  expect_s3_class(testsourcedata, "sourcedata")
+  expect_s3_class(testsource_data, "source_data")
 
-  expect_equal(testsourcedata$timepoint_fieldname, "col_timepoint")
-  expect_equal(testsourcedata$timepoint_missing_n, 6)
-  expect_equal(testsourcedata$rows_source_n, 900)
-  expect_equal(testsourcedata$rows_imported_n, 890)
-  expect_equal(testsourcedata$rows_duplicates_n, 4)
-  expect_equal(testsourcedata$cols_source_n, 24)
-  expect_equal(testsourcedata$cols_imported_n, 12)
-  expect_equal(testsourcedata$dataset_shortdesc, "completetestset")
+  expect_equal(testsource_data$timepoint_field_name, "col_timepoint")
+  expect_equal(testsource_data$timepoint_missing_n, 6)
+  expect_equal(testsource_data$rows_source_n, 900)
+  expect_equal(testsource_data$rows_imported_n, 890)
+  expect_equal(testsource_data$rows_duplicates_n, 4)
+  expect_equal(testsource_data$cols_source_n, 24)
+  expect_equal(testsource_data$cols_imported_n, 12)
+  expect_equal(testsource_data$dataset_description, "completetestset")
 
-  expect_snapshot(testsourcedata$validation_warnings)
+  expect_snapshot(testsource_data$validation_warnings)
 })
 
 
 test_that("prepare_data() ignores nonchar columns (since readr::type_convert fails to skip nonchar cols)", {
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
@@ -168,16 +168,16 @@ test_that("prepare_data() ignores nonchar columns (since readr::type_convert fai
       col2 = ft_simple(),
       col3 = ft_ignore()
     ),
-    dataset_shortdesc = "ignore nonchar columns",
+    dataset_description = "ignore nonchar columns",
     show_progress = FALSE
   )
 
-  expect_equal(testsourcedata$cols_imported_n, 2)
+  expect_equal(testsource_data$cols_imported_n, 2)
 })
 
 
 test_that("prepare_data() generates a validation warning when nonchar columns are provided", {
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = 1:5
@@ -186,17 +186,17 @@ test_that("prepare_data() generates a validation warning when nonchar columns ar
       col1 = ft_timepoint(),
       col2 = ft_numeric()
     ),
-    dataset_shortdesc = "nonchar columns",
+    dataset_description = "nonchar columns",
     show_progress = FALSE
   )
 
-  expect_equal(testsourcedata$validation_warnings$fieldname, "col2")
-  expect_match(testsourcedata$validation_warnings$message, "instead of character")
+  expect_equal(testsource_data$validation_warnings$field_name, "col2")
+  expect_match(testsource_data$validation_warnings$message, "instead of character")
 })
 
 
 test_that("prepare_data() overrides column names correctly", {
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep("1", 5)
@@ -206,16 +206,16 @@ test_that("prepare_data() overrides column names correctly", {
       colb = ft_simple()
     ),
     override_column_names = TRUE,
-    dataset_shortdesc = "override colnames",
+    dataset_description = "override colnames",
     show_progress = FALSE
   )
 
-  expect_equal(names(testsourcedata$datafields)[1:2], c("cola", "colb"))
+  expect_equal(names(testsource_data$data_fields)[1:2], c("cola", "colb"))
 })
 
 
 test_that("prepare_data() can accept a data.table with nonchar cols without error", {
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = data.table::data.table(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5)
@@ -225,21 +225,21 @@ test_that("prepare_data() can accept a data.table with nonchar cols without erro
       col2 = ft_simple()
     ),
     override_column_names = TRUE,
-    dataset_shortdesc = "pass in nonchar data.table",
+    dataset_description = "pass in nonchar data.table",
     show_progress = FALSE
   )
 
-  expect_equal(testsourcedata$cols_imported_n, 2)
+  expect_equal(testsource_data$cols_imported_n, 2)
 })
 
 
-test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) passed in", {
+test_that("prepare_data() gets dataset_description from call if NULL (default) passed in", {
   dfobj <- data.frame(
     col1 = rep("2022-01-01", 5),
     col2 = rep(1, 5),
     col3 = 1:5
   )
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = dfobj,
     field_types = field_types(
       col1 = ft_timepoint(),
@@ -249,9 +249,9 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
     show_progress = FALSE
   )
 
-  expect_equal(testsourcedata$dataset_shortdesc, "dfobj")
+  expect_equal(testsource_data$dataset_description, "dfobj")
 
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
@@ -266,15 +266,15 @@ test_that("prepare_data() gets dataset_shortdesc from call if NULL (default) pas
   )
 
   expect_equal(
-    testsourcedata$dataset_shortdesc,
+    testsource_data$dataset_description,
     "data.frame(col1 = rep(\"2022-01-01\", 5), col2 = rep(1, 5), col3 = 1:5)"
   )
 })
 
 
-test_that("sourcedata object prints to console ok", {
+test_that("source_data object prints to console ok", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsourcedata <- prepare_data(
+  testsource_data <- prepare_data(
     testdf,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
@@ -302,11 +302,11 @@ test_that("sourcedata object prints to console ok", {
       col_simple_err = ft_ignore(),
       col_simple = ft_simple()
     ),
-    dataset_shortdesc = "completetestset",
+    dataset_description = "completetestset",
     show_progress = FALSE
   )
 
-  expect_snapshot_output(print(testsourcedata))
+  expect_snapshot_output(print(testsource_data))
 })
 
 test_that("remove_rows() removes specified rows", {
@@ -318,9 +318,9 @@ test_that("remove_rows() removes specified rows", {
   )
   # object.size(testdt)
   rowstoremove <- c(1, 4, 5, 6, numrows)
-  rowindicator <- rep(FALSE, numrows)
-  rowindicator[rowstoremove] <- TRUE
-  postdt <- remove_rows(data.table::copy(testdt), rowindicator = rowindicator)
+  row_indicator <- rep(FALSE, numrows)
+  row_indicator[rowstoremove] <- TRUE
+  postdt <- remove_rows(data.table::copy(testdt), row_indicator = row_indicator)
 
   # correct no. of rows removed
   expect_equal(nrow(postdt), numrows - length(rowstoremove))
@@ -329,10 +329,10 @@ test_that("remove_rows() removes specified rows", {
   # all columns still present
   expect_equal(names(testdt), names(postdt))
   # the contents of the first non-deleted row is the same before and after
-  expect_equal(unlist(testdt[which(!rowindicator)[1]]), unlist(postdt[1]))
+  expect_equal(unlist(testdt[which(!row_indicator)[1]]), unlist(postdt[1]))
 })
 
-test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
+test_that("identify_duplicate_rows() identifies all exactly duplicated rows", {
   # unbatched
   numrows <- 200000
   testdt <- data.table::data.table(
@@ -345,7 +345,7 @@ test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals
 
-  result <- identify_duplicaterows(testdt, "col2", show_progress = FALSE)
+  result <- identify_duplicate_rows(testdt, "col2", show_progress = FALSE)
 
   expect_true(all(result[duplicaterows]))
   expect_true(all(!result[-duplicaterows]))
@@ -362,7 +362,7 @@ test_that("identify_duplicaterows() identifies all exactly duplicated rows", {
   duplicatevals <- c(1, 4, 4, 4, numrows - 1)
   testdt$col2[duplicaterows] <- duplicatevals
 
-  result <- identify_duplicaterows(testdt, "col2", show_progress = FALSE)
+  result <- identify_duplicate_rows(testdt, "col2", show_progress = FALSE)
 
   expect_true(all(result[duplicaterows]))
   expect_true(all(!result[-duplicaterows]))

@@ -17,9 +17,9 @@ Choose a directory in which to save the log file. If this is not called, no
 log file is created.
 }
 \examples{
-logname <- initialise_log(".")
+log_name <- initialise_log(".")
 \dontshow{
 close_log()
-file.remove(logname)
+file.remove(log_name)
 }
 }

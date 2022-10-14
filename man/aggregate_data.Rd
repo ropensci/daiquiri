@@ -4,10 +4,10 @@
 \alias{aggregate_data}
 \title{Aggregate source data}
 \usage{
-aggregate_data(sourcedata, aggregation_timeunit = "day", show_progress = TRUE)
+aggregate_data(source_data, aggregation_timeunit = "day", show_progress = TRUE)
 }
 \arguments{
-\item{sourcedata}{A \code{sourcedata} object returned from
+\item{source_data}{A \code{source_data} object returned from
 \code{\link[=prepare_data]{prepare_data()}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
@@ -17,23 +17,23 @@ Monday-based. Default = \code{"day"}}
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
-An \code{aggregatedata} object
+An \code{aggregated_data} object
 }
 \description{
-Aggregates a \code{sourcedata} object based on the \code{\link[=field_types]{field_types()}} specified at load time.
+Aggregates a \code{source_data} object based on the \code{\link[=field_types]{field_types()}} specified at load time.
 Default time period for aggregation is a calendar day
 }
 \examples{
 # load example data into a data.frame
-rawdata <- read_data(
+raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
   col_names = TRUE
 )
 
 # validate and prepare the data for aggregation
-sourcedataobj <- prepare_data(
-  rawdata,
+source_data <- prepare_data(
+  raw_data,
   field_types = field_types(
     PrescriptionID = ft_uniqueidentifier(),
     PrescriptionDate = ft_timepoint(),
@@ -49,8 +49,8 @@ sourcedataobj <- prepare_data(
 )
 
 # aggregate the data
-aggregatedataobj <- aggregate_data(
-  sourcedataobj,
+aggregated_data <- aggregate_data(
+  source_data,
   aggregation_timeunit = "day"
 )
 

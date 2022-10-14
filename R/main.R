@@ -15,7 +15,7 @@
 #'   Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
 #'   values, Default = `c("","NA","NULL")`.
-#' @param dataset_shortdesc Short description of the dataset being checked. This
+#' @param dataset_description Short description of the dataset being checked. This
 #'   will appear on the report. If blank, the name of the data frame object will
 #'   be used
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
@@ -30,7 +30,7 @@
 #' @param log_directory String specifying directory in which to save log file.
 #'   If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as
-#'   well as the resulting `sourcedata` and `aggregatedata` objects.
+#'   well as the resulting `source_data` and `aggregated_data` objects.
 #' @section Details: In order for the package to detect any non-conformant
 #'   values in numeric or datetime fields, these should be present in the data
 #'   frame in their raw character format. Rectangular data from a text file will
@@ -41,15 +41,15 @@
 #' @examples
 #' \donttest{
 #' # load example data into a data.frame
-#' rawdata <- read_data(
+#' raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
 #' )
 #'
 #' # create a report in the current directory
-#' daiqobj <- create_report(
-#'   rawdata,
+#' daiq_obj <- create_report(
+#'   raw_data,
 #'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
@@ -62,7 +62,7 @@
 #'   ),
 #'   override_column_names = FALSE,
 #'   na = c("", "NULL"),
-#'   dataset_shortdesc = "Example data provided with package",
+#'   dataset_description = "Example data provided with package",
 #'   aggregation_timeunit = "day",
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
@@ -79,7 +79,7 @@ create_report <- function(df,
                           field_types,
                           override_column_names = FALSE,
                           na = c("", "NA", "NULL"),
-                          dataset_shortdesc = NULL,
+                          dataset_description = NULL,
                           aggregation_timeunit = "day",
                           save_directory = ".",
                           save_filename = NULL,
@@ -104,7 +104,7 @@ create_report <- function(df,
     field_types = field_types,
     override_column_names = override_column_names,
     na = na,
-    dataset_shortdesc = dataset_shortdesc,
+    dataset_description = dataset_description,
     aggregation_timeunit = aggregation_timeunit,
     save_directory = save_directory,
     save_filename = save_filename,
@@ -112,26 +112,26 @@ create_report <- function(df,
     log_directory = log_directory
   )
 
-  sourcedata <-
+  source_data <-
     prepare_data(
       df,
       field_types,
       override_column_names = override_column_names,
-      dataset_shortdesc = dataset_shortdesc,
+      dataset_description = dataset_description,
       na = na,
       show_progress = show_progress
     )
 
-  aggregatedata <-
-    aggregate_data(sourcedata,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = aggregation_timeunit,
       show_progress = show_progress
     )
 
   reportfilename <-
     report_data(
-      sourcedata,
-      aggregatedata,
+      source_data,
+      aggregated_data,
       save_directory = save_directory,
       save_filename = save_filename,
       show_progress = show_progress
@@ -143,14 +143,14 @@ create_report <- function(df,
 
   structure(
     list(
-      dataset_shortdesc = sourcedata$dataset_shortdesc,
+      dataset_description = source_data$dataset_description,
       field_types = field_types,
       override_column_names = override_column_names,
       na_values = na,
       aggregation_timeunit = aggregation_timeunit,
       report_filename = reportfilename,
-      sourcedata = sourcedata,
-      aggregatedata = aggregatedata,
+      source_data = source_data,
+      aggregated_data = aggregated_data,
       log_filename = log_filename
     ),
     class = "daiquiri_object"
@@ -160,29 +160,29 @@ create_report <- function(df,
 #' @export
 print.daiquiri_object <- function(x, ...) {
   cat("Class: daiquiri_object\n")
-  cat("Dataset:", x$sourcedata$dataset_shortdesc, "\n")
+  cat("Dataset:", x$source_data$dataset_description, "\n")
   cat("\n")
-  cat("Columns in source:", x$sourcedata$cols_source_n, "\n")
-  cat("Columns imported:", x$sourcedata$cols_imported_n, "\n")
-  cat("Rows in source:", x$sourcedata$rows_source_n, "\n")
-  cat("Duplicate rows removed:", x$sourcedata$rows_duplicates_n, "\n")
-  cat("Rows imported:", x$sourcedata$rows_imported_n, "\n")
-  cat("Column used for timepoint:", x$sourcedata$timepoint_fieldname, "\n")
-  cat("Rows missing timepoint values removed:", x$sourcedata$timepoint_missing_n, "\n")
-  cat("Total validation warnings:", nrow(x$sourcedata$validation_warnings), "\n")
+  cat("Columns in source:", x$source_data$cols_source_n, "\n")
+  cat("Columns imported:", x$source_data$cols_imported_n, "\n")
+  cat("Rows in source:", x$source_data$rows_source_n, "\n")
+  cat("Duplicate rows removed:", x$source_data$rows_duplicates_n, "\n")
+  cat("Rows imported:", x$source_data$rows_imported_n, "\n")
+  cat("Column used for timepoint:", x$source_data$timepoint_field_name, "\n")
+  cat("Rows missing timepoint values removed:", x$source_data$timepoint_missing_n, "\n")
+  cat("Total validation warnings:", nrow(x$source_data$validation_warnings), "\n")
   cat("\n")
 
-  aggfields <- x$aggregatedata$aggregatefields
-  cat("Min timepoint value:", format(aggfields[[1]]$values[[1]][1]), "\n")
-  cat("Max timepoint value:", format(rev(aggfields[[1]]$values[[1]])[1]), "\n")
-  cat("Timepoint aggregation unit:", x$aggregatedata$aggregation_timeunit, "\n")
+  agg_fields <- x$aggregated_data$aggregated_fields
+  cat("Min timepoint value:", format(agg_fields[[1]]$values[[1]][1]), "\n")
+  cat("Max timepoint value:", format(rev(agg_fields[[1]]$values[[1]])[1]), "\n")
+  cat("Timepoint aggregation unit:", x$aggregated_data$aggregation_timeunit, "\n")
   cat(
     "Total number of timepoints:",
-    length(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[[1]]), "\n"
+    length(agg_fields[[x$aggregated_data$timepoint_field_name]]$values[[1]]), "\n"
   )
   cat(
     "Number of empty timepoints:",
-    sum(aggfields[[x$aggregatedata$timepoint_fieldname]]$values[["n"]] == 0), "\n"
+    sum(agg_fields[[x$aggregated_data$timepoint_field_name]]$values[["n"]] == 0), "\n"
   )
 }
 
@@ -212,7 +212,7 @@ print.daiquiri_object <- function(x, ...) {
 #' @param n_max Maximum number of lines to read.
 #' @param show_progress Display a progress bar? Default = `TRUE`
 #' @return A data frame
-#' @examples rawdata <- read_data(
+#' @examples raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE

@@ -1,9 +1,9 @@
-# prepare_data() creates sourcedata object correctly
+# prepare_data() creates source_data object correctly
 
     Code
-      testsourcedata$validation_warnings
+      testsource_data$validation_warnings
     Output
-                  fieldname                                            message
+                 field_name                                            message
        1:     col_timepoint        Missing or invalid value in Timepoint field
        2:     col_timepoint          expected valid date, but got '2021-06-31'
        3:     col_timepoint expected valid date, but got '2021-06-01 33:00:00'
@@ -31,7 +31,7 @@
       25: col_numeric_dirty               expected a double, but got ''10.09''
       26: col_numeric_dirty   expected no trailing characters, but got '11.1''
       27: col_numeric_dirty               expected a double, but got '`12.11''
-                  fieldname                                            message
+                 field_name                                            message
           instances
        1:         6
        2:         1
@@ -62,9 +62,9 @@
       27:         1
           instances
 
-# sourcedata object prints to console ok
+# source_data object prints to console ok
 
-    Class: sourcedata
+    Class: source_data
     Dataset: completetestset 
     
     Overall:
@@ -81,7 +81,7 @@
     Total validation warnings: 33 
     
     Datafields:
-                       fieldname       field_type  datatype count  missing
+                      field_name       field_type  datatype count  missing
     1  col_timepoint_err         ignore           NA           NA NA      
     2  col_timepoint             timepoint        double      890 0 (0%)  
     3  col_date_time_err         ignore           NA           NA NA      
@@ -134,7 +134,7 @@
     
     Validation warnings:
     
-                fieldname                                            message
+               field_name                                            message
      1:     col_timepoint        Missing or invalid value in Timepoint field
      2:     col_timepoint          expected valid date, but got '2021-06-31'
      3:     col_timepoint expected valid date, but got '2021-06-01 33:00:00'
@@ -162,7 +162,7 @@
     25: col_numeric_dirty               expected a double, but got ''10.09''
     26: col_numeric_dirty   expected no trailing characters, but got '11.1''
     27: col_numeric_dirty               expected a double, but got '`12.11''
-                fieldname                                            message
+               field_name                                            message
         instances
      1:         6
      2:         1
