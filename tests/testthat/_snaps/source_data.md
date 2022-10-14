@@ -64,7 +64,6 @@
 
 # source_data object prints to console ok
 
-    Class: source_data
     Dataset: completetestset 
     
     Overall:

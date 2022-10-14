@@ -7,7 +7,7 @@
 aggregate_data(source_data, aggregation_timeunit = "day", show_progress = TRUE)
 }
 \arguments{
-\item{source_data}{A \code{source_data} object returned from
+\item{source_data}{A \code{daiquiri_source_data} object returned from
 \code{\link[=prepare_data]{prepare_data()}} function}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
@@ -17,10 +17,10 @@ Monday-based. Default = \code{"day"}}
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
-An \code{aggregated_data} object
+A \code{daiquiri_aggregated_data} object
 }
 \description{
-Aggregates a \code{source_data} object based on the \code{\link[=field_types]{field_types()}} specified at load time.
+Aggregates a \code{daiquiri_source_data} object based on the \code{\link[=field_types]{field_types()}} specified at load time.
 Default time period for aggregation is a calendar day
 }
 \examples{

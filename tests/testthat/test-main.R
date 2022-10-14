@@ -102,8 +102,8 @@ test_that("create_report() creates report and returns daiquiri object successful
   )
 
   expect_s3_class(testdaiq_obj, "daiquiri_object")
-  expect_s3_class(testdaiq_obj$source_data, "source_data")
-  expect_s3_class(testdaiq_obj$aggregated_data, "aggregated_data")
+  expect_s3_class(testdaiq_obj$source_data, "daiquiri_source_data")
+  expect_s3_class(testdaiq_obj$aggregated_data, "daiquiri_aggregated_data")
 
   expect_equal(testdaiq_obj$dataset_description, "completetestset")
   expect_equal(testdaiq_obj$report_filename, file.path(

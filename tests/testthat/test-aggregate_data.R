@@ -13,7 +13,7 @@ test_that("aggregate_data() requires source_data param to be a source_data objec
 
 test_that("aggregate_data() requires aggregation_timeunit param to be one of day/week/month/quarter/year", {
   expect_error(aggregate_data(
-    source_data = structure(list(data_fields = NA), class = "source_data"),
+    source_data = structure(list(data_fields = NA), class = "daiquiri_source_data"),
     aggregation_timeunit = "hello"
   ),
   class = "invalid_param_type"
@@ -60,7 +60,7 @@ test_that("aggregate_data() creates aggregate object correctly", {
       show_progress = FALSE
     )
 
-  expect_s3_class(testaggregated_data, "aggregated_data")
+  expect_s3_class(testaggregated_data, "daiquiri_aggregated_data")
 
   # check the basic structure is ok
   expect_equal(testaggregated_data$timepoint_field_name, "col_timepoint")
@@ -106,7 +106,7 @@ test_that("export_aggregated_data() requires a aggregated_data param", {
 
 test_that("export_aggregated_data() requires a save_directory param", {
   expect_error(export_aggregated_data(
-    aggregated_data = structure(list(data_fields = NA), class = "aggregated_data")
+    aggregated_data = structure(list(data_fields = NA), class = "daiquiri_aggregated_data")
   ),
   class = "invalid_param_missing"
   )
@@ -207,6 +207,7 @@ test_that("aggregated_data object prints to console ok", {
         col2 = ft_simple(),
         col3 = ft_ignore()
       ),
+      dataset_description = "completetestset",
       show_progress = FALSE
     )
   testdata_byday <-

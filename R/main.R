@@ -30,7 +30,7 @@
 #' @param log_directory String specifying directory in which to save log file.
 #'   If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as
-#'   well as the resulting `source_data` and `aggregated_data` objects.
+#'   well as the resulting `daiquiri_source_data` and `daiquiri_aggregated_data` objects.
 #' @section Details: In order for the package to detect any non-conformant
 #'   values in numeric or datetime fields, these should be present in the data
 #'   frame in their raw character format. Rectangular data from a text file will

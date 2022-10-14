@@ -20,12 +20,12 @@ data_field <- function(x, field_type, validation_warnings = NULL) {
       validation_warnings = validation_warnings
     ),
     class = c(paste0(
-      "data_field_", field_type_type(field_type)
-    ), "data_field")
+      "daiquiri_data_field_", field_type_type(field_type)
+    ), "daiquiri_data_field")
   )
 }
 
-is.data_field <- function(x) inherits(x, "data_field")
+is.data_field <- function(x) inherits(x, "daiquiri_data_field")
 
 
 # -----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ is.data_field <- function(x) inherits(x, "data_field")
 #'   will appear on the report. If blank, the name of the data frame object will
 #'   be used
 #' @param show_progress Print progress to console. Default = `TRUE`
-#' @return A `source_data` object
+#' @return A `daiquiri_source_data` object
 #' @examples
 #' # load example data into a data.frame
 #' raw_data <- read_data(
@@ -351,7 +351,7 @@ prepare_data <- function(df,
       dataset_description = dataset_description,
       na_values = na
     ),
-    class = "source_data"
+    class = "daiquiri_source_data"
   )
 }
 #' Test if object is a source_data object
@@ -359,12 +359,11 @@ prepare_data <- function(df,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.source_data <- function(x) inherits(x, "source_data")
+is.source_data <- function(x) inherits(x, "daiquiri_source_data")
 
 #' @export
-print.source_data <- function(x, ...) {
+print.daiquiri_source_data <- function(x, ...) {
   source_summary <- summarise_source_data(x, show_progress = FALSE)
-  cat("Class: source_data\n")
   cat("Dataset:", x$dataset_description, "\n")
   cat("\n")
   cat("Overall:\n")

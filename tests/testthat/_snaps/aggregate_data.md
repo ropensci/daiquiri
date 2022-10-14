@@ -1,6 +1,6 @@
 # aggregated_data object prints to console ok
 
-    Class: aggregated_data
+    Dataset: completetestset 
     
     Overall:
     Number of data fields: 4 

@@ -3,11 +3,11 @@
 # -----------------------------------------------------------------------------
 #' Generate report from existing objects
 #'
-#' Generate report from previously-created `source_data` and `aggregated_data` objects
+#' Generate report from previously-created `daiquiri_source_data` and `daiquiri_aggregated_data` objects
 #'
-#' @param source_data A `source_data` object returned from
+#' @param source_data A `daiquiri_source_data` object returned from
 #'   [prepare_data()] function
-#' @param aggregated_data An `aggregated_data` object returned from
+#' @param aggregated_data A `daiquiri_aggregated_data` object returned from
 #'   [aggregate_data()] function
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.

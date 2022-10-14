@@ -55,7 +55,7 @@ If no directory is supplied, progress is not logged.}
 }
 \value{
 A list containing information relating to the supplied parameters as
-well as the resulting \code{source_data} and \code{aggregated_data} objects.
+well as the resulting \code{daiquiri_source_data} and \code{daiquiri_aggregated_data} objects.
 }
 \description{
 Accepts record-level data from a data frame, validates it against the

@@ -12,7 +12,7 @@ test_that("Valid field_types can be specified", {
       Col_sim = ft_simple(),
       Col_ign = ft_ignore()
     ),
-    "field_types"
+    "daiquiri_field_types"
   )
 })
 

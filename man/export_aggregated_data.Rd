@@ -12,7 +12,7 @@ export_aggregated_data(
 )
 }
 \arguments{
-\item{aggregated_data}{A \code{aggregated_data} object}
+\item{aggregated_data}{A \code{daiquiri_aggregated_data} object}
 
 \item{save_directory}{String. Full or relative path for save folder}
 
@@ -22,7 +22,7 @@ export_aggregated_data(
 currently only csv allowed}
 }
 \value{
-(invisibly) The \code{aggregated_data} object that was passed in
+(invisibly) The \code{daiquiri_aggregated_data} object that was passed in
 }
 \description{
 Export aggregated data to disk.  Creates a separate file for each aggregated

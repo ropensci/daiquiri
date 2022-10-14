@@ -1,7 +1,7 @@
 
 test_that("report_data() requires a source_data param", {
   expect_error(report_data(aggregated_data = structure(list(data_fields = NA),
-    class = "aggregated_data"
+    class = "daiquiri_aggregated_data"
   )),
   class = "invalid_param_missing"
   )
@@ -9,7 +9,7 @@ test_that("report_data() requires a source_data param", {
 
 test_that("report_data() requires a aggregated_data param", {
   expect_error(report_data(source_data = structure(list(data_fields = NA),
-    class = "source_data"
+    class = "daiquiri_source_data"
   )),
   class = "invalid_param_missing"
   )
@@ -19,7 +19,7 @@ test_that("report_data() requires source_data param to be a source_data object",
   expect_error(report_data(
     source_data = data.frame("Fieldname" = 123),
     aggregated_data = structure(list(data_fields = NA),
-      class = "aggregated_data"
+      class = "daiquiri_aggregated_data"
     )
   ),
   class = "invalid_param_type"
@@ -29,7 +29,7 @@ test_that("report_data() requires source_data param to be a source_data object",
 test_that("report_data() requires aggregated_data param to be an aggregated_data object", {
   expect_error(report_data(
     source_data = structure(list(data_fields = NA),
-      class = "source_data"
+      class = "daiquiri_source_data"
     ),
     aggregated_data = data.frame("Fieldname" = 123)
   ),

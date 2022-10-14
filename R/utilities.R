@@ -439,11 +439,11 @@ testfn_params_type <- function(df,
     field_types <- daiquiri::field_types(Col_tp = ft_timepoint())
   }
   if (missing(source_data)) {
-    source_data <- structure(list(data_fields = NA), class = "source_data")
+    source_data <- structure(list(data_fields = NA), class = "daiquiri_source_data")
   }
   if (missing(aggregated_data)) {
     aggregated_data <-
-      structure(list(data_fields = NA), class = "aggregated_data")
+      structure(list(data_fields = NA), class = "daiquiri_aggregated_data")
   }
 
   validate_params_type(

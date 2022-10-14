@@ -304,7 +304,7 @@ aggregate_field <- function(data_field,
       field_type = data_field$field_type,
       column_name = data_field$column_name
     ),
-    class = "aggregated_field"
+    class = "daiquiri_aggregated_field"
   )
 }
 
@@ -313,7 +313,7 @@ aggregate_field <- function(data_field,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.aggregated_field <- function(x) inherits(x, "aggregated_field")
+is.aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
 
 # -----------------------------------------------------------------------------
 #' Constructor for the [ALL_FIELDS_COMBINED] aggregated_field object
@@ -383,23 +383,23 @@ aggregate_combined_fields <- function(agg_fields,
       field_type = ft,
       column_name = "[ALL_FIELDS_COMBINED]"
     ),
-    class = "aggregated_field"
+    class = "daiquiri_aggregated_field"
   )
 }
 
 # -----------------------------------------------------------------------------
 #' Aggregate source data
 #'
-#' Aggregates a `source_data` object based on the [field_types()] specified at load time.
+#' Aggregates a `daiquiri_source_data` object based on the [field_types()] specified at load time.
 #' Default time period for aggregation is a calendar day
 #'
-#' @param source_data A `source_data` object returned from
+#' @param source_data A `daiquiri_source_data` object returned from
 #'   [prepare_data()] function
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
 #'   `"day"`, `"week"`, `"month"`, `"quarter"`, `"year"`. The `"week"` option is
 #'   Monday-based. Default = `"day"`
 #' @param show_progress Print progress to console. Default = `TRUE`
-#' @return An `aggregated_data` object
+#' @return A `daiquiri_aggregated_data` object
 #' @examples
 #' # load example data into a data.frame
 #' raw_data <- read_data(
@@ -512,9 +512,10 @@ aggregate_data <- function(source_data,
       timepoint_field_name = source_data$timepoint_field_name,
       # not sure if this should be set at overall object level or allow it to
       # differ per aggregated_field
-      aggregation_timeunit = aggregation_timeunit
+      aggregation_timeunit = aggregation_timeunit,
+      dataset_description = source_data$dataset_description
     ),
-    class = "aggregated_data"
+    class = "daiquiri_aggregated_data"
   )
 }
 
@@ -523,7 +524,7 @@ aggregate_data <- function(source_data,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.aggregated_data <- function(x) inherits(x, "aggregated_data")
+is.aggregated_data <- function(x) inherits(x, "daiquiri_aggregated_data")
 
 # -----------------------------------------------------------------------------
 #' Export aggregated data
@@ -531,12 +532,12 @@ is.aggregated_data <- function(x) inherits(x, "aggregated_data")
 #' Export aggregated data to disk.  Creates a separate file for each aggregated
 #' field in dataset.
 #'
-#' @param aggregated_data A `aggregated_data` object
+#' @param aggregated_data A `daiquiri_aggregated_data` object
 #' @param save_directory String. Full or relative path for save folder
 #' @param save_file_prefix String. Optional prefix for the exported filenames
 #' @param save_file_type String. Filetype extension supported by `readr`,
 #'   currently only csv allowed
-#' @return (invisibly) The `aggregated_data` object that was passed in
+#' @return (invisibly) The `daiquiri_aggregated_data` object that was passed in
 #' @examples raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
@@ -614,9 +615,9 @@ export_aggregated_data <- function(aggregated_data,
 }
 
 #' @export
-print.aggregated_data <- function(x, ...) {
+print.daiquiri_aggregated_data <- function(x, ...) {
   agg_summary <- summarise_aggregated_data(x)
-  cat("Class: aggregated_data\n")
+  cat("Dataset:", x$dataset_description, "\n")
   cat("\n")
   cat("Overall:\n")
   cat("Number of data fields:", agg_summary$overall["n_fields"], "\n")
@@ -658,12 +659,7 @@ summarise_aggregated_data <- function(aggregated_data) {
     n_empty_timepoints = sum(agg_fields[[aggregated_data$timepoint_field_name]]$values[["n"]] == 0)
   )
 
-  structure(
-    list(
-      overall = overall
-    ),
-    class = "summary_aggregated_data"
-  )
+  list(overall = overall)
 }
 
 #' Allocate timepoint values to appropriate day/week/month etc. for later grouping

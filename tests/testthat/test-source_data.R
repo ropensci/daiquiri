@@ -141,7 +141,7 @@ test_that("prepare_data() creates source_data object correctly", {
     show_progress = FALSE
   )
 
-  expect_s3_class(testsource_data, "source_data")
+  expect_s3_class(testsource_data, "daiquiri_source_data")
 
   expect_equal(testsource_data$timepoint_field_name, "col_timepoint")
   expect_equal(testsource_data$timepoint_missing_n, 6)

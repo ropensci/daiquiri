@@ -14,10 +14,10 @@ report_data(
 )
 }
 \arguments{
-\item{source_data}{A \code{source_data} object returned from
+\item{source_data}{A \code{daiquiri_source_data} object returned from
 \code{\link[=prepare_data]{prepare_data()}} function}
 
-\item{aggregated_data}{An \code{aggregated_data} object returned from
+\item{aggregated_data}{A \code{daiquiri_aggregated_data} object returned from
 \code{\link[=aggregate_data]{aggregate_data()}} function}
 
 \item{save_directory}{String specifying directory in which to save the
@@ -35,7 +35,7 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 A string containing the name and path of the saved report
 }
 \description{
-Generate report from previously-created \code{source_data} and \code{aggregated_data} objects
+Generate report from previously-created \code{daiquiri_source_data} and \code{daiquiri_aggregated_data} objects
 }
 \examples{
 \donttest{

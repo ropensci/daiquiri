@@ -31,7 +31,7 @@ field_type <- function(type,
       aggregation_functions = aggregation_functions,
       options = options
     ),
-    class = c(paste0("field_type_", type), "field_type")
+    class = c(paste0("daiquiri_field_type_", type), "daiquiri_field_type")
   )
 }
 
@@ -40,42 +40,42 @@ field_type <- function(type,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type <- function(x) inherits(x, "field_type")
+is.field_type <- function(x) inherits(x, "daiquiri_field_type")
 
 #' Test if object is a timepoint field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_timepoint <- function(x) inherits(x, "field_type_timepoint")
+is.field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
 
 #' Test if object is a ignore field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_ignore <- function(x) inherits(x, "field_type_ignore")
+is.field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
 
 #' Test if object is a datetime field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_datetime <- function(x) inherits(x, "field_type_datetime")
+is.field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
 
 #' Test if object is a numeric field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_numeric <- function(x) inherits(x, "field_type_numeric")
+is.field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
 #' Test if object is a calculated field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_calculated <- function(x) inherits(x, c("field_type_allfields", "field_type_duplicates"))
+is.field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
 
 
 #' Types of data fields available for specification
@@ -403,16 +403,16 @@ field_types <- function(...) {
     )
   }
 
-  structure(fts, class = "field_types")
+  structure(fts, class = "daiquiri_field_types")
 }
 
-is.field_types <- function(x) inherits(x, "field_types")
+is.field_types <- function(x) inherits(x, "daiquiri_field_types")
 
 field_types_to_string <- function(field_types) {
   s <- ""
   for (ft in seq_along(field_types)) {
     s <-
-      paste0(s, names(field_types[ft]), "\t", "<", class(field_types[[ft]])[1], ">")
+      paste0(s, names(field_types[ft]), "\t", "<", field_type_type(field_types[[ft]]), ">")
     if (!is.null(field_types[[ft]]$options)) {
       s <- paste0(s, "\t", "options: ", field_types[[ft]]$options)
     }
@@ -422,7 +422,7 @@ field_types_to_string <- function(field_types) {
 }
 
 #' @export
-print.field_types <- function(x, ...) {
+print.daiquiri_field_types <- function(x, ...) {
   cat(field_types_to_string(x))
 }
 

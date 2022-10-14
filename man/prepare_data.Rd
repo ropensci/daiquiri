@@ -36,7 +36,7 @@ be used}
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
 \value{
-A \code{source_data} object
+A \code{daiquiri_source_data} object
 }
 \description{
 Validate a data frame against a \code{\link[=field_types]{field_types()}} specification, and
