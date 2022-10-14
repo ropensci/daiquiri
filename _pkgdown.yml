@@ -20,9 +20,9 @@ reference:
 
 - title: Specifying the type of data in each field
   contents:
-  - availablefieldtypes
-  - fieldtypes
-  - fieldtypes_template
+  - field_types_available
+  - field_types
+  - print_field_types_template
 
 - title: Advanced usage
   contents:
@@ -30,8 +30,8 @@ reference:
   - aggregate_data
   - report_data
   - export_aggregated_data
-  - log_initialise
-  - log_close
+  - initialise_log
+  - close_log
 
 authors:
   footer:

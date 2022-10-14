@@ -34,7 +34,13 @@
     <loc>/reference/availablefieldtypes.html</loc>
   </url>
   <url>
+    <loc>/reference/close_log.html</loc>
+  </url>
+  <url>
     <loc>/reference/create_report.html</loc>
+  </url>
+  <url>
+    <loc>/reference/daiquiri-package.html</loc>
   </url>
   <url>
     <loc>/reference/daiquiri.html</loc>
@@ -49,7 +55,16 @@
     <loc>/reference/fieldtypes_template.html</loc>
   </url>
   <url>
+    <loc>/reference/field_types.html</loc>
+  </url>
+  <url>
+    <loc>/reference/field_types_available.html</loc>
+  </url>
+  <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/initialise_log.html</loc>
   </url>
   <url>
     <loc>/reference/log_close.html</loc>
@@ -59,6 +74,9 @@
   </url>
   <url>
     <loc>/reference/prepare_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/print_field_types_template.html</loc>
   </url>
   <url>
     <loc>/reference/read_data.html</loc>

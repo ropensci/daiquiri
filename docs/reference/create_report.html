@@ -14,7 +14,7 @@ series plots for visual inspection, and saves a report to disk."><!-- mathjax --
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,38 +63,38 @@ series plots for visual inspection, and saves a report to disk.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_report</span><span class="op">(</span>
-  <span class="va">df</span>,
-  <span class="va">fieldtypes</span>,
-  override_columnnames <span class="op">=</span> <span class="cn">FALSE</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NULL"</span><span class="op">)</span>,
-  dataset_shortdesc <span class="op">=</span> <span class="cn">NULL</span>,
-  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,
-  save_directory <span class="op">=</span> <span class="st">"."</span>,
-  save_filename <span class="op">=</span> <span class="cn">NULL</span>,
-  showprogress <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_directory <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_report</span><span class="op">(</span></span>
+<span>  <span class="va">df</span>,</span>
+<span>  <span class="va">field_types</span>,</span>
+<span>  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span>  dataset_description <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  save_filename <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_directory <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>df</dt>
 <dd><p>A data frame. Rectangular data can be read from file using
-<code><a href="read_data.html">read_data</a></code>. See details.</p></dd>
+<code><a href="read_data.html">read_data()</a></code>. See Details.</p></dd>
 
 
-<dt>fieldtypes</dt>
-<dd><p><code><a href="fieldtypes.html">fieldtypes</a></code> object specifying names and types
-of fields (columns) in source data. See also <a href="availablefieldtypes.html">availablefieldtypes</a>.</p></dd>
+<dt>field_types</dt>
+<dd><p><code><a href="field_types.html">field_types()</a></code> object specifying names and types
+of fields (columns) in the supplied <code>df</code>. See also <a href="field_types_available.html">field_types_available</a>.</p></dd>
 
 
-<dt>override_columnnames</dt>
-<dd><p>If FALSE, column names must exist in data frame
-and must match the names specified in fieldtypes exactly. If TRUE, column
-names in source will be replaced with names in fieldtypes specification.
+<dt>override_column_names</dt>
+<dd><p>If <code>FALSE</code>, column names in the supplied <code>df</code>
+must match the names specified in <code>field_types</code> exactly. If <code>TRUE</code>, column
+names in the supplied <code>df</code> will be replaced with the names specified in <code>field_types</code>.
 The specification must therefore contain the columns in the correct order.
-Default = FALSE</p></dd>
+Default = <code>FALSE</code></p></dd>
 
 
 <dt>na</dt>
@@ -102,7 +102,7 @@ Default = FALSE</p></dd>
 values, Default = <code>c("","NA","NULL")</code>.</p></dd>
 
 
-<dt>dataset_shortdesc</dt>
+<dt>dataset_description</dt>
 <dd><p>Short description of the dataset being checked. This
 will appear on the report. If blank, the name of the data frame object will
 be used</p></dd>
@@ -110,8 +110,8 @@ be used</p></dd>
 
 <dt>aggregation_timeunit</dt>
 <dd><p>Unit of time to aggregate over. Specify one of
-"day", "week", "month", "quarter", "year". The "week" option is
-Monday-based. Default = "day"</p></dd>
+<code>"day"</code>, <code>"week"</code>, <code>"month"</code>, <code>"quarter"</code>, <code>"year"</code>. The <code>"week"</code> option is
+Monday-based. Default = <code>"day"</code></p></dd>
 
 
 <dt>save_directory</dt>
@@ -121,12 +121,12 @@ report. Default is current directory.</p></dd>
 
 <dt>save_filename</dt>
 <dd><p>String specifying filename for the report, excluding any
-file extension. If no filename is supplied (i.e. filename = NULL), one will
-be automatically generated with the format daiquiri_report_YYMMDD_HHMMSS.</p></dd>
+file extension. If no filename is supplied, one will
+be automatically generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 
 
-<dt>showprogress</dt>
-<dd><p>Print progress to console. Default = TRUE</p></dd>
+<dt>show_progress</dt>
+<dd><p>Print progress to console. Default = <code>TRUE</code></p></dd>
 
 
 <dt>log_directory</dt>
@@ -139,73 +139,75 @@ If no directory is supplied, progress is not logged.</p></dd>
     
 
 <p>A list containing information relating to the supplied parameters as
-  well as the resulting <code>sourcedata</code> and <code>aggregatedata</code> objects.</p>
+well as the resulting <code>source_data</code> and <code>aggregated_data</code> objects.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>In order for the package to detect any non-conformant
-  values in numeric or datetime fields, these should be present in the data
-  frame in their raw character format. Rectangular data from a text file will
-  automatically be read in as character type if you use the
-  <code><a href="read_data.html">read_data</a></code> function. Data frame columns that are not of class
-  character will still be processed according to the fieldtypes
-  specification.</p>
+values in numeric or datetime fields, these should be present in the data
+frame in their raw character format. Rectangular data from a text file will
+automatically be read in as character type if you use the
+<code><a href="read_data.html">read_data()</a></code> function. Data frame columns that are not of class
+character will still be processed according to the <code>field_types</code>
+specified.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="read_data.html">read_data</a></code>, <code><a href="fieldtypes.html">fieldtypes</a></code>,
-  <code><a href="availablefieldtypes.html">availablefieldtypes</a></code></p></div>
+    <div class="dont-index"><p><code><a href="read_data.html">read_data()</a></code>, <code><a href="field_types.html">field_types()</a></code>,
+<code><a href="field_types_available.html">field_types_available()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># load example data into a data.frame</span></span>
-<span class="r-in"><span class="va">rawdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_data.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span>
-<span class="r-in">  delim <span class="op">=</span> <span class="st">","</span>,</span>
-<span class="r-in">  col_names <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># create a report in the current directory</span></span>
-<span class="r-in"><span class="va">daiqobj</span> <span class="op">&lt;-</span> <span class="fu">create_report</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">rawdata</span>,</span>
-<span class="r-in">  fieldtypes <span class="op">=</span> <span class="fu"><a href="fieldtypes.html">fieldtypes</a></span><span class="op">(</span>PrescriptionID <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    PrescriptionDate <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    AdmissionDate <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span class="r-in">    Drug <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    Dose <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    DoseUnit <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    PatientID <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">    Location <span class="op">=</span> <span class="fu"><a href="availablefieldtypes.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">  override_columnnames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span class="r-in">  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>,<span class="st">"NULL"</span><span class="op">)</span>,</span>
-<span class="r-in">  dataset_shortdesc <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span>
-<span class="r-in">  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
-<span class="r-in">  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
-<span class="r-in">  save_filename <span class="op">=</span> <span class="st">"example_data_report"</span>,</span>
-<span class="r-in">  showprogress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">  log_directory <span class="op">=</span> <span class="cn">NULL</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Fieldtypes supplied:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;fieldtype_uniqueidentifier&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;fieldtype_timepoint&gt;	options: includes_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;fieldtype_datetime&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;fieldtype_freetext&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;fieldtype_numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;fieldtype_categorical&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;fieldtype_ignore&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;fieldtype_categorical&gt;	options: aggregate_by_each_category</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># load example data into a data.frame</span></span></span>
+<span class="r-in"><span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  delim <span class="op">=</span> <span class="st">","</span>,</span></span>
+<span class="r-in"><span>  col_names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># create a report in the current directory</span></span></span>
+<span class="r-in"><span><span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu">create_report</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">raw_data</span>,</span></span>
+<span class="r-in"><span>  field_types <span class="op">=</span> <span class="fu"><a href="field_types.html">field_types</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    PrescriptionID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    PrescriptionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    AdmissionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Drug <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Dose <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    DoseUnit <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    PatientID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    Location <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dataset_description <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span></span>
+<span class="r-in"><span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span></span>
+<span class="r-in"><span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span></span>
+<span class="r-in"><span>  save_filename <span class="op">=</span> <span class="st">"example_data_report"</span>,</span></span>
+<span class="r-in"><span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  log_directory <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> field_types supplied:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;field_type_uniqueidentifier&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;field_type_timepoint&gt;	options: includes_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;field_type_datetime&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;field_type_freetext&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;field_type_numeric&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;field_type_categorical&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;field_type_ignore&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;field_type_categorical&gt;	options: aggregate_by_each_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against fieldtypes... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against field_types... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [Example data provided with package]... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Checking data against fieldtypes... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Checking data against field_types... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Selecting relevant warnings... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Identifying nonconformant values... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Checking and removing missing timepoints... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking for duplicates... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sorting data... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading into sourcedata structure... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading into source_data structure... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   PrescriptionID </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   PrescriptionDate </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   AdmissionDate </span>
@@ -217,16 +219,16 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating [] by [day]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating overall dataset... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating each datafield in turn... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating each data_field in turn... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: PrescriptionID </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preparing... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating character field... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   By n </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   By missing_n </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   By missing_perc </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   By minlength </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   By maxlength </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   By meanlength </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   By min_length </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   By max_length </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   By mean_length </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: PrescriptionDate </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preparing... </span>
@@ -297,7 +299,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   By sum </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   By nonzero_perc </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [ALLFIELDSCOMBINED]: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [ALL_FIELDS_COMBINED]: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Generating html report... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -324,7 +326,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    inline R code fragments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |..............                                                        |  21%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> label: sourcedata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label: source_data</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |.................                                                     |  24%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -344,12 +346,12 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |..................................                                    |  48%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> label: sourcedata-summary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label: source_data-summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |....................................                                  |  52%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |.......................................                               |  55%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> label: aggregatedata</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label: aggregated_data</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |.........................................                             |  59%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -374,7 +376,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |...............................................................       |  90%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> label: aggregatedata-summary</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> label: aggregated_data-summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |.................................................................     |  93%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -388,15 +390,14 @@ If no directory is supplied, progress is not logged.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: report_htmldoc.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc3a2812d12da3.html --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\phuongq\AppData\Local\Temp\RtmpWyuhfE\rmarkdown-str3a2854b663e9.html" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/quarto/bin/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc47442b7f6268.html --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\pquan\AppData\Local\Temp\RtmpQ3Y4Sq\rmarkdown-str474416e63525.html" </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Output created: example_data_report.html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Report saved to: ./example_data_report.html </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -408,7 +409,7 @@ If no directory is supplied, progress is not logged.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
     </footer></div>
