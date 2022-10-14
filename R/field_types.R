@@ -36,7 +36,7 @@ field_types <- function(...) {
 
   # validate - collect all errors together and return only once
   err_validation <- character()
-  is_field_type <- vapply(fts, is.field_type, logical(1))
+  is_field_type <- vapply(fts, is_field_type, logical(1))
   if (any(!is_field_type)) {
     err_validation <-
       append(
@@ -51,7 +51,7 @@ field_types <- function(...) {
         )
       )
   }
-  is_timepoint <- vapply(fts, is.field_type_timepoint, logical(1))
+  is_timepoint <- vapply(fts, is_field_type_timepoint, logical(1))
   if (sum(is_timepoint) != 1) {
     err_validation <-
       append(
@@ -406,7 +406,7 @@ ft_duplicates <- function() {
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_types <- function(x) inherits(x, "daiquiri_field_types")
+is_field_types <- function(x) inherits(x, "daiquiri_field_types")
 
 
 # -----------------------------------------------------------------------------
@@ -444,7 +444,7 @@ field_type <- function(type,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type <- function(x) inherits(x, "daiquiri_field_type")
+is_field_type <- function(x) inherits(x, "daiquiri_field_type")
 
 
 # -----------------------------------------------------------------------------
@@ -455,35 +455,35 @@ is.field_type <- function(x) inherits(x, "daiquiri_field_type")
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
+is_field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
 
 #' Test if object is a ignore field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
+is_field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
 
 #' Test if object is a datetime field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
+is_field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
 
 #' Test if object is a numeric field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
+is_field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
 #' Test if object is a calculated field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
+is_field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
 
 
 #' Get the field_type's collector
@@ -556,7 +556,7 @@ field_types_to_string <- function(field_types) {
 field_types_to_cols <-
   function(field_types, all_to_string = FALSE) {
     # validate
-    if (missing(field_types) || !is.field_types(field_types)) {
+    if (missing(field_types) || !is_field_types(field_types)) {
       stop("Invalid parameter(s) supplied:",
         "`field_types'",
         call. = FALSE

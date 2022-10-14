@@ -143,13 +143,13 @@ prepare_data <- function(df,
       data.table::data.table(
         col_index = which(
           dt_datatypes != "character" &
-            !vapply(field_types, is.field_type_ignore, logical(1))
+            !vapply(field_types, is_field_type_ignore, logical(1))
         ),
         row_index = NA,
         message = paste0(
           "Data supplied as ",
           dt_datatypes[which(dt_datatypes != "character" &
-            !vapply(field_types, is.field_type_ignore, logical(1)))],
+            !vapply(field_types, is_field_type_ignore, logical(1)))],
           " instead of character, non-conformant values will not be identified"
         )
       )
@@ -210,7 +210,7 @@ prepare_data <- function(df,
   # TODO: should I remove them here or when aggregating?  Summary doesn't look
   # right if remove them here. Rownumbers in warnings no longer matches either
   # TODO: check don't duplicate any messages from above
-  timepoint_index <- which(vapply(field_types, is.field_type_timepoint, logical(1)))
+  timepoint_index <- which(vapply(field_types, is_field_type_timepoint, logical(1)))
   timepoint_field_name <- names(timepoint_index)
   if (anyNA(dt[[(timepoint_field_name)]])) {
     na_vector <- is.na(dt[[(timepoint_field_name)]])
@@ -279,7 +279,7 @@ prepare_data <- function(df,
   for (i in 1:cols_source_n) {
     current_field <- names(field_types[i])
     log_message(paste0("  ", current_field), show_progress)
-    if (is.field_type_ignore(field_types[[i]])) {
+    if (is_field_type_ignore(field_types[[i]])) {
       dfs[[i]] <- data_field(as.vector("ignored"), field_types[[i]])
     } else {
       dfs[[i]] <- data_field(
@@ -367,7 +367,7 @@ print.daiquiri_source_data <- function(x, ...) {
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.source_data <- function(x) inherits(x, "daiquiri_source_data")
+is_source_data <- function(x) inherits(x, "daiquiri_source_data")
 
 
 # -----------------------------------------------------------------------------
@@ -486,7 +486,7 @@ data_field <- function(x, field_type, validation_warnings = NULL) {
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.data_field <- function(x) inherits(x, "daiquiri_data_field")
+is_data_field <- function(x) inherits(x, "daiquiri_data_field")
 
 
 # -----------------------------------------------------------------------------
@@ -507,7 +507,7 @@ data_field_type <- function(data_field) {
 #' @return vector of data values
 #' @noRd
 data_field_vector <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type)) {
+  if (is_field_type_ignore(data_field$field_type)) {
     NA
   } else {
     data_field$values[[1]]
@@ -520,7 +520,7 @@ data_field_vector <- function(data_field) {
 #' @return string denoting storage type
 #' @noRd
 data_field_basetype <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type)) {
+  if (is_field_type_ignore(data_field$field_type)) {
     NA_character_
   } else {
     typeof(data_field$values[[1]])
@@ -533,7 +533,7 @@ data_field_basetype <- function(data_field) {
 #' @return minimum data value, excluding NAs
 #' @noRd
 data_field_min <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type) ||
+  if (is_field_type_ignore(data_field$field_type) ||
     all(is.na(data_field$values[[1]]))) {
     NA_real_
   } else {
@@ -547,7 +547,7 @@ data_field_min <- function(data_field) {
 #' @return maximum data value, excluding NAs
 #' @noRd
 data_field_max <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type) ||
+  if (is_field_type_ignore(data_field$field_type) ||
     all(is.na(data_field$values[[1]]))) {
     NA_real_
   } else {
@@ -561,7 +561,7 @@ data_field_max <- function(data_field) {
 #' @return numeric list of 1. frequency, 2. percentage
 #' @noRd
 data_field_missing <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type)) {
+  if (is_field_type_ignore(data_field$field_type)) {
     list("frequency" = NA_integer_, "percentage" = NA_real_)
   } else {
     list(
@@ -577,8 +577,8 @@ data_field_missing <- function(data_field) {
 #' @return number of validation warnings
 #' @noRd
 data_field_validation_warnings_n <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type) ||
-    is.field_type_calculated(data_field$field_type)) {
+  if (is_field_type_ignore(data_field$field_type) ||
+    is_field_type_calculated(data_field$field_type)) {
     NA_integer_
   } else {
     nrow(data_field$validation_warnings)
@@ -591,7 +591,7 @@ data_field_validation_warnings_n <- function(data_field) {
 #' @return number of non-missing values
 #' @noRd
 data_field_count <- function(data_field) {
-  if (is.field_type_ignore(data_field$field_type) ||
+  if (is_field_type_ignore(data_field$field_type) ||
     all(is.na(data_field$values[[1]]))) {
     NA_integer_
   } else {

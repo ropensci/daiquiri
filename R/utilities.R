@@ -201,7 +201,7 @@ validate_params_type <- function(call, ...) {
         )
       }
     } else if (params_names[i] == "field_types") {
-      if (!is.field_types(params_passed[[i]])) {
+      if (!is_field_types(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
@@ -215,7 +215,7 @@ validate_params_type <- function(call, ...) {
         )
       }
     } else if (params_names[i] == "default_field_type") {
-      if (!is.field_type(params_passed[[i]])) {
+      if (!is_field_type(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
@@ -229,7 +229,7 @@ validate_params_type <- function(call, ...) {
         )
       }
     } else if (params_names[i] == "source_data") {
-      if (!is.source_data(params_passed[[i]])) {
+      if (!is_source_data(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(
@@ -243,7 +243,7 @@ validate_params_type <- function(call, ...) {
         )
       }
     } else if (params_names[i] == "aggregated_data") {
-      if (!is.aggregated_data(params_passed[[i]])) {
+      if (!is_aggregated_data(params_passed[[i]])) {
         err_validation <- append(
           err_validation,
           paste0(

@@ -417,7 +417,7 @@ yscale_breaks <- function(agg_fun,
     # percentage agg_funs should always be shown on a range of 0-100
     breaks <- seq(0, 100, by = 10)
   } else {
-    if (is.field_type_datetime(field_type)) {
+    if (is_field_type_datetime(field_type)) {
       # dates should be left to base
       breaks <- pretty(c(min_val, max_val))
     } else {

@@ -247,7 +247,7 @@ export_aggregated_data <- function(aggregated_data,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.aggregated_data <- function(x) inherits(x, "daiquiri_aggregated_data")
+is_aggregated_data <- function(x) inherits(x, "daiquiri_aggregated_data")
 
 
 # -----------------------------------------------------------------------------
@@ -597,7 +597,7 @@ aggregate_field <- function(data_field,
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is.aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
+is_aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
 
 
 # -----------------------------------------------------------------------------
