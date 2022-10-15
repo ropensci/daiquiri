@@ -85,16 +85,16 @@ series plots for visual inspection, and saves a report to disk.</p>
 
 
 <dt>field_types</dt>
-<dd><p><code><a href="field_types.html">field_types()</a></code> object specifying names and types
-of fields (columns) in the supplied <code>df</code>. See also <a href="field_types_available.html">field_types_available</a>.</p></dd>
+<dd><p><code><a href="field_types.html">field_types()</a></code> object specifying names and types of
+fields (columns) in the supplied <code>df</code>. See also <a href="field_types_available.html">field_types_available</a>.</p></dd>
 
 
 <dt>override_column_names</dt>
 <dd><p>If <code>FALSE</code>, column names in the supplied <code>df</code>
 must match the names specified in <code>field_types</code> exactly. If <code>TRUE</code>, column
-names in the supplied <code>df</code> will be replaced with the names specified in <code>field_types</code>.
-The specification must therefore contain the columns in the correct order.
-Default = <code>FALSE</code></p></dd>
+names in the supplied <code>df</code> will be replaced with the names specified in
+<code>field_types</code>. The specification must therefore contain the columns in the
+correct order. Default = <code>FALSE</code></p></dd>
 
 
 <dt>na</dt>
@@ -103,9 +103,9 @@ values, Default = <code>c("","NA","NULL")</code>.</p></dd>
 
 
 <dt>dataset_description</dt>
-<dd><p>Short description of the dataset being checked. This
-will appear on the report. If blank, the name of the data frame object will
-be used</p></dd>
+<dd><p>Short description of the dataset being checked.
+This will appear on the report. If blank, the name of the data frame object
+will be used</p></dd>
 
 
 <dt>aggregation_timeunit</dt>
@@ -121,8 +121,8 @@ report. Default is current directory.</p></dd>
 
 <dt>save_filename</dt>
 <dd><p>String specifying filename for the report, excluding any
-file extension. If no filename is supplied, one will
-be automatically generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
+file extension. If no filename is supplied, one will be automatically
+generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 
 
 <dt>show_progress</dt>
@@ -139,17 +139,19 @@ If no directory is supplied, progress is not logged.</p></dd>
     
 
 <p>A list containing information relating to the supplied parameters as
-well as the resulting <code>source_data</code> and <code>aggregated_data</code> objects.</p>
+well as the resulting <code>daiquiri_source_data</code> and <code>daiquiri_aggregated_data</code></p>
+
+
+<p>objects.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>In order for the package to detect any non-conformant
 values in numeric or datetime fields, these should be present in the data
 frame in their raw character format. Rectangular data from a text file will
-automatically be read in as character type if you use the
-<code><a href="read_data.html">read_data()</a></code> function. Data frame columns that are not of class
-character will still be processed according to the <code>field_types</code>
-specified.</p>
+automatically be read in as character type if you use the <code><a href="read_data.html">read_data()</a></code>
+function. Data frame columns that are not of class character will still be
+processed according to the <code>field_types</code> specified.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -190,14 +192,14 @@ specified.</p>
 <span class="r-in"><span>  log_directory <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> field_types supplied:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;field_type_uniqueidentifier&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;field_type_timepoint&gt;	options: includes_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;field_type_datetime&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;field_type_freetext&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;field_type_numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;field_type_categorical&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;field_type_ignore&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;field_type_categorical&gt;	options: aggregate_by_each_category</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;uniqueidentifier&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;timepoint&gt;	options: includes_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;datetime&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;freetext&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;numeric&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;categorical&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;ignore&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;categorical&gt;	options: aggregate_by_each_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against field_types... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [Example data provided with package]... </span>
@@ -390,7 +392,7 @@ specified.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: report_htmldoc.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/quarto/bin/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc47442b7f6268.html --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\pquan\AppData\Local\Temp\RtmpQ3Y4Sq\rmarkdown-str474416e63525.html" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/quarto/bin/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc45f05b3b3894.html --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\pquan\AppData\Local\Temp\RtmpsnSV2Z\rmarkdown-str45f0393149b2.html" </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Output created: example_data_report.html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Report saved to: ./example_data_report.html </span>

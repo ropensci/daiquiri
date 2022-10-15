@@ -271,9 +271,10 @@ specification to the console that you can copy and edit.</p>
 <p>The simplest way to create a data quality report is to use the
 <code><a href="../reference/create_report.html">create_report()</a></code> function. If successful, the function will
 return a list containing information relating to the supplied parameters
-as well as the resulting <code>source_data</code> and
-<code>aggregated_data</code> objects, which can be reused to create
-further reports without needing to run everything all over again.</p>
+as well as the resulting <code>daiquiri_source_data</code> and
+<code>daiquiri_aggregated_data</code> objects, which can be reused to
+create further reports without needing to run everything all over
+again.</p>
 <p>At this point we need to decide what level of aggregation granularity
 we want to use. Options are daily/weekly/monthly/quarterly/yearly.
 Smaller aggregation granularities (e.g. day or week) will provide more

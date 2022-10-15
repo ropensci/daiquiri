@@ -51,7 +51,7 @@ field_types() specification."><!-- mathjax --><script src="https://cdnjs.cloudfl
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Types of data fields available for specification</h1>
-      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/fieldtypes.R" class="external-link"><code>R/fieldtypes.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/field_types.R" class="external-link"><code>R/field_types.R</code></a></small>
       <div class="d-none name"><code>field_types_available.Rd</code></div>
     </div>
 
@@ -83,18 +83,18 @@ depending on the type of data that it contains. This is done through a
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>includes_time</dt>
-<dd><p>If <code>TRUE</code>, additional aggregated values will be generated
-using the time portion (and if no time portion is present then midnight
-will be assumed). If <code>FALSE</code>, aggregated values will ignore any time portion.
-Default = <code>TRUE</code></p></dd>
+<dd><p>If <code>TRUE</code>, additional aggregated values will be
+generated using the time portion (and if no time portion is present then
+midnight will be assumed). If <code>FALSE</code>, aggregated values will ignore any
+time portion. Default = <code>TRUE</code></p></dd>
 
 
 <dt>format</dt>
 <dd><p>Where datetime values are not in the format <code>YYYY-MM-DD</code> or
 <code>YYYY-MM-DD HH:MM:SS</code>, an alternative format can be specified at the per
-field level, using <code><a href="https://readr.tidyverse.org/reference/parse_datetime.html" class="external-link">readr::col_datetime()</a></code> format
-specifications, e.g. <code>format = "%d/%m/%Y"</code>. When a format is
-supplied, it must match the complete string.</p></dd>
+field level, using <code><a href="https://readr.tidyverse.org/reference/parse_datetime.html" class="external-link">readr::col_datetime()</a></code> format specifications, e.g.
+<code>format = "%d/%m/%Y"</code>. When a format is supplied, it must match the
+complete string.</p></dd>
 
 
 <dt>aggregate_by_each_category</dt>
@@ -112,19 +112,20 @@ Default = <code>FALSE</code></p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>ft_timepoint()</code> - identifies the data field which
-should be used as the independent time variable. There should be one and
-only one of these specified.</p>
+    <p><code>ft_timepoint()</code> - identifies the data field which should
+be used as the independent time variable. There should be one and only one
+of these specified.</p>
 <p><code>ft_uniqueidentifier()</code> - identifies data fields which
 contain a (usually computer-generated) identifier for an entity, e.g. a
 patient. It does not need to be unique within the dataset.</p>
 <p><code>ft_categorical()</code> - identifies data fields which should
 be treated as categorical.</p>
 
-<p><code>ft_numeric()</code> - identifies data fields which contain numeric values that should be treated as continuous.
-Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant</p>
-<p><code>ft_datetime()</code> - identifies data fields which contain
-date values that should be treated as continuous.</p>
+<p><code>ft_numeric()</code> - identifies data fields which contain numeric values that
+should be treated as continuous. Any values which contain non-numeric
+characters (including grouping marks) will be classed as non-conformant</p>
+<p><code>ft_datetime()</code> - identifies data fields which contain date
+values that should be treated as continuous.</p>
 <p><code>ft_freetext()</code> - identifies data fields which contain
 free text values. Only presence/missingness will be evaluated.</p>
 <p><code>ft_simple()</code> - identifies data fields where you only
@@ -150,6 +151,25 @@ ignored.  These will not be loaded.</p>
 <span class="r-in"><span>  ResultComment <span class="op">=</span> <span class="fu">ft_freetext</span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  Location <span class="op">=</span> <span class="fu">ft_categorical</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ft_simple</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $type</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "simple"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $collector</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;collector_character&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data_class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "character"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $aggregation_functions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "n"            "missing_n"    "missing_perc"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $options</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "daiquiri_field_type_simple" "daiquiri_field_type"       </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

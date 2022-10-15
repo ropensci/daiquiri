@@ -49,7 +49,7 @@ field in dataset."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/aja
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Export aggregated data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/aggregatedata.R" class="external-link"><code>R/aggregatedata.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/aggregate_data.R" class="external-link"><code>R/aggregate_data.R</code></a></small>
       <div class="d-none name"><code>export_aggregated_data.Rd</code></div>
     </div>
 
@@ -71,7 +71,7 @@ field in dataset.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>aggregated_data</dt>
-<dd><p>A <code>aggregated_data</code> object</p></dd>
+<dd><p>A <code>daiquiri_aggregated_data</code> object</p></dd>
 
 
 <dt>save_directory</dt>
@@ -91,7 +91,7 @@ currently only csv allowed</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>(invisibly) The <code>aggregated_data</code> object that was passed in</p>
+<p>(invisibly) The <code>daiquiri_aggregated_data</code> object that was passed in</p>
     </div>
 
     <div class="section level2">
@@ -118,14 +118,14 @@ currently only csv allowed</p></dd>
 <span class="r-in"><span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> field_types supplied:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;field_type_uniqueidentifier&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;field_type_timepoint&gt;	options: includes_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;field_type_datetime&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;field_type_freetext&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;field_type_numeric&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;field_type_categorical&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;field_type_ignore&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;field_type_categorical&gt;	options: aggregate_by_each_category</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;uniqueidentifier&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;timepoint&gt;	options: includes_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> AdmissionDate	&lt;datetime&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Drug	&lt;freetext&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dose	&lt;numeric&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DoseUnit	&lt;categorical&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;ignore&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;categorical&gt;	options: aggregate_by_each_category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Checking column names against field_types... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Importing source data [NULL]... </span>

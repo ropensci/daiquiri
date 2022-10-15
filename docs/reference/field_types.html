@@ -51,7 +51,7 @@ ways, depending on its field_type.  See field_types_available"><!-- mathjax --><
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Create field_types specification</h1>
-      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/fieldtypes.R" class="external-link"><code>R/fieldtypes.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/phuongquan/daiquiri/blob/HEAD/R/field_types.R" class="external-link"><code>R/field_types.R</code></a></small>
       <div class="d-none name"><code>field_types.Rd</code></div>
     </div>
 
@@ -95,6 +95,16 @@ ways, depending on its <code>field_type</code>.  See <a href="field_types_availa
 <span class="r-in"><span>  ResultComment <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  Location <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fts</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> PatientID	&lt;uniqueidentifier&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TestID	&lt;ignore&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TestDate	&lt;timepoint&gt;	options: includes_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TestName	&lt;categorical&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> TestResult	&lt;numeric&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ResultDate	&lt;datetime&gt;	options: includes_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ResultComment	&lt;freetext&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Location	&lt;categorical&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
