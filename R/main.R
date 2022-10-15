@@ -190,11 +190,14 @@ print.daiquiri_object <- function(x, ...) {
 
 
 # -----------------------------------------------------------------------------
-#' Read data from delimited file without doing any datatype conversion
+#' Read delimited data for optimal use with daiquiri
 #'
-#' Read rectangular data from a delimited file, with all columns read in as
-#' character type so that the package can later detect any non-conformant
-#' values. Operates as a restricted implementation of [readr::read_delim()].
+#' Popular file readers such as `readr::read_delim()` perform datatype
+#' conversion by default, which can interfere with daiquiri's ability to detect
+#' non-conformant values. Use this function instead to ensure optimal
+#' compatibility with daiquiri's features.
+#'
+#' Operates as a restricted implementation of [readr::read_delim()].
 #'
 #' @param file A string containing path of file containing data to load, or a
 #'   URL starting `http://`, `file://`, etc. Compressed files with extension

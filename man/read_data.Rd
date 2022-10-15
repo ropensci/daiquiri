@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{read_data}
 \alias{read_data}
-\title{Read data from delimited file without doing any datatype conversion}
+\title{Read delimited data for optimal use with daiquiri}
 \usage{
 read_data(
   file,
@@ -48,9 +48,13 @@ supplied any commented lines are ignored after skipping}
 A data frame
 }
 \description{
-Read rectangular data from a delimited file, with all columns read in as
-character type so that the package can later detect any non-conformant
-values. Operates as a restricted implementation of \code{\link[readr:read_delim]{readr::read_delim()}}.
+Popular file readers such as \code{readr::read_delim()} perform datatype
+conversion by default, which can interfere with daiquiri's ability to detect
+non-conformant values. Use this function instead to ensure optimal
+compatibility with daiquiri's features.
+}
+\details{
+Operates as a restricted implementation of \code{\link[readr:read_delim]{readr::read_delim()}}.
 }
 \examples{
 raw_data <- read_data(
