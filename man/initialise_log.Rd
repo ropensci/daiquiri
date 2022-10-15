@@ -10,7 +10,8 @@ initialise_log(log_directory)
 \item{log_directory}{String containing directory to save log file}
 }
 \value{
-Character string containing the full path to the newly-created log file
+Character string containing the full path to the newly-created log
+file
 }
 \description{
 Choose a directory in which to save the log file. If this is not called, no

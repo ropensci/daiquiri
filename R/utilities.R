@@ -1,6 +1,4 @@
-# Generic functions
-
-###############################################################################
+# =============================================================================
 # FUNCTIONS FOR LOGGING
 
 # -----------------------------------------------------------------------------
@@ -10,7 +8,8 @@
 #' log file is created.
 #'
 #' @param log_directory String containing directory to save log file
-#' @return Character string containing the full path to the newly-created log file
+#' @return Character string containing the full path to the newly-created log
+#'   file
 #' @examples
 #' log_name <- initialise_log(".")
 #'
@@ -111,7 +110,7 @@ log_function_end <- function(function_name) {
 }
 
 
-###############################################################################
+# =============================================================================
 # FUNCTIONS FOR PARAMETER VALIDATION
 
 # -----------------------------------------------------------------------------
@@ -323,9 +322,9 @@ validate_params_type <- function(call, ...) {
           err_validation,
           paste0(
             params_names[i],
-            ": Invalid fileprefix: ",
+            ": Invalid file_prefix: ",
             params_passed[[i]],
-            ". Fileprefix can only contain alphanumeric, '-', and '_' characters"
+            ". file_prefix can only contain alphanumeric, '-', and '_' characters"
           )
         )
       }
@@ -391,7 +390,7 @@ validate_params_type <- function(call, ...) {
 }
 
 
-###############################################################################
+# =============================================================================
 # MISCELLANEOUS
 
 # -----------------------------------------------------------------------------

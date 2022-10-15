@@ -24,7 +24,12 @@ copied and edited before being used as input to \url{create_report()}
 or \url{prepare_data()}.
 }
 \examples{
-df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
+df <- data.frame(
+  col1 = rep("2022-01-01", 5),
+  col2 = rep(1, 5),
+  col3 = 1:5,
+  col4 = rnorm(5)
+)
 
 print_field_types_template(df, default_field_type = ft_numeric())
 }

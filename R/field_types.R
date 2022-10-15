@@ -51,7 +51,7 @@ field_types <- function(...) {
         )
       )
   }
-  is_timepoint <- vapply(fts, is_field_type_timepoint, logical(1))
+  is_timepoint <- vapply(fts, is_ft_timepoint, logical(1))
   if (sum(is_timepoint) != 1) {
     err_validation <-
       append(
@@ -124,7 +124,12 @@ print.daiquiri_field_types <- function(x, ...) {
 #'   [ft_ignore()]. See  [field_types_available()]
 #' @return (invisibly) Character string containing the template code
 #' @examples
-#' df <- data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5, col4 = rnorm(5))
+#' df <- data.frame(
+#'   col1 = rep("2022-01-01", 5),
+#'   col2 = rep(1, 5),
+#'   col3 = 1:5,
+#'   col4 = rnorm(5)
+#' )
 #'
 #' print_field_types_template(df, default_field_type = ft_numeric())
 #' @seealso [field_types()]
@@ -180,18 +185,18 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
 #' ft_simple()
 NULL
 
-#' @section Details: `ft_timepoint()` - identifies the data field which
-#'   should be used as the independent time variable. There should be one and
-#'   only one of these specified.
-#' @param includes_time If `TRUE`, additional aggregated values will be generated
-#'   using the time portion (and if no time portion is present then midnight
-#'   will be assumed). If `FALSE`, aggregated values will ignore any time portion.
-#'   Default = `TRUE`
+#' @section Details: `ft_timepoint()` - identifies the data field which should
+#'   be used as the independent time variable. There should be one and only one
+#'   of these specified.
+#' @param includes_time If `TRUE`, additional aggregated values will be
+#'   generated using the time portion (and if no time portion is present then
+#'   midnight will be assumed). If `FALSE`, aggregated values will ignore any
+#'   time portion. Default = `TRUE`
 #' @param format Where datetime values are not in the format `YYYY-MM-DD` or
 #'   `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
-#'   field level, using [readr::col_datetime()] format
-#'   specifications, e.g. `format = "%d/%m/%Y"`. When a format is
-#'   supplied, it must match the complete string.
+#'   field level, using [readr::col_datetime()] format specifications, e.g.
+#'   `format = "%d/%m/%Y"`. When a format is supplied, it must match the
+#'   complete string.
 #' @rdname field_types_available
 #' @export
 ft_timepoint <- function(includes_time = TRUE,
@@ -219,7 +224,8 @@ ft_timepoint <- function(includes_time = TRUE,
 #' @rdname field_types_available
 #' @export
 ft_uniqueidentifier <- function() {
-  # TODO: potential additional aggregation_functions: proportion numeric; distinct first chars
+  # TODO: potential additional aggregation_functions:
+  # proportion numeric; distinct first chars
   field_type(
     type = "uniqueidentifier",
     collector = readr::col_character(),
@@ -244,7 +250,8 @@ ft_uniqueidentifier <- function() {
 #' @rdname field_types_available
 #' @export
 ft_categorical <- function(aggregate_by_each_category = FALSE) {
-  # TODO: allow more options for aggregate_by_each_category, e.g. topx (bysize), or accept a vector of values
+  # TODO: allow more options for aggregate_by_each_category,
+  # e.g. topx (bysize), or accept a vector of values
   agg_fun <- c("n", "missing_n", "missing_perc", "distinct")
   options <- NULL
   if (aggregate_by_each_category) {
@@ -262,8 +269,9 @@ ft_categorical <- function(aggregate_by_each_category = FALSE) {
 }
 
 #' @section Details:
-#' `ft_numeric()` - identifies data fields which contain numeric values that should be treated as continuous.
-#' Any values which contain non-numeric characters (including grouping marks) will be classed as non-conformant
+#' `ft_numeric()` - identifies data fields which contain numeric values that
+#' should be treated as continuous. Any values which contain non-numeric
+#' characters (including grouping marks) will be classed as non-conformant
 #' @rdname field_types_available
 #' @export
 ft_numeric <- function() {
@@ -285,17 +293,17 @@ ft_numeric <- function() {
   )
 }
 
-#' @section Details: `ft_datetime()` - identifies data fields which contain
-#'   date values that should be treated as continuous.
-#' @param includes_time If `TRUE`, additional aggregated values will be generated
-#'   using the time portion (and if no time portion is present then midnight
-#'   will be assumed). If `FALSE`, aggregated values will ignore any time portion.
-#'   Default = `TRUE`
+#' @section Details: `ft_datetime()` - identifies data fields which contain date
+#'   values that should be treated as continuous.
+#' @param includes_time If `TRUE`, additional aggregated values will be
+#'   generated using the time portion (and if no time portion is present then
+#'   midnight will be assumed). If `FALSE`, aggregated values will ignore any
+#'   time portion. Default = `TRUE`
 #' @param format Where datetime values are not in the format `YYYY-MM-DD` or
 #'   `YYYY-MM-DD HH:MM:SS`, an alternative format can be specified at the per
-#'   field level, using [readr::col_datetime()] format
-#'   specifications, e.g. `format = "%d/%m/%Y"`. When a format is
-#'   supplied, it must match the complete string.
+#'   field level, using [readr::col_datetime()] format specifications, e.g.
+#'   `format = "%d/%m/%Y"`. When a format is supplied, it must match the
+#'   complete string.
 #' @rdname field_types_available
 #' @export
 ft_datetime <- function(includes_time = TRUE,
@@ -415,11 +423,13 @@ is_field_types <- function(x) inherits(x, "daiquiri_field_types")
 #' @param type string denoting the field_type
 #' @param collector readr `collector' to use when parsing the data
 #' @param data_class type of data, e.g. character or POSIXct
-#' @param aggregation_functions aggregation_functions to apply to the data in this field
+#' @param aggregation_functions aggregation_functions to apply to the data in
+#'   this field
 #' @param options additional options for certain aggregation_functions
 #' @return field_type object
 #' @noRd
-# TODO: decide whether to require all aggregation_functions to be supplied or automatically include the basic ones
+# TODO: decide whether to require all aggregation_functions to be supplied or
+# automatically include the basic ones
 field_type <- function(type,
                        collector,
                        data_class,
@@ -455,35 +465,40 @@ is_field_type <- function(x) inherits(x, "daiquiri_field_type")
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is_field_type_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
+is_ft_timepoint <- function(x) inherits(x, "daiquiri_field_type_timepoint")
 
 #' Test if object is a ignore field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is_field_type_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
+is_ft_ignore <- function(x) inherits(x, "daiquiri_field_type_ignore")
 
 #' Test if object is a datetime field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is_field_type_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
+is_ft_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
 
 #' Test if object is a numeric field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is_field_type_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
+is_ft_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
 #' Test if object is a calculated field_type
 #'
 #' @param x object to test
 #' @return Logical
 #' @noRd
-is_field_type_calculated <- function(x) inherits(x, c("daiquiri_field_type_allfields", "daiquiri_field_type_duplicates"))
+is_ft_calculated <- function(x) {
+  inherits(x, c(
+    "daiquiri_field_type_allfields",
+    "daiquiri_field_type_duplicates"
+  ))
+}
 
 
 #' Get the field_type's collector
@@ -533,10 +548,16 @@ field_type_aggregation_functions <- function(field_type) {
 field_types_to_string <- function(field_types) {
   s <- ""
   for (ft in seq_along(field_types)) {
-    s <-
-      paste0(s, names(field_types[ft]), "\t", "<", field_type_type(field_types[[ft]]), ">")
+    s <- paste0(
+      s,
+      names(field_types[ft]), "\t",
+      "<", field_type_type(field_types[[ft]]), ">"
+    )
     if (!is.null(field_types[[ft]]$options)) {
-      s <- paste0(s, "\t", "options: ", field_types[[ft]]$options)
+      s <- paste0(
+        s, "\t",
+        "options: ", field_types[[ft]]$options
+      )
     }
     s <- paste0(s, "\n")
   }
@@ -550,7 +571,8 @@ field_types_to_string <- function(field_types) {
 #' Parser used is readr. See readr::col_types
 #'
 #' @param field_types field_types object
-#' @param all_to_string Set to TRUE if want parser to read everything as character
+#' @param all_to_string Set to TRUE if want parser to read everything as
+#'   character
 #' @return list of coltypes
 #' @noRd
 field_types_to_cols <-
@@ -570,4 +592,3 @@ field_types_to_cols <-
       do.call(readr::cols, lapply(field_types, field_type_collector))
     }
   }
-

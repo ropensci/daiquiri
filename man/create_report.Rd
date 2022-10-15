@@ -21,21 +21,21 @@ create_report(
 \item{df}{A data frame. Rectangular data can be read from file using
 \code{\link[=read_data]{read_data()}}. See Details.}
 
-\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types
-of fields (columns) in the supplied \code{df}. See also \link{field_types_available}.}
+\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types of
+fields (columns) in the supplied \code{df}. See also \link{field_types_available}.}
 
 \item{override_column_names}{If \code{FALSE}, column names in the supplied \code{df}
 must match the names specified in \code{field_types} exactly. If \code{TRUE}, column
-names in the supplied \code{df} will be replaced with the names specified in \code{field_types}.
-The specification must therefore contain the columns in the correct order.
-Default = \code{FALSE}}
+names in the supplied \code{df} will be replaced with the names specified in
+\code{field_types}. The specification must therefore contain the columns in the
+correct order. Default = \code{FALSE}}
 
 \item{na}{vector containing strings that should be interpreted as missing
 values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_description}{Short description of the dataset being checked. This
-will appear on the report. If blank, the name of the data frame object will
-be used}
+\item{dataset_description}{Short description of the dataset being checked.
+This will appear on the report. If blank, the name of the data frame object
+will be used}
 
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
 \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"}, \code{"year"}. The \code{"week"} option is
@@ -45,8 +45,8 @@ Monday-based. Default = \code{"day"}}
 report. Default is current directory.}
 
 \item{save_filename}{String specifying filename for the report, excluding any
-file extension. If no filename is supplied, one will
-be automatically generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
+file extension. If no filename is supplied, one will be automatically
+generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 
@@ -55,7 +55,8 @@ If no directory is supplied, progress is not logged.}
 }
 \value{
 A list containing information relating to the supplied parameters as
-well as the resulting \code{daiquiri_source_data} and \code{daiquiri_aggregated_data} objects.
+well as the resulting \code{daiquiri_source_data} and \code{daiquiri_aggregated_data}
+objects.
 }
 \description{
 Accepts record-level data from a data frame, validates it against the
@@ -66,10 +67,9 @@ series plots for visual inspection, and saves a report to disk.
  In order for the package to detect any non-conformant
 values in numeric or datetime fields, these should be present in the data
 frame in their raw character format. Rectangular data from a text file will
-automatically be read in as character type if you use the
-\code{\link[=read_data]{read_data()}} function. Data frame columns that are not of class
-character will still be processed according to the \code{field_types}
-specified.
+automatically be read in as character type if you use the \code{\link[=read_data]{read_data()}}
+function. Data frame columns that are not of class character will still be
+processed according to the \code{field_types} specified.
 }
 
 \examples{

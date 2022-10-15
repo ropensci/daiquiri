@@ -6,38 +6,38 @@
 #'
 #' @param df A data frame. Rectangular data can be read from file using
 #'   [read_data()]. See Details.
-#' @param field_types [field_types()] object specifying names and types
-#'   of fields (columns) in the supplied `df`. See also [field_types_available].
+#' @param field_types [field_types()] object specifying names and types of
+#'   fields (columns) in the supplied `df`. See also [field_types_available].
 #' @param override_column_names If `FALSE`, column names in the supplied `df`
 #'   must match the names specified in `field_types` exactly. If `TRUE`, column
-#'   names in the supplied `df` will be replaced with the names specified in `field_types`.
-#'   The specification must therefore contain the columns in the correct order.
-#'   Default = `FALSE`
+#'   names in the supplied `df` will be replaced with the names specified in
+#'   `field_types`. The specification must therefore contain the columns in the
+#'   correct order. Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
 #'   values, Default = `c("","NA","NULL")`.
-#' @param dataset_description Short description of the dataset being checked. This
-#'   will appear on the report. If blank, the name of the data frame object will
-#'   be used
+#' @param dataset_description Short description of the dataset being checked.
+#'   This will appear on the report. If blank, the name of the data frame object
+#'   will be used
 #' @param aggregation_timeunit Unit of time to aggregate over. Specify one of
 #'   `"day"`, `"week"`, `"month"`, `"quarter"`, `"year"`. The `"week"` option is
 #'   Monday-based. Default = `"day"`
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any
-#'   file extension. If no filename is supplied, one will
-#'   be automatically generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
+#'   file extension. If no filename is supplied, one will be automatically
+#'   generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
 #' @param show_progress Print progress to console. Default = `TRUE`
 #' @param log_directory String specifying directory in which to save log file.
 #'   If no directory is supplied, progress is not logged.
 #' @return A list containing information relating to the supplied parameters as
-#'   well as the resulting `daiquiri_source_data` and `daiquiri_aggregated_data` objects.
+#'   well as the resulting `daiquiri_source_data` and `daiquiri_aggregated_data`
+#'   objects.
 #' @section Details: In order for the package to detect any non-conformant
 #'   values in numeric or datetime fields, these should be present in the data
 #'   frame in their raw character format. Rectangular data from a text file will
-#'   automatically be read in as character type if you use the
-#'   [read_data()] function. Data frame columns that are not of class
-#'   character will still be processed according to the `field_types`
-#'   specified.
+#'   automatically be read in as character type if you use the [read_data()]
+#'   function. Data frame columns that are not of class character will still be
+#'   processed according to the `field_types` specified.
 #' @examples
 #' \donttest{
 #' # load example data into a data.frame
@@ -197,14 +197,14 @@ print.daiquiri_object <- function(x, ...) {
 #' values. Operates as a restricted implementation of [readr::read_delim()].
 #'
 #' @param file A string containing path of file containing data to load, or a
-#'   URL starting `http://`, `file://`, etc. Compressed files with extension `.gz`,
-#'   `.bz2`, `.xz` and `.zip` are supported.
+#'   URL starting `http://`, `file://`, etc. Compressed files with extension
+#'   `.gz`, `.bz2`, `.xz` and `.zip` are supported.
 #' @param delim Single character used to separate fields within a record. E.g.
 #'   `","` or `"\t"`
-#' @param col_names Either `TRUE`, `FALSE` or a character vector of column names. If
-#'   `TRUE`, the first row of the input will be used as the column names, and will
-#'   not be included in the data frame. If `FALSE`, column names will be generated
-#'   automatically. Default = `TRUE`
+#' @param col_names Either `TRUE`, `FALSE` or a character vector of column
+#'   names. If `TRUE`, the first row of the input will be used as the column
+#'   names, and will not be included in the data frame. If `FALSE`, column names
+#'   will be generated automatically. Default = `TRUE`
 #' @param quote Single character used to quote strings.
 #' @param trim_ws Should leading and trailing whitespace be trimmed from each
 #'   field?

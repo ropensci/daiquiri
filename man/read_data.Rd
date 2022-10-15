@@ -18,16 +18,16 @@ read_data(
 }
 \arguments{
 \item{file}{A string containing path of file containing data to load, or a
-URL starting \verb{http://}, \verb{file://}, etc. Compressed files with extension \code{.gz},
-\code{.bz2}, \code{.xz} and \code{.zip} are supported.}
+URL starting \verb{http://}, \verb{file://}, etc. Compressed files with extension
+\code{.gz}, \code{.bz2}, \code{.xz} and \code{.zip} are supported.}
 
 \item{delim}{Single character used to separate fields within a record. E.g.
 \code{","} or \code{"\\t"}}
 
-\item{col_names}{Either \code{TRUE}, \code{FALSE} or a character vector of column names. If
-\code{TRUE}, the first row of the input will be used as the column names, and will
-not be included in the data frame. If \code{FALSE}, column names will be generated
-automatically. Default = \code{TRUE}}
+\item{col_names}{Either \code{TRUE}, \code{FALSE} or a character vector of column
+names. If \code{TRUE}, the first row of the input will be used as the column
+names, and will not be included in the data frame. If \code{FALSE}, column names
+will be generated automatically. Default = \code{TRUE}}
 
 \item{quote}{Single character used to quote strings.}
 

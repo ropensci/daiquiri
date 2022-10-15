@@ -16,22 +16,21 @@ prepare_data(
 \arguments{
 \item{df}{A data frame}
 
-\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types
-of fields (columns) in the supplied \code{df}. See also
-\link{field_types_available}.}
+\item{field_types}{\code{\link[=field_types]{field_types()}} object specifying names and types of
+fields (columns) in the supplied \code{df}. See also \link{field_types_available}.}
 
 \item{override_column_names}{If \code{FALSE}, column names in the supplied \code{df}
 must match the names specified in \code{field_types} exactly. If \code{TRUE}, column
-names in the supplied \code{df} will be replaced with the names specified in \code{field_types}.
-The specification must therefore contain the columns in the correct order.
-Default = \code{FALSE}}
+names in the supplied \code{df} will be replaced with the names specified in
+\code{field_types}. The specification must therefore contain the columns in the
+correct order. Default = \code{FALSE}}
 
 \item{na}{vector containing strings that should be interpreted as missing
 values, Default = \code{c("","NA","NULL")}.}
 
-\item{dataset_description}{Short description of the dataset being checked. This
-will appear on the report. If blank, the name of the data frame object will
-be used}
+\item{dataset_description}{Short description of the dataset being checked.
+This will appear on the report. If blank, the name of the data frame object
+will be used}
 
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 }
@@ -39,8 +38,8 @@ be used}
 A \code{daiquiri_source_data} object
 }
 \description{
-Validate a data frame against a \code{\link[=field_types]{field_types()}} specification, and
-prepare for aggregation.
+Validate a data frame against a \code{\link[=field_types]{field_types()}} specification, and prepare
+for aggregation.
 }
 \examples{
 # load example data into a data.frame

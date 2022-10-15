@@ -75,7 +75,9 @@ aggregate_data <- function(source_data,
   )
 
   # get timepoint field values as they will be used repeatedly later
-  timepoint_field_values <- data_field_vector(source_data$data_fields[[source_data$timepoint_field_name]])
+  timepoint_field_values <- data_field_vector(
+    source_data$data_fields[[source_data$timepoint_field_name]]
+  )
 
   ### AGGREGATE OVERALL DATASET
   log_message(paste0("Aggregating overall dataset..."), show_progress)
@@ -263,6 +265,7 @@ is_aggregated_data <- function(x) inherits(x, "daiquiri_aggregated_data")
 # too
 summarise_aggregated_data <- function(aggregated_data) {
   agg_fields <- aggregated_data$aggregated_fields
+  timepoint_field <- agg_fields[[aggregated_data$timepoint_field_name]]
 
   # summary info for overall dataset
   # use timepoint column to illustrate overall counts
@@ -271,13 +274,13 @@ summarise_aggregated_data <- function(aggregated_data) {
     timepoint_field_name = aggregated_data$timepoint_field_name,
     aggregation_timeunit = aggregated_data$aggregation_timeunit,
     timepoint_min = format(
-      min(agg_fields[[aggregated_data$timepoint_field_name]]$values[[1]])
+      min(timepoint_field$values[[1]])
     ),
     timepoint_max = format(
-      max(agg_fields[[aggregated_data$timepoint_field_name]]$values[[1]])
+      max(timepoint_field$values[[1]])
     ),
-    n_timepoints = length(agg_fields[[aggregated_data$timepoint_field_name]]$values[[1]]),
-    n_empty_timepoints = sum(agg_fields[[aggregated_data$timepoint_field_name]]$values[["n"]] == 0)
+    n_timepoints = length(timepoint_field$values[[1]]),
+    n_empty_timepoints = sum(timepoint_field$values[["n"]] == 0)
   )
 
   list(overall = overall)
@@ -310,11 +313,11 @@ aggregate_field <- function(data_field,
     show_progress
   )
 
-  # TODO: consider doing this by reference
   # this contains all values present in the original data_field, alongside their timepoint_group
   data_field_dt <-
     data.table::data.table(
-      "timepoint_group" = timepoint_as_timepoint_group(timepoint_field_values,
+      "timepoint_group" = timepoint_as_timepoint_group(
+        timepoint_field_values,
         aggregation_timeunit = aggregation_timeunit
       ),
       "values" = data_field[["values"]][[1]],
@@ -329,12 +332,14 @@ aggregate_field <- function(data_field,
     log_message(paste0("  By ", f), show_progress)
     if (f == "n") {
       # number of values present (including non-conformant ones)
-      grouped_values[data_field_dt[, list("value" = sum(!(is.na(values) &
-        !is.nan(values)))),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = sum(!(is.na(values) & !is.nan(values)))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # for timepoints with no records, set n to 0 (but all other aggregation_functions should show NA)
       grouped_values[is.na(n), "n" := 0]
@@ -343,65 +348,82 @@ aggregate_field <- function(data_field,
       grouped_values[, (f) := NA_real_]
     } else if (f == "missing_n") {
       # number of values missing (excludes non-conformant ones)
-      grouped_values[data_field_dt[, list("value" = sum(is.na(values) &
-        !is.nan(values))),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = sum(is.na(values) & !is.nan(values))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "missing_perc") {
       # percentage of values missing (excludes non-conformant ones) out of number of records
-      grouped_values[data_field_dt[, list("value" = 100 * sum(is.na(values) &
-        !is.nan(values)) / length(values)),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = 100 * sum(is.na(values) & !is.nan(values)) / length(values)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "nonconformant_n") {
       # number of nonconformant values
-      grouped_values[data_field_dt[, list("value" = sum(is.nan(values))),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = sum(is.nan(values))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "nonconformant_perc") {
       # percentage of nonconformant values out of number of records
       # TODO: should the denominator be all rows or only conformant/nonmissing rows?
-      grouped_values[data_field_dt[, list("value" = 100 * sum(is.nan(values)) /
-        length(values)),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = 100 * sum(is.nan(values)) / length(values)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "sum") {
       # sum of values (used to indicate number of duplicate rows removed)
-      grouped_values[data_field_dt[, list("value" = sum(values, na.rm = TRUE)),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = sum(values, na.rm = TRUE)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "nonzero_perc") {
       # percentage of values which are non-zero out of number of values present
       #   (used to indicate percentage of remaining records that were duplicated)
-      grouped_values[data_field_dt[, list("value" = 100 * length(which(values >
-        0)) / length(values[!is.na(values)])),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = 100 * length(which(values > 0)) / length(values[!is.na(values)])),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "distinct") {
       # number of distinct values (excluding NAs)
-      grouped_values[data_field_dt[, list("value" = length(unique(values[!is.na(values)]))),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = length(unique(values[!is.na(values)]))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f %in% c("subcat_n", "subcat_perc")) {
       # create a separate column per category value
@@ -418,21 +440,26 @@ aggregate_field <- function(data_field,
             paste0(f, "_", j, "_", gsub("([[:punct:]])|\\s+", "_", catval))
           if (f == "subcat_n") {
             # number of times this particular category value appears
-            grouped_values[data_field_dt[, list("value" = sum(values == catval, na.rm = TRUE)),
-              by = list(timepoint_group)
-            ],
-            (catname) := value,
-            by = .EACHI
+            grouped_values[
+              data_field_dt[
+                ,
+                list("value" = sum(values == catval, na.rm = TRUE)),
+                by = list(timepoint_group)
+              ],
+              (catname) := value,
+              by = .EACHI
             ]
           } else if (f == "subcat_perc") {
             # percentage this particular category value appears out of number of records
             # include all values in denominator, including NA and NaN
-            grouped_values[data_field_dt[, list("value" = 100 * sum(values == catval, na.rm = TRUE) /
-              length(values)),
-            by = list(timepoint_group)
-            ],
-            (catname) := value,
-            by = .EACHI
+            grouped_values[
+              data_field_dt[
+                ,
+                list("value" = 100 * sum(values == catval, na.rm = TRUE) / length(values)),
+                by = list(timepoint_group)
+              ],
+              (catname) := value,
+              by = .EACHI
             ]
           }
         }
@@ -440,32 +467,40 @@ aggregate_field <- function(data_field,
     } else if (f == "midnight_n") {
       # number of values whose time portion is midnight (used to check for missing time portions)
       # TODO: if n is zero, should this be zero or NA?
-      grouped_values[data_field_dt[, list("value" = sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "midnight_perc") {
       # percentage of values whose time portion is midnight (used to check for missing time portions)
       #   out of number of values present
-      grouped_values[data_field_dt[, list("value" = 100 * sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE) /
-        length(values[!is.na(values)])),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = 100 * sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE) / length(values[!is.na(values)])),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # NOTE: if n is zero, the above returns NaN. Update to NA instead
       grouped_values[is.nan(get(f)), (f) := NA_real_]
     } else if (f == "min") {
       # minimum value, whether numeric or datetime. Excludes NAs
       # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      grouped_values[data_field_dt[, list("value" = suppressWarnings(min(values, na.rm = TRUE))),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = suppressWarnings(min(values, na.rm = TRUE))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # min/max return Inf when all values are NA. Update to NA instead
       grouped_values[is.infinite(get(f)), (f) := NA_real_]
@@ -477,11 +512,14 @@ aggregate_field <- function(data_field,
     } else if (f == "max") {
       # maximum value, whether numeric or datetime. Excludes NAs
       # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      grouped_values[data_field_dt[, list("value" = suppressWarnings(max(values, na.rm = TRUE))),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = suppressWarnings(max(values, na.rm = TRUE))),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # min/max return Inf when all values are NA. Update to NA instead
       grouped_values[is.infinite(get(f)), (f) := NA_real_]
@@ -492,21 +530,27 @@ aggregate_field <- function(data_field,
       }
     } else if (f == "mean") {
       # mean value. Excludes NAs
-      grouped_values[data_field_dt[, list("value" = mean(values, na.rm = TRUE)),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = mean(values, na.rm = TRUE)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # NOTE: mean returns NaN when all values are NA. Update to NA instead
       grouped_values[is.nan(get(f)), (f) := NA_real_]
     } else if (f == "median") {
       # median value. Excludes NAs
-      grouped_values[data_field_dt[, list("value" = stats::median(values, na.rm = TRUE)),
-        by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = stats::median(values, na.rm = TRUE)),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
     } else if (f == "min_length") {
       # minimum character length
@@ -516,7 +560,8 @@ aggregate_field <- function(data_field,
       # returned, data.table doesn't like it (though the error only seems to appear
       # when using the package and not when testing inside the package itself)
       grouped_values[
-        data_field_dt[,
+        data_field_dt[
+          ,
           list("value" = suppressWarnings(as.double(
             min(nchar(as.character(values),
               keepNA = TRUE
@@ -539,14 +584,15 @@ aggregate_field <- function(data_field,
       # returned, data.table doesn't like it (though the error only seems to appear
       # when using the package and not when testing inside the package itself)
       grouped_values[
-        data_field_dt[,
-          list("value" = suppressWarnings(as.double(
-            max(nchar(as.character(values),
+        data_field_dt[
+          ,
+          list("value" = suppressWarnings(
+            as.double(max(nchar(as.character(values),
               keepNA = TRUE
             ),
             na.rm = TRUE
-            )
-          ))),
+            ))
+          )),
           by = list(timepoint_group)
         ],
         (f) := value,
@@ -556,15 +602,16 @@ aggregate_field <- function(data_field,
       grouped_values[is.infinite(get(f)), (f) := NA_real_]
     } else if (f == "mean_length") {
       # mean character length
-      grouped_values[data_field_dt[, list("value" = mean(nchar(as.character(values),
-        keepNA = TRUE
-      ),
-      na.rm = TRUE
-      )),
-      by = list(timepoint_group)
-      ],
-      (f) := value,
-      by = .EACHI
+      grouped_values[
+        data_field_dt[
+          ,
+          list("value" = mean(nchar(as.character(values), keepNA = TRUE),
+            na.rm = TRUE
+          )),
+          by = list(timepoint_group)
+        ],
+        (f) := value,
+        by = .EACHI
       ]
       # NOTE: mean returns NaN when all values are NA. Update to NA instead
       grouped_values[is.nan(get(f)), (f) := NA_real_]
@@ -633,7 +680,8 @@ aggregate_combined_fields <- function(agg_fields,
       if (names(agg_fields[[i]][["values"]])[j] %in% c("n", "missing_n", "nonconformant_n")) {
         f <- names(agg_fields[[i]][["values"]])[j]
         if (f %in% names(grouped_values)) {
-          # If all values are NA then leave as NA, but if any values are not NA then ignore the NAs (per timepoint)
+          # If all values are NA then leave as NA,
+          # but if any values are not NA then ignore the NAs (per timepoint)
           grouped_values[
             ,
             (f) := data.table::fifelse(

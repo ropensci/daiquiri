@@ -35,7 +35,8 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 A string containing the name and path of the saved report
 }
 \description{
-Generate report from previously-created \code{daiquiri_source_data} and \code{daiquiri_aggregated_data} objects
+Generate report from previously-created \code{daiquiri_source_data} and
+\code{daiquiri_aggregated_data} objects
 }
 \examples{
 \donttest{

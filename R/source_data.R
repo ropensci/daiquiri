@@ -4,23 +4,22 @@
 # -----------------------------------------------------------------------------
 #' Prepare source data
 #'
-#' Validate a data frame against a [field_types()] specification, and
-#' prepare for aggregation.
+#' Validate a data frame against a [field_types()] specification, and prepare
+#' for aggregation.
 #'
 #' @param df A data frame
-#' @param field_types [field_types()] object specifying names and types
-#'   of fields (columns) in the supplied `df`. See also
-#'   [field_types_available].
+#' @param field_types [field_types()] object specifying names and types of
+#'   fields (columns) in the supplied `df`. See also [field_types_available].
 #' @param override_column_names If `FALSE`, column names in the supplied `df`
 #'   must match the names specified in `field_types` exactly. If `TRUE`, column
-#'   names in the supplied `df` will be replaced with the names specified in `field_types`.
-#'   The specification must therefore contain the columns in the correct order.
-#'   Default = `FALSE`
+#'   names in the supplied `df` will be replaced with the names specified in
+#'   `field_types`. The specification must therefore contain the columns in the
+#'   correct order. Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
 #'   values, Default = `c("","NA","NULL")`.
-#' @param dataset_description Short description of the dataset being checked. This
-#'   will appear on the report. If blank, the name of the data frame object will
-#'   be used
+#' @param dataset_description Short description of the dataset being checked.
+#'   This will appear on the report. If blank, the name of the data frame object
+#'   will be used
 #' @param show_progress Print progress to console. Default = `TRUE`
 #' @return A `daiquiri_source_data` object
 #' @examples
@@ -132,7 +131,7 @@ prepare_data <- function(df,
   }
 
   # Validate data against specification, store warnings instead of printing them
-  # use readr::type_convert for now.  Ideally want to store original values and describe action taken too
+  # use readr::type_convert for now. Ideally want to store original values and describe action taken too
 
   # ensure all columns are character type because readr::type_convert won't skip numeric columns
   dt_datatypes <- vapply(dt, typeof, character(1))
@@ -143,13 +142,13 @@ prepare_data <- function(df,
       data.table::data.table(
         col_index = which(
           dt_datatypes != "character" &
-            !vapply(field_types, is_field_type_ignore, logical(1))
+            !vapply(field_types, is_ft_ignore, logical(1))
         ),
         row_index = NA,
         message = paste0(
           "Data supplied as ",
           dt_datatypes[which(dt_datatypes != "character" &
-            !vapply(field_types, is_field_type_ignore, logical(1)))],
+            !vapply(field_types, is_ft_ignore, logical(1)))],
           " instead of character, non-conformant values will not be identified"
         )
       )
@@ -210,7 +209,7 @@ prepare_data <- function(df,
   # TODO: should I remove them here or when aggregating?  Summary doesn't look
   # right if remove them here. Rownumbers in warnings no longer matches either
   # TODO: check don't duplicate any messages from above
-  timepoint_index <- which(vapply(field_types, is_field_type_timepoint, logical(1)))
+  timepoint_index <- which(vapply(field_types, is_ft_timepoint, logical(1)))
   timepoint_field_name <- names(timepoint_index)
   if (anyNA(dt[[(timepoint_field_name)]])) {
     na_vector <- is.na(dt[[(timepoint_field_name)]])
@@ -253,7 +252,8 @@ prepare_data <- function(df,
       sort_field_name = timepoint_field_name,
       show_progress = show_progress
     )
-  # find the index row for each duplicate (i.e. the row immediately before any string of dups since we have already sorted the data)...
+  # find the index row for each duplicate
+  # (i.e. the row immediately before any string of dups since we have already sorted the data)...
   duprows_index <- c(duprows_vector[-1], FALSE)
   duprows_index <- duprows_index & !duprows_vector
   # ...and record the no. of duplicates on it
@@ -279,7 +279,7 @@ prepare_data <- function(df,
   for (i in 1:cols_source_n) {
     current_field <- names(field_types[i])
     log_message(paste0("  ", current_field), show_progress)
-    if (is_field_type_ignore(field_types[[i]])) {
+    if (is_ft_ignore(field_types[[i]])) {
       dfs[[i]] <- data_field(as.vector("ignored"), field_types[[i]])
     } else {
       dfs[[i]] <- data_field(
@@ -332,29 +332,29 @@ prepare_data <- function(df,
 # -----------------------------------------------------------------------------
 #' @export
 print.daiquiri_source_data <- function(x, ...) {
-  source_summary <- summarise_source_data(x, show_progress = FALSE)
+  summary <- summarise_source_data(x, show_progress = FALSE)
   cat("Dataset:", x$dataset_description, "\n")
   cat("\n")
   cat("Overall:\n")
-  cat("Columns in source:", source_summary$overall["cols_source_n"], "\n")
-  cat("Columns imported:", source_summary$overall["cols_imported_n"], "\n")
-  cat("Rows in source:", source_summary$overall["rows_source_n"], "\n")
-  cat("Duplicate rows removed:", source_summary$overall["rows_duplicates_n"], "\n")
-  cat("Rows imported:", source_summary$overall["rows_imported_n"], "\n")
-  cat("Column used for timepoint:", source_summary$overall["timepoint_field_name"], "\n")
-  cat("Min timepoint value:", source_summary$overall["timepoint_min"], "\n")
-  cat("Max timepoint value:", source_summary$overall["timepoint_max"], "\n")
-  cat("Rows missing timepoint values removed:", source_summary$overall["timepoint_missing_n"], "\n")
-  cat("Strings interpreted as missing values:", source_summary$overall["na_values"], "\n")
-  cat("Total validation warnings:", sum(source_summary$validation_warnings$instances), "\n")
+  cat("Columns in source:", summary$overall["cols_source_n"], "\n")
+  cat("Columns imported:", summary$overall["cols_imported_n"], "\n")
+  cat("Rows in source:", summary$overall["rows_source_n"], "\n")
+  cat("Duplicate rows removed:", summary$overall["rows_duplicates_n"], "\n")
+  cat("Rows imported:", summary$overall["rows_imported_n"], "\n")
+  cat("Column used for timepoint:", summary$overall["timepoint_field_name"], "\n")
+  cat("Min timepoint value:", summary$overall["timepoint_min"], "\n")
+  cat("Max timepoint value:", summary$overall["timepoint_max"], "\n")
+  cat("Rows missing timepoint values removed:", summary$overall["timepoint_missing_n"], "\n")
+  cat("Strings interpreted as missing values:", summary$overall["na_values"], "\n")
+  cat("Total validation warnings:", sum(summary$validation_warnings$instances), "\n")
   cat("\n")
   cat("Datafields:\n")
-  print(source_summary$data_fields)
+  print(summary$data_fields)
   cat("\n")
   cat("Validation warnings:\n")
   cat("\n")
-  if (nrow(source_summary$validation_warnings) > 0) {
-    print(source_summary$validation_warnings)
+  if (nrow(summary$validation_warnings) > 0) {
+    print(summary$validation_warnings)
   } else {
     cat("None")
   }
@@ -381,13 +381,16 @@ is_source_data <- function(x) inherits(x, "daiquiri_source_data")
 #'   data_field, 3. any validation warnings
 #' @noRd
 # TODO: consider making this a generic summary() method instead.
-#       Help file says summary() is for models but there are a bunch of other objects implementing it too
+# Help file says summary() is for models but there are a bunch of other objects implementing it too
 # TODO: Consider adding a warning if a categorical field has "too many" different values
 summarise_source_data <- function(source_data, show_progress = TRUE) {
   log_function_start(match.call()[[1]])
   log_message(paste0("Creating summary of source data..."), show_progress)
 
+  timepoint_field <- source_data$data_fields[[source_data$timepoint_field_name]]
+
   log_message(paste0("  For overall dataset..."), show_progress)
+
   overall <- c(
     cols_source_n = format(source_data$cols_source_n),
     cols_imported_n = format(source_data$cols_imported_n),
@@ -395,30 +398,33 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
     rows_duplicates_n = format(source_data$rows_duplicates_n),
     rows_imported_n = format(source_data$rows_imported_n),
     timepoint_field_name = source_data$timepoint_field_name,
-    timepoint_min = format(data_field_min(source_data$data_fields[[source_data$timepoint_field_name]])),
-    timepoint_max = format(data_field_max(source_data$data_fields[[source_data$timepoint_field_name]])),
+    timepoint_min = format(data_field_min(timepoint_field)),
+    timepoint_max = format(data_field_max(timepoint_field)),
     timepoint_missing_n = format(source_data$timepoint_missing_n),
     na_values = paste(dQuote(source_data$na_values, q = FALSE), collapse = ",")
   )
 
   log_message(paste0("  For each column in dataset..."), show_progress)
+  # Exclude calculated fields
+  imported_fields <- source_data$data_fields[1:source_data$cols_source_n]
+
   data_fields <-
     data.frame(
-      field_name = format(names(source_data$data_fields[1:source_data$cols_source_n])),
+      field_name = format(names(imported_fields)),
       field_type = format(vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         data_field_type, character(1)
       )),
       datatype = format(vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         data_field_basetype, character(1)
       )),
       count = format(vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         data_field_count, integer(1)
       )),
       missing = format(vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         function(x) {
           gdm <- data_field_missing(x)
           if (is.na(gdm$frequency)) {
@@ -430,17 +436,17 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
         character(1)
       )),
       min = vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         function(x) format(data_field_min(x)),
         character(1)
       ),
       max = vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         function(x) format(data_field_max(x)),
         character(1)
       ),
       validation_warnings = format(vapply(
-        source_data$data_fields[1:source_data$cols_source_n],
+        imported_fields,
         data_field_validation_warnings_n, integer(1)
       )),
       stringsAsFactors = FALSE,
@@ -452,8 +458,13 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
 
   log_function_end(match.call()[[1]])
 
-  list(overall = overall, data_fields = data_fields, validation_warnings = validation_warnings)
+  list(
+    overall = overall,
+    data_fields = data_fields,
+    validation_warnings = validation_warnings
+  )
 }
+
 
 # -----------------------------------------------------------------------------
 #' Constructor for individual data_fields within source_data object
@@ -464,7 +475,8 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
 #'   warnings
 #' @noRd
 #' @return A `data_field` object
-# TODO: not sure if better to store the entire field_type or just its name or even as a separate list in the source_data
+# TODO: not sure if better to store the entire field_type
+# or just its name or even as a separate list in the source_data
 data_field <- function(x, field_type, validation_warnings = NULL) {
   structure(
     list(
@@ -507,7 +519,7 @@ data_field_type <- function(data_field) {
 #' @return vector of data values
 #' @noRd
 data_field_vector <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type)) {
+  if (is_ft_ignore(data_field$field_type)) {
     NA
   } else {
     data_field$values[[1]]
@@ -520,7 +532,7 @@ data_field_vector <- function(data_field) {
 #' @return string denoting storage type
 #' @noRd
 data_field_basetype <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type)) {
+  if (is_ft_ignore(data_field$field_type)) {
     NA_character_
   } else {
     typeof(data_field$values[[1]])
@@ -533,11 +545,11 @@ data_field_basetype <- function(data_field) {
 #' @return minimum data value, excluding NAs
 #' @noRd
 data_field_min <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type) ||
-    all(is.na(data_field$values[[1]]))) {
+  data_vals <- data_field$values[[1]]
+  if (is_ft_ignore(data_field$field_type) || all(is.na(data_vals))) {
     NA_real_
   } else {
-    min(data_field$values[[1]], na.rm = TRUE)
+    min(data_vals, na.rm = TRUE)
   }
 }
 
@@ -547,8 +559,8 @@ data_field_min <- function(data_field) {
 #' @return maximum data value, excluding NAs
 #' @noRd
 data_field_max <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type) ||
-    all(is.na(data_field$values[[1]]))) {
+  data_vals <- data_field$values[[1]]
+  if (is_ft_ignore(data_field$field_type) || all(is.na(data_field$values[[1]]))) {
     NA_real_
   } else {
     max(data_field$values[[1]], na.rm = TRUE)
@@ -561,12 +573,13 @@ data_field_max <- function(data_field) {
 #' @return numeric list of 1. frequency, 2. percentage
 #' @noRd
 data_field_missing <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type)) {
+  if (is_ft_ignore(data_field$field_type)) {
     list("frequency" = NA_integer_, "percentage" = NA_real_)
   } else {
+    data_vals <- data_field$values[[1]]
     list(
-      "frequency" = sum(is.na(data_field$values[[1]])),
-      "percentage" = 100 * sum(is.na(data_field$values[[1]])) / length(data_field$values[[1]])
+      "frequency" = sum(is.na(data_vals)),
+      "percentage" = 100 * sum(is.na(data_vals)) / length(data_vals)
     )
   }
 }
@@ -577,8 +590,7 @@ data_field_missing <- function(data_field) {
 #' @return number of validation warnings
 #' @noRd
 data_field_validation_warnings_n <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type) ||
-    is_field_type_calculated(data_field$field_type)) {
+  if (is_ft_ignore(data_field$field_type) || is_ft_calculated(data_field$field_type)) {
     NA_integer_
   } else {
     nrow(data_field$validation_warnings)
@@ -591,11 +603,12 @@ data_field_validation_warnings_n <- function(data_field) {
 #' @return number of non-missing values
 #' @noRd
 data_field_count <- function(data_field) {
-  if (is_field_type_ignore(data_field$field_type) ||
-    all(is.na(data_field$values[[1]]))) {
+  data_vals <- data_field$values[[1]]
+
+  if (is_ft_ignore(data_field$field_type) || all(is.na(data_vals))) {
     NA_integer_
   } else {
-    sum(!is.na(data_field$values[[1]]))
+    sum(!is.na(data_vals))
   }
 }
 

@@ -3,7 +3,8 @@
 # -----------------------------------------------------------------------------
 #' Generate report from existing objects
 #'
-#' Generate report from previously-created `daiquiri_source_data` and `daiquiri_aggregated_data` objects
+#' Generate report from previously-created `daiquiri_source_data` and
+#' `daiquiri_aggregated_data` objects
 #'
 #' @param source_data A `daiquiri_source_data` object returned from
 #'   [prepare_data()] function
@@ -102,7 +103,10 @@ report_data <- function(source_data,
       ),
       output_file = paste0(save_filename, ".html"),
       output_dir = save_directory,
-      params = list(source_data = source_data, aggregated_data = aggregated_data),
+      params = list(
+        source_data = source_data,
+        aggregated_data = aggregated_data
+      ),
       quiet = !show_progress
     )
   } else {
@@ -124,7 +128,8 @@ report_data <- function(source_data,
 #' Create a scatter plot for an individual time series
 #'
 #' @param agg_field aggregated_field object
-#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
 #' @return ggplot
 #' @noRd
 plot_timeseries_static <- function(agg_field,
@@ -183,7 +188,8 @@ plot_timeseries_static <- function(agg_field,
 #' Create a filled line plot to show overall numbers per timepoint
 #'
 #' @param agg_field aggregated_field object
-#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
 #' @param fill_colour colour to use below the line
 #' @param title optional title for the plot
 #' @return ggplot
@@ -230,7 +236,11 @@ plot_overview_totals_static <- function(agg_field,
       # use ribbon instead of area so that NAs don't get interpolated
       ggplot2::geom_ribbon(
         data = data[!is.na(get(agg_fun)), ymin := 0],
-        ggplot2::aes_string(x = timepoint_aggcol_name, ymin = "ymin", ymax = agg_fun),
+        ggplot2::aes_string(
+          x = timepoint_aggcol_name,
+          ymin = "ymin",
+          ymax = agg_fun
+        ),
         fill = fill_colour,
         alpha = 0.5
       )
@@ -251,7 +261,8 @@ plot_overview_totals_static <- function(agg_field,
 #' Create a heatmap showing a particular agg_fun value across all fields
 #'
 #' @param agg_fields all aggregated_fields object
-#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
 #' @param fill_colour colour to use for the tiles
 #' @return ggplot
 #' @noRd
@@ -350,7 +361,8 @@ plot_overview_heatmap_static <- function(agg_fields,
 #' aggregation function
 #'
 #' @param agg_fields all aggregated_fields to be included
-#' @param agg_fun which aggregation function to plot (from agg_field column_name)
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
 #' @param lineplot_field_name which aggregated_field to use for the lineplot
 #' @param lineplot_fill_colour colour to use below the line
 #' @param heatmap_fill_colour colour to use for the tiles
@@ -391,7 +403,8 @@ plot_overview_combo_static <- function(agg_fields,
 # -----------------------------------------------------------------------------
 #' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
-#' @param agg_fun aggregation function being plotted (from agg_field column_name)
+#' @param agg_fun aggregation function being plotted (from agg_field
+#'   column_name)
 #' @param max_val maximum data value
 #' @param min_val minimum data value
 #' @param field_type field_type object
@@ -417,7 +430,7 @@ yscale_breaks <- function(agg_fun,
     # percentage agg_funs should always be shown on a range of 0-100
     breaks <- seq(0, 100, by = 10)
   } else {
-    if (is_field_type_datetime(field_type)) {
+    if (is_ft_datetime(field_type)) {
       # dates should be left to base
       breaks <- pretty(c(min_val, max_val))
     } else {

@@ -43,7 +43,9 @@ Report created on: `r Sys.time()`; Package version `r utils::packageVersion(util
 
 
 ```{r source_data}
-sourcesummary <- summarise_source_data(params$source_data, show_progress = FALSE)
+sourcesummary <- summarise_source_data(params$source_data,
+  show_progress = FALSE
+)
 source_data_fields <- sourcesummary$data_fields
 source_data_fields$ordinal_position <- seq.int(nrow(source_data_fields))
 ```
@@ -54,7 +56,9 @@ source_data_fields$ordinal_position <- seq.int(nrow(source_data_fields))
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
-  source_data_fields[which(trimws(sourcesummary$data_fields$field_type) != "ignore"), ],
+  source_data_fields[
+    which(trimws(sourcesummary$data_fields$field_type) != "ignore"),
+  ],
   sortable = TRUE,
   filterable = FALSE,
   searchable = FALSE,
