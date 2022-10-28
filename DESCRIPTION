@@ -8,7 +8,6 @@ Authors@R: c(
     person("Jack", "Cregan", role = "ctb"),
     person(family = "University of Oxford", role = "cph"),
     person(family = "National Institute for Health Research (NIHR)", role = "fnd"),
-    person("Mauro", "Lepore", role = "rev"),
     person("Brad", "Cannell", role = "rev")
     )
 Description: Generate reports that enable quick visual review of 
