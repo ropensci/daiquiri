@@ -343,7 +343,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("dataset_description")) {
+    } else if (params_names[i] %in% c("dataset_description", "report_title")) {
       if (!is.null(params_passed[[i]]) &&
         (!is.character(params_passed[[i]]) ||
           length(params_passed[[i]]) != 1)) {
@@ -442,6 +442,7 @@ testfn_params_type <- function(df,
                                na = c("", "NA", "NULL"),
                                dataset_description = "shortdesc",
                                aggregation_timeunit = "day",
+                               report_title = "title",
                                save_directory = ".",
                                save_filename = "filename",
                                show_progress = TRUE,
@@ -472,6 +473,7 @@ testfn_params_type <- function(df,
     na = na,
     dataset_description = dataset_description,
     aggregation_timeunit = aggregation_timeunit,
+    report_title = report_title,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,

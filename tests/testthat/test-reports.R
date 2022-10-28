@@ -79,6 +79,7 @@ test_that("report_data() creates report and returns path successfully", {
     report_data(
       testsource_data,
       testaggregated_data,
+      report_title = "Complete Test Set",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
       show_progress = FALSE

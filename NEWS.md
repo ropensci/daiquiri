@@ -18,9 +18,11 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 * Fixed error when user passes in a data.table (to `create_report()` or `prepare_data()`) that contains non-character columns.
 
+* `create_report()` and `report_data()` accept a new parameter `report_title`.
+
 * `close_log()` now returns the path to the closed log file (if any).
 
-* `example_prescriptions` replaces `example_dataset` as the example dataset supplied with the package 
+* `example_prescriptions` replaces `example_dataset` as the example dataset supplied with the package.
 
 # daiquiri 0.7.0 (2022-04-20)
 

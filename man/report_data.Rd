@@ -7,6 +7,7 @@
 report_data(
   source_data,
   aggregated_data,
+  report_title = "daiquiri data quality report",
   save_directory = ".",
   save_filename = NULL,
   format = "html",
@@ -19,6 +20,8 @@ report_data(
 
 \item{aggregated_data}{A \code{daiquiri_aggregated_data} object returned from
 \code{\link[=aggregate_data]{aggregate_data()}} function}
+
+\item{report_title}{Title to appear on the report}
 
 \item{save_directory}{String specifying directory in which to save the
 report. Default is current directory.}
@@ -77,6 +80,7 @@ aggregated_data <- aggregate_data(
 report_data(
   source_data,
   aggregated_data,
+  report_title = "daiquiri data quality report",
   save_directory = ".",
   save_filename = "example_data_report",
   show_progress = TRUE

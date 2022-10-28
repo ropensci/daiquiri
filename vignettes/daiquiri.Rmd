@@ -135,6 +135,7 @@ daiq_obj <- create_report(
   na = c("", "NULL"),
   dataset_description = "Example prescription data",
   aggregation_timeunit = "day",
+  report_title =  "daiquiri data quality report",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
   show_progress = FALSE,
@@ -153,6 +154,7 @@ daiq_obj <- create_report(
   na = c("", "NULL"),
   dataset_description = "Example prescription data",
   aggregation_timeunit = "day",
+  report_title =  "daiquiri data quality report",
   save_directory = ".",
   save_filename = "example_prescriptions_report",
   show_progress = TRUE,
@@ -210,6 +212,7 @@ prescriptions_byweek <- aggregate_data(
 report_data(
   source_data = prescriptions_source_data,
   aggregated_data = prescriptions_byday,
+  report_title =  "Daily prescriptions",
   save_directory = ".",
   save_filename = "example_prescriptions_byday"
 )
@@ -217,6 +220,7 @@ report_data(
 report_data(
   source_data = prescriptions_source_data,
   aggregated_data = prescriptions_byweek,
+  report_title =  "Weekly prescriptions",
   save_directory = ".",
   save_filename = "example_prescriptions_byweek"
 )

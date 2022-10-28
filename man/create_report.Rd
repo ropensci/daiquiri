@@ -11,6 +11,7 @@ create_report(
   na = c("", "NA", "NULL"),
   dataset_description = NULL,
   aggregation_timeunit = "day",
+  report_title = "daiquiri data quality report",
   save_directory = ".",
   save_filename = NULL,
   show_progress = TRUE,
@@ -40,6 +41,8 @@ will be used}
 \item{aggregation_timeunit}{Unit of time to aggregate over. Specify one of
 \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"}, \code{"year"}. The \code{"week"} option is
 Monday-based. Default = \code{"day"}}
+
+\item{report_title}{Title to appear on the report}
 
 \item{save_directory}{String specifying directory in which to save the
 report. Default is current directory.}
@@ -98,6 +101,7 @@ daiq_obj <- create_report(
   na = c("", "NULL"),
   dataset_description = "Example data provided with package",
   aggregation_timeunit = "day",
+  report_title = "daiquiri data quality report",
   save_directory = ".",
   save_filename = "example_data_report",
   show_progress = TRUE,

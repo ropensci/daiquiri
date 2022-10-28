@@ -10,6 +10,7 @@
 #'   [prepare_data()] function
 #' @param aggregated_data A `daiquiri_aggregated_data` object returned from
 #'   [aggregate_data()] function
+#' @param report_title Title to appear on the report
 #' @param save_directory String specifying directory in which to save the
 #'   report. Default is current directory.
 #' @param save_filename String specifying filename for the report, excluding any
@@ -57,6 +58,7 @@
 #' report_data(
 #'   source_data,
 #'   aggregated_data,
+#'   report_title = "daiquiri data quality report",
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
 #'   show_progress = TRUE
@@ -69,6 +71,7 @@
 #' @export
 report_data <- function(source_data,
                         aggregated_data,
+                        report_title = "daiquiri data quality report",
                         save_directory = ".",
                         save_filename = NULL,
                         format = "html",
@@ -79,6 +82,7 @@ report_data <- function(source_data,
   validate_params_type(match.call(),
     source_data = source_data,
     aggregated_data = aggregated_data,
+    report_title = report_title,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,
@@ -105,7 +109,8 @@ report_data <- function(source_data,
       output_dir = save_directory,
       params = list(
         source_data = source_data,
-        aggregated_data = aggregated_data
+        aggregated_data = aggregated_data,
+        report_title = report_title
       ),
       quiet = !show_progress
     )

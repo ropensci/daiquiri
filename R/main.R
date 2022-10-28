@@ -15,6 +15,7 @@
 #'   correct order. Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
 #'   values, Default = `c("","NA","NULL")`.
+#' @param report_title Title to appear on the report
 #' @param dataset_description Short description of the dataset being checked.
 #'   This will appear on the report. If blank, the name of the data frame object
 #'   will be used
@@ -64,6 +65,7 @@
 #'   na = c("", "NULL"),
 #'   dataset_description = "Example data provided with package",
 #'   aggregation_timeunit = "day",
+#'   report_title = "daiquiri data quality report",
 #'   save_directory = ".",
 #'   save_filename = "example_data_report",
 #'   show_progress = TRUE,
@@ -81,6 +83,7 @@ create_report <- function(df,
                           na = c("", "NA", "NULL"),
                           dataset_description = NULL,
                           aggregation_timeunit = "day",
+                          report_title = "daiquiri data quality report",
                           save_directory = ".",
                           save_filename = NULL,
                           show_progress = TRUE,
@@ -106,6 +109,7 @@ create_report <- function(df,
     na = na,
     dataset_description = dataset_description,
     aggregation_timeunit = aggregation_timeunit,
+    report_title = report_title,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,
@@ -132,6 +136,7 @@ create_report <- function(df,
     report_data(
       source_data,
       aggregated_data,
+      report_title = report_title,
       save_directory = save_directory,
       save_filename = save_filename,
       show_progress = show_progress

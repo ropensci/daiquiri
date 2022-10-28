@@ -63,6 +63,17 @@ test_that("validate_params_type() checks dataset_description params are of corre
   )
 })
 
+test_that("validate_params_type() checks report_title params are of correct type", {
+  expect_silent(testfn_params_type(report_title = ""))
+  expect_silent(testfn_params_type(report_title = NULL))
+  expect_error(testfn_params_type(report_title = 123),
+               class = "invalid_param_type"
+  )
+  expect_error(testfn_params_type(report_title = c("col1", "col2")),
+               class = "invalid_param_type"
+  )
+})
+
 test_that("validate_params_type() checks aggregation_timeunit params are one of day/week/month/quarter/year", {
   expect_silent(testfn_params_type(aggregation_timeunit = "day"))
   expect_silent(testfn_params_type(aggregation_timeunit = "week"))

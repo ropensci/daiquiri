@@ -25,7 +25,6 @@ Other contributors:
   \item Jack Cregan [contributor]
   \item  University of Oxford [copyright holder]
   \item  National Institute for Health Research (NIHR) [funder]
-  \item Mauro Lepore [reviewer]
   \item Brad Cannell [reviewer]
 }
 

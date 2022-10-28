@@ -95,6 +95,7 @@ test_that("create_report() creates report and returns daiquiri object successful
     ),
     dataset_description = "completetestset",
     aggregation_timeunit = "week",
+    report_title = "Complete Test Set",
     save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
     log_directory = tempdir(),
