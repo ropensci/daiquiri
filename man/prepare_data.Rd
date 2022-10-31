@@ -72,5 +72,5 @@ source_data
 \seealso{
 \code{\link[=field_types]{field_types()}}, \code{\link[=field_types_available]{field_types_available()}},
 \code{\link[=aggregate_data]{aggregate_data()}}, \code{\link[=report_data]{report_data()}},
-\code{\link[=create_report]{create_report()}}
+\code{\link[=daiquiri_report]{daiquiri_report()}}
 }

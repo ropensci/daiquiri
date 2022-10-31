@@ -51,7 +51,7 @@
 #' source_data
 #' @seealso [field_types()], [field_types_available()],
 #'   [aggregate_data()], [report_data()],
-#'   [create_report()]
+#'   [daiquiri_report()]
 #' @export
 #' @importFrom data.table .N .SD
 prepare_data <- function(df,
@@ -77,9 +77,9 @@ prepare_data <- function(df,
 
   # use dataset_description if present, otherwise get from call
   if (is.null(dataset_description)) {
-    # look for create_report() in the call stack and if present, use the latest one
+    # look for daiquiri_report() in the call stack and if present, use the latest one
     # can't just use sys.function(-1) as that doesn't work inside testthat
-    matched_calls <- grep("create_report", as.character(sys.calls()))
+    matched_calls <- grep("daiquiri_report", as.character(sys.calls()))
     if (length(matched_calls) > 0) {
       dataset_description <-
         as.character(enquote(

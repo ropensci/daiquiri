@@ -117,7 +117,7 @@ fts <- field_types(
 
 ``` r
 # create a report in the current directory
-daiq_obj <- create_report(
+daiq_obj <- daiquiri_report(
   raw_data,
   field_types = fts
 )

@@ -20,7 +20,7 @@ specification}
 Helper function to generate template code for a \code{\link[=field_types]{field_types()}} specification,
 based on the supplied data frame. All fields (columns) in the specification
 will be defined using the \code{default_field_type}, and the console output can be
-copied and edited before being used as input to \url{create_report()}
+copied and edited before being used as input to \url{daiquiri_report()}
 or \url{prepare_data()}.
 }
 \examples{

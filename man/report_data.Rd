@@ -95,5 +95,5 @@ report_data(
 }
 \seealso{
 \code{\link[=prepare_data]{prepare_data()}}, \code{\link[=aggregate_data]{aggregate_data()}},
-\code{\link[=create_report]{create_report()}}
+\code{\link[=daiquiri_report]{daiquiri_report()}}
 }

@@ -112,7 +112,7 @@ TIP: If you have a lot of columns in your dataset you can use the `print_field_t
 
 ## Generating a data quality report
 
-The simplest way to create a data quality report is to use the `create_report()` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `daiquiri_source_data` and `daiquiri_aggregated_data` objects, which can be reused to create further reports without needing to run everything all over again.
+The simplest way to create a data quality report is to use the `daiquiri_report()` function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting `daiquiri_source_data` and `daiquiri_aggregated_data` objects, which can be reused to create further reports without needing to run everything all over again.
 
 At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.
 
@@ -128,7 +128,7 @@ For the `example_prescriptions` dataset above, we will set the aggregation granu
 
 ```{r, include=FALSE}
 # quietly check can create the report but show the code in the next chunk in the vignette
-daiq_obj <- create_report(
+daiq_obj <- daiquiri_report(
   df = example_prescriptions,
   field_types = fts,
   override_column_names = FALSE,
@@ -147,7 +147,7 @@ file.remove("./example_prescriptions_report.html")
 ```
 
 ```{r, eval=FALSE}
-daiq_obj <- create_report(
+daiq_obj <- daiquiri_report(
   df = example_prescriptions,
   field_types = fts,
   override_column_names = FALSE,
@@ -186,7 +186,7 @@ This contains two levels of child tabs. The first level consists of one tab per 
 
 ## Advanced usage details
 
-The simplest way to use this package is to use the `create_report()` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `field_types()` specification then the data will need to be re-loaded.
+The simplest way to use this package is to use the `daiquiri_report()` function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the `field_types()` specification then the data will need to be re-loaded.
 
 ```{r, eval=FALSE}
 # load your dataset into a source_data object

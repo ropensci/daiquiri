@@ -4,9 +4,11 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 ## Breaking changes
 
+* `daiquiri_report()` replaces `create_report()` and some parameters have been renamed.
+
 * `field_types()` replaces `fieldtypes()`.
 
-* `create_report()`, `prepare_data()`, `aggregate_data()`, and `report_data()` parameters have been renamed.
+* `prepare_data()`, `aggregate_data()`, and `report_data()` parameters have been renamed.
 
 * `initialise_log()` replaces `log_initialise()`.
 
@@ -16,9 +18,9 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 ## Bug fixes and minor improvements
 
-* Fixed error when user passes in a data.table (to `create_report()` or `prepare_data()`) that contains non-character columns.
+* Fixed error when user passes in a data.table (to `daiquiri_report()` or `prepare_data()`) that contains non-character columns.
 
-* `create_report()` and `report_data()` accept a new parameter `report_title`.
+* `daiquiri_report` (formerly `create_report()`) and `report_data()` accept a new parameter `report_title`.
 
 * `report_data()` now accepts `...` parameter to be passed through to `rmarkdown::render()`.
 

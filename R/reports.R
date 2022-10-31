@@ -69,7 +69,7 @@
 #' }
 #'
 #' @seealso [prepare_data()], [aggregate_data()],
-#'   [create_report()]
+#'   [daiquiri_report()]
 #' @export
 report_data <- function(source_data,
                         aggregated_data,

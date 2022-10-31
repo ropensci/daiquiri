@@ -32,20 +32,20 @@ test_that("read_data() raises a warning when there are parsing issues", {
   )
 })
 
-test_that("create_report() requires a df param", {
-  expect_error(create_report(field_types = field_types(Col_tp = ft_timepoint())),
+test_that("daiquiri_report() requires a df param", {
+  expect_error(daiquiri_report(field_types = field_types(Col_tp = ft_timepoint())),
     class = "invalid_param_missing"
   )
 })
 
-test_that("create_report() requires a field_types param", {
-  expect_error(create_report(df = data.frame("Fieldname" = 123)),
+test_that("daiquiri_report() requires a field_types param", {
+  expect_error(daiquiri_report(df = data.frame("Fieldname" = 123)),
     class = "invalid_param_missing"
   )
 })
 
-test_that("create_report() requires df param to be a data frame", {
-  expect_error(create_report(
+test_that("daiquiri_report() requires df param to be a data frame", {
+  expect_error(daiquiri_report(
     df = c("Fieldname", 123),
     field_types = field_types(Col_tp = ft_timepoint())
   ),
@@ -53,8 +53,8 @@ test_that("create_report() requires df param to be a data frame", {
   )
 })
 
-test_that("create_report() requires field_types param to be a field_types object", {
-  expect_error(create_report(
+test_that("daiquiri_report() requires field_types param to be a field_types object", {
+  expect_error(daiquiri_report(
     df = data.frame("Fieldname" = 123),
     field_types = TRUE
   ),
@@ -63,9 +63,9 @@ test_that("create_report() requires field_types param to be a field_types object
 })
 
 
-test_that("create_report() creates report and returns daiquiri object successfully", {
+test_that("daiquiri_report() creates report and returns daiquiri object successfully", {
   testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testdaiq_obj <- create_report(
+  testdaiq_obj <- daiquiri_report(
     testdf,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
@@ -118,9 +118,9 @@ test_that("create_report() creates report and returns daiquiri object successful
 })
 
 
-test_that("create_report() works even when column_names contain special chars", {
+test_that("daiquiri_report() works even when column_names contain special chars", {
   testdaiq_obj <-
-    create_report(
+    daiquiri_report(
       df = read_data(test_path("testdata", "specialchars_colnames.csv")),
       field_types = field_types(
         "col_underscore" = ft_ignore(),
@@ -146,14 +146,14 @@ test_that("create_report() works even when column_names contain special chars", 
 })
 
 
-test_that("create_report() gets dataset_description from call if NULL (default) passed in", {
+test_that("daiquiri_report() gets dataset_description from call if NULL (default) passed in", {
   dfobj <-
     data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
       col3 = 1:5
     )
-  testdaiq_obj <- create_report(
+  testdaiq_obj <- daiquiri_report(
     df = dfobj,
     field_types = field_types(
       col1 = ft_timepoint(),
@@ -170,7 +170,7 @@ test_that("create_report() gets dataset_description from call if NULL (default) 
   expect_true(file.remove(testdaiq_obj$report_filename))
 
   testdaiq_obj <-
-    create_report(
+    daiquiri_report(
       df = data.frame(
         col1 = rep("2022-01-01", 5),
         col2 = rep(1, 5),
@@ -198,7 +198,7 @@ test_that("create_report() gets dataset_description from call if NULL (default) 
 
 test_that("daiquiri_object prints to console ok", {
   testdaiq_obj <-
-    create_report(
+    daiquiri_report(
       df = data.frame(
         col1 = rep("2022-01-01", 5),
         col2 = rep(1, 5),

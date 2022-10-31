@@ -49,7 +49,7 @@
 #' )
 #'
 #' # create a report in the current directory
-#' daiq_obj <- create_report(
+#' daiq_obj <- daiquiri_report(
 #'   raw_data,
 #'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
@@ -77,7 +77,7 @@
 #' @seealso [read_data()], [field_types()],
 #'   [field_types_available()]
 #' @export
-create_report <- function(df,
+daiquiri_report <- function(df,
                           field_types,
                           override_column_names = FALSE,
                           na = c("", "NA", "NULL"),
@@ -235,7 +235,7 @@ print.daiquiri_object <- function(x, ...) {
 #' head(raw_data)
 #' @seealso [field_types()], [field_types_available()],
 #'   [aggregate_data()], [report_data()],
-#'   [create_report()]
+#'   [daiquiri_report()]
 #' @export
 read_data <- function(file,
                       delim = NULL,
