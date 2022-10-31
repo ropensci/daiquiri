@@ -125,6 +125,8 @@ validate_params_required <- function(call) {
   # get the required arguments from function definition
   params_defined <- formals(as.character(call[[1]]))
   params_required <- names(which(vapply(params_defined, is.symbol, logical(1))))
+  # exclude ... param
+  params_required <- params_required[which(params_required != "...")]
   # get the arguments passed into the parent call
   params_passed <- names(as.list(call)[-1])
 
@@ -156,6 +158,8 @@ validate_params_required <- function(call) {
 #' @noRd
 validate_params_type <- function(call, ...) {
   params_defined <- names(formals(as.character(call[[1]])))
+  # exclude ... param
+  params_defined <- params_defined[which(params_defined != "...")]
   params_passed <- list(...)
   params_names <- names(params_passed)
 
@@ -424,8 +428,9 @@ stop_custom <- function(.subclass, message, call = NULL, ...) {
 #' @param p1 required param
 #' @param p2 required param
 #' @param p3 optional param
+#' @param ... optional param
 #' @noRd
-testfn_params_required <- function(p1, p2, p3 = NULL) {
+testfn_params_required <- function(p1, p2, p3 = NULL, ...) {
   validate_params_required(match.call())
 }
 

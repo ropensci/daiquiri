@@ -20,6 +20,8 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 * `create_report()` and `report_data()` accept a new parameter `report_title`.
 
+* `report_data()` now accepts `...` parameter to be passed through to `rmarkdown::render()`.
+
 * `close_log()` now returns the path to the closed log file (if any).
 
 * `example_prescriptions` replaces `example_dataset` as the example dataset supplied with the package.

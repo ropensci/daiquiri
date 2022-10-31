@@ -20,6 +20,10 @@ test_that("validate_params_required() checks returns an error if any required pa
   )
 })
 
+test_that("validate_params_required() allows arbitrary additional params to be supplied via ...", {
+  expect_silent(testfn_params_required(p2 = 1, p1 = 2, passthrough = 1))
+})
+
 
 test_that("validate_params_type() is silent if all params are of correct type", {
   # NOTE: testfn_params_type() defined in utilities.R as devtools::test() can't find it when it's defined here

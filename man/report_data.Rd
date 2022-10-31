@@ -11,7 +11,8 @@ report_data(
   save_directory = ".",
   save_filename = NULL,
   format = "html",
-  show_progress = TRUE
+  show_progress = TRUE,
+  ...
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 \item{format}{File format of the report. Currently only \code{"html"} is supported}
 
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
+
+\item{...}{Further parameters to be passed to \code{rmarkdown::render()}. Cannot
+include any of \code{input}, \code{output_dir}, \code{output_file}, \code{params}, \code{quiet}.}
 }
 \value{
 A string containing the name and path of the saved report

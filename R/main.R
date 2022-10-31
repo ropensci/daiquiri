@@ -202,7 +202,10 @@ print.daiquiri_object <- function(x, ...) {
 #' non-conformant values. Use this function instead to ensure optimal
 #' compatibility with daiquiri's features.
 #'
-#' Operates as a restricted implementation of [readr::read_delim()].
+#' This function is aimed at non-expert users of R, and operates as a restricted
+#' implementation of [readr::read_delim()]. If you prefer to use `read_delim()`
+#' directly, ensure you set the following parameters: `col_types =
+#' readr::cols(.default = "c")` and `na = character()`
 #'
 #' @param file A string containing path of file containing data to load, or a
 #'   URL starting `http://`, `file://`, etc. Compressed files with extension

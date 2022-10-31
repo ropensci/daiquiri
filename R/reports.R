@@ -18,6 +18,8 @@
 #'   generated with the format `daiquiri_report_YYMMDD_HHMMSS`.
 #' @param format File format of the report. Currently only `"html"` is supported
 #' @param show_progress Print progress to console. Default = `TRUE`
+#' @param ... Further parameters to be passed to `rmarkdown::render()`. Cannot
+#'   include any of `input`, `output_dir`, `output_file`, `params`, `quiet`.
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' \donttest{
@@ -75,7 +77,8 @@ report_data <- function(source_data,
                         save_directory = ".",
                         save_filename = NULL,
                         format = "html",
-                        show_progress = TRUE) {
+                        show_progress = TRUE,
+                        ...) {
   log_function_start(match.call()[[1]])
 
   validate_params_required(match.call())
@@ -112,7 +115,8 @@ report_data <- function(source_data,
         aggregated_data = aggregated_data,
         report_title = report_title
       ),
-      quiet = !show_progress
+      quiet = !show_progress,
+      ...
     )
   } else {
     stop(paste(

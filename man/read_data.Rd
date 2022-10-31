@@ -54,7 +54,9 @@ non-conformant values. Use this function instead to ensure optimal
 compatibility with daiquiri's features.
 }
 \details{
-Operates as a restricted implementation of \code{\link[readr:read_delim]{readr::read_delim()}}.
+This function is aimed at non-expert users of R, and operates as a restricted
+implementation of \code{\link[readr:read_delim]{readr::read_delim()}}. If you prefer to use \code{read_delim()}
+directly, ensure you set the following parameters: \code{col_types = readr::cols(.default = "c")} and \code{na = character()}
 }
 \examples{
 raw_data <- read_data(
