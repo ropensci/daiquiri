@@ -18,11 +18,12 @@ test_that("validate_column_names() checks that column names in data and field_ty
     check_length_only = TRUE
   ))
 
-  expect_error(validate_column_names(c("nonsense", "set", "of"),
-    c("nonsense", "set"),
-    check_length_only = TRUE
-  ),
-  class = "invalid_column_names"
+  expect_error(
+    validate_column_names(c("nonsense", "set", "of"),
+      c("nonsense", "set"),
+      check_length_only = TRUE
+    ),
+    class = "invalid_column_names"
   )
 })
 
@@ -38,22 +39,24 @@ test_that("validate_column_names() checks that duplicate column names in data no
 })
 
 test_that("validate_column_names() checks that column names in data but not in field_types is not allowed", {
-  expect_error(validate_column_names(
-    c("nonsense", "set", "of", "stuff", "names"),
-    c("nonsense", "set", "of", "stuff"),
-    check_length_only = FALSE
-  ),
-  class = "invalid_column_names"
+  expect_error(
+    validate_column_names(
+      c("nonsense", "set", "of", "stuff", "names"),
+      c("nonsense", "set", "of", "stuff"),
+      check_length_only = FALSE
+    ),
+    class = "invalid_column_names"
   )
 })
 
 test_that("validate_column_names() checks that column names in field_types but not in data is not allowed", {
-  expect_error(validate_column_names(
-    c("nonsense", "set", "of"),
-    c("nonsense", "set", "of", "stuff"),
-    check_length_only = FALSE
-  ),
-  class = "invalid_column_names"
+  expect_error(
+    validate_column_names(
+      c("nonsense", "set", "of"),
+      c("nonsense", "set", "of", "stuff"),
+      check_length_only = FALSE
+    ),
+    class = "invalid_column_names"
   )
 })
 
@@ -72,37 +75,40 @@ test_that("prepare_data() requires a field_types param", {
 })
 
 test_that("prepare_data() requires df param to be a data frame", {
-  expect_error(prepare_data(c("Fieldname", 123),
-    field_types = field_types(Col_tp = ft_timepoint())
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    prepare_data(c("Fieldname", 123),
+      field_types = field_types(Col_tp = ft_timepoint())
+    ),
+    class = "invalid_param_type"
   )
 })
 
 test_that("prepare_data() requires field_types param to be a field_types object", {
-  expect_error(prepare_data(
-    df = data.frame("Fieldname" = 123),
-    field_types = TRUE
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    prepare_data(
+      df = data.frame("Fieldname" = 123),
+      field_types = TRUE
+    ),
+    class = "invalid_param_type"
   )
 })
 
 test_that("prepare_data() checks that at least one valid timepoint value is present", {
-  expect_error(prepare_data(
-    df = data.frame(
-      col1 = rep("01/01/2022", 5),
-      col2 = rep(1, 5),
-      col3 = 1:5
+  expect_error(
+    prepare_data(
+      df = data.frame(
+        col1 = rep("01/01/2022", 5),
+        col2 = rep(1, 5),
+        col3 = 1:5
+      ),
+      field_types = field_types(
+        col1 = ft_timepoint(),
+        col2 = ft_simple(),
+        col3 = ft_ignore()
+      ),
+      show_progress = FALSE
     ),
-    field_types = field_types(
-      col1 = ft_timepoint(),
-      col2 = ft_simple(),
-      col3 = ft_ignore()
-    ),
-    show_progress = FALSE
-  ),
-  class = "invalid_param_type"
+    class = "invalid_param_type"
   )
 })
 

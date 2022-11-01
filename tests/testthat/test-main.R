@@ -45,20 +45,22 @@ test_that("daiquiri_report() requires a field_types param", {
 })
 
 test_that("daiquiri_report() requires df param to be a data frame", {
-  expect_error(daiquiri_report(
-    df = c("Fieldname", 123),
-    field_types = field_types(Col_tp = ft_timepoint())
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    daiquiri_report(
+      df = c("Fieldname", 123),
+      field_types = field_types(Col_tp = ft_timepoint())
+    ),
+    class = "invalid_param_type"
   )
 })
 
 test_that("daiquiri_report() requires field_types param to be a field_types object", {
-  expect_error(daiquiri_report(
-    df = data.frame("Fieldname" = 123),
-    field_types = TRUE
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    daiquiri_report(
+      df = data.frame("Fieldname" = 123),
+      field_types = TRUE
+    ),
+    class = "invalid_param_type"
   )
 })
 

@@ -209,7 +209,6 @@ export_aggregated_data <- function(aggregated_data,
                                    save_directory,
                                    save_file_prefix = "",
                                    save_file_type = "csv") {
-
   # validation checks on params
   validate_params_required(match.call())
   validate_params_type(match.call(),
@@ -301,7 +300,6 @@ aggregate_field <- function(data_field,
                             timepoint_group_sequence,
                             aggregation_timeunit,
                             show_progress = TRUE) {
-
   # initialise known column names to prevent R CMD check notes
   n <- value <- values <- timepoint_group <- NULL
 
@@ -563,10 +561,11 @@ aggregate_field <- function(data_field,
         data_field_dt[
           ,
           list("value" = suppressWarnings(as.double(
-            min(nchar(as.character(values),
-              keepNA = TRUE
-            ),
-            na.rm = TRUE
+            min(
+              nchar(as.character(values),
+                keepNA = TRUE
+              ),
+              na.rm = TRUE
             )
           ))),
           by = list(timepoint_group)
@@ -586,13 +585,14 @@ aggregate_field <- function(data_field,
       grouped_values[
         data_field_dt[
           ,
-          list("value" = suppressWarnings(
-            as.double(max(nchar(as.character(values),
-              keepNA = TRUE
-            ),
-            na.rm = TRUE
-            ))
-          )),
+          list("value" = suppressWarnings(as.double(
+            max(
+              nchar(as.character(values),
+                keepNA = TRUE
+              ),
+              na.rm = TRUE
+            )
+          ))),
           by = list(timepoint_group)
         ],
         (f) := value,
@@ -664,7 +664,6 @@ is_aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
 # datatype, decide if need to make them all the same
 aggregate_combined_fields <- function(agg_fields,
                                       show_progress = TRUE) {
-
   # initialise known column names to prevent R CMD check notes
   n <- missing_n <- nonconformant_n <- NULL
 

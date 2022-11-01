@@ -12,11 +12,12 @@ test_that("aggregate_data() requires source_data param to be a source_data objec
 })
 
 test_that("aggregate_data() requires aggregation_timeunit param to be one of day/week/month/quarter/year", {
-  expect_error(aggregate_data(
-    source_data = structure(list(data_fields = NA), class = "daiquiri_source_data"),
-    aggregation_timeunit = "hello"
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    aggregate_data(
+      source_data = structure(list(data_fields = NA), class = "daiquiri_source_data"),
+      aggregation_timeunit = "hello"
+    ),
+    class = "invalid_param_type"
   )
 })
 
@@ -105,19 +106,21 @@ test_that("export_aggregated_data() requires a aggregated_data param", {
 })
 
 test_that("export_aggregated_data() requires a save_directory param", {
-  expect_error(export_aggregated_data(
-    aggregated_data = structure(list(data_fields = NA), class = "daiquiri_aggregated_data")
-  ),
-  class = "invalid_param_missing"
+  expect_error(
+    export_aggregated_data(
+      aggregated_data = structure(list(data_fields = NA), class = "daiquiri_aggregated_data")
+    ),
+    class = "invalid_param_missing"
   )
 })
 
 test_that("export_aggregated_data() requires aggregated_data param to be an aggregated_data object", {
-  expect_error(export_aggregated_data(
-    aggregated_data = data.frame("Fieldname" = 123),
-    save_directory = tempdir()
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    export_aggregated_data(
+      aggregated_data = data.frame("Fieldname" = 123),
+      save_directory = tempdir()
+    ),
+    class = "invalid_param_type"
   )
 })
 

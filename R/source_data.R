@@ -628,7 +628,6 @@ data_field_count <- function(data_field) {
 validate_column_names <- function(source_names,
                                   spec_names,
                                   check_length_only = FALSE) {
-
   # validate - collect all errors together and return only once
   err_validation <- character()
 

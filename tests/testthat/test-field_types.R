@@ -22,19 +22,21 @@ test_that("Invalid field_types cannot be specified", {
 })
 
 test_that("Duplicate column names in field_types specification not allowed", {
-  expect_error(field_types(
-    Col_dup = ft_timepoint(),
-    Col_dup = ft_uniqueidentifier()
-  ),
-  class = "invalid_field_types"
+  expect_error(
+    field_types(
+      Col_dup = ft_timepoint(),
+      Col_dup = ft_uniqueidentifier()
+    ),
+    class = "invalid_field_types"
   )
 
-  expect_error(field_types(
-    Col_tp = ft_timepoint(),
-    Col_dup = ft_uniqueidentifier(),
-    Col_dup = ft_uniqueidentifier()
-  ),
-  class = "invalid_field_types"
+  expect_error(
+    field_types(
+      Col_tp = ft_timepoint(),
+      Col_dup = ft_uniqueidentifier(),
+      Col_dup = ft_uniqueidentifier()
+    ),
+    class = "invalid_field_types"
   )
 })
 
@@ -45,11 +47,12 @@ test_that("field_types object must include a timepoint field", {
 })
 
 test_that("field_types object must not contain more than one timepoint field", {
-  expect_error(field_types(
-    Col_tp1 = ft_timepoint(),
-    Col_tp2 = ft_timepoint()
-  ),
-  class = "invalid_field_types"
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      Col_tp2 = ft_timepoint()
+    ),
+    class = "invalid_field_types"
   )
 })
 
@@ -58,11 +61,12 @@ test_that("[DUPLICATES] cannot be used as a field_type colname as it is a reserv
     class = "invalid_field_types"
   )
 
-  expect_error(field_types(
-    Col_tp = ft_timepoint(),
-    "[DUPLICATES]" = ft_simple()
-  ),
-  class = "invalid_field_types"
+  expect_error(
+    field_types(
+      Col_tp = ft_timepoint(),
+      "[DUPLICATES]" = ft_simple()
+    ),
+    class = "invalid_field_types"
   )
 })
 
@@ -86,11 +90,12 @@ test_that("print_field_types_template() requires df param to be a data frame", {
 })
 
 test_that("print_field_types_template() requires default_field_type param to be a field_type", {
-  expect_error(print_field_types_template(
-    df = data.frame("Fieldname" = 123),
-    default_field_type = TRUE
-  ),
-  class = "invalid_param_type"
+  expect_error(
+    print_field_types_template(
+      df = data.frame("Fieldname" = 123),
+      default_field_type = TRUE
+    ),
+    class = "invalid_param_type"
   )
 })
 

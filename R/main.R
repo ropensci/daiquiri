@@ -78,17 +78,16 @@
 #'   [field_types_available()]
 #' @export
 daiquiri_report <- function(df,
-                          field_types,
-                          override_column_names = FALSE,
-                          na = c("", "NA", "NULL"),
-                          dataset_description = NULL,
-                          aggregation_timeunit = "day",
-                          report_title = "daiquiri data quality report",
-                          save_directory = ".",
-                          save_filename = NULL,
-                          show_progress = TRUE,
-                          log_directory = NULL) {
-
+                            field_types,
+                            override_column_names = FALSE,
+                            na = c("", "NA", "NULL"),
+                            dataset_description = NULL,
+                            aggregation_timeunit = "day",
+                            report_title = "daiquiri data quality report",
+                            save_directory = ".",
+                            save_filename = NULL,
+                            show_progress = TRUE,
+                            log_directory = NULL) {
   # if a log directory is supplied, start a new log. Otherwise, close any existing log
   if (!is.null(log_directory)) {
     log_filename <- initialise_log(log_directory)

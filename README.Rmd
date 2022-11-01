@@ -60,14 +60,14 @@ head(raw_data)
 
 # specify the type of data expected in each column of the data.frame
 fts <- field_types(
-  	PrescriptionID = ft_uniqueidentifier(),
-    PrescriptionDate = ft_timepoint(),
-    AdmissionDate = ft_datetime(includes_time = FALSE),
-    Drug = ft_freetext(),
-    Dose = ft_numeric(),
-    DoseUnit = ft_categorical(),
-    PatientID = ft_ignore(),
-    Location = ft_categorical(aggregate_by_each_category=TRUE)
+  PrescriptionID = ft_uniqueidentifier(),
+  PrescriptionDate = ft_timepoint(),
+  AdmissionDate = ft_datetime(includes_time = FALSE),
+  Drug = ft_freetext(),
+  Dose = ft_numeric(),
+  DoseUnit = ft_categorical(),
+  PatientID = ft_ignore(),
+  Location = ft_categorical(aggregate_by_each_category = TRUE)
 )
 ```
 

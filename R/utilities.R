@@ -408,12 +408,13 @@ validate_params_type <- function(call, ...) {
 #' @param ... other items to pass to condition object
 #' @noRd
 stop_custom <- function(.subclass, message, call = NULL, ...) {
-  err <- structure(list(
-    message = message,
-    call = call,
-    ...
-  ),
-  class = c(.subclass, "error", "condition")
+  err <- structure(
+    list(
+      message = message,
+      call = call,
+      ...
+    ),
+    class = c(.subclass, "error", "condition")
   )
   stop(err)
 }

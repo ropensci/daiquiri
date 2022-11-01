@@ -209,7 +209,6 @@ plot_overview_totals_static <- function(agg_field,
                                         agg_fun,
                                         fill_colour = NA,
                                         title = NULL) {
-
   # initialise known column names to prevent R CMD check notes
   ymin <- NULL
 
@@ -279,7 +278,6 @@ plot_overview_totals_static <- function(agg_field,
 plot_overview_heatmap_static <- function(agg_fields,
                                          agg_fun,
                                          fill_colour = "darkred") {
-
   # initialise known column names to prevent R CMD check notes
   field_name <- NULL
 
