@@ -99,5 +99,5 @@ fts <- field_types(
 ft_simple()
 }
 \seealso{
-\code{\link[=field_types]{field_types()}}
+\code{\link[=field_types]{field_types()}}, \code{\link[=template_field_types]{template_field_types()}}
 }

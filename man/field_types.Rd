@@ -32,5 +32,5 @@ fts <- field_types(
 fts
 }
 \seealso{
-\code{\link[=field_types_available]{field_types_available()}}
+\code{\link[=field_types_available]{field_types_available()}}, \code{\link[=template_field_types]{template_field_types()}}
 }

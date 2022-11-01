@@ -77,21 +77,21 @@ test_that("[ALL_FIELDS_COMBINED] cannot be used as a field_type colname as it is
 })
 
 
-test_that("print_field_types_template() requires a df param", {
-  expect_error(print_field_types_template(),
+test_that("template_field_types() requires a df param", {
+  expect_error(template_field_types(),
     class = "invalid_param_missing"
   )
 })
 
-test_that("print_field_types_template() requires df param to be a data frame", {
-  expect_error(print_field_types_template(df = c("Fieldname", 123)),
+test_that("template_field_types() requires df param to be a data frame", {
+  expect_error(template_field_types(df = c("Fieldname", 123)),
     class = "invalid_param_type"
   )
 })
 
-test_that("print_field_types_template() requires default_field_type param to be a field_type", {
+test_that("template_field_types() requires default_field_type param to be a field_type", {
   expect_error(
-    print_field_types_template(
+    template_field_types(
       df = data.frame("Fieldname" = 123),
       default_field_type = TRUE
     ),
@@ -99,8 +99,8 @@ test_that("print_field_types_template() requires default_field_type param to be 
   )
 })
 
-test_that("print_field_types_template() generates template field_types output", {
-  expect_snapshot_output(print_field_types_template(df = data.frame(
+test_that("template_field_types() generates template field_types output", {
+  expect_snapshot_output(template_field_types(df = data.frame(
     "col1" = 123,
     "col2" = 123,
     "col3" = "hello"

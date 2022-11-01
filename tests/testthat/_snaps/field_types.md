@@ -1,4 +1,4 @@
-# print_field_types_template() generates template field_types output
+# template_field_types() generates template field_types output
 
     field_types( "col1" = ft_ignore(),
     	"col2" = ft_ignore(),

@@ -29,7 +29,7 @@
 #' )
 #'
 #' fts
-#' @seealso [field_types_available()]
+#' @seealso [field_types_available()], [template_field_types()]
 #' @export
 field_types <- function(...) {
   fts <- list(...)
@@ -131,10 +131,10 @@ print.daiquiri_field_types <- function(x, ...) {
 #'   col4 = rnorm(5)
 #' )
 #'
-#' print_field_types_template(df, default_field_type = ft_numeric())
+#' template_field_types(df, default_field_type = ft_numeric())
 #' @seealso [field_types()]
 #' @export
-print_field_types_template <- function(df, default_field_type = ft_ignore()) {
+template_field_types <- function(df, default_field_type = ft_ignore()) {
   validate_params_required(match.call())
   validate_params_type(match.call(),
     df = df,
@@ -143,8 +143,8 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
 
   field_names <- names(df)
   template_string <-
-    paste(
-      "field_types(",
+    paste0(
+      "field_types(\n  ",
       paste0(
         "\"",
         field_names,
@@ -153,9 +153,9 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
         default_field_type$type,
         "()",
         ifelse(field_names == rev(field_names)[1], "", ","),
-        collapse = "\n\t"
+        collapse = "\n  "
       ),
-      ")"
+      "\n)"
     )
   cat(template_string)
   invisible(template_string)
@@ -168,7 +168,7 @@ print_field_types_template <- function(df, default_field_type = ft_ignore()) {
 #' Each column in the source dataset must be assigned to a particular `ft_xx`
 #' depending on the type of data that it contains. This is done through a
 #' [field_types()] specification.
-#' @seealso [field_types()]
+#' @seealso [field_types()], [template_field_types()]
 #' @name field_types_available
 #' @return A `field_type` object denoting the type of data in the column
 #' @examples fts <- field_types(
