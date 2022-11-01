@@ -2,7 +2,7 @@
 
 ## Reporting issues
 
-Please report any bugs or suggestions by opening a [github issue](https://github.com/phuongquan/daiquiri/issues).
+Please report any bugs or suggestions by opening a [github issue](https://github.com/ropensci/daiquiri/issues).
 
 
 ## Development guidelines

@@ -6,4 +6,4 @@ bibentry(bibtype = "Manual",
          doi =  "10.5281/zenodo.6334341",
          year = 2022,
          note = note,
-         url = "https://github.com/phuongquan/daiquiri")
+         url = "https://github.com/ropensci/daiquiri")

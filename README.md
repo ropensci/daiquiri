@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/phuongquan/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/phuongquan/daiquiri/actions)
+[![R-CMD-check](https://github.com/ropensci/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/daiquiri/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/phuongquan/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/phuongquan/daiquiri?branch=master)
+coverage](https://codecov.io/gh/ropensci/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ropensci/daiquiri?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -75,7 +75,7 @@ can install the current development version from GitHub:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("phuongquan/daiquiri", build_vignettes = TRUE)
+devtools::install_github("ropensci/daiquiri", build_vignettes = TRUE)
 ```
 
 ## Usage
@@ -124,12 +124,12 @@ daiq_obj <- daiquiri_report(
 ```
 
 An [example
-report](https://phuongquan.github.io/daiquiri/misc/example_prescriptions_report.html)
+report](https://ropensci.github.io/daiquiri/misc/example_prescriptions_report.html)
 is available from the [package
-website](https://phuongquan.github.io/daiquiri/index.html).
+website](https://ropensci.github.io/daiquiri/index.html).
 
 More detailed guidance can be found in the [walkthrough
-vignette](https://phuongquan.github.io/daiquiri/articles/daiquiri.html):
+vignette](https://ropensci.github.io/daiquiri/articles/daiquiri.html):
 
 ``` r
 vignette("daiquiri", package = "daiquiri")
@@ -141,9 +141,9 @@ Please remember to update the version number to match the version you
 used.
 
 > Quan TP (2022). daiquiri: Data quality reporting for temporal
-> datasets. R package version v0.7.0. Zenodo.
+> datasets. R package version v1.0.0. Zenodo.
 > <https://doi.org/10.5281/zenodo.6334341>. URL:
-> <https://github.com/phuongquan/daiquiri>
+> <https://github.com/ropensci/daiquiri>
 
 ## Acknowledgements
 

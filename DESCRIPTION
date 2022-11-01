@@ -21,8 +21,8 @@ Description: Generate reports that enable quick visual review of
     any type of record-level temporal data (i.e. tabular data where each row represents 
     a single “event”, one column contains the "event date", and other columns 
     contain any associated values for the event).
-URL: https://github.com/phuongquan/daiquiri, https://phuongquan.github.io/daiquiri/
-BugReports: https://github.com/phuongquan/daiquiri/issues
+URL: https://github.com/ropensci/daiquiri, https://ropensci.github.io/daiquiri
+BugReports: https://github.com/ropensci/daiquiri/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Imports:

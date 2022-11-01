@@ -4,10 +4,11 @@
   "identifier": "daiquiri",
   "description": "Generate reports that enable quick visual review of temporal shifts in record-level data. Time series plots showing aggregated values are automatically created for each data field (column) depending on its contents (e.g. min/max/mean values for numeric data, no. of distinct values for categorical data), as well as overviews for missing values, non-conformant values, and duplicated rows. The resulting reports are sharable and can contribute to forming a transparent record of the entire analysis process. It is designed with Electronic Health Records in mind, but can be used for any type of record-level temporal data (i.e. tabular data where each row represents a single “event”, one column contains the \"event date\", and other columns contain any associated values for the event).",
   "name": "daiquiri: Data Quality Reporting for Temporal Datasets",
-  "codeRepository": "https://github.com/phuongquan/daiquiri",
-  "issueTracker": "https://github.com/phuongquan/daiquiri/issues",
+  "relatedLink": "https://docs.ropensci.org/daiquiri/",
+  "codeRepository": "https://github.com/ropensci/daiquiri",
+  "issueTracker": "https://github.com/ropensci/daiquiri/issues",
   "license": "https://spdx.org/licenses/GPL-3.0",
-  "version": "0.7.0.9000",
+  "version": "1.0.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -205,7 +206,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "222369.356KB",
+  "fileSize": "224819.36KB",
   "citation": [
     {
       "@type": "SoftwareSourceCode",
@@ -220,12 +221,14 @@
       "name": "daiquiri: Data quality reporting for temporal datasets",
       "identifier": "10.5281/zenodo.6334341",
       "url": "https://github.com/phuongquan/daiquiri",
-      "description": "R package version 0.7.0.9000",
+      "description": "R package version 1.0.0",
       "@id": "https://doi.org/10.5281/zenodo.6334341",
       "sameAs": "https://doi.org/10.5281/zenodo.6334341"
     }
   ],
-  "releaseNotes": "https://github.com/phuongquan/daiquiri/blob/master/NEWS.md",
-  "readme": "https://github.com/phuongquan/daiquiri/blob/master/README.md",
-  "contIntegration": ["https://github.com/phuongquan/daiquiri/actions", "https://app.codecov.io/gh/phuongquan/daiquiri?branch=master"]
+  "releaseNotes": "https://github.com/ropensci/daiquiri/blob/master/NEWS.md",
+  "readme": "https://github.com/ropensci/daiquiri/blob/master/README.md",
+  "contIntegration": ["https://github.com/ropensci/daiquiri/actions", "https://app.codecov.io/gh/ropensci/daiquiri?branch=master"],
+  "developmentStatus": "https://www.repostatus.org/#active",
+  "keywords": ["data-quality", "initial-data-analysis", "r", "r-package", "reproducible-research", "rstats", "temporal-data", "time-series"]
 }
