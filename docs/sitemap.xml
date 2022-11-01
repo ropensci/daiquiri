@@ -22,37 +22,22 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/misc/example_data_report.html</loc>
-  </url>
-  <url>
     <loc>/news/index.html</loc>
   </url>
   <url>
     <loc>/reference/aggregate_data.html</loc>
   </url>
   <url>
-    <loc>/reference/availablefieldtypes.html</loc>
-  </url>
-  <url>
     <loc>/reference/close_log.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_report.html</loc>
   </url>
   <url>
     <loc>/reference/daiquiri-package.html</loc>
   </url>
   <url>
-    <loc>/reference/daiquiri.html</loc>
+    <loc>/reference/daiquiri_report.html</loc>
   </url>
   <url>
     <loc>/reference/export_aggregated_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fieldtypes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fieldtypes_template.html</loc>
   </url>
   <url>
     <loc>/reference/field_types.html</loc>
@@ -67,21 +52,15 @@
     <loc>/reference/initialise_log.html</loc>
   </url>
   <url>
-    <loc>/reference/log_close.html</loc>
-  </url>
-  <url>
-    <loc>/reference/log_initialise.html</loc>
-  </url>
-  <url>
     <loc>/reference/prepare_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print_field_types_template.html</loc>
   </url>
   <url>
     <loc>/reference/read_data.html</loc>
   </url>
   <url>
     <loc>/reference/report_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/template_field_types.html</loc>
   </url>
 </urlset>

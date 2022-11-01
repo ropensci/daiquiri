@@ -46,7 +46,7 @@
     
     <a class="navbar-brand me-2" href="index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,6 @@
 <div class="page-header"><h1 id="daiquiri">daiquiri<a class="anchor" aria-label="anchor" href="#daiquiri"></a>
 </h1></div>
 <!-- badges: start -->
-
 <p>The daiquiri package generates data quality reports that enable quick visual review of temporal shifts in record-level data. Time series plots showing aggregated values are automatically created for each data field (column) depending on its contents (e.g. min/max/mean values for numeric data, no. of distinct values for categorical data), as well as overviews for missing values, non-conformant values, and duplicated rows.</p>
 <p>Essentially, it takes input such as this:</p>
 <p><img src="reference/figures/example_prescriptions_head.png" width="700"></p>
@@ -110,60 +109,58 @@
 </h2>
 <p>The intention is to make daiquiri available in CRAN but until then, you can install the current development version from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"phuongquan/daiquiri"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"phuongquan/daiquiri"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/phuongquan/daiquiri" class="external-link">daiquiri</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># load delimited file into a data.frame without doing any datatype conversion</span></span>
-<span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span></span>
-<span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_data.html">read_data</a></span><span class="op">(</span><span class="va">path</span>, show_progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 × 8</span></span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/phuongquan/daiquiri" class="external-link">daiquiri</a></span><span class="op">)</span>
+
+<span class="co"># load delimited file into a data.frame without doing any datatype conversion</span>
+<span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>
+<span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_data.html">read_data</a></span><span class="op">(</span><span class="va">path</span>, show_progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 x 8</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;          &lt;chr&gt;              &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;    </span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 6000           2021-01-01 00:00:… 2020-12-31    Ceft… 500   mg       4993679  </span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 6001           NULL               2020-12-31    Fluc… 1000  mg       819452   </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 6002           NULL               2020-12-30    Teic… 400   mg       275597   </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 6003           2021-01-01 01:00:… 2020-12-31    Fluc… 1000  NULL     819452   </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 6004           2021-01-01 02:00:… 2020-12-20    Fluc… 1000  NULL     528071   </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6005           2021-01-01 03:00:… 2020-12-30    Co-a… 1.2   g        1001434  </span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 1 more variable: Location &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 6000           2021-01-01 00:00:~ 2020-12-31    Ceft~ 500   mg       4993679  </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 6001           NULL               2020-12-31    Fluc~ 1000  mg       819452   </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 6002           NULL               2020-12-30    Teic~ 400   mg       275597   </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 6003           2021-01-01 01:00:~ 2020-12-31    Fluc~ 1000  NULL     819452   </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 6004           2021-01-01 02:00:~ 2020-12-20    Fluc~ 1000  NULL     528071   </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6005           2021-01-01 03:00:~ 2020-12-30    Co-a~ 1.2   g        1001434  </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## # ... with 1 more variable: Location &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># specify the type of data expected in each column of the data.frame</span></span>
-<span><span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/field_types.html">field_types</a></span><span class="op">(</span></span>
-<span>    PrescriptionID <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    PrescriptionDate <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    AdmissionDate <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>    Drug <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    Dose <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    DoseUnit <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    PatientID <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    Location <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="co"># specify the type of data expected in each column of the data.frame</span>
+<span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/field_types.html">field_types</a></span><span class="op">(</span>
+  PrescriptionID <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,
+  PrescriptionDate <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,
+  AdmissionDate <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
+  Drug <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,
+  Dose <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,
+  DoseUnit <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,
+  PatientID <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,
+  Location <span class="op">=</span> <span class="fu"><a href="reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># create a report in the current directory</span></span>
-<span><span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/create_report.html">create_report</a></span><span class="op">(</span></span>
-<span>  <span class="va">raw_data</span>,</span>
-<span>  field_types <span class="op">=</span> <span class="va">fts</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="co"># create a report in the current directory</span>
+<span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/daiquiri_report.html">daiquiri_report</a></span><span class="op">(</span>
+  <span class="va">raw_data</span>,
+  field_types <span class="op">=</span> <span class="va">fts</span>
+<span class="op">)</span></code></pre></div>
 <p>An <a href="https://phuongquan.github.io/daiquiri/misc/example_prescriptions_report.html" class="external-link">example report</a> is available from the <a href="https://phuongquan.github.io/daiquiri/index.html" class="external-link">package website</a>.</p>
 <p>More detailed guidance can be found in the <a href="https://phuongquan.github.io/daiquiri/articles/daiquiri.html" class="external-link">walkthrough vignette</a>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"daiquiri"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"daiquiri"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="how-to-cite-this-package">How to cite this package<a class="anchor" aria-label="anchor" href="#how-to-cite-this-package"></a>
 </h2>
 <p>Please remember to update the version number to match the version you used.</p>
-<blockquote>
-<p>Quan TP (2022). daiquiri: Data quality reporting for temporal datasets. R package version v0.7.0. Zenodo. <a href="https://doi.org/10.5281/zenodo.6334341" class="external-link uri">https://doi.org/10.5281/zenodo.6334341</a>. URL: <a href="https://github.com/phuongquan/daiquiri" class="external-link uri">https://github.com/phuongquan/daiquiri</a></p>
-</blockquote>
+<blockquote><p>Quan TP (2022). daiquiri: Data quality reporting for temporal datasets. R package version v0.7.0. Zenodo. <a href="https://doi.org/10.5281/zenodo.6334341" class="external-link uri">https://doi.org/10.5281/zenodo.6334341</a>. URL: <a href="https://github.com/phuongquan/daiquiri" class="external-link uri">https://github.com/phuongquan/daiquiri</a></p></blockquote>
 </div>
 <div class="section level2">
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>

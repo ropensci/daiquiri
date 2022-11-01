@@ -14,7 +14,7 @@ field_types() specification."><!-- mathjax --><script src="https://cdnjs.cloudfl
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,21 +63,21 @@ depending on the type of data that it contains. This is done through a
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ft_timepoint</span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_uniqueidentifier</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_categorical</span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_numeric</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_datetime</span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_freetext</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_simple</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ft_ignore</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">ft_timepoint</span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+
+<span class="fu">ft_uniqueidentifier</span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu">ft_categorical</span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="fu">ft_numeric</span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu">ft_datetime</span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
+
+<span class="fu">ft_freetext</span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu">ft_simple</span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu">ft_ignore</span><span class="op">(</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -136,23 +136,23 @@ ignored.  These will not be loaded.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="field_types.html">field_types()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="field_types.html">field_types()</a></code>, <code><a href="template_field_types.html">template_field_types()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="field_types.html">field_types</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  PatientID <span class="op">=</span> <span class="fu">ft_uniqueidentifier</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TestID <span class="op">=</span> <span class="fu">ft_ignore</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TestDate <span class="op">=</span> <span class="fu">ft_timepoint</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TestName <span class="op">=</span> <span class="fu">ft_categorical</span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  TestResult <span class="op">=</span> <span class="fu">ft_numeric</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ResultDate <span class="op">=</span> <span class="fu">ft_datetime</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  ResultComment <span class="op">=</span> <span class="fu">ft_freetext</span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  Location <span class="op">=</span> <span class="fu">ft_categorical</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">ft_simple</span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="field_types.html">field_types</a></span><span class="op">(</span></span>
+<span class="r-in">  PatientID <span class="op">=</span> <span class="fu">ft_uniqueidentifier</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  TestID <span class="op">=</span> <span class="fu">ft_ignore</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  TestDate <span class="op">=</span> <span class="fu">ft_timepoint</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  TestName <span class="op">=</span> <span class="fu">ft_categorical</span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span class="r-in">  TestResult <span class="op">=</span> <span class="fu">ft_numeric</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  ResultDate <span class="op">=</span> <span class="fu">ft_datetime</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  ResultComment <span class="op">=</span> <span class="fu">ft_freetext</span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">  Location <span class="op">=</span> <span class="fu">ft_categorical</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu">ft_simple</span><span class="op">(</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "simple"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

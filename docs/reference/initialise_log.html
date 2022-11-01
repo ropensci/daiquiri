@@ -12,7 +12,7 @@ log file is created."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,7 @@ log file is created.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">initialise_log</span><span class="op">(</span><span class="va">log_directory</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">initialise_log</span><span class="op">(</span><span class="va">log_directory</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -79,16 +79,16 @@ file</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">log_name</span> <span class="op">&lt;-</span> <span class="fu">initialise_log</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">log_name</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\reference\\daiquiri_20221015_184434.log"</span>
-<span class="r-in"><span><span class="co"># \dontshow{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="close_log.html">close_log</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\reference\\daiquiri_20221015_184434.log"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">log_name</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">log_name</span> <span class="op">&lt;-</span> <span class="fu">initialise_log</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="va">log_name</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\phuongq\\Documents\\Rworkspace\\daiquiri\\docs\\reference\\daiquiri_20221101_150707.log"</span>
+<span class="r-in"><span class="co"># \dontshow{</span></span>
+<span class="r-in"><span class="fu"><a href="close_log.html">close_log</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\phuongq\\Documents\\Rworkspace\\daiquiri\\docs\\reference\\daiquiri_20221101_150707.log"</span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">log_name</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span class="co"># }</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

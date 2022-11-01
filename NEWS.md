@@ -1,6 +1,6 @@
-# daiquiri (development version)
+# daiquiri 1.0.0 (2022-11-01)
 
-There are a lot of breaking changes as objects have been renamed for better consistency and style
+This release incorporates changes requested for acceptance into https://ropensci.org/. There are many breaking changes as objects have been renamed for better consistency and style.
 
 ## Breaking changes
 
@@ -14,11 +14,11 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 * `close_log()` replaces `log_close()`.
 
-* `print_field_types_template()` replaces `field_types_template()` 
+* `template_field_types()` replaces `fieldtypes_template()` 
 
 ## Bug fixes and minor improvements
 
-* Fixed error when user passes in a data.table (to `daiquiri_report()` or `prepare_data()`) that contains non-character columns.
+* Fixed error when user passes in a `data.table` (to `daiquiri_report()` or `prepare_data()`) that contains non-character columns.
 
 * `daiquiri_report` (formerly `create_report()`) and `report_data()` accept a new parameter `report_title`.
 
@@ -26,7 +26,7 @@ There are a lot of breaking changes as objects have been renamed for better cons
 
 * `close_log()` now returns the path to the closed log file (if any).
 
-* `example_prescriptions` replaces `example_dataset` as the example dataset supplied with the package.
+* `example_prescriptions.csv` replaces `example_dataset.csv` as the example dataset supplied with the package.
 
 # daiquiri 0.7.0 (2022-04-20)
 
@@ -34,7 +34,7 @@ This release moves the reading of csv files out into a separate function in orde
 
 ## Breaking changes
 
-* `create_report()` now only accepts a dataframe as the first parameter. The `textfile_contains_column_names` parameter has been removed.
+* `create_report()` now only accepts a dataframe as the first parameter. The `textfile_contains_columnnames` parameter has been removed.
 
 * `load_data()` has been replaced with `read_data()` and `prepare_data()`.
 
@@ -44,13 +44,13 @@ This release moves the reading of csv files out into a separate function in orde
 
 * New function `read_data()` reads data from a delimited file, with all columns read in as character type.
 
-* New function `prepare_data()` validates a dataframe against a field_types specification, and prepares it for aggregation.
+* New function `prepare_data()` validates a dataframe against a fieldtypes specification, and prepares it for aggregation.
 
-* `create_report()` accepts a new parameter `dataset_description` for the user to specify a dataset description to appear on the report.
+* `create_report()` accepts a new parameter `dataset_shortdesc` for the user to specify a dataset description to appear on the report.
 
-* `export_aggregated_data()` function accepts new `save_file_prefix` parameter.
+* `export_aggregated_data()` function accepts new `save_fileprefix` parameter.
 
-* New function `field_types_template()` generates template code for creating a field_types specification based on an existing dataframe, and outputs it to the console.
+* New function `fieldtypes_template()` generates template code for creating a fieldtypes specification based on an existing dataframe, and outputs it to the console.
 
 ## Bug fixes and minor improvements
 

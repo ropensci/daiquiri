@@ -16,13 +16,13 @@ reference:
   contents:
   - daiquiri
   - read_data
-  - create_report
+  - daiquiri_report
 
 - title: Specifying the type of data in each field
   contents:
   - field_types_available
   - field_types
-  - print_field_types_template
+  - template_field_types
 
 - title: Advanced usage
   contents:

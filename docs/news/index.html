@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,21 +51,24 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="daiquiri-development-version">daiquiri (development version)<a class="anchor" aria-label="anchor" href="#daiquiri-development-version"></a></h2>
-<p>There are a lot of breaking changes as objects have been renamed for better consistency and style</p>
+<h2 class="pkg-version" data-toc-text="1.0.0" id="daiquiri-100-2022-11-01">daiquiri 1.0.0 (2022-11-01)<a class="anchor" aria-label="anchor" href="#daiquiri-100-2022-11-01"></a></h2>
+<p>This release incorporates changes requested for acceptance into <a href="https://ropensci.org/" class="external-link uri">https://ropensci.org/</a>. There are many breaking changes as objects have been renamed for better consistency and style.</p>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/field_types.html">field_types()</a></code> replaces <code>fieldtypes()</code>.</p></li>
-<li><p><code><a href="../reference/create_report.html">create_report()</a></code>, <code><a href="../reference/prepare_data.html">prepare_data()</a></code>, <code><a href="../reference/aggregate_data.html">aggregate_data()</a></code>, and <code><a href="../reference/report_data.html">report_data()</a></code> parameters have been renamed.</p></li>
+<h3 id="breaking-changes-1-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-0-0"></a></h3>
+<ul><li><p><code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> replaces <code>create_report()</code> and some parameters have been renamed.</p></li>
+<li><p><code><a href="../reference/field_types.html">field_types()</a></code> replaces <code>fieldtypes()</code>.</p></li>
+<li><p><code><a href="../reference/prepare_data.html">prepare_data()</a></code>, <code><a href="../reference/aggregate_data.html">aggregate_data()</a></code>, and <code><a href="../reference/report_data.html">report_data()</a></code> parameters have been renamed.</p></li>
 <li><p><code><a href="../reference/initialise_log.html">initialise_log()</a></code> replaces <code>log_initialise()</code>.</p></li>
 <li><p><code><a href="../reference/close_log.html">close_log()</a></code> replaces <code>log_close()</code>.</p></li>
-<li><p><code><a href="../reference/print_field_types_template.html">print_field_types_template()</a></code> replaces <code>field_types_template()</code></p></li>
+<li><p><code><a href="../reference/template_field_types.html">template_field_types()</a></code> replaces <code>fieldtypes_template()</code></p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-and-minor-improvements-development-version">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-development-version"></a></h3>
-<ul><li><p>Fixed error when user passes in a data.table (to <code><a href="../reference/create_report.html">create_report()</a></code> or <code><a href="../reference/prepare_data.html">prepare_data()</a></code>) that contains non-character columns.</p></li>
+<h3 id="bug-fixes-and-minor-improvements-1-0-0">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-1-0-0"></a></h3>
+<ul><li><p>Fixed error when user passes in a <code>data.table</code> (to <code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> or <code><a href="../reference/prepare_data.html">prepare_data()</a></code>) that contains non-character columns.</p></li>
+<li><p><code>daiquiri_report</code> (formerly <code>create_report()</code>) and <code><a href="../reference/report_data.html">report_data()</a></code> accept a new parameter <code>report_title</code>.</p></li>
+<li><p><code><a href="../reference/report_data.html">report_data()</a></code> now accepts <code>...</code> parameter to be passed through to <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code>.</p></li>
 <li><p><code><a href="../reference/close_log.html">close_log()</a></code> now returns the path to the closed log file (if any).</p></li>
-<li><p><code>example_prescriptions</code> replaces <code>example_dataset</code> as the example dataset supplied with the package</p></li>
+<li><p><code>example_prescriptions.csv</code> replaces <code>example_dataset.csv</code> as the example dataset supplied with the package.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -73,17 +76,17 @@
 <p>This release moves the reading of csv files out into a separate function in order to make it more configurable and to handle the parsing of all fields as character data for the user.</p>
 <div class="section level3">
 <h3 id="breaking-changes-0-7-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-7-0"></a></h3>
-<ul><li><p><code><a href="../reference/create_report.html">create_report()</a></code> now only accepts a dataframe as the first parameter. The <code>textfile_contains_column_names</code> parameter has been removed.</p></li>
+<ul><li><p><code>create_report()</code> now only accepts a dataframe as the first parameter. The <code>textfile_contains_columnnames</code> parameter has been removed.</p></li>
 <li><p><code>load_data()</code> has been replaced with <code><a href="../reference/read_data.html">read_data()</a></code> and <code><a href="../reference/prepare_data.html">prepare_data()</a></code>.</p></li>
 <li><p><code>log_initialise()</code> function: <code>dirpath</code> parameter renamed to <code>log_directory</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-0-7-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-7-0"></a></h3>
 <ul><li><p>New function <code><a href="../reference/read_data.html">read_data()</a></code> reads data from a delimited file, with all columns read in as character type.</p></li>
-<li><p>New function <code><a href="../reference/prepare_data.html">prepare_data()</a></code> validates a dataframe against a field_types specification, and prepares it for aggregation.</p></li>
-<li><p><code><a href="../reference/create_report.html">create_report()</a></code> accepts a new parameter <code>dataset_description</code> for the user to specify a dataset description to appear on the report.</p></li>
-<li><p><code><a href="../reference/export_aggregated_data.html">export_aggregated_data()</a></code> function accepts new <code>save_file_prefix</code> parameter.</p></li>
-<li><p>New function <code>field_types_template()</code> generates template code for creating a field_types specification based on an existing dataframe, and outputs it to the console.</p></li>
+<li><p>New function <code><a href="../reference/prepare_data.html">prepare_data()</a></code> validates a dataframe against a fieldtypes specification, and prepares it for aggregation.</p></li>
+<li><p><code>create_report()</code> accepts a new parameter <code>dataset_shortdesc</code> for the user to specify a dataset description to appear on the report.</p></li>
+<li><p><code><a href="../reference/export_aggregated_data.html">export_aggregated_data()</a></code> function accepts new <code>save_fileprefix</code> parameter.</p></li>
+<li><p>New function <code>fieldtypes_template()</code> generates template code for creating a fieldtypes specification based on an existing dataframe, and outputs it to the console.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-and-minor-improvements-0-7-0">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-0-7-0"></a></h3>
@@ -104,7 +107,7 @@
 <p>Beta release. Complete list of functions exported:</p>
 <ul><li><code><a href="../reference/aggregate_data.html">aggregate_data()</a></code></li>
 <li>
-<code><a href="../reference/create_report.html">create_report()</a></code> accepts either a dataframe or csv filename as the first parameter. This may change in future.</li>
+<code>create_report()</code> accepts either a dataframe or csv filename as the first parameter. This may change in future.</li>
 <li><code><a href="../reference/export_aggregated_data.html">export_aggregated_data()</a></code></li>
 <li><code><a href="../reference/field_types.html">field_types()</a></code></li>
 <li><code><a href="../reference/field_types_available.html">ft_categorical()</a></code></li>

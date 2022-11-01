@@ -12,7 +12,7 @@ daiquiri_aggregated_data objects"><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,14 +60,16 @@ daiquiri_aggregated_data objects"><!-- mathjax --><script src="https://cdnjs.clo
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">report_data</span><span class="op">(</span></span>
-<span>  <span class="va">source_data</span>,</span>
-<span>  <span class="va">aggregated_data</span>,</span>
-<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
-<span>  save_filename <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  format <span class="op">=</span> <span class="st">"html"</span>,</span>
-<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">report_data</span><span class="op">(</span>
+  <span class="va">source_data</span>,
+  <span class="va">aggregated_data</span>,
+  report_title <span class="op">=</span> <span class="st">"daiquiri data quality report"</span>,
+  save_directory <span class="op">=</span> <span class="st">"."</span>,
+  save_filename <span class="op">=</span> <span class="cn">NULL</span>,
+  format <span class="op">=</span> <span class="st">"html"</span>,
+  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,6 +82,10 @@ daiquiri_aggregated_data objects"><!-- mathjax --><script src="https://cdnjs.clo
 <dt>aggregated_data</dt>
 <dd><p>A <code>daiquiri_aggregated_data</code> object returned from
 <code><a href="aggregate_data.html">aggregate_data()</a></code> function</p></dd>
+
+
+<dt>report_title</dt>
+<dd><p>Title to appear on the report</p></dd>
 
 
 <dt>save_directory</dt>
@@ -100,6 +106,11 @@ generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 <dt>show_progress</dt>
 <dd><p>Print progress to console. Default = <code>TRUE</code></p></dd>
 
+
+<dt>...</dt>
+<dd><p>Further parameters to be passed to <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code>. Cannot
+include any of <code>input</code>, <code>output_dir</code>, <code>output_file</code>, <code>params</code>, <code>quiet</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -110,37 +121,37 @@ generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="prepare_data.html">prepare_data()</a></code>, <code><a href="aggregate_data.html">aggregate_data()</a></code>,
-<code><a href="create_report.html">create_report()</a></code></p></div>
+<code><a href="daiquiri_report.html">daiquiri_report()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="co"># load example data into a data.frame</span></span></span>
-<span class="r-in"><span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  delim <span class="op">=</span> <span class="st">","</span>,</span></span>
-<span class="r-in"><span>  col_names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># validate and prepare the data for aggregation</span></span></span>
-<span class="r-in"><span><span class="va">source_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">raw_data</span>,</span></span>
-<span class="r-in"><span>  field_types <span class="op">=</span> <span class="fu"><a href="field_types.html">field_types</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    PrescriptionID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    PrescriptionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    AdmissionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    Drug <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    Dose <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    DoseUnit <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    PatientID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    Location <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  dataset_description <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span></span>
-<span class="r-in"><span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
+<span class="r-in"><span class="co"># load example data into a data.frame</span></span>
+<span class="r-in"><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="read_data.html">read_data</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>,</span>
+<span class="r-in">  delim <span class="op">=</span> <span class="st">","</span>,</span>
+<span class="r-in">  col_names <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span class="r-in"><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># validate and prepare the data for aggregation</span></span>
+<span class="r-in"><span class="va">source_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_data.html">prepare_data</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="va">raw_data</span>,</span>
+<span class="r-in">  field_types <span class="op">=</span> <span class="fu"><a href="field_types.html">field_types</a></span><span class="op">(</span></span>
+<span class="r-in">    PrescriptionID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    PrescriptionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    AdmissionDate <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span class="r-in">    Drug <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    Dose <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    DoseUnit <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    PatientID <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span class="r-in">    Location <span class="op">=</span> <span class="fu"><a href="field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in">  <span class="op">)</span>,</span>
+<span class="r-in">  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span class="r-in">  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span class="r-in">  dataset_description <span class="op">=</span> <span class="st">"Example data provided with package"</span>,</span>
+<span class="r-in">  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span class="r-in"><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> field_types supplied:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionID	&lt;uniqueidentifier&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PrescriptionDate	&lt;timepoint&gt;	options: includes_time</span>
@@ -169,13 +180,13 @@ generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   PatientID </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Location </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># aggregate the data</span></span></span>
-<span class="r-in"><span><span class="va">aggregated_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_data.html">aggregate_data</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">source_data</span>,</span></span>
-<span class="r-in"><span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span></span>
-<span class="r-in"><span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># aggregate the data</span></span>
+<span class="r-in"><span class="va">aggregated_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_data.html">aggregate_data</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="va">source_data</span>,</span>
+<span class="r-in">  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span class="r-in">  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span class="r-in"><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating [] by [day]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating overall dataset... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating each data_field in turn... </span>
@@ -260,21 +271,22 @@ generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [ALL_FIELDS_COMBINED]: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Finished </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># save a report in the current directory using the previously-created objects</span></span></span>
-<span class="r-in"><span><span class="fu">report_data</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">source_data</span>,</span></span>
-<span class="r-in"><span>  <span class="va">aggregated_data</span>,</span></span>
-<span class="r-in"><span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span></span>
-<span class="r-in"><span>  save_filename <span class="op">=</span> <span class="st">"example_data_report"</span>,</span></span>
-<span class="r-in"><span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"></span>
+<span class="r-in"><span class="co"># save a report in the current directory using the previously-created objects</span></span>
+<span class="r-in"><span class="fu">report_data</span><span class="op">(</span></span>
+<span class="r-in">  <span class="va">source_data</span>,</span>
+<span class="r-in">  <span class="va">aggregated_data</span>,</span>
+<span class="r-in">  report_title <span class="op">=</span> <span class="st">"daiquiri data quality report"</span>,</span>
+<span class="r-in">  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span class="r-in">  save_filename <span class="op">=</span> <span class="st">"example_data_report"</span>,</span>
+<span class="r-in">  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span class="r-in"><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Generating html report... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> processing file: report_htmldoc.Rmd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |..                                                                    |   3%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ordinary text without R code</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    inline R code fragments</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |.....                                                                 |   7%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> label: setup (with options) </span>
@@ -358,15 +370,15 @@ generated with the format <code>daiquiri_report_YYMMDD_HHMMSS</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> output file: report_htmldoc.knit.md</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/quarto/bin/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc45f06f3325d4.html --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\pquan\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\pquan\AppData\Local\Temp\RtmpsnSV2Z\rmarkdown-str45f02af75ba.html" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "C:/Program Files/RStudio/bin/pandoc/pandoc" +RTS -K512m -RTS report_htmldoc.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output pandoc117c1f3c5988.html --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\pagebreak.lua" --lua-filter "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmarkdown\lua\latex-div.lua" --self-contained --variable bs3=TRUE --standalone --section-divs --template "C:\Users\phuongq\Documents\Rworkspace\library\rmarkdown\rmd\h\default.html" --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable "mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" --include-in-header "C:\Users\phuongq\AppData\Local\Temp\Rtmpkb5mRK\rmarkdown-str117c58876d73.html" </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Output created: example_data_report.html</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Report saved to: ./example_data_report.html </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "./example_data_report.html"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="st">"./example_data_report.html"</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span class="co"># }</span></span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
