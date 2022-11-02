@@ -90,16 +90,16 @@ raw_data <- read_data(path, show_progress = FALSE)
 head(raw_data)
 ```
 
-    ## # A tibble: 6 x 8
+    ## # A tibble: 6 × 8
     ##   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID
     ##   <chr>          <chr>              <chr>         <chr> <chr> <chr>    <chr>    
-    ## 1 6000           2021-01-01 00:00:~ 2020-12-31    Ceft~ 500   mg       4993679  
-    ## 2 6001           NULL               2020-12-31    Fluc~ 1000  mg       819452   
-    ## 3 6002           NULL               2020-12-30    Teic~ 400   mg       275597   
-    ## 4 6003           2021-01-01 01:00:~ 2020-12-31    Fluc~ 1000  NULL     819452   
-    ## 5 6004           2021-01-01 02:00:~ 2020-12-20    Fluc~ 1000  NULL     528071   
-    ## 6 6005           2021-01-01 03:00:~ 2020-12-30    Co-a~ 1.2   g        1001434  
-    ## # ... with 1 more variable: Location <chr>
+    ## 1 6000           2021-01-01 00:00:… 2020-12-31    Ceft… 500   mg       4993679  
+    ## 2 6001           NULL               2020-12-31    Fluc… 1000  mg       819452   
+    ## 3 6002           NULL               2020-12-30    Teic… 400   mg       275597   
+    ## 4 6003           2021-01-01 01:00:… 2020-12-31    Fluc… 1000  NULL     819452   
+    ## 5 6004           2021-01-01 02:00:… 2020-12-20    Fluc… 1000  NULL     528071   
+    ## 6 6005           2021-01-01 03:00:… 2020-12-30    Co-a… 1.2   g        1001434  
+    ## # … with 1 more variable: Location <chr>
 
 ``` r
 # specify the type of data expected in each column of the data.frame
@@ -152,3 +152,12 @@ Health Protection Research Unit (NIHR HPRU) in Healthcare Associated
 Infections and Antimicrobial Resistance at the University of Oxford in
 partnership with Public Health England (PHE) (NIHR200915), and by the
 NIHR Oxford Biomedical Research Centre.
+
+## Contributing to this package
+
+Please report any bugs or suggestions by opening a [github
+issue](https://github.com/ropensci/daiquiri/issues).
+
+Please note that this package is released with a [Contributor Code of
+Conduct](https://ropensci.org/code-of-conduct/). By contributing to this
+project, you agree to abide by its terms.

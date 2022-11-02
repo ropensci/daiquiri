@@ -97,3 +97,10 @@ Please remember to update the version number to match the version you used.
 
 This work was supported by the National Institute for Health Research Health Protection Research Unit (NIHR HPRU) in Healthcare Associated Infections and Antimicrobial Resistance at the University of Oxford in partnership with Public Health England (PHE) (NIHR200915), and by the NIHR Oxford Biomedical Research Centre.
 
+
+## Contributing to this package
+
+Please report any bugs or suggestions by opening a [github issue](https://github.com/ropensci/daiquiri/issues).
+
+Please note that this package is released with a [Contributor Code of Conduct](https://ropensci.org/code-of-conduct/). 
+By contributing to this project, you agree to abide by its terms.

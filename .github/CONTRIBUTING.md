@@ -13,4 +13,5 @@ If you'd like to contribute changes please raise an issue first and then we can 
 
 ## Code of Conduct
 
-Please keep any comments respectful and relevant.
+Please note that this package is released with a [Contributor Code of Conduct](https://ropensci.org/code-of-conduct/). 
+By contributing to this project, you agree to abide by its terms.
