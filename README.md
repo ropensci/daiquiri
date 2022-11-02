@@ -71,11 +71,11 @@ trust in the scientific process.
 ## Installation
 
 The intention is to make daiquiri available in CRAN but until then, you
-can install the current development version from GitHub:
+can install the current development version from the
+[r-universe](https://r-universe.dev/):
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ropensci/daiquiri", build_vignettes = TRUE)
+install.packages("daiquiri", repos = "https://ropensci.r-universe.dev")
 ```
 
 ## Usage
