@@ -107,10 +107,9 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The intention is to make daiquiri available in CRAN but until then, you can install the current development version from GitHub:</p>
+<p>The intention is to make daiquiri available in CRAN but until then, you can install the current development version from the <a href="https://r-universe.dev/" class="external-link">r-universe</a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ropensci/daiquiri"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"daiquiri"</span>, repos <span class="op">=</span> <span class="st">"https://ropensci.r-universe.dev"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -123,16 +122,16 @@
 <span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_data.html">read_data</a></span><span class="op">(</span><span class="va">path</span>, show_progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">raw_data</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 x 8</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 × 8</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;          &lt;chr&gt;              &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;    </span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 6000           2021-01-01 00:00:~ 2020-12-31    Ceft~ 500   mg       4993679  </span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 6001           NULL               2020-12-31    Fluc~ 1000  mg       819452   </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 6002           NULL               2020-12-30    Teic~ 400   mg       275597   </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 6003           2021-01-01 01:00:~ 2020-12-31    Fluc~ 1000  NULL     819452   </span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 6004           2021-01-01 02:00:~ 2020-12-20    Fluc~ 1000  NULL     528071   </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6005           2021-01-01 03:00:~ 2020-12-30    Co-a~ 1.2   g        1001434  </span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## # ... with 1 more variable: Location &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 6000           2021-01-01 00:00:… 2020-12-31    Ceft… 500   mg       4993679  </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 6001           NULL               2020-12-31    Fluc… 1000  mg       819452   </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 6002           NULL               2020-12-30    Teic… 400   mg       275597   </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 6003           2021-01-01 01:00:… 2020-12-31    Fluc… 1000  NULL     819452   </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 6004           2021-01-01 02:00:… 2020-12-20    Fluc… 1000  NULL     528071   </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6005           2021-01-01 03:00:… 2020-12-30    Co-a… 1.2   g        1001434  </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 1 more variable: Location &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the type of data expected in each column of the data.frame</span>
 <span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/field_types.html">field_types</a></span><span class="op">(</span>
@@ -166,6 +165,12 @@
 <h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
 </h2>
 <p>This work was supported by the National Institute for Health Research Health Protection Research Unit (NIHR HPRU) in Healthcare Associated Infections and Antimicrobial Resistance at the University of Oxford in partnership with Public Health England (PHE) (NIHR200915), and by the NIHR Oxford Biomedical Research Centre.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing-to-this-package">Contributing to this package<a class="anchor" aria-label="anchor" href="#contributing-to-this-package"></a>
+</h2>
+<p>Please report any bugs or suggestions by opening a <a href="https://github.com/ropensci/daiquiri/issues" class="external-link">github issue</a>.</p>
+<p>Please note that this package is released with a <a href="https://ropensci.org/code-of-conduct/" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
