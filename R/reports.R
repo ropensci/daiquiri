@@ -141,6 +141,7 @@ report_data <- function(source_data,
 #'   column_name)
 #' @return ggplot
 #' @noRd
+#' @importFrom ggplot2 .data
 plot_timeseries_static <- function(agg_field,
                                    agg_fun) {
   timepoint_aggcol_name <- names(agg_field$values)[1]
@@ -148,7 +149,7 @@ plot_timeseries_static <- function(agg_field,
   g <-
     ggplot2::ggplot(
       agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE],
-      ggplot2::aes_string(timepoint_aggcol_name, agg_fun)
+      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])
     ) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
@@ -217,7 +218,7 @@ plot_overview_totals_static <- function(agg_field,
     agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
 
   g <-
-    ggplot2::ggplot(data, ggplot2::aes_string(timepoint_aggcol_name, agg_fun)) +
+    ggplot2::ggplot(data, ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
       labels = scales::label_date_short(sep = " "),
@@ -244,10 +245,10 @@ plot_overview_totals_static <- function(agg_field,
       # use ribbon instead of area so that NAs don't get interpolated
       ggplot2::geom_ribbon(
         data = data[!is.na(get(agg_fun)), ymin := 0],
-        ggplot2::aes_string(
-          x = timepoint_aggcol_name,
-          ymin = "ymin",
-          ymax = agg_fun
+        ggplot2::aes(
+          x = .data[[timepoint_aggcol_name]],
+          ymin = ymin,
+          ymax = .data[[agg_fun]]
         ),
         fill = fill_colour,
         alpha = 0.5
@@ -311,7 +312,7 @@ plot_overview_heatmap_static <- function(agg_fields,
   g <-
     ggplot2::ggplot(
       data,
-      ggplot2::aes_string(timepoint_aggcol_name, "field_name", fill = agg_fun)
+      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[agg_fun]])
     ) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(
