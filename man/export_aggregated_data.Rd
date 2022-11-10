@@ -29,6 +29,7 @@ Export aggregated data to disk.  Creates a separate file for each aggregated
 field in dataset.
 }
 \examples{
+\donttest{
 raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
   delim = ",",
@@ -65,6 +66,7 @@ export_aggregated_data(
 \dontshow{
 f <- list.files(".", "^ex_.*csv$")
 file.remove(f)
+}
 }
 
 }

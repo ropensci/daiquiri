@@ -166,7 +166,9 @@ print.daiquiri_aggregated_data <- function(x, ...) {
 #' @param save_file_type String. Filetype extension supported by `readr`,
 #'   currently only csv allowed
 #' @return (invisibly) The `daiquiri_aggregated_data` object that was passed in
-#' @examples raw_data <- read_data(
+#' @examples
+#' \donttest{
+#' raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
 #'   delim = ",",
 #'   col_names = TRUE
@@ -202,6 +204,7 @@ print.daiquiri_aggregated_data <- function(x, ...) {
 #' \dontshow{
 #' f <- list.files(".", "^ex_.*csv$")
 #' file.remove(f)
+#' }
 #' }
 #'
 #' @export
