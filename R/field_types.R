@@ -115,8 +115,8 @@ print.daiquiri_field_types <- function(x, ...) {
 #' Helper function to generate template code for a [field_types()] specification,
 #' based on the supplied data frame. All fields (columns) in the specification
 #' will be defined using the `default_field_type`, and the console output can be
-#' copied and edited before being used as input to [daiquiri_report()]()
-#' or [prepare_data()]().
+#' copied and edited before being used as input to [daiquiri_report()]
+#' or [prepare_data()].
 #'
 #' @param df data frame including the column names for the template
 #'   specification

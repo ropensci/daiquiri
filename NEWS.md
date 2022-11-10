@@ -1,3 +1,10 @@
+# daiquiri 1.0.1 (2022-11-09)
+
+Initial submission to CRAN
+
+* Replaced calls to deprecated function `aes_string()` in `ggplot2`
+
+
 # daiquiri 1.0.0 (2022-11-01)
 
 This release incorporates changes requested for acceptance into https://ropensci.org/. There are many breaking changes as objects have been renamed for better consistency and style.

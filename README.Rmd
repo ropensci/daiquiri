@@ -78,7 +78,7 @@ daiq_obj <- daiquiri_report(
 )
 ```
 
-An [example report](https://ropensci.github.io/daiquiri/misc/example_prescriptions_report.html) is available from the [package website](https://ropensci.github.io/daiquiri/index.html).
+An [example report](https://ropensci.github.io/daiquiri/misc/example_data_report.html) is available from the [package website](https://ropensci.github.io/daiquiri/index.html).
 
 More detailed guidance can be found in the [walkthrough vignette](https://ropensci.github.io/daiquiri/articles/daiquiri.html):
 

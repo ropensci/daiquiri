@@ -1,7 +1,7 @@
 Package: daiquiri
 Type: Package
 Title: Data Quality Reporting for Temporal Datasets
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
@@ -15,13 +15,13 @@ Description: Generate reports that enable quick visual review of
     values are automatically created for each data field (column) depending on its 
     contents (e.g. min/max/mean values for numeric data, no. of distinct 
     values for categorical data), as well as overviews for missing values, 
-    non-conformant values, and duplicated rows. The resulting reports are sharable 
+    non-conformant values, and duplicated rows. The resulting reports are shareable 
     and can contribute to forming a transparent record of the entire analysis process. 
     It is designed with Electronic Health Records in mind, but can be used for 
     any type of record-level temporal data (i.e. tabular data where each row represents 
     a single “event”, one column contains the "event date", and other columns 
     contain any associated values for the event).
-URL: https://github.com/ropensci/daiquiri, https://ropensci.github.io/daiquiri
+URL: https://github.com/ropensci/daiquiri, https://ropensci.github.io/daiquiri/
 BugReports: https://github.com/ropensci/daiquiri/issues
 License: GPL (>= 3)
 Encoding: UTF-8
