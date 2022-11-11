@@ -8,8 +8,8 @@
 <meta name="description" content="daiquiri">
 <title>Walkthrough for the daiquiri package • daiquiri</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Walkthrough for the daiquiri package">
 <meta property="og:description" content="daiquiri">
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,191 +80,323 @@
 
     
     
-<p>This vignette demonstrates how to use this package to generate an html report that allows you to quickly review any changes in a temporal dataset’s values over time.</p>
+<p>This vignette demonstrates how to use this package to generate an
+html report that allows you to quickly review any changes in a temporal
+dataset’s values over time.</p>
 <div class="section level2">
 <h2 id="data-format">Data format<a class="anchor" aria-label="anchor" href="#data-format"></a>
 </h2>
-<p>Data must be in tabular format, as a data frame. Each row should represent a single “event” such as a visit to hospital or a medical test result or a drug prescription. One column must contain the “event date” (aka “timepoint”) for the row, with further columns containing any associated values for the event, such as the type of visit, or the name of the medical test, or the quantity of the drug prescribed.</p>
-<p>In order for the package to detect any non-conformant values in numeric or datetime fields, these should be present in the data frame in their raw character format. A function called <code><a href="../reference/read_data.html">read_data()</a></code> is supplied to assist with this, and will read rectangular data from a text file automatically as character type.</p>
-<p>Dates are expected to be in the format <code>YYYY-MM-DD</code> or <code>YYYY-MM-DD HH:MM:SS</code>, though a range of other date formats can also be accepted (see later). User-specified locales are not currently supported.</p>
+<p>Data must be in tabular format, as a data frame. Each row should
+represent a single “event” such as a visit to hospital or a medical test
+result or a drug prescription. One column must contain the “event date”
+(aka “timepoint”) for the row, with further columns containing any
+associated values for the event, such as the type of visit, or the name
+of the medical test, or the quantity of the drug prescribed.</p>
+<p>In order for the package to detect any non-conformant values in
+numeric or datetime fields, these should be present in the data frame in
+their raw character format. A function called <code><a href="../reference/read_data.html">read_data()</a></code>
+is supplied to assist with this, and will read rectangular data from a
+text file automatically as character type.</p>
+<p>Dates are expected to be in the format <code>YYYY-MM-DD</code> or
+<code>YYYY-MM-DD HH:MM:SS</code>, though a range of other date formats
+can also be accepted (see later). User-specified locales are not
+currently supported.</p>
 <p><strong>Example:</strong></p>
-<p>The <code>example_prescriptions</code> dataset is provided with this package as a csv file, and contains (synthetic) examples of antibiotic prescriptions given in a hospital over a period of a year, with one row per prescription. It contains 8 columns:</p>
+<p>The <code>example_prescriptions</code> dataset is provided with this
+package as a csv file, and contains (synthetic) examples of antibiotic
+prescriptions given in a hospital over a period of a year, with one row
+per prescription. It contains 8 columns:</p>
 <ul>
 <li>PrescriptionID - the uniqueidentifier for the row</li>
 <li>PrescriptionDate - The date the prescription was given</li>
-<li>AdmissionDate - The date the patient was admitted to the hospital</li>
+<li>AdmissionDate - The date the patient was admitted to the
+hospital</li>
 <li>Drug - The name of the antibiotic prescribed</li>
 <li>Dose - The size of the dose prescribed</li>
 <li>DoseUnit - The units for the dose prescribed</li>
 <li>PatientID - A unique identifier for the patient</li>
 <li>Location - The location of the patient</li>
 </ul>
-<p>There are some missing values which are represented by the string ‘NULL’. String values that should be treated as missing values can be specified when the data is processed, using the <code>na</code> parameter.</p>
+<p>There are some missing values which are represented by the string
+‘NULL’. String values that should be treated as missing values can be
+specified when the data is processed, using the <code>na</code>
+parameter.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># first, attach the package if you haven't already</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/daiquiri" class="external-link">daiquiri</a></span><span class="op">)</span>
-
-<span class="co"># this is where the example file is located</span>
-<span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span>
-
-<span class="co"># load the data into a data.frame without doing any datatype conversion</span>
-<span class="va">example_prescriptions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_data.html">read_data</a></span><span class="op">(</span>
-  <span class="va">path</span>,
-  delim <span class="op">=</span> <span class="st">","</span>,
-  col_names <span class="op">=</span> <span class="cn">TRUE</span>,
-  show_progress <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_prescriptions</span><span class="op">)</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 8</span></span>
-<span class="co">#&gt;   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID</span>
-<span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 6000           2021-01-01 00:00:~ 2020-12-31    Ceft~ 500   mg       4993679  </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 6001           NULL               2020-12-31    Fluc~ 1000  mg       819452   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 6002           NULL               2020-12-30    Teic~ 400   mg       275597   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:~ 2020-12-31    Fluc~ 1000  NULL     819452   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:~ 2020-12-20    Fluc~ 1000  NULL     528071   </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 6005           2021-01-01 03:00:~ 2020-12-30    Co-a~ 1.2   g        1001434  </span>
-<span class="co">#&gt; <span style="color: #949494;"># ... with 1 more variable: Location &lt;chr&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># first, attach the package if you haven't already</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/daiquiri" class="external-link">daiquiri</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># this is where the example file is located</span></span>
+<span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_prescriptions.csv"</span>, package <span class="op">=</span> <span class="st">"daiquiri"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># load the data into a data.frame without doing any datatype conversion</span></span>
+<span><span class="va">example_prescriptions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_data.html">read_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">path</span>,</span>
+<span>  delim <span class="op">=</span> <span class="st">","</span>,</span>
+<span>  col_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_prescriptions</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt;   PrescriptionID PrescriptionDate    Admis…¹ Drug  Dose  DoseU…² Patie…³ Locat…⁴</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 6000           2021-01-01 00:00:00 2020-1… Ceft… 500   mg      4993679 SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 6001           NULL                2020-1… Fluc… 1000  mg      819452  SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 6002           NULL                2020-1… Teic… 400   mg      275597  SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:00 2020-1… Fluc… 1000  NULL    819452  SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:00 2020-1… Fluc… 1000  NULL    528071  SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 6005           2021-01-01 03:00:00 2020-1… Co-a… 1.2   g       1001434 SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​AdmissionDate, ²​DoseUnit, ³​PatientID,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   ⁴​Location</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="specification-of-data-field-types">Specification of data field types<a class="anchor" aria-label="anchor" href="#specification-of-data-field-types"></a>
 </h2>
-<p>You must specify what type of data is expected in each column, e.g. a date, a number, a nominal category. The package will use this information to calculate the number of values that are not of the expected type, and to decide which summary functions to use for the time series’.</p>
-<p>One and only one column must be chosen to be the “timepoint” field (though you could run the package again using a different column as the timepoint field if you so choose). This column will be used as the independent time variable on the x-axis of each time series plot.</p>
-<p>Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number of values present, as well as the number and percentage of missing values.</p>
+<p>You must specify what type of data is expected in each column, e.g. a
+date, a number, a nominal category. The package will use this
+information to calculate the number of values that are not of the
+expected type, and to decide which summary functions to use for the time
+series’.</p>
+<p>One and only one column must be chosen to be the “timepoint” field
+(though you could run the package again using a different column as the
+timepoint field if you so choose). This column will be used as the
+independent time variable on the x-axis of each time series plot.</p>
+<p>Here is a list of the possible field types for the columns. Different
+time series will be generated depending on the type of field. All types
+will have time series generated for the number of values present, as
+well as the number and percentage of missing values.</p>
 <ul>
 <li>
-<code><a href="../reference/field_types_available.html">ft_timepoint()</a></code> - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the <code>includes_time</code> parameter is set to <code>FALSE</code> (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series’ are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.</li>
+<code><a href="../reference/field_types_available.html">ft_timepoint()</a></code> - identifies the data field which should
+be used as the independent time variable (and will form the x-axis of
+any time series plots). There should be one and only one of these
+specified. By default, time series will also be created for the number
+and percentage of values which do not contain a time portion, though
+this can be switched off if the <code>includes_time</code> parameter is
+set to <code>FALSE</code> (e.g. if you already know in advance that
+there are no time portions in any of the values). NOTE: Time series’ are
+not created for missing values as they cannot be assigned to a date.
+Instead, the total number of missing values is included in the summary
+table.</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_uniqueidentifier()</a></code> - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for min_length, max_length, and mean_length of the string.</li>
+<code><a href="../reference/field_types_available.html">ft_uniqueidentifier()</a></code> - identifies data fields which
+contain a (usually computer-generated) identifier for an entity, e.g. a
+patient. It does not need to be unique within the dataset. Values are
+treated as strings, with additional time series created for min_length,
+max_length, and mean_length of the string.</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_categorical()</a></code> - identifies data fields which should be treated as categorical. Values are treated as strings. Additional time series are created for the number of “distinct” values, and if the <code>aggregate_by_each_category</code> parameter is set to <code>TRUE</code>, further time series will be created for the number and percentage of values within each distinct subcategory value.</li>
+<code><a href="../reference/field_types_available.html">ft_categorical()</a></code> - identifies data fields which should
+be treated as categorical. Values are treated as strings. Additional
+time series are created for the number of “distinct” values, and if the
+<code>aggregate_by_each_category</code> parameter is set to
+<code>TRUE</code>, further time series will be created for the number
+and percentage of values within each distinct subcategory value.</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_numeric()</a></code> - identifies data fields which contain numeric values that should be treated as continuous. Additional time series are created for the min, max, mean, and median value, and and the number and percentage of non-conformant values.</li>
+<code><a href="../reference/field_types_available.html">ft_numeric()</a></code> - identifies data fields which contain
+numeric values that should be treated as continuous. Additional time
+series are created for the min, max, mean, and median value, and and the
+number and percentage of non-conformant values.</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_datetime()</a></code> - identifies data fields which contain date (and optionally time) values that should be treated as continuous. Additional time series are created for the min, max, and mean value, and and the number and percentage of non-conformant values. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the <code>includes_time</code> parameter is set to <code>FALSE</code> (e.g. if you already know in advance that there are no time portions in any of the values).</li>
+<code><a href="../reference/field_types_available.html">ft_datetime()</a></code> - identifies data fields which contain
+date (and optionally time) values that should be treated as continuous.
+Additional time series are created for the min, max, and mean value, and
+and the number and percentage of non-conformant values. By default, time
+series will also be created for the number and percentage of values
+which do not contain a time portion, though this can be switched off if
+the <code>includes_time</code> parameter is set to <code>FALSE</code>
+(e.g. if you already know in advance that there are no time portions in
+any of the values).</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_freetext()</a></code> - identifies data fields which contain free text values. Only presence/missingness will be evaluated.</li>
+<code><a href="../reference/field_types_available.html">ft_freetext()</a></code> - identifies data fields which contain
+free text values. Only presence/missingness will be evaluated.</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_simple()</a></code> - identifies data fields where you only want presence/missingness to be evaluated (but which are not necessarily free text).</li>
+<code><a href="../reference/field_types_available.html">ft_simple()</a></code> - identifies data fields where you only
+want presence/missingness to be evaluated (but which are not necessarily
+free text).</li>
 <li>
-<code><a href="../reference/field_types_available.html">ft_ignore()</a></code> - identifies data fields which should be ignored. These will not be loaded.</li>
+<code><a href="../reference/field_types_available.html">ft_ignore()</a></code> - identifies data fields which should be
+ignored. These will not be loaded.</li>
 </ul>
-<p>Lastly, a number of time series will be generated for the dataset as a whole, namely:</p>
+<p>Lastly, a number of time series will be generated for the dataset as
+a whole, namely:</p>
 <ul>
-<li>The number and percentage presence of duplicate records (i.e. where the entire row is the same as another row in the dataset)</li>
+<li>The number and percentage presence of duplicate records (i.e. where
+the entire row is the same as another row in the dataset)</li>
 <li>The number of records (after duplicates have been removed)</li>
-<li>The total number and percentage of missing and of non-conformant values (where relevant) across all data fields</li>
+<li>The total number and percentage of missing and of non-conformant
+values (where relevant) across all data fields</li>
 </ul>
 <p>NOTES:</p>
-<p>The <code><a href="../reference/field_types_available.html">ft_timepoint()</a></code> and <code><a href="../reference/field_types_available.html">ft_datetime()</a></code> field types accept a <code>format</code> parameter for when the values in the column are not in <code>YYYY-MM-DD</code> or <code>YYYY-MM-DD HH:MM:SS</code> format. These must follow the <code>col_datetime</code> format specifications from the <code>readr</code> package, e.g. “%d/%m/%Y”. When a format is supplied, it must match the complete string. User-specified locales are not currently supported.</p>
-<p>If your data is already aggregated (e.g. one column contains a date and the other columns contain the number of inpatient admissions, outpatient appointments, and emergency department attendances on that date), you can still use this package if you restrict to the <code><a href="../reference/field_types_available.html">ft_timepoint()</a></code>, <code><a href="../reference/field_types_available.html">ft_numeric()</a></code>, and <code><a href="../reference/field_types_available.html">ft_simple()</a></code> field types.</p>
+<p>The <code><a href="../reference/field_types_available.html">ft_timepoint()</a></code> and <code><a href="../reference/field_types_available.html">ft_datetime()</a></code> field
+types accept a <code>format</code> parameter for when the values in the
+column are not in <code>YYYY-MM-DD</code> or
+<code>YYYY-MM-DD HH:MM:SS</code> format. These must follow the
+<code>col_datetime</code> format specifications from the
+<code>readr</code> package, e.g. “%d/%m/%Y”. When a format is supplied,
+it must match the complete string. User-specified locales are not
+currently supported.</p>
+<p>If your data is already aggregated (e.g. one column contains a date
+and the other columns contain the number of inpatient admissions,
+outpatient appointments, and emergency department attendances on that
+date), you can still use this package if you restrict to the
+<code><a href="../reference/field_types_available.html">ft_timepoint()</a></code>, <code><a href="../reference/field_types_available.html">ft_numeric()</a></code>, and
+<code><a href="../reference/field_types_available.html">ft_simple()</a></code> field types.</p>
 <p><strong>Example:</strong></p>
-<p>For the <code>example_prescriptions</code> dataset above, we will use the PrescriptionDate as the timepoint field, and specify the other columns as follows:</p>
+<p>For the <code>example_prescriptions</code> dataset above, we will use
+the PrescriptionDate as the timepoint field, and specify the other
+columns as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># set up a field_types specification for use later</span>
-<span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/field_types.html">field_types</a></span><span class="op">(</span>
-  PrescriptionID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,
-  PrescriptionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,
-  AdmissionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
-  Drug <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,
-  Dose <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,
-  DoseUnit <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,
-  PatientID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,
-  Location <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
-<p>This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.</p>
-<p>TIP: If you have a lot of columns in your dataset you can use the <code><a href="../reference/template_field_types.html">template_field_types()</a></code> function to print a template specification to the console that you can copy and edit.</p>
+<code class="sourceCode R"><span><span class="co"># set up a field_types specification for use later</span></span>
+<span><span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/field_types.html">field_types</a></span><span class="op">(</span></span>
+<span>  PrescriptionID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  PrescriptionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  AdmissionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  Drug <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  Dose <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  DoseUnit <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  PatientID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  Location <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span>aggregate_by_each_category <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>This is just one of many different possible choices, for example
+another option could be to use the AdmissionDate as the timepoint field
+instead, and set the Drug column to be categorical. It is up to you to
+decide which set of time series you want to be created for each
+column.</p>
+<p>TIP: If you have a lot of columns in your dataset you can use the
+<code><a href="../reference/template_field_types.html">template_field_types()</a></code> function to print a template
+specification to the console that you can copy and edit.</p>
 </div>
 <div class="section level2">
 <h2 id="generating-a-data-quality-report">Generating a data quality report<a class="anchor" aria-label="anchor" href="#generating-a-data-quality-report"></a>
 </h2>
-<p>The simplest way to create a data quality report is to use the <code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> function. If successful, the function will return a list containing information relating to the supplied parameters as well as the resulting <code>daiquiri_source_data</code> and <code>daiquiri_aggregated_data</code> objects, which can be reused to create further reports without needing to run everything all over again.</p>
-<p>At this point we need to decide what level of aggregation granularity we want to use. Options are daily/weekly/monthly/quarterly/yearly. Smaller aggregation granularities (e.g. day or week) will provide more detail, but if your data is sparser you might want to use a larger granularity. Time series will be created according to the specified field types, by aggregating the values for all records whose timepoint value lies within the relevant day/week/month etc.</p>
-<p>We also need to decide where to save the report, and optionally specify a filename (excluding file extension). The filename can only contain alphanumeric, <code>-</code> and <code>_</code> characters. If a filename is not supplied, one will be automatically generated. We can also optionally specify a short description for the dataset, which will appear on the report.</p>
-<p>If you specify a log directory, details of all the processing steps will be saved into a text file.</p>
-<p>You can choose to override the existing column names in the dataframe with those in the <code><a href="../reference/field_types.html">field_types()</a></code> specification by setting the <code>override_column_names</code> parameter to <code>TRUE</code>, in which case they must be specified in the correct order. If <code>override_column_names = FALSE</code> (the default) then the names in the <code><a href="../reference/field_types.html">field_types()</a></code> specification must match exactly to those in the dataframe.</p>
+<p>The simplest way to create a data quality report is to use the
+<code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> function. If successful, the function
+will return a list containing information relating to the supplied
+parameters as well as the resulting <code>daiquiri_source_data</code>
+and <code>daiquiri_aggregated_data</code> objects, which can be reused
+to create further reports without needing to run everything all over
+again.</p>
+<p>At this point we need to decide what level of aggregation granularity
+we want to use. Options are daily/weekly/monthly/quarterly/yearly.
+Smaller aggregation granularities (e.g. day or week) will provide more
+detail, but if your data is sparser you might want to use a larger
+granularity. Time series will be created according to the specified
+field types, by aggregating the values for all records whose timepoint
+value lies within the relevant day/week/month etc.</p>
+<p>We also need to decide where to save the report, and optionally
+specify a filename (excluding file extension). The filename can only
+contain alphanumeric, <code>-</code> and <code>_</code> characters. If a
+filename is not supplied, one will be automatically generated. We can
+also optionally specify a short description for the dataset, which will
+appear on the report.</p>
+<p>If you specify a log directory, details of all the processing steps
+will be saved into a text file.</p>
+<p>You can choose to override the existing column names in the dataframe
+with those in the <code><a href="../reference/field_types.html">field_types()</a></code> specification by setting
+the <code>override_column_names</code> parameter to <code>TRUE</code>,
+in which case they must be specified in the correct order. If
+<code>override_column_names = FALSE</code> (the default) then the names
+in the <code><a href="../reference/field_types.html">field_types()</a></code> specification must match exactly to
+those in the dataframe.</p>
 <p><strong>Example:</strong></p>
-<p>For the <code>example_prescriptions</code> dataset above, we will set the aggregation granularity to <code>day</code>, and save a report in the current directory.</p>
+<p>For the <code>example_prescriptions</code> dataset above, we will set
+the aggregation granularity to <code>day</code>, and save a report in
+the current directory.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daiquiri_report.html">daiquiri_report</a></span><span class="op">(</span>
-  df <span class="op">=</span> <span class="va">example_prescriptions</span>,
-  field_types <span class="op">=</span> <span class="va">fts</span>,
-  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,
-  dataset_description <span class="op">=</span> <span class="st">"Example prescription data"</span>,
-  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,
-  report_title <span class="op">=</span> <span class="st">"daiquiri data quality report"</span>,
-  save_directory <span class="op">=</span> <span class="st">"."</span>,
-  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_report"</span>,
-  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,
-  log_directory <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daiquiri_report.html">daiquiri_report</a></span><span class="op">(</span></span>
+<span>  df <span class="op">=</span> <span class="va">example_prescriptions</span>,</span>
+<span>  field_types <span class="op">=</span> <span class="va">fts</span>,</span>
+<span>  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span>  dataset_description <span class="op">=</span> <span class="st">"Example prescription data"</span>,</span>
+<span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span>  report_title <span class="op">=</span> <span class="st">"daiquiri data quality report"</span>,</span>
+<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_report"</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_directory <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contents-of-the-report">Contents of the report<a class="anchor" aria-label="anchor" href="#contents-of-the-report"></a>
 </h2>
-<p>The html reports created by this package can be opened in a browser and/or attached to an email, and contain three main tabs:</p>
+<p>The html reports created by this package can be opened in a browser
+and/or attached to an email, and contain three main tabs:</p>
 <div class="section level3">
 <h3 id="source-data">Source data<a class="anchor" aria-label="anchor" href="#source-data"></a>
 </h3>
-<p>This contains child tabs which provide an overall summary of the data imported, plus a complete list of validation warnings (such as any values identified as non-conformant)</p>
+<p>This contains child tabs which provide an overall summary of the data
+imported, plus a complete list of validation warnings (such as any
+values identified as non-conformant)</p>
 <p><img src="../reference/figures/example_prescriptions_source_fieldsimported.png" width="500"></p>
 </div>
 <div class="section level3">
 <h3 id="aggregated-data">Aggregated data<a class="anchor" aria-label="anchor" href="#aggregated-data"></a>
 </h3>
-<p>This contains child tabs which display plots showing overall numbers of records, missing values, non-conformant values, and duplicate records per timepoint, across the dataset as a whole. Fields and timepoints where these values are not applicable are coloured in grey.</p>
+<p>This contains child tabs which display plots showing overall numbers
+of records, missing values, non-conformant values, and duplicate records
+per timepoint, across the dataset as a whole. Fields and timepoints
+where these values are not applicable are coloured in grey.</p>
 <p><img src="../reference/figures/example_prescriptions_aggregated_valuespresent.png" width="500"></p>
 </div>
 <div class="section level3">
 <h3 id="individual-data-fields">Individual data fields<a class="anchor" aria-label="anchor" href="#individual-data-fields"></a>
 </h3>
-<p>This contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created</p>
+<p>This contains two levels of child tabs. The first level consists of
+one tab per data field in the dataset. Within each data field tab, there
+is a further set of child tabs displaying a plot for each time series
+created</p>
 <p><img src="../reference/figures/example_prescriptions_allfields_missing_perc.png" width="500"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="advanced-usage-details">Advanced usage details<a class="anchor" aria-label="anchor" href="#advanced-usage-details"></a>
 </h2>
-<p>The simplest way to use this package is to use the <code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> function as described above, which loads the data, aggregates it, and generates a report all in one go. However, if you have a very large dataset or if you want to create reports for multiple aggregation granularities without re-loading the data each time, you may prefer to do this in stages. Here is an example of how to use the intermediate functions and objects to achieve this. NOTE: if you want to change the <code><a href="../reference/field_types.html">field_types()</a></code> specification then the data will need to be re-loaded.</p>
+<p>The simplest way to use this package is to use the
+<code><a href="../reference/daiquiri_report.html">daiquiri_report()</a></code> function as described above, which loads
+the data, aggregates it, and generates a report all in one go. However,
+if you have a very large dataset or if you want to create reports for
+multiple aggregation granularities without re-loading the data each
+time, you may prefer to do this in stages. Here is an example of how to
+use the intermediate functions and objects to achieve this. NOTE: if you
+want to change the <code><a href="../reference/field_types.html">field_types()</a></code> specification then the
+data will need to be re-loaded.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># load your dataset into a source_data object</span>
-<span class="va">prescriptions_source_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span>
-  <span class="va">example_prescriptions</span>,
-  fieldtypes <span class="op">=</span> <span class="va">fts</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co"># aggregate the source_data object by desired granularity</span>
-<span class="va">prescriptions_byday</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_data.html">aggregate_data</a></span><span class="op">(</span>
-  <span class="va">prescriptions_source_data</span>,
-  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>
-<span class="op">)</span>
-
-<span class="co"># aggregate the same source_data object by a different granularity</span>
-<span class="va">prescriptions_byweek</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_data.html">aggregate_data</a></span><span class="op">(</span>
-  <span class="va">prescriptions_source_data</span>,
-  aggregation_timeunit <span class="op">=</span> <span class="st">"week"</span>
-<span class="op">)</span>
-
-<span class="co"># generate and save the reports</span>
-<span class="fu"><a href="../reference/report_data.html">report_data</a></span><span class="op">(</span>
-  source_data <span class="op">=</span> <span class="va">prescriptions_source_data</span>,
-  aggregated_data <span class="op">=</span> <span class="va">prescriptions_byday</span>,
-  report_title <span class="op">=</span> <span class="st">"Daily prescriptions"</span>,
-  save_directory <span class="op">=</span> <span class="st">"."</span>,
-  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_byday"</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="../reference/report_data.html">report_data</a></span><span class="op">(</span>
-  source_data <span class="op">=</span> <span class="va">prescriptions_source_data</span>,
-  aggregated_data <span class="op">=</span> <span class="va">prescriptions_byweek</span>,
-  report_title <span class="op">=</span> <span class="st">"Weekly prescriptions"</span>,
-  save_directory <span class="op">=</span> <span class="st">"."</span>,
-  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_byweek"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># load your dataset into a source_data object</span></span>
+<span><span class="va">prescriptions_source_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">example_prescriptions</span>,</span>
+<span>  fieldtypes <span class="op">=</span> <span class="va">fts</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># aggregate the source_data object by desired granularity</span></span>
+<span><span class="va">prescriptions_byday</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_data.html">aggregate_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">prescriptions_source_data</span>,</span>
+<span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># aggregate the same source_data object by a different granularity</span></span>
+<span><span class="va">prescriptions_byweek</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_data.html">aggregate_data</a></span><span class="op">(</span></span>
+<span>  <span class="va">prescriptions_source_data</span>,</span>
+<span>  aggregation_timeunit <span class="op">=</span> <span class="st">"week"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># generate and save the reports</span></span>
+<span><span class="fu"><a href="../reference/report_data.html">report_data</a></span><span class="op">(</span></span>
+<span>  source_data <span class="op">=</span> <span class="va">prescriptions_source_data</span>,</span>
+<span>  aggregated_data <span class="op">=</span> <span class="va">prescriptions_byday</span>,</span>
+<span>  report_title <span class="op">=</span> <span class="st">"Daily prescriptions"</span>,</span>
+<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_byday"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/report_data.html">report_data</a></span><span class="op">(</span></span>
+<span>  source_data <span class="op">=</span> <span class="va">prescriptions_source_data</span>,</span>
+<span>  aggregated_data <span class="op">=</span> <span class="va">prescriptions_byweek</span>,</span>
+<span>  report_title <span class="op">=</span> <span class="st">"Weekly prescriptions"</span>,</span>
+<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_byweek"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

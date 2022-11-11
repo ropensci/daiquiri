@@ -1,6 +1,6 @@
-# daiquiri 1.0.1 (2022-11-09)
+# daiquiri 1.0.1 (2022-11-11)
 
-Initial submission to CRAN
+First release to CRAN
 
 * Replaced calls to deprecated function `aes_string()` in `ggplot2`
 

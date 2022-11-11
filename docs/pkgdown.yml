@@ -1,7 +1,7 @@
-pandoc: 2.14.0.3
+pandoc: 2.17.1.1
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   daiquiri: daiquiri.html
-last_built: 2022-11-04T16:46Z
+last_built: 2022-11-11T17:53Z
 
