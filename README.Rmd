@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 [![R-CMD-check](https://github.com/ropensci/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/daiquiri/actions)
 [![Codecov test coverage](https://codecov.io/gh/ropensci/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ropensci/daiquiri?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Status at rOpenSci Software Peer Review](https://badges.ropensci.org/535_status.svg)](https://github.com/ropensci/software-review/issues/535)
 <!-- badges: end -->
 
 The daiquiri package generates data quality reports that enable quick visual review of temporal shifts in record-level data. Time series plots showing aggregated values are automatically created for each data field (column) depending on its contents (e.g. min/max/mean values for numeric data, no. of distinct values for categorical data), as well as overviews for missing values, non-conformant values, and duplicated rows.
