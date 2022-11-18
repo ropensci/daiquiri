@@ -19,7 +19,7 @@
 #' @param format File format of the report. Currently only `"html"` is supported
 #' @param show_progress Print progress to console. Default = `TRUE`
 #' @param ... Further parameters to be passed to `rmarkdown::render()`. Cannot
-#'   include any of `input`, `output_dir`, `output_file`, `params`, `quiet`.
+#'   include any of `input`, `output_dir`, `output_file`, `params`, `quiet`, `intermediates_dir`.
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' \donttest{
@@ -110,6 +110,7 @@ report_data <- function(source_data,
       ),
       output_file = paste0(save_filename, ".html"),
       output_dir = save_directory,
+      intermediates_dir = tempdir(),
       params = list(
         source_data = source_data,
         aggregated_data = aggregated_data,

@@ -36,7 +36,7 @@ generated with the format \code{daiquiri_report_YYMMDD_HHMMSS}.}
 \item{show_progress}{Print progress to console. Default = \code{TRUE}}
 
 \item{...}{Further parameters to be passed to \code{rmarkdown::render()}. Cannot
-include any of \code{input}, \code{output_dir}, \code{output_file}, \code{params}, \code{quiet}.}
+include any of \code{input}, \code{output_dir}, \code{output_file}, \code{params}, \code{quiet}, \code{intermediates_dir}.}
 }
 \value{
 A string containing the name and path of the saved report
