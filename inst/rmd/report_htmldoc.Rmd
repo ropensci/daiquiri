@@ -43,7 +43,7 @@ Report created on: `r Sys.time()`; daiquiri version `r utils::packageVersion(uti
 ## Source data {.tabset}
 
 
-```{r source_data}
+```{r source-data}
 sourcesummary <- summarise_source_data(params$source_data,
   show_progress = FALSE
 )
@@ -149,7 +149,7 @@ reactable::reactable(
 
 ### Summary
 
-```{r source_data-summary}
+```{r source-data-summary}
 
 summarydf <- data.frame(
   "Item" = c(
@@ -212,7 +212,7 @@ reactable::reactable(
 ## Aggregated data {.tabset}
 
 
-```{r aggregated_data}
+```{r aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
 ```
 
@@ -282,7 +282,7 @@ plot_overview_totals_static(
 
 ### Summary
 
-```{r aggregated_data-summary}
+```{r aggregated-data-summary}
 
 aggsummarydf <- data.frame(
   "Item" = c(
