@@ -1,4 +1,4 @@
-# daiquiri (development version)
+# daiquiri 1.0.2 (2022-11-21)
 
 * When rendering reports, intermediate files are now written to `tempdir()` instead of to the directory of the `report_htmldoc.Rmd` file (the default behaviour of `rmarkdown::render()`). This fixes errors caused when the library location is read-only.
 
