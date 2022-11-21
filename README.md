@@ -94,16 +94,17 @@ raw_data <- read_data(path, show_progress = FALSE)
 head(raw_data)
 ```
 
-    ## # A tibble: 6 x 8
-    ##   PrescriptionID PrescriptionDate   AdmissionDate Drug  Dose  DoseUnit PatientID
-    ##   <chr>          <chr>              <chr>         <chr> <chr> <chr>    <chr>    
-    ## 1 6000           2021-01-01 00:00:~ 2020-12-31    Ceft~ 500   mg       4993679  
-    ## 2 6001           NULL               2020-12-31    Fluc~ 1000  mg       819452   
-    ## 3 6002           NULL               2020-12-30    Teic~ 400   mg       275597   
-    ## 4 6003           2021-01-01 01:00:~ 2020-12-31    Fluc~ 1000  NULL     819452   
-    ## 5 6004           2021-01-01 02:00:~ 2020-12-20    Fluc~ 1000  NULL     528071   
-    ## 6 6005           2021-01-01 03:00:~ 2020-12-30    Co-a~ 1.2   g        1001434  
-    ## # ... with 1 more variable: Location <chr>
+    ## # A tibble: 6 × 8
+    ##   PrescriptionID PrescriptionDate    Admis…¹ Drug  Dose  DoseU…² Patie…³ Locat…⁴
+    ##   <chr>          <chr>               <chr>   <chr> <chr> <chr>   <chr>   <chr>  
+    ## 1 6000           2021-01-01 00:00:00 2020-1… Ceft… 500   mg      4993679 SITE1  
+    ## 2 6001           NULL                2020-1… Fluc… 1000  mg      819452  SITE1  
+    ## 3 6002           NULL                2020-1… Teic… 400   mg      275597  SITE1  
+    ## 4 6003           2021-01-01 01:00:00 2020-1… Fluc… 1000  NULL    819452  SITE1  
+    ## 5 6004           2021-01-01 02:00:00 2020-1… Fluc… 1000  NULL    528071  SITE1  
+    ## 6 6005           2021-01-01 03:00:00 2020-1… Co-a… 1.2   g       1001434 SITE1  
+    ## # … with abbreviated variable names ¹​AdmissionDate, ²​DoseUnit, ³​PatientID,
+    ## #   ⁴​Location
 
 ``` r
 # specify the type of data expected in each column of the data.frame
