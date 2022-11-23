@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +25,7 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="../misc/example_data_report.html">Example report</a>
+  <a class="nav-link" href="../articles/example_report.html">Example report</a>
 </li>
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -50,6 +50,10 @@
       <small>Source: <a href="https://github.com/ropensci/daiquiri/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.2" id="daiquiri-102-2022-11-21">daiquiri 1.0.2 (2022-11-21)<a class="anchor" aria-label="anchor" href="#daiquiri-102-2022-11-21"></a></h2><p class="text-muted">CRAN release: 2022-11-21</p>
+<ul><li>When rendering reports, intermediate files are now written to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> instead of to the directory of the <code>report_htmldoc.Rmd</code> file (the default behaviour of <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code>). This fixes errors caused when the library location is read-only.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="daiquiri-101-2022-11-11">daiquiri 1.0.1 (2022-11-11)<a class="anchor" aria-label="anchor" href="#daiquiri-101-2022-11-11"></a></h2><p class="text-muted">CRAN release: 2022-11-11</p>
 <p>First release to CRAN</p>

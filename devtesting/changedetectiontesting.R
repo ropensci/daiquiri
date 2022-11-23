@@ -9,9 +9,9 @@ devtools::load_all(".", reset = TRUE)
 log_initialise("./devtesting/testoutput")
 
 # test against example dataset
-testfile <- "./inst/extdata/example_data.csv"
+testfile <- "./inst/extdata/example_prescriptions.csv"
 testdf <- read_data(testfile)
-testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
+testfile_fieldtypes <- field_types(PrescriptionID = ft_uniqueidentifier()
 																	,PrescriptionDate = ft_timepoint()
 																	,AdmissionDate = ft_datetime(includes_time = FALSE)
 																	,Drug = ft_freetext()
@@ -20,14 +20,14 @@ testfile_fieldtypes <- fieldtypes(PrescriptionID = ft_uniqueidentifier()
 																	,PatientID = ft_ignore()
 																	,Location = ft_categorical(aggregate_by_each_category=TRUE))
 
-daiqobj <- create_report(testdf,
-													fieldtypes = testfile_fieldtypes,
-													override_columnnames = FALSE,
+daiqobj <- daiquiri_report(testdf,
+													field_types = testfile_fieldtypes,
+													override_column_names = FALSE,
 													na = c("","NULL"),
 													aggregation_timeunit = "day",
 													save_directory = "./devtesting/testoutput",
 													save_filename = NULL,
-													showprogress = TRUE,
+													show_progress = TRUE,
 													log_directory = "./devtesting/testoutput")
 
 testsourcedata <- prepare_data(testdf, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE)

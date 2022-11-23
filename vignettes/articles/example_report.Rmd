@@ -1,0 +1,48 @@
+---
+title: "Example report"
+---
+
+```{r example-options, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+```
+
+```{r example-setup}
+library(daiquiri)
+```
+
+```{r generate-report}
+raw_data <- read_data(
+  system.file("extdata", "example_prescriptions.csv",
+              package = "daiquiri"),
+  show_progress = FALSE
+)
+
+fts <- field_types(
+  PrescriptionID = ft_uniqueidentifier(),
+  PrescriptionDate = ft_timepoint(),
+  AdmissionDate = ft_datetime(includes_time = FALSE),
+  Drug = ft_freetext(),
+  Dose = ft_numeric(),
+  DoseUnit = ft_categorical(),
+  PatientID = ft_ignore(),
+  Location = ft_categorical(aggregate_by_each_category = TRUE)
+)
+
+daiqobj <- daiquiri_report(raw_data,
+													field_types = fts,
+													dataset_description = "Example prescription data",
+													save_directory = "../../docs/articles",
+													save_filename = "example_prescriptions",
+													show_progress = FALSE)
+
+```
+
+```{=html}
+<iframe src="./example_prescriptions.html" width="100%" height="900">
+</iframe>
+```
+

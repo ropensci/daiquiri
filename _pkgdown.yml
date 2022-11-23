@@ -9,7 +9,7 @@ navbar:
   components:
     example-report:
       text: Example report
-      href: misc/example_data_report.html
+      href: articles/example_report.html
 
 reference:
 - title: Basic usage

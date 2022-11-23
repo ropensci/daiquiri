@@ -7,6 +7,12 @@
     <loc>/articles/daiquiri.html</loc>
   </url>
   <url>
+    <loc>/articles/example_prescriptions.html</loc>
+  </url>
+  <url>
+    <loc>/articles/example_report.html</loc>
+  </url>
+  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>
@@ -20,9 +26,6 @@
   </url>
   <url>
     <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/misc/example_data_report.html</loc>
   </url>
   <url>
     <loc>/news/index.html</loc>
