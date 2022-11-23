@@ -42,7 +42,7 @@ daiqobj <- daiquiri_report(raw_data,
 ```
 
 ```{=html}
-<iframe src="./example_prescriptions.html" width="100%" height="900">
+<iframe src="https://ropensci.github.io/daiquiri/articles/example_prescriptions.html" width="100%" height="900">
 </iframe>
 ```
 
