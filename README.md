@@ -80,6 +80,10 @@ install.packages("daiquiri")
 
 # or install the development version from rOpenSci
 install.packages("daiquiri", repos = "https://ropensci.r-universe.dev")
+
+# or install direct from source
+# install.packages("remotes")
+remotes::install_github("ropensci/daiquiri")
 ```
 
 ## Usage
