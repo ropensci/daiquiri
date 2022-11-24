@@ -126,6 +126,25 @@ You can choose to override the existing column names in the dataframe with those
 
 For the `example_prescriptions` dataset above, we will set the aggregation granularity to `day`, and save a report in the current directory.
 
+```{r, include=FALSE}
+# quietly test can create the report from an rmd but show the code in the next chunk in the vignette
+daiq_obj <- daiquiri_report(
+  df = example_prescriptions,
+  field_types = fts,
+  override_column_names = FALSE,
+  na = c("", "NULL"),
+  dataset_description = "Example prescription data",
+  aggregation_timeunit = "day",
+  report_title = "daiquiri data quality report",
+  save_directory = tempdir(),
+  save_filename = "example_prescriptions_report",
+  show_progress = FALSE,
+  log_directory = NULL
+)
+# clean up
+file.remove(daiq_obj$report_filename)
+```
+
 ```{r, eval=FALSE}
 daiq_obj <- daiquiri_report(
   df = example_prescriptions,

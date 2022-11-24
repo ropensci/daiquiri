@@ -3,3 +3,5 @@
 .RData
 ^daiquiri_report_*\.html$
 *.log
+daiquiri_report_*_files
+daiquiri_temp_*

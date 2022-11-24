@@ -14,3 +14,5 @@
 ^pkgdown$
 ^LICENSE\.md$
 ^vignettes/articles$
+daiquiri_report_*_files
+daiquiri_temp_*

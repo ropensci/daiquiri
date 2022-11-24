@@ -19,7 +19,7 @@
 #' @param format File format of the report. Currently only `"html"` is supported
 #' @param show_progress Print progress to console. Default = `TRUE`
 #' @param ... Further parameters to be passed to `rmarkdown::render()`. Cannot
-#'   include any of `input`, `output_dir`, `output_file`, `params`, `quiet`, `intermediates_dir`.
+#'   include any of `input`, `output_dir`, `output_file`, `params`, `quiet`.
 #' @return A string containing the name and path of the saved report
 #' @examples
 #' \donttest{
@@ -92,25 +92,41 @@ report_data <- function(source_data,
     format = format
   )
 
+  timestamp_string <- format(Sys.time(), "%Y%m%d%_%H%M%S")
+
   if (is.null(save_filename)) {
     save_filename <-
-      paste0("daiquiri_report_", format(Sys.time(), "%Y%m%d%_%H%M%S"))
+      paste0("daiquiri_report_", timestamp_string)
   }
 
   file_and_path <- file.path(save_directory, paste0(save_filename, ".html"))
 
+  # temporarily copy rmd file from package library into save_directory so that
+  # intermediate files also get created there.
+  # NOTE: explicitly setting intermediates_dir in rmarkdown::render() to
+  # save_directory or tempdir() causes duplicate chunk label errors when package
+  # is run from inside an rmd/qmd
+  temp_dirname <-
+    file.path(save_directory, paste0("daiquiri_temp_", timestamp_string))
+  dir.create(temp_dirname)
+  file.copy(
+    from = system.file(
+      "rmd",
+      "report_htmldoc.Rmd",
+      package = utils::packageName(),
+      mustWork = TRUE
+    ),
+    to = temp_dirname,
+    overwrite = TRUE
+  )
+
   if (format == "html") {
     log_message("Generating html report...", show_progress)
     rmarkdown::render(
-      input = system.file(
-        "rmd",
-        "report_htmldoc.Rmd",
-        package = utils::packageName(),
-        mustWork = TRUE
-      ),
+      input = file.path(temp_dirname,
+                        "report_htmldoc.Rmd"),
       output_file = paste0(save_filename, ".html"),
       output_dir = save_directory,
-      intermediates_dir = tempdir(),
       params = list(
         source_data = source_data,
         aggregated_data = aggregated_data,
@@ -127,6 +143,9 @@ report_data <- function(source_data,
   }
 
   log_message(paste0("Report saved to: ", file_and_path), show_progress)
+
+  # remove temporary directory created earlier
+  unlink(temp_dirname, recursive = TRUE)
 
   log_function_end(match.call()[[1]])
 
