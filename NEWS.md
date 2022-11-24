@@ -1,6 +1,10 @@
 # daiquiri (development version)
 
-* Fixed (some) errors about duplicate chunk labels when running package from within rmarkdown/quarto (rmd/qmd) files (bug introduced in previous release 1.0.2). This now allows chunks in the parent file to be unlabelled but unfortunately still errors when there is a chunk labelled `setup`. See https://github.com/ropensci/daiquiri/issues/7#issue-1461963491
+## Bug fixes and minor improvements
+
+* Calling functions with package prefix no longer causes an error ([Issue #10](https://github.com/ropensci/daiquiri/issues/10))
+
+* Fixed (some) errors about duplicate chunk labels when running package from within rmarkdown/quarto (rmd/qmd) files (bug introduced in previous release 1.0.2). This now allows chunks in the parent file to be unlabelled but unfortunately still errors when there is a chunk labelled `setup`. See [Issue #7](https://github.com/ropensci/daiquiri/issues/7#issue-1461963491) and 737fa0363587ffde81c31880df9b619ac2537638
 
 
 # daiquiri 1.0.2 (2022-11-21)

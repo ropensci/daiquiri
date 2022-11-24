@@ -123,7 +123,8 @@ log_function_end <- function(function_name) {
 #' @noRd
 validate_params_required <- function(call) {
   # get the required arguments from function definition
-  params_defined <- formals(as.character(call[[1]]))
+  params_defined <-
+    formals(utils::tail(as.character(call[[1]]), n = 1))
   params_required <- names(which(vapply(params_defined, is.symbol, logical(1))))
   # exclude ... param
   params_required <- params_required[which(params_required != "...")]
@@ -157,7 +158,8 @@ validate_params_required <- function(call) {
 #'   checked, with names
 #' @noRd
 validate_params_type <- function(call, ...) {
-  params_defined <- names(formals(as.character(call[[1]])))
+  params_defined <-
+    names(formals(utils::tail(as.character(call[[1]]), n = 1)))
   # exclude ... param
   params_defined <- params_defined[which(params_defined != "...")]
   params_passed <- list(...)

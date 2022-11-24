@@ -24,6 +24,12 @@ test_that("validate_params_required() allows arbitrary additional params to be s
   expect_silent(testfn_params_required(p2 = 1, p1 = 2, passthrough = 1))
 })
 
+test_that("validate_params_required() works with package prefix", {
+  expect_error(daiquiri::initialise_log(),
+    class = "invalid_param_missing"
+  )
+})
+
 
 test_that("validate_params_type() is silent if all params are of correct type", {
   # NOTE: testfn_params_type() defined in utilities.R as devtools::test() can't find it when it's defined here
@@ -159,6 +165,12 @@ test_that("validate_params_type() checks source_data params are of correct type"
 
 test_that("validate_params_type() checks aggregated_data params are of correct type", {
   expect_error(testfn_params_type(aggregated_data = 1),
+    class = "invalid_param_type"
+  )
+})
+
+test_that("validate_params_type() works with package prefix", {
+  expect_error(daiquiri::initialise_log(log_directory = "hello"),
     class = "invalid_param_type"
   )
 })
