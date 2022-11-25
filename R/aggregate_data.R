@@ -544,10 +544,13 @@ aggregate_field <- function(data_field,
       grouped_values[is.nan(get(f)), (f) := NA_real_]
     } else if (f == "median") {
       # median value. Excludes NAs
+      # NOTE: need the as.double() because median can return either the original
+      # type or a double, and if a mixture of types are
+      # returned, data.table doesn't like it
       grouped_values[
         data_field_dt[
           ,
-          list("value" = stats::median(values, na.rm = TRUE)),
+          list("value" = as.double(stats::median(values, na.rm = TRUE))),
           by = list(timepoint_group)
         ],
         (f) := value,
