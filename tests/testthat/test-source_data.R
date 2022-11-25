@@ -201,6 +201,52 @@ test_that("prepare_data() generates a validation warning when nonchar columns ar
 })
 
 
+test_that("prepare_data() matches nonchar validation warnings to column names correctly when fieldtypes are supplied in different order to df columns", {
+  testsource_data <- prepare_data(
+    df = data.frame(
+      col1 = rep("2022-01-01", 5),
+      col2 = 1:5,
+      col3 = 1:5,
+      col4 = 1:5
+    ),
+    field_types = field_types(
+      col2 = ft_numeric(),
+      col1 = ft_timepoint(),
+      col3 = ft_ignore(),
+      col4 = ft_numeric()
+    ),
+    dataset_description = "nonchar columns",
+    show_progress = FALSE
+  )
+
+  expect_equal(testsource_data$validation_warnings$field_name, c("col2", "col4"))
+  expect_match(testsource_data$validation_warnings$message, "instead of character")
+})
+
+
+test_that("prepare_data() matches type_convert() validation warnings to column names correctly when fieldtypes are supplied in different order to df columns", {
+  testsource_data <- prepare_data(
+    df = data.frame(
+      col_tp = rep("2022-01-01", 5),
+      col_ign = as.character(1:5),
+      col_num = c("some text", 1:4),
+      col_date = rep("2022-01-01", 5)
+    ),
+    field_types = field_types(
+      col_num = ft_numeric(),
+      col_tp = ft_timepoint(),
+      col_ign = ft_ignore(),
+      col_date = ft_datetime()
+    ),
+    dataset_description = "nonchar columns",
+    show_progress = FALSE
+  )
+
+  expect_equal(testsource_data$validation_warnings$field_name, "col_num")
+  expect_match(testsource_data$validation_warnings$message, "expected a double")
+})
+
+
 test_that("prepare_data() overrides column names correctly", {
   testsource_data <- prepare_data(
     df = data.frame(

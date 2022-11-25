@@ -128,6 +128,9 @@ prepare_data <- function(df,
 
   if (override_column_names == TRUE) {
     names(dt) <- names(field_types)
+  } else{
+    # make sure the column order matches the fieldtypes specification
+    data.table::setcolorder(dt, names(field_types))
   }
 
   # Validate data against specification, store warnings instead of printing them
