@@ -2,6 +2,8 @@
 
 ## Bug fixes and minor improvements
 
+* Validation warnings now match column names correctly when `field_types` are specified in a different order to the supplied data frame columns
+
 * Passing in a data frame containing integer columns no longer causes an aggregation error (#9)
 
 * Calling functions with package prefix no longer causes an error (#10)

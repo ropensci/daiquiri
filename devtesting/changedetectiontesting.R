@@ -11,6 +11,7 @@ log_initialise("./devtesting/testoutput")
 # test against example dataset
 testfile <- "./inst/extdata/example_prescriptions.csv"
 testdf <- read_data(testfile)
+
 testfile_fieldtypes <- field_types(PrescriptionID = ft_uniqueidentifier()
 																	,PrescriptionDate = ft_timepoint()
 																	,AdmissionDate = ft_datetime(includes_time = FALSE)
@@ -30,8 +31,8 @@ daiqobj <- daiquiri_report(testdf,
 													show_progress = TRUE,
 													log_directory = "./devtesting/testoutput")
 
-testsourcedata <- prepare_data(testdf, fieldtypes = testfile_fieldtypes, na=c("","NULL"), showprogress=TRUE)
-testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", showprogress = TRUE)
+testsourcedata <- prepare_data(testdf, field_types = testfile_fieldtypes, na=c("","NULL"), show_progress=TRUE)
+testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", show_progress = TRUE)
 report_data(testsourcedata, testdata_byday)
 
 
@@ -62,7 +63,7 @@ testsourcedata <- prepare_data(testdf,
 															 												 col_freetext = ft_freetext(),
 															 												 col_simple_err = ft_ignore(),
 															 												 col_simple = ft_simple()),
-															 dataset_shortdesc = "completetestset",
+															 dataset_description = "completetestset",
 															 showprogress = FALSE
 )
 
@@ -91,4 +92,3 @@ class(df)
 tracemem(df)
 class(res)
 tracemem(res)
-
