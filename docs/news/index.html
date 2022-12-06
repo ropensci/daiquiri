@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">daiquiri</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,16 @@
       <small>Source: <a href="https://github.com/ropensci/daiquiri/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.3" id="daiquiri-103-2022-12-06">daiquiri 1.0.3 (2022-12-06)<a class="anchor" aria-label="anchor" href="#daiquiri-103-2022-12-06"></a></h2><p class="text-muted">CRAN release: 2022-12-06</p>
+<div class="section level3">
+<h3 id="bug-fixes-and-minor-improvements-1-0-3">Bug fixes and minor improvements<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-improvements-1-0-3"></a></h3>
+<ul><li><p>Validation warnings now match column names correctly when <code>field_types</code> are specified in a different order to the supplied data frame columns</p></li>
+<li><p>Passing in a data frame containing integer columns no longer causes an aggregation error (<a href="https://github.com/ropensci/daiquiri/issues/9" class="external-link">#9</a>)</p></li>
+<li><p>Calling functions with package prefix no longer causes an error (<a href="https://github.com/ropensci/daiquiri/issues/10" class="external-link">#10</a>)</p></li>
+<li><p>Fixed (some) errors about duplicate chunk labels when running package from within rmarkdown/quarto (rmd/qmd) files (bug introduced in previous release 1.0.2). This now allows chunks in the parent file to be unlabelled but unfortunately still errors when there is a chunk labelled <code>setup</code>. (<a href="https://github.com/ropensci/daiquiri/issues/7" class="external-link">#7</a>)</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.2" id="daiquiri-102-2022-11-21">daiquiri 1.0.2 (2022-11-21)<a class="anchor" aria-label="anchor" href="#daiquiri-102-2022-11-21"></a></h2><p class="text-muted">CRAN release: 2022-11-21</p>
 <ul><li>When rendering reports, intermediate files are now written to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> instead of to the directory of the <code>report_htmldoc.Rmd</code> file (the default behaviour of <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code>). This fixes errors caused when the library location is read-only.</li>
