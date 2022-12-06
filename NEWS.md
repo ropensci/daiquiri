@@ -1,4 +1,4 @@
-# daiquiri (development version)
+# daiquiri 1.0.3 (2022-12-06)
 
 ## Bug fixes and minor improvements
 
