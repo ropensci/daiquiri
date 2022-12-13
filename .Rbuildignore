@@ -16,3 +16,4 @@
 ^vignettes/articles$
 daiquiri_report_*_files
 daiquiri_temp_*
+^paper$
