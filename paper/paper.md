@@ -36,8 +36,9 @@ for numeric data, no. of distinct values for categorical data, see
 overviews for missing values, non-conformant values, and duplicated rows, see
 \autoref{fig:prescriptions_aggregated}.
 
-![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset. \label{fig:prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png){ width=45% }
-![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset. \label{fig:prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png){ width=45% }
+![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset. \label{fig:prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png){ width=90% }
+
+![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset. \label{fig:prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png){ width=90% }
 
 The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process.
