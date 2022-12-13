@@ -32,13 +32,13 @@ the event, see \autoref{fig:example_prescriptions_head} for an example).
 The package automatically creates time series plots showing aggregated values
 for each data field (column) depending on its contents (e.g. min/max/mean values
 for numeric data, no. of distinct values for categorical data, see
-\autoref{fig:prescriptions_missing_perc}), as well as
+\autoref{fig:example_prescriptions_individual}), as well as
 overviews for missing values, non-conformant values, and duplicated rows, see
-\autoref{fig:prescriptions_aggregated}.
+\autoref{fig:example_prescriptions_overview}.
 
-![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset. \label{fig:prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png){ width=90% }
+![Screenshot showing percentage of missing values per day, for the AdmissionDate field of the example dataset. \label{fig:example_prescriptions_individual}](example_prescriptions_admdate_missing_perc.png){ width=80% }
 
-![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset. \label{fig:prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png){ width=90% }
+![Screenshot showing number of values present per day, across all fields of the example dataset. \label{fig:example_prescriptions_overview}](example_prescriptions_aggregated_valuespresent.png){ width=80% }
 
 The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process.
