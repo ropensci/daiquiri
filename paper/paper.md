@@ -27,8 +27,7 @@ data (i.e. tabular data where each row represents a single "event", one column
 contains the "event date", and other columns contain any associated values for
 the event), see \autoref{fig:example_prescriptions_head} for an example.
 
-![Example dataset containing information on antibiotic
-prescriptions.\label{fig:example_prescriptions_head}](example_prescriptions_head.png)
+![Example dataset containing information on antibiotic prescriptions.\label{fig:example_prescriptions_head}](example_prescriptions_head.png)
 
 The package automatically creates time series plots showing aggregated values
 for each data field (column) depending on its contents (e.g. min/max/mean values
@@ -37,11 +36,8 @@ for numeric data, no. of distinct values for categorical data, see
 overviews for missing values, non-conformant values, and duplicated rows, see
 \autoref{fig:ex_prescriptions_aggregated}.
 
-![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions
-dataset.\label{fig:ex_prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png)
-![Screenshot showing number of values present per day, in each field of the
-antibiotic prescriptions
-dataset.\label{fig:ex_prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png)
+![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset.\label{fig:ex_prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png)
+![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset.\label{fig:ex_prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png)
 
 The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process.
@@ -65,9 +61,7 @@ changed in the way the data was collected or processed. A careful researcher
 needs to take these sudden changes into account, particularly if comparing or
 combining the data before and after these 'change points'.
 
-![The mean value per day, of all laboratory tests checking for levels of
-creatinine in the blood.\label{fig:bchem_creatinine_mean.png}](bchem_creatinine_day_Value_mean.png.png){
-width=90% }
+![The mean value per day, of all laboratory tests checking for levels of creatinine in the blood.\label{fig:bchem_creatinine_mean.png}](bchem_creatinine_day_Value_mean.png.png){ width=90% }
 
 While these checks should theoretically be conducted by the researcher at the
 initial data analysis stage, in practice it is unclear to what extent this is
@@ -81,8 +75,8 @@ well as trust in the scientific process.
 
 There are a number of existing R packages which generate reports that provide an
 overview of a dataset's contents, such as `dataReporter` (formerly `dataMaid`)
-`[@datamaid2019:2019]`, `smartEDA` `[@smarteda2019:2019]`, and `dataquieR`
-`[@dataquier2021:2021]`. In these packages, summary statistics are calculated
+[@datamaid2019], `smartEDA` [@smarteda2019], and `dataquieR` [@dataquier2021]. 
+In these packages, summary statistics are calculated
 across all rows in the dataset, or perhaps stratified by a categorical field. In
 contrast, `daiquiri` focuses on how these summary statistics may change over the
 time scale of the dataset, which can reveal data quality issues that might otherwise be
