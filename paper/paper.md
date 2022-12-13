@@ -31,8 +31,8 @@ the event, see \autoref{fig:example_prescriptions_head} for an example).
 
 The package automatically creates time series plots showing aggregated values
 for each data field (column) depending on its contents (e.g. min/max/mean values
-for numeric data, no. of distinct values for categorical data, see
-\autoref{fig:example_prescriptions_individual}), as well as
+for numeric data, no. of distinct values for categorical data), see
+\autoref{fig:example_prescriptions_individual}, as well as
 overviews for missing values, non-conformant values, and duplicated rows, see
 \autoref{fig:example_prescriptions_overview}.
 
@@ -62,7 +62,7 @@ changed in the way the data was collected or processed. A careful researcher
 needs to take these sudden changes into account, particularly if comparing or
 combining the data before and after these 'change points'.
 
-![The mean value per day, of all laboratory tests checking for levels of creatinine in the blood. \label{fig:bchem_creatinine_mean}](bchem_creatinine_day_Value_mean.png){ width=90% }
+![The mean value per day, of all laboratory tests checking for levels of creatinine in the blood. \label{fig:bchem_creatinine_mean}](bchem_creatinine_day_Value_mean.png){ width=80% }
 
 While these checks should theoretically be conducted by the researcher at the
 initial data analysis stage, in practice it is unclear to what extent this is
