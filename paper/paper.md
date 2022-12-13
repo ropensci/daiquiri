@@ -15,7 +15,7 @@ affiliations:
  - name: University of Oxford, UK
    index: 1
 date: 13 December 2022
-bibliography: paper/paper.bib
+bibliography: paper.bib
 ---
 
 # Summary
