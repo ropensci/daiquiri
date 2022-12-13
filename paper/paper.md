@@ -25,19 +25,19 @@ review of temporal shifts in record-level data. It is designed with electronic
 health records in mind, but can be used for any type of record-level temporal
 data (i.e. tabular data where each row represents a single "event", one column
 contains the "event date", and other columns contain any associated values for
-the event), see \autoref{fig:example_prescriptions_head} for an example.
+the event, see \autoref{fig:example_prescriptions_head} for an example).
 
 ![Example dataset containing information on antibiotic prescriptions.\label{fig:example_prescriptions_head}](example_prescriptions_head.png)
 
 The package automatically creates time series plots showing aggregated values
 for each data field (column) depending on its contents (e.g. min/max/mean values
 for numeric data, no. of distinct values for categorical data, see
-\autoref{fig:ex_prescriptions_missing_perc}), as well as
+\autoref{fig:prescriptions_missing_perc}), as well as
 overviews for missing values, non-conformant values, and duplicated rows, see
-\autoref{fig:ex_prescriptions_aggregated}.
+\autoref{fig:prescriptions_aggregated}.
 
-![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset.\label{fig:ex_prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png)
-![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset.\label{fig:ex_prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png)
+![Screenshot showing percentage of missing values per day, across the entire antibiotic prescriptions dataset. \label{fig:prescriptions_missing_perc}](example_prescriptions_allfields_missing_perc.png){ width=45% }
+![Screenshot showing number of values present per day, in each field of the antibiotic prescriptions dataset. \label{fig:prescriptions_aggregated}](example_prescriptions_aggregated_valuespresent.png){ width=45% }
 
 The resulting html reports are shareable and can contribute to forming a
 transparent record of the entire analysis process.
@@ -53,7 +53,7 @@ cause temporal artefacts that, if not identified and taken into account, can
 lead to biased results and incorrect conclusions.
 
 For example,
-\autoref{fig:bchem_creatinine_mean.png} shows the mean value of all
+\autoref{fig:bchem_creatinine_mean} shows the mean value of all
 laboratory tests checking for levels of creatinine in the blood, from a large
 hospital group in the UK. As you can see, there are points in time where these
 values shift up or down suddenly and unnaturally, indicating that something
@@ -61,7 +61,7 @@ changed in the way the data was collected or processed. A careful researcher
 needs to take these sudden changes into account, particularly if comparing or
 combining the data before and after these 'change points'.
 
-![The mean value per day, of all laboratory tests checking for levels of creatinine in the blood.\label{fig:bchem_creatinine_mean.png}](bchem_creatinine_day_Value_mean.png.png){ width=90% }
+![The mean value per day, of all laboratory tests checking for levels of creatinine in the blood. \label{fig:bchem_creatinine_mean}](bchem_creatinine_day_Value_mean.png){ width=90% }
 
 While these checks should theoretically be conducted by the researcher at the
 initial data analysis stage, in practice it is unclear to what extent this is
