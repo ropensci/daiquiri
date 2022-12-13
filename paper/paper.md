@@ -36,12 +36,12 @@ for numeric data, no. of distinct values for categorical data), see
 overviews for missing values, non-conformant values, and duplicated rows, see
 \autoref{fig:example_prescriptions_overview}.
 
+The resulting html reports are shareable and can contribute to forming a
+transparent record of the entire analysis process.
+
 ![Screenshot showing percentage of missing values per day, for the AdmissionDate field of the example dataset. \label{fig:example_prescriptions_individual}](example_prescriptions_admdate_missing_perc.png){ width=80% }
 
 ![Screenshot showing number of values present per day, across all fields of the example dataset. \label{fig:example_prescriptions_overview}](example_prescriptions_aggregated_valuespresent.png){ width=80% }
-
-The resulting html reports are shareable and can contribute to forming a
-transparent record of the entire analysis process.
 
 # Statement of need
 
