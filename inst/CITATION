@@ -1,9 +1,12 @@
-note <- sprintf("R package version %s", meta$Version)
-
-bibentry(bibtype = "Manual",
-         title = "daiquiri: Data quality reporting for temporal datasets",
-         author = person(c("T.", "Phuong"), "Quan"),
-         doi =  "10.5281/zenodo.6334341",
-         year = 2022,
-         note = note,
-         url = "https://github.com/ropensci/daiquiri")
+bibentry(
+  bibtype = "Article",
+  title = "daiquiri: Data Quality Reporting for Temporal Datasets",
+  author = person(c("T.", "Phuong"), "Quan"),
+  doi =  "10.21105/joss.05034",
+  year = 2022,
+  publisher = "The Open Journal",
+  volume = 7,
+  number = 80,
+  pages = 5034,
+  journal = "Journal of Open Source Software"
+)

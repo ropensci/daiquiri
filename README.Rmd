@@ -16,6 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 [![Codecov test coverage](https://codecov.io/gh/ropensci/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ropensci/daiquiri?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Status at rOpenSci Software Peer Review](https://badges.ropensci.org/535_status.svg)](https://github.com/ropensci/software-review/issues/535)
+[![JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05034/status.svg)](https://doi.org/10.21105/joss.05034)
 <!-- badges: end -->
 
 The daiquiri package generates data quality reports that enable quick visual review of temporal shifts in record-level data. Time series plots showing aggregated values are automatically created for each data field (column) depending on its contents (e.g. min/max/mean values for numeric data, no. of distinct values for categorical data), as well as overviews for missing values, non-conformant values, and duplicated rows.
@@ -96,9 +97,7 @@ vignette("daiquiri", package = "daiquiri")
 
 ## How to cite this package
 
-Please remember to update the version number to match the version you used.
-
-> Quan TP (2022). daiquiri: Data quality reporting for temporal datasets. R package version v1.0.0. Zenodo. https://doi.org/10.5281/zenodo.6334341. URL: https://github.com/ropensci/daiquiri
+> Quan, T. P., (2022). daiquiri: Data Quality Reporting for Temporal Datasets. Journal of Open Source Software, 7(80), 5034, https://doi.org/10.21105/joss.05034
 
 ## Acknowledgements
 
