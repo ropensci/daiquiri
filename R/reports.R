@@ -429,6 +429,104 @@ plot_overview_combo_static <- function(agg_fields,
 
 
 # -----------------------------------------------------------------------------
+#' Create a heatmap showing value across all subcategories
+#'
+#' @param agg_field categorical aggfield object
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   function_list)
+#' @return ggplot
+#' @noRd
+plot_subcat_heatmap_static <- function(agg_field,
+                                         agg_fun) {
+  # initialise known column names to prevent R CMD check notes
+  field_name <- NULL
+
+  agg_field_values <- agg_field[1]$values
+  agg_field_cols <- names(agg_field_values)
+  timepoint_aggcol_name <- agg_field_cols[1]
+
+  # get agg_fun values from each subcategory
+  heatmap_fields <-
+    agg_field_cols[which(startsWith(agg_field_cols, agg_fun))]
+  data <- data.table::data.table()
+  for (i in seq_along(heatmap_fields)) {
+    f <- heatmap_fields[i]
+    d <-
+      agg_field_values[, c(timepoint_aggcol_name, f), with = FALSE]
+    names(d)[2] <- agg_fun
+    d[, field_name := agg_fun_subcat_value(f)]
+    data <- rbind(data, d)
+  }
+  data[, field_name := factor(field_name, levels = agg_fun_subcat_value(heatmap_fields))]
+
+  # when the only values are zero, make sure the fill colour is white (as
+  # geom_tile uses the 'high' colour)
+  if (all(data[, agg_fun, with = FALSE] == 0, na.rm = TRUE)) {
+    fill_colour <- "white"
+  }
+
+  fill_colour <- switch(agg_fun,
+                        "subcat_n" = "chocolate4",
+                        "subcat_perc" = "darkorchid4")
+  y_lab_prefix <- switch(agg_fun,
+                         "subcat_n" = "No. of values per category",
+                         "subcat_perc" = "Percentage of values per category")
+
+  g <-
+    ggplot2::ggplot(
+      data,
+      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[agg_fun]])
+    ) +
+    ggplot2::geom_tile() +
+    ggplot2::scale_fill_gradient(
+      low = "white",
+      high = fill_colour,
+      na.value = "grey",
+      labels = NULL,
+      limits = c(0, NA)
+    ) +
+    ggplot2::scale_x_date(
+      breaks = scales::breaks_pretty(12),
+      labels = scales::label_date_short(sep = " "),
+      expand = c(0, 0)
+    ) +
+    ggplot2::labs(y = paste0(y_lab_prefix, "\n(", agg_field$column_name, ")"), x = NULL) +
+    # facet by variable (field name) to create separate bars
+    ggplot2::facet_grid(field_name ~ ., scales = "free", space = "free") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      # remove grid lines
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank(),
+      # remove facet labels and their background
+      strip.background = ggplot2::element_blank(),
+      strip.text.y = ggplot2::element_blank(),
+      # add borders to the bars
+      panel.border = ggplot2::element_rect(
+        colour = "darkgrey",
+        fill = NA,
+        size = 0.75
+      ),
+      # remove space between facets
+      panel.spacing = ggplot2::unit(0, "lines"),
+      # remove y-axis ticks
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.title = ggplot2::element_text(size = 8),
+      axis.text.x = ggplot2::element_text(
+        angle = 90,
+        vjust = 0.35,
+        hjust = 1,
+        size = 7
+      ),
+      axis.text.y = ggplot2::element_text(size = 7),
+      legend.position = "none",
+    )
+
+  g
+}
+
+
+# -----------------------------------------------------------------------------
 #' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
 #' @param agg_fun aggregation function being plotted (from agg_field

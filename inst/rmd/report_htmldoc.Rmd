@@ -340,17 +340,41 @@ for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
     " {.tabset}\n"
   )
   agg_funs <-
-    names(params$aggregated_data$aggregated_fields[[i]]$values)[-1]
+    params$aggregated_data$aggregated_fields[[i]]$function_list
   for (agg_fun in agg_funs) {
-    cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
-    p <-
-      plot_timeseries_static(
-        agg_field = params$aggregated_data$aggregated_fields[[i]],
-        agg_fun = agg_fun
-      )
-
-    print(p)
-    cat("\n")
+    if (startsWith(agg_fun, "subcat")) {
+      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), " {.tabset}\n")
+      # first tab has all subcats in heatmap
+      cat("\n#####", "All\n")
+      p <-
+        plot_subcat_heatmap_static(
+          agg_field = params$aggregated_data$aggregated_fields[[i]],
+          agg_fun = agg_fun
+        )
+      print(p)
+      cat("\n")
+      # following tabs show individual time series
+      agg_cols <- names(params$aggregated_data$aggregated_fields[[i]]$values)
+      for (subcat_col in agg_cols[which(startsWith(agg_cols, agg_fun))]) {
+        cat("\n#####", agg_fun_subcat_value(subcat_col), "\n")
+        p <-
+          plot_timeseries_static(
+            agg_field = params$aggregated_data$aggregated_fields[[i]],
+            agg_fun = subcat_col
+          )
+        print(p)
+        cat("\n")
+      }
+    } else{
+      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
+      p <-
+        plot_timeseries_static(
+          agg_field = params$aggregated_data$aggregated_fields[[i]],
+          agg_fun = agg_fun
+        )
+      print(p)
+      cat("\n")
+    }
   }
 }
 ```

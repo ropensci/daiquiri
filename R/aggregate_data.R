@@ -822,7 +822,7 @@ create_timepoint_groups <- function(timepoint_field, aggregation_timeunit) {
 # TODO: come up with some friendlier short names, currently just the agg_fun itself
 agg_fun_friendly_name <- function(agg_fun, type) {
   if (startsWith(agg_fun, "subcat_")) {
-    catval <- substring(gsub("^(?:[^_]*_){3}", "_", agg_fun), 2)
+    catval <- agg_fun_subcat_value(agg_fun)
     if (startsWith(agg_fun, "subcat_n")) {
       switch(type,
         short = agg_fun,
@@ -940,4 +940,17 @@ agg_fun_friendly_name <- function(agg_fun, type) {
       }
     )
   }
+}
+
+
+#' Get the subcategory value from the agg_fun name
+#'
+#' This uses the agg_field column_names rather than the original
+#' aggregationfunction
+#'
+#' @param agg_fun (vector of) string name of agg_fun (from agg_field column_name)
+#' @return string containing subcat value
+#' @noRd
+agg_fun_subcat_value <- function(agg_fun) {
+  substring(gsub("^(?:[^_]*_){3}", "_", agg_fun), 2)
 }

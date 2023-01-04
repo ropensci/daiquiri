@@ -316,3 +316,9 @@ test_that("aggregated values contain all NAs when data_field values are all NA (
     }
   }
 })
+
+test_that("agg_fun_subcat_value() retrieves value correctly", {
+  expect_equal(agg_fun_subcat_value(agg_fun = "subcat_n_16_thisvalue"),
+               "thisvalue"
+  )
+})
