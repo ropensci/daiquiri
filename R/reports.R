@@ -348,7 +348,7 @@ plot_overview_heatmap_static <- function(agg_fields,
       labels = scales::label_date_short(sep = " "),
       expand = c(0, 0)
     ) +
-    ggplot2::labs(y = "Instances per field_name", x = NULL) +
+    ggplot2::labs(y = "Instances per field", x = NULL) +
     # facet by variable (field name) to create separate bars
     ggplot2::facet_grid(field_name ~ ., scales = "free", space = "free") +
     ggplot2::theme_bw() +
