@@ -66,7 +66,7 @@ One and only one column must be chosen to be the "timepoint" field (though you c
 
 Here is a list of the possible field types for the columns. Different time series will be generated depending on the type of field. All types will have time series generated for the number of values present, as well as the number and percentage of missing values.
 
-* `ft_timepoint()` - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series' are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.
+* `ft_timepoint()` - identifies the data field which should be used as the independent time variable (and will form the x-axis of any time series plots). There should be one and only one of these specified. The number of values present in this field is equivalent to the number of records in the data set (after duplicates have been removed). By default, time series will also be created for the number and percentage of values which do not contain a time portion, though this can be switched off if the `includes_time` parameter is set to `FALSE` (e.g. if you already know in advance that there are no time portions in any of the values). NOTE: Time series' are not created for missing values as they cannot be assigned to a date. Instead, the total number of missing values is included in the summary table.
 * `ft_uniqueidentifier()` - identifies data fields which contain a (usually computer-generated) identifier for an entity, e.g. a patient. It does not need to be unique within the dataset. Values are treated as strings, with additional time series created for min_length, max_length, and mean_length of the string.
 * `ft_categorical()` - identifies data fields which should be treated as categorical. Values are treated as strings. Additional time series are created for the number of "distinct" values, and if the `aggregate_by_each_category` parameter is set to `TRUE`, further time series will be created for the number and percentage of values within each distinct subcategory value.
 * `ft_numeric()` - identifies data fields which contain numeric values that should be treated as continuous. Additional time series are created for the min, max, mean, and median value, and and the number and percentage of non-conformant values.
@@ -78,7 +78,7 @@ Here is a list of the possible field types for the columns. Different time serie
 Lastly, a number of time series will be generated for the dataset as a whole, namely:
 
 * The number and percentage presence of duplicate records (i.e. where the entire row is the same as another row in the dataset)
-* The number of records (after duplicates have been removed)
+* The total number of values present across all data fields
 * The total number and percentage of missing and of non-conformant values (where relevant) across all data fields
 
 NOTES:
