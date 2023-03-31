@@ -2,6 +2,8 @@
 
 * Categorical data fields now show a heatmap plot as well as the individual time series plots
 
+* Print method of `daiquiri_object` now displays the location the report was saved to
+
 # daiquiri 1.0.3 (2022-12-06)
 
 ## Bug fixes and minor improvements

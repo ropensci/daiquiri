@@ -217,7 +217,13 @@ test_that("daiquiri_object prints to console ok", {
       show_progress = FALSE
     )
 
-  expect_snapshot_output(print(testdaiq_obj))
+  # need to replace the temp filename otherwise it will never match the snapshot
+  printstr <- paste(capture.output(print(testdaiq_obj)), collapse = "\n")
+  startpos <- regexpr("Saved to:", printstr, ignore.case = TRUE) + 10
+  endpos <- regexpr("daiquiri_testthatreport", printstr, ignore.case = TRUE) - 2
+  tdir <- substring(printstr, startpos, endpos)
+  printx <- sub(tdir, "[tempdir]", printstr, fixed = TRUE)
+  expect_snapshot_output(cat(printx))
   # clean up
   expect_true(file.remove(testdaiq_obj$report_filename))
 })

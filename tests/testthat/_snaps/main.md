@@ -2,6 +2,7 @@
 
     Class: daiquiri_object
     Dataset: data.frame(col1 = rep("2022-01-01", 5), col2 = rep(1, 5), col3 = 1:5) 
+    Saved to: [tempdir]/daiquiri_testthatreport.html 
     
     Columns in source: 3 
     Columns imported: 2 
