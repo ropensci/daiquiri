@@ -74,9 +74,11 @@ aggregate_data <- function(source_data,
     aggregation_timeunit = aggregation_timeunit
   )
 
-  # get timepoint field values as they will be used repeatedly later
-  timepoint_field_values <- data_field_vector(
-    source_data$data_fields[[source_data$timepoint_field_name]]
+  # map timepoint field values to timepoint_group_sequence values.
+  # these will be used repeatedly later
+  timepoint_field_as_timepoint_group <- timepoint_as_timepoint_group(
+    data_field_vector(source_data$data_fields[[source_data$timepoint_field_name]]),
+    aggregation_timeunit = aggregation_timeunit
   )
 
   ### AGGREGATE OVERALL DATASET
@@ -90,9 +92,8 @@ aggregate_data <- function(source_data,
     agg_fields[[i]] <-
       aggregate_field(
         source_data$data_fields[[fieldindex]],
-        timepoint_field_values,
+        timepoint_field_as_timepoint_group,
         timepoint_group_sequence,
-        aggregation_timeunit,
         show_progress = show_progress
       )
   }
@@ -101,9 +102,8 @@ aggregate_data <- function(source_data,
   agg_fields[[source_data$cols_imported_n + 1]] <-
     aggregate_field(
       source_data$data_fields[[source_data$cols_source_n + 1]],
-      timepoint_field_values,
+      timepoint_field_as_timepoint_group,
       timepoint_group_sequence,
-      aggregation_timeunit,
       show_progress = show_progress
     )
   log_message(paste0("[ALL_FIELDS_COMBINED]:"), show_progress)
@@ -293,15 +293,16 @@ summarise_aggregated_data <- function(aggregated_data) {
 #' Constructor for an individual aggregated_field object
 #'
 #' @param data_field data_field object
-#' @param timepoint_field_values all values in timepoint field
+#' @param timepoint_field_as_timepoint_group all values in timepoint field
+#'   transformed to correct timepoint group
+#' @param timepoint_group_sequence complete set of x-axis values
 #' @return aggregated_field object, including a data.table where the first column
 #'   is the timepoint group, then one column per aggregation function
 #' @noRd
 #' @importFrom data.table ':=' .EACHI
 aggregate_field <- function(data_field,
-                            timepoint_field_values,
+                            timepoint_field_as_timepoint_group,
                             timepoint_group_sequence,
-                            aggregation_timeunit,
                             show_progress = TRUE) {
   # initialise known column names to prevent R CMD check notes
   n <- value <- values <- timepoint_group <- NULL
@@ -317,14 +318,11 @@ aggregate_field <- function(data_field,
   # this contains all values present in the original data_field, alongside their timepoint_group
   data_field_dt <-
     data.table::data.table(
-      "timepoint_group" = timepoint_as_timepoint_group(
-        timepoint_field_values,
-        aggregation_timeunit = aggregation_timeunit
-      ),
+      "timepoint_group" = timepoint_field_as_timepoint_group,
       "values" = data_field[["values"]][[1]],
       key = "timepoint_group"
     )
-  # this contains the agg_fun values after aggregating (one column per agg_fun)
+  # this will contain the agg_fun values after aggregating (one column per agg_fun)
   grouped_values <- data.table::as.data.table(timepoint_group_sequence)
   data.table::setkey(grouped_values)
 
