@@ -511,150 +511,56 @@ create_timepoint_groups <- function(timepoint_field, aggregation_timeunit) {
 
 
 # -----------------------------------------------------------------------------
-# TODO: Define set of allowed aggregation functions similarly to field_types,
-# with each object containing formula for aggregation as well as friendly names
-
-#' Set user-friendly names for agg_funs
+#' Get user-friendly names for agg_funs
 #'
 #' This uses the agg_field column_names rather than the original
 #' aggregationfunction (relevant for subcats)
 #'
-#' @param agg_fun string name of agg_fun (from agg_field column_name)
+#' @param agg_fun_colname string name of agg_fun from agg_field column_name
 #' @param type "short" or "long"
 #' @return string containing friendly name
 #' @noRd
 # TODO: come up with some friendlier short names, currently just the agg_fun itself
-agg_fun_friendly_name <- function(agg_fun, type) {
-  if (startsWith(agg_fun, "subcat_")) {
-    catval <- agg_fun_subcat_value(agg_fun)
-    if (startsWith(agg_fun, "subcat_n")) {
-      switch(type,
-        short = agg_fun,
-        long = paste0("No. of values in the category: ", catval)
+agg_fun_friendly_name <- function(agg_fun_colname, type) {
+  if (startsWith(agg_fun_colname, "subcat_")) {
+    catval <- agg_fun_subcat_value(agg_fun_colname)
+    agg_fun_type <- agg_fun_subcat_type(agg_fun_colname)
+    agg_fun <- agg_fun_from_type(type = agg_fun_type)
+    switch(type,
+      short = agg_fun$friendly_name_short,
+      long = paste0(agg_fun$friendly_name_long, ": ", catval)
       )
-    } else if (startsWith(agg_fun, "subcat_perc")) {
-      switch(type,
-        short = agg_fun,
-        long = paste0("Percentage of values in the category: ", catval)
-      )
-    }
   } else {
-    switch(agg_fun,
-      n = {
-        switch(type,
-          short = "n",
-          long = "No. of values present"
-        )
-      },
-      missing_n = {
-        switch(type,
-          short = "missing_n",
-          long = "No. of missing values"
-        )
-      },
-      missing_perc = {
-        switch(type,
-          short = "missing_perc",
-          long = "Percentage of missing values"
-        )
-      },
-      nonconformant_n = {
-        switch(type,
-          short = "nonconformant_n",
-          long = "No. of non-conformant values"
-        )
-      },
-      nonconformant_perc = {
-        switch(type,
-          short = "nonconformant_perc",
-          long = "Percentage of non-conformant values"
-        )
-      },
-      sum = {
-        switch(type,
-          short = "sum",
-          long = "No. of duplicate records removed"
-        )
-      },
-      nonzero_perc = {
-        switch(type,
-          short = "nonzero_perc",
-          long = "Percentage of (remaining) records that were duplicated"
-        )
-      },
-      distinct = {
-        switch(type,
-          short = "distinct",
-          long = "No. of distinct values"
-        )
-      },
-      midnight_n = {
-        switch(type,
-          short = "midnight_n",
-          long = "No. of values with no time element"
-        )
-      },
-      midnight_perc = {
-        switch(type,
-          short = "midnight_perc",
-          long = "Percentage of values with no time element"
-        )
-      },
-      min = {
-        switch(type,
-          short = "min",
-          long = "Minimum value"
-        )
-      },
-      max = {
-        switch(type,
-          short = "max",
-          long = "Maximum value"
-        )
-      },
-      mean = {
-        switch(type,
-          short = "mean",
-          long = "Mean value"
-        )
-      },
-      median = {
-        switch(type,
-          short = "median",
-          long = "Median value"
-        )
-      },
-      min_length = {
-        switch(type,
-          short = "min_length",
-          long = "Minimum string length"
-        )
-      },
-      max_length = {
-        switch(type,
-          short = "max_length",
-          long = "Maximum string length"
-        )
-      },
-      mean_length = {
-        switch(type,
-          short = "mean_length",
-          long = "Mean string length"
-        )
-      }
-    )
+    agg_fun <- agg_fun_from_type(type = agg_fun_colname)
+    switch(type,
+      short = agg_fun$friendly_name_short,
+      long = agg_fun$friendly_name_long
+      )
   }
 }
 
-
-#' Get the subcategory value from the agg_fun name
+#' Get the subcategory value from the agg_fun_colname
 #'
 #' This uses the agg_field column_names rather than the original
 #' aggregationfunction
 #'
-#' @param agg_fun (vector of) string name of agg_fun (from agg_field column_name)
+#' @param agg_fun_colname (vector of) string name of agg_fun (from agg_field column_name)
 #' @return string containing subcat value
 #' @noRd
-agg_fun_subcat_value <- function(agg_fun) {
-  substring(gsub("^(?:[^_]*_){3}", "_", agg_fun), 2)
+agg_fun_subcat_value <- function(agg_fun_colname) {
+  substring(gsub("^(?:[^_]*_){3}", "_", agg_fun_colname), 2)
+}
+
+#' Get the subcat type from the agg_fun_colname
+#'
+#' This uses the agg_field column_names rather than the original
+#' aggregationfunction. Bit ugly but works so long as there are only two subcat types
+#'
+#' @param agg_fun_colname (vector of) string name of agg_fun (from agg_field column_name)
+#' @return string containing the subcat type
+#' @noRd
+agg_fun_subcat_type <- function(agg_fun_colname) {
+  ifelse(grepl("subcat_n", agg_fun_colname),
+         "subcat_n",
+         "subcat_perc")
 }
