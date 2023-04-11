@@ -74,9 +74,11 @@ aggregate_data <- function(source_data,
     aggregation_timeunit = aggregation_timeunit
   )
 
-  # get timepoint field values as they will be used repeatedly later
-  timepoint_field_values <- data_field_vector(
-    source_data$data_fields[[source_data$timepoint_field_name]]
+  # map timepoint field values to timepoint_group_sequence values.
+  # these will be used repeatedly later
+  timepoint_field_as_timepoint_group <- timepoint_as_timepoint_group(
+    data_field_vector(source_data$data_fields[[source_data$timepoint_field_name]]),
+    aggregation_timeunit = aggregation_timeunit
   )
 
   ### AGGREGATE OVERALL DATASET
@@ -90,9 +92,8 @@ aggregate_data <- function(source_data,
     agg_fields[[i]] <-
       aggregate_field(
         source_data$data_fields[[fieldindex]],
-        timepoint_field_values,
+        timepoint_field_as_timepoint_group,
         timepoint_group_sequence,
-        aggregation_timeunit,
         show_progress = show_progress
       )
   }
@@ -101,9 +102,8 @@ aggregate_data <- function(source_data,
   agg_fields[[source_data$cols_imported_n + 1]] <-
     aggregate_field(
       source_data$data_fields[[source_data$cols_source_n + 1]],
-      timepoint_field_values,
+      timepoint_field_as_timepoint_group,
       timepoint_group_sequence,
-      aggregation_timeunit,
       show_progress = show_progress
     )
   log_message(paste0("[ALL_FIELDS_COMBINED]:"), show_progress)
@@ -293,18 +293,17 @@ summarise_aggregated_data <- function(aggregated_data) {
 #' Constructor for an individual aggregated_field object
 #'
 #' @param data_field data_field object
-#' @param timepoint_field_values all values in timepoint field
+#' @param timepoint_field_as_timepoint_group all values in timepoint field
+#'   transformed to correct timepoint group
+#' @param timepoint_group_sequence complete set of x-axis values
+#' @param show_progress Print progress to console
 #' @return aggregated_field object, including a data.table where the first column
 #'   is the timepoint group, then one column per aggregation function
 #' @noRd
-#' @importFrom data.table ':=' .EACHI
 aggregate_field <- function(data_field,
-                            timepoint_field_values,
+                            timepoint_field_as_timepoint_group,
                             timepoint_group_sequence,
-                            aggregation_timeunit,
                             show_progress = TRUE) {
-  # initialise known column names to prevent R CMD check notes
-  n <- value <- values <- timepoint_group <- NULL
 
   log_message(paste0("Preparing..."), show_progress)
   function_list <- data_field$field_type$aggregation_functions
@@ -317,317 +316,22 @@ aggregate_field <- function(data_field,
   # this contains all values present in the original data_field, alongside their timepoint_group
   data_field_dt <-
     data.table::data.table(
-      "timepoint_group" = timepoint_as_timepoint_group(
-        timepoint_field_values,
-        aggregation_timeunit = aggregation_timeunit
-      ),
+      "timepoint_group" = timepoint_field_as_timepoint_group,
       "values" = data_field[["values"]][[1]],
       key = "timepoint_group"
     )
-  # this contains the agg_fun values after aggregating (one column per agg_fun)
+  # this will contain the agg_fun values after aggregating (one column per agg_fun)
   grouped_values <- data.table::as.data.table(timepoint_group_sequence)
   data.table::setkey(grouped_values)
 
+  # append values for each aggregation function in turn
   for (i in seq_along(function_list)) {
     f <- function_list[i]
     log_message(paste0("  By ", f), show_progress)
-    if (f == "n") {
-      # number of values present (including non-conformant ones)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = sum(!(is.na(values) & !is.nan(values)))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # for timepoints with no records, set n to 0 (but all other aggregation_functions should show NA)
-      grouped_values[is.na(n), "n" := 0]
-    } else if (all(data_field_dt[, is.na(values)])) {
-      # when all data_field values are NA, just return NAs
-      grouped_values[, (f) := NA_real_]
-    } else if (f == "missing_n") {
-      # number of values missing (excludes non-conformant ones)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = sum(is.na(values) & !is.nan(values))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "missing_perc") {
-      # percentage of values missing (excludes non-conformant ones) out of number of records
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = 100 * sum(is.na(values) & !is.nan(values)) / length(values)),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "nonconformant_n") {
-      # number of nonconformant values
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = sum(is.nan(values))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "nonconformant_perc") {
-      # percentage of nonconformant values out of number of records
-      # TODO: should the denominator be all rows or only conformant/nonmissing rows?
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = 100 * sum(is.nan(values)) / length(values)),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "sum") {
-      # sum of values (used to indicate number of duplicate rows removed)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = sum(values, na.rm = TRUE)),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "nonzero_perc") {
-      # percentage of values which are non-zero out of number of values present
-      #   (used to indicate percentage of remaining records that were duplicated)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = 100 * length(which(values > 0)) / length(values[!is.na(values)])),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "distinct") {
-      # number of distinct values (excluding NAs)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = length(unique(values[!is.na(values)]))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f %in% c("subcat_n", "subcat_perc")) {
-      # create a separate column per category value
-      distinct_categories <-
-        sort(data_field_dt[is.na(values) == FALSE, unique(values)])
-      log_message(paste0("    ", length(distinct_categories), " categories found"), show_progress)
-      # If there is only one category, don't bother
-      if (length(distinct_categories) > 1) {
-        # TODO: consider setting a max number of categories
-        for (j in seq_along(distinct_categories)) {
-          log_message(paste0("    ", j, ": ", distinct_categories[j]), show_progress)
-          catval <- distinct_categories[j]
-          catname <-
-            paste0(f, "_", j, "_", gsub("([[:punct:]])|\\s+", "_", catval))
-          if (f == "subcat_n") {
-            # number of times this particular category value appears
-            grouped_values[
-              data_field_dt[
-                ,
-                list("value" = sum(values == catval, na.rm = TRUE)),
-                by = list(timepoint_group)
-              ],
-              (catname) := value,
-              by = .EACHI
-            ]
-          } else if (f == "subcat_perc") {
-            # percentage this particular category value appears out of number of records
-            # include all values in denominator, including NA and NaN
-            grouped_values[
-              data_field_dt[
-                ,
-                list("value" = 100 * sum(values == catval, na.rm = TRUE) / length(values)),
-                by = list(timepoint_group)
-              ],
-              (catname) := value,
-              by = .EACHI
-            ]
-          }
-        }
-      }
-    } else if (f == "midnight_n") {
-      # number of values whose time portion is midnight (used to check for missing time portions)
-      # TODO: if n is zero, should this be zero or NA?
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "midnight_perc") {
-      # percentage of values whose time portion is midnight (used to check for missing time portions)
-      #   out of number of values present
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = 100 * sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE) / length(values[!is.na(values)])),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # NOTE: if n is zero, the above returns NaN. Update to NA instead
-      grouped_values[is.nan(get(f)), (f) := NA_real_]
-    } else if (f == "min") {
-      # minimum value, whether numeric or datetime. Excludes NAs
-      # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = suppressWarnings(min(values, na.rm = TRUE))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # min/max return Inf when all values are NA. Update to NA instead
-      grouped_values[is.infinite(get(f)), (f) := NA_real_]
-      # min/max also drops datetime class so preserve datatypes
-      if (inherits(data_field[["values"]][[1]], "POSIXct")) {
-        # TODO: make sure this is consistent with data format on loading
-        grouped_values[, (f) := as.POSIXct(get(f), tz = "UTC", origin = "1970-01-01")]
-      }
-    } else if (f == "max") {
-      # maximum value, whether numeric or datetime. Excludes NAs
-      # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = suppressWarnings(max(values, na.rm = TRUE))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # min/max return Inf when all values are NA. Update to NA instead
-      grouped_values[is.infinite(get(f)), (f) := NA_real_]
-      # min/max also drops datetime class so preserve datatypes
-      if (inherits(data_field[["values"]][[1]], "POSIXct")) {
-        # TODO: make sure this is consistent with data format on loading
-        grouped_values[, (f) := as.POSIXct(get(f), tz = "UTC", origin = "1970-01-01")]
-      }
-    } else if (f == "mean") {
-      # mean value. Excludes NAs
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = mean(values, na.rm = TRUE)),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # NOTE: mean returns NaN when all values are NA. Update to NA instead
-      grouped_values[is.nan(get(f)), (f) := NA_real_]
-    } else if (f == "median") {
-      # median value. Excludes NAs
-      # NOTE: need the as.double() because median can return either the original
-      # type or a double, and if a mixture of types are
-      # returned, data.table doesn't like it
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = as.double(stats::median(values, na.rm = TRUE))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-    } else if (f == "min_length") {
-      # minimum character length
-      # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      # NOTE: need the as.double() because min/max returns integer if all values
-      # are NA (in the group), and if a mixture of doubles and integers are
-      # returned, data.table doesn't like it (though the error only seems to appear
-      # when using the package and not when testing inside the package itself)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = suppressWarnings(as.double(
-            min(
-              nchar(as.character(values),
-                keepNA = TRUE
-              ),
-              na.rm = TRUE
-            )
-          ))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # min/max return Inf when all values are NA. Update to NA instead
-      grouped_values[is.infinite(get(f)), (f) := NA_real_]
-    } else if (f == "max_length") {
-      # maximum character length
-      # NOTE: min/max return warnings when all values are NA, so need to suppress them
-      # NOTE: need the as.double() because min/max returns integer if all values
-      # are NA (in the group), and if a mixture of doubles and integers are
-      # returned, data.table doesn't like it (though the error only seems to appear
-      # when using the package and not when testing inside the package itself)
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = suppressWarnings(as.double(
-            max(
-              nchar(as.character(values),
-                keepNA = TRUE
-              ),
-              na.rm = TRUE
-            )
-          ))),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # min/max return Inf when all values are NA. Update to NA instead
-      grouped_values[is.infinite(get(f)), (f) := NA_real_]
-    } else if (f == "mean_length") {
-      # mean character length
-      grouped_values[
-        data_field_dt[
-          ,
-          list("value" = mean(nchar(as.character(values), keepNA = TRUE),
-            na.rm = TRUE
-          )),
-          by = list(timepoint_group)
-        ],
-        (f) := value,
-        by = .EACHI
-      ]
-      # NOTE: mean returns NaN when all values are NA. Update to NA instead
-      grouped_values[is.nan(get(f)), (f) := NA_real_]
-    } else {
-      # TODO: Decide if this should stop everything or just raise a warning
-      # TODO: Putting it here means it doesn't get called if all values are NA
-      stop(paste("Unrecognised aggregation type:", f),
-        call. = FALSE
-      )
-    }
+    aggregate_and_append_values(aggregation_function = f,
+                                data_field_dt = data_field_dt,
+                                grouped_values = grouped_values,
+                                show_progress = show_progress)
   }
 
   log_message(paste0("Finished"), show_progress)
@@ -807,150 +511,56 @@ create_timepoint_groups <- function(timepoint_field, aggregation_timeunit) {
 
 
 # -----------------------------------------------------------------------------
-# TODO: Define set of allowed aggregation functions similarly to field_types,
-# with each object containing formula for aggregation as well as friendly names
-
-#' Set user-friendly names for agg_funs
+#' Get user-friendly names for agg_funs
 #'
 #' This uses the agg_field column_names rather than the original
 #' aggregationfunction (relevant for subcats)
 #'
-#' @param agg_fun string name of agg_fun (from agg_field column_name)
+#' @param agg_fun_colname string name of agg_fun from agg_field column_name
 #' @param type "short" or "long"
 #' @return string containing friendly name
 #' @noRd
 # TODO: come up with some friendlier short names, currently just the agg_fun itself
-agg_fun_friendly_name <- function(agg_fun, type) {
-  if (startsWith(agg_fun, "subcat_")) {
-    catval <- agg_fun_subcat_value(agg_fun)
-    if (startsWith(agg_fun, "subcat_n")) {
-      switch(type,
-        short = agg_fun,
-        long = paste0("No. of values in the category: ", catval)
+agg_fun_friendly_name <- function(agg_fun_colname, type) {
+  if (startsWith(agg_fun_colname, "subcat_")) {
+    catval <- agg_fun_subcat_value(agg_fun_colname)
+    agg_fun_type <- agg_fun_subcat_type(agg_fun_colname)
+    agg_fun <- agg_fun_from_type(type = agg_fun_type)
+    switch(type,
+      short = agg_fun$friendly_name_short,
+      long = paste0(agg_fun$friendly_name_long, ": ", catval)
       )
-    } else if (startsWith(agg_fun, "subcat_perc")) {
-      switch(type,
-        short = agg_fun,
-        long = paste0("Percentage of values in the category: ", catval)
-      )
-    }
   } else {
-    switch(agg_fun,
-      n = {
-        switch(type,
-          short = "n",
-          long = "No. of values present"
-        )
-      },
-      missing_n = {
-        switch(type,
-          short = "missing_n",
-          long = "No. of missing values"
-        )
-      },
-      missing_perc = {
-        switch(type,
-          short = "missing_perc",
-          long = "Percentage of missing values"
-        )
-      },
-      nonconformant_n = {
-        switch(type,
-          short = "nonconformant_n",
-          long = "No. of non-conformant values"
-        )
-      },
-      nonconformant_perc = {
-        switch(type,
-          short = "nonconformant_perc",
-          long = "Percentage of non-conformant values"
-        )
-      },
-      sum = {
-        switch(type,
-          short = "sum",
-          long = "No. of duplicate records removed"
-        )
-      },
-      nonzero_perc = {
-        switch(type,
-          short = "nonzero_perc",
-          long = "Percentage of (remaining) records that were duplicated"
-        )
-      },
-      distinct = {
-        switch(type,
-          short = "distinct",
-          long = "No. of distinct values"
-        )
-      },
-      midnight_n = {
-        switch(type,
-          short = "midnight_n",
-          long = "No. of values with no time element"
-        )
-      },
-      midnight_perc = {
-        switch(type,
-          short = "midnight_perc",
-          long = "Percentage of values with no time element"
-        )
-      },
-      min = {
-        switch(type,
-          short = "min",
-          long = "Minimum value"
-        )
-      },
-      max = {
-        switch(type,
-          short = "max",
-          long = "Maximum value"
-        )
-      },
-      mean = {
-        switch(type,
-          short = "mean",
-          long = "Mean value"
-        )
-      },
-      median = {
-        switch(type,
-          short = "median",
-          long = "Median value"
-        )
-      },
-      min_length = {
-        switch(type,
-          short = "min_length",
-          long = "Minimum string length"
-        )
-      },
-      max_length = {
-        switch(type,
-          short = "max_length",
-          long = "Maximum string length"
-        )
-      },
-      mean_length = {
-        switch(type,
-          short = "mean_length",
-          long = "Mean string length"
-        )
-      }
-    )
+    agg_fun <- agg_fun_from_type(type = agg_fun_colname)
+    switch(type,
+      short = agg_fun$friendly_name_short,
+      long = agg_fun$friendly_name_long
+      )
   }
 }
 
-
-#' Get the subcategory value from the agg_fun name
+#' Get the subcategory value from the agg_fun_colname
 #'
 #' This uses the agg_field column_names rather than the original
 #' aggregationfunction
 #'
-#' @param agg_fun (vector of) string name of agg_fun (from agg_field column_name)
+#' @param agg_fun_colname (vector of) string name of agg_fun (from agg_field column_name)
 #' @return string containing subcat value
 #' @noRd
-agg_fun_subcat_value <- function(agg_fun) {
-  substring(gsub("^(?:[^_]*_){3}", "_", agg_fun), 2)
+agg_fun_subcat_value <- function(agg_fun_colname) {
+  substring(gsub("^(?:[^_]*_){3}", "_", agg_fun_colname), 2)
+}
+
+#' Get the subcat type from the agg_fun_colname
+#'
+#' This uses the agg_field column_names rather than the original
+#' aggregationfunction. Bit ugly but works so long as there are only two subcat types
+#'
+#' @param agg_fun_colname (vector of) string name of agg_fun (from agg_field column_name)
+#' @return string containing the subcat type
+#' @noRd
+agg_fun_subcat_type <- function(agg_fun_colname) {
+  ifelse(grepl("subcat_n", agg_fun_colname),
+         "subcat_n",
+         "subcat_perc")
 }

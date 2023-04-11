@@ -495,6 +495,89 @@ testfn_params_type <- function(df,
   )
 }
 
+#' Helper function for testing aggregate_and_append_values()
+#'
+#' @param testvalues vector containing alternate values for timepoint and field value
+#' @param field_type field_type of field value
+#' @param aggregation_function aggregation_function being tested
+#' @param aggregation_timeunit aggregation_timeunit
+#' @param field_offset add 1/2 to return values from duplicates/allfields calculated fields
+#' @param add_uid_field add a uid field so that the rows don't get deduped
+#'
+#' @return grouped_values data.table
+#' @noRd
+aggregate_and_append_values_testhelper <- function(
+    testvalues,
+    field_type,
+    aggregation_function,
+    aggregation_timeunit,
+    field_offset = 0,
+    add_uid_field = FALSE
+){
+
+  df <-
+    data.table::data.table(
+      "col_timepoint" = testvalues[seq(from = 1, to = length(testvalues) - 1, by = 2)],
+      "col_values" = testvalues[seq(from = 2, to = length(testvalues), by = 2)]
+    )
+  fts = field_types(
+    col_timepoint = ft_timepoint(),
+    col_values = field_type
+  )
+
+  if(add_uid_field){
+    df[, "col_uid" := seq_along(df$col_timepoint)]
+    fts = field_types(
+      col_timepoint = ft_timepoint(),
+      col_uid = ft_simple(),
+      col_values = field_type
+    )
+    field_offset = field_offset + 1
+  }
+
+  source_data <-
+    prepare_data(
+      df,
+      field_types = fts,
+      show_progress = FALSE
+    )
+
+  #--- this part copied from aggregate_data() ---#
+  # create column to group by, which will become the x-axes
+  timepoint_group_sequence <- create_timepoint_groups(
+    timepoint_field = source_data$data_fields[[source_data$timepoint_field_name]],
+    aggregation_timeunit = aggregation_timeunit
+  )
+
+  # map timepoint field values to timepoint_group_sequence values.
+  # these will be used repeatedly later
+  timepoint_field_as_timepoint_group <- timepoint_as_timepoint_group(
+    data_field_vector(source_data$data_fields[[source_data$timepoint_field_name]]),
+    aggregation_timeunit = aggregation_timeunit
+  )
+  #--- ---#
+
+  data_field <- source_data$data_fields[[2 + field_offset]]
+  #--- this part copied from aggregate_field() ---#
+  # this contains all values present in the original data_field, alongside their timepoint_group
+  data_field_dt <-
+    data.table::data.table(
+      "timepoint_group" = timepoint_field_as_timepoint_group,
+      "values" = data_field[["values"]][[1]],
+      key = "timepoint_group"
+    )
+  # this will contain the agg_fun values after aggregating (one column per agg_fun)
+  grouped_values <- data.table::as.data.table(timepoint_group_sequence)
+  data.table::setkey(grouped_values)
+  #--- ---#
+
+  aggregate_and_append_values(aggregation_function,
+                              data_field_dt = data_field_dt,
+                              grouped_values = grouped_values,
+                              show_progress = FALSE)
+
+  grouped_values
+}
 
 # -----------------------------------------------------------------------------
 #' Dummy function set up purely for R CMD Check Namespace bug
