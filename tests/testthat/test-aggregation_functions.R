@@ -511,6 +511,7 @@ test_that("aggregate_and_append_values 'midnight_n' works as expected", {
 
 test_that("aggregate_and_append_values 'midnight_n' works as expected when all values are missing", {
   # number of values whose time portion is midnight (used to check for missing time portions)
+  # non-conformant values should be treated same as missing values
 
   testvalues <- c("2021-06-01", "",
                   "2021-06-02", "",
@@ -518,14 +519,14 @@ test_that("aggregate_and_append_values 'midnight_n' works as expected when all v
                   "2021-06-03", "",
                   "2021-06-03", "",
                   "2021-06-03", "",
-                  "2021-06-05", "",
+                  "2021-06-05", "2021-06",
                   "2021-06-05", "",
                   "2021-06-05", "",
                   "2021-06-05", ""
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_datetime(),
                                            aggregation_function = "midnight_n",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -576,6 +577,7 @@ test_that("aggregate_and_append_values 'midnight_perc' works as expected", {
 test_that("aggregate_and_append_values 'midnight_perc' works as expected when all values are missing", {
   # percentage of values whose time portion is midnight (used to check for missing time portions)
   #   out of number of values present
+  # non-conformant values should be treated same as missing values
 
   testvalues <- c("2021-06-01", "",
                   "2021-06-02", "",
@@ -583,14 +585,14 @@ test_that("aggregate_and_append_values 'midnight_perc' works as expected when al
                   "2021-06-03", "",
                   "2021-06-03", "",
                   "2021-06-03", "",
-                  "2021-06-05", "",
+                  "2021-06-05", "2021-06",
                   "2021-06-05", "",
                   "2021-06-05", "",
                   "2021-06-05", ""
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_datetime(),
                                            aggregation_function = "midnight_perc",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -674,6 +676,7 @@ test_that("aggregate_and_append_values 'min' works as expected for date fields",
 test_that("aggregate_and_append_values 'min' works as expected when all values are missing", {
   # minimum value
   # For timepoints with no records, value should show NA
+  # non-conformant values should be treated same as missing values
 
   testvalues <- c("2021-06-01", "",
                   "2021-06-02", "",
@@ -681,14 +684,14 @@ test_that("aggregate_and_append_values 'min' works as expected when all values a
                   "2021-06-03", "",
                   "2021-06-03", "",
                   "2021-06-03", "",
-                  "2021-06-05", "",
+                  "2021-06-05", "a",
                   "2021-06-05", "",
                   "2021-06-05", "",
                   "2021-06-05", ""
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_numeric(),
                                            aggregation_function = "min",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -772,6 +775,7 @@ test_that("aggregate_and_append_values 'max' works as expected for date fields",
 test_that("aggregate_and_append_values 'max' works as expected when all values are missing", {
   # maximum value
   # For timepoints with no records, value should show NA
+  # non-conformant values should be treated same as missing values
 
   testvalues <- c("2021-06-01", "",
                   "2021-06-02", "",
@@ -779,14 +783,14 @@ test_that("aggregate_and_append_values 'max' works as expected when all values a
                   "2021-06-03", "",
                   "2021-06-03", "",
                   "2021-06-03", "",
-                  "2021-06-05", "",
+                  "2021-06-05", "a",
                   "2021-06-05", "",
                   "2021-06-05", "",
                   "2021-06-05", ""
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_numeric(),
                                            aggregation_function = "max",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -833,6 +837,37 @@ test_that("aggregate_and_append_values 'mean' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 3)
 })
 
+test_that("aggregate_and_append_values 'mean' works as expected when all values are missing", {
+  # mean value
+  # For timepoints with no records, value should show NA
+  # non-conformant values should be treated same as missing values
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "a",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "mean",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
+})
+
 test_that("aggregate_and_append_values 'median' works as expected", {
   # median value. Excludes NAs
   # For timepoints with no records, value should show NA
@@ -867,9 +902,10 @@ test_that("aggregate_and_append_values 'median' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 2)
 })
 
-test_that("aggregate_and_append_values 'mean' works as expected when all values are missing", {
-  # mean value
+test_that("aggregate_and_append_values 'median' works as expected when all values are missing", {
+  # median value
   # For timepoints with no records, value should show NA
+  # non-conformant values should be treated same as missing values
 
   testvalues <- c("2021-06-01", "",
                   "2021-06-02", "",
@@ -877,15 +913,15 @@ test_that("aggregate_and_append_values 'mean' works as expected when all values 
                   "2021-06-03", "",
                   "2021-06-03", "",
                   "2021-06-03", "",
-                  "2021-06-05", "",
+                  "2021-06-05", "a",
                   "2021-06-05", "",
                   "2021-06-05", "",
                   "2021-06-05", ""
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
-                                           aggregation_function = "mean",
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "median",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
                                            )
@@ -896,7 +932,6 @@ test_that("aggregate_and_append_values 'mean' works as expected when all values 
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
-
 
 test_that("aggregate_and_append_values 'min_length' works as expected", {
   # minimum character length
@@ -948,7 +983,7 @@ test_that("aggregate_and_append_values 'min_length' works as expected when all v
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_uniqueidentifier(),
                                            aggregation_function = "min_length",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -1011,7 +1046,7 @@ test_that("aggregate_and_append_values 'max_length' works as expected when all v
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_uniqueidentifier(),
                                            aggregation_function = "max_length",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
@@ -1074,7 +1109,7 @@ test_that("aggregate_and_append_values 'mean_length' works as expected when all 
                   )
   grouped_values <-
     aggregate_and_append_values_testhelper(testvalues = testvalues,
-                                           field_type = ft_categorical(),
+                                           field_type = ft_uniqueidentifier(),
                                            aggregation_function = "mean_length",
                                            aggregation_timeunit = "day",
                                            add_uid_field = TRUE
