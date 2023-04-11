@@ -150,6 +150,8 @@ agg_fun_nonzero_perc <- function(){
 #' distinct
 #'
 #' number of distinct values (excluding NAs)
+#' For timepoints with no non-missing values, value should show NA for
+#'   consistency with other fieldtype-specific agg_funs
 #' For timepoints with no records, value should show NA
 #'
 #' @return agg_fun object
@@ -157,7 +159,11 @@ agg_fun_nonzero_perc <- function(){
 agg_fun_distinct <- function(){
   agg_fun(type = "distinct",
           function_call = quote(
-            length(unique(values[!is.na(values)]))
+            if(all(is.na(values))){
+                NA_integer_
+              } else{
+                length(unique(values[!is.na(values)]))
+              }
             ),
           friendly_name_short = "distinct",
           friendly_name_long = "No. of distinct values"
@@ -168,13 +174,16 @@ agg_fun_distinct <- function(){
 #'
 #' number of values whose time portion is midnight (used to check for missing time portions)
 #' For timepoints with no records, value should show NA
-#' TODO: if all values are missing, this should probably return NA for consistency with midnight_perc. Currently returning zero
 #' @return agg_fun object
 #' @noRd
 agg_fun_midnight_n <- function(){
   agg_fun(type = "midnight_n",
           function_call = quote(
-            sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)
+            if(all(is.na(values))){
+                NA_integer_
+              } else{
+                sum(format(values, format = "%T") == "00:00:00", na.rm = TRUE)
+              }
             ),
           friendly_name_short = "midnight_n",
           friendly_name_long = "No. of values with no time element"
@@ -312,7 +321,11 @@ agg_fun_mean <- function(){
 agg_fun_median <- function(){
   agg_fun(type = "median",
           function_call = quote(
-            as.double(stats::median(values, na.rm = TRUE))
+            if(all(is.na(values))){
+                NA_real_
+              } else{
+                as.double(stats::median(values, na.rm = TRUE))
+              }
           ),
           friendly_name_short = "median",
           friendly_name_long = "Median value"
@@ -486,10 +499,7 @@ aggregate_and_append_values <- function(aggregation_function,
   agg_fun <- agg_fun_from_type(type = aggregation_function,
                                data_class = class(data_field_dt[["values"]][[1]]))
 
-  # when all data_field values are NA, don't need to do a big calculation
-  if (all(data_field_dt[, is.na(values)])) {
-    grouped_values[, (agg_fun$type) := agg_fun$value_if_no_records]
-  } else if (aggregation_function %in% c("subcat_n", "subcat_perc")) {
+  if (aggregation_function %in% c("subcat_n", "subcat_perc")) {
     aggregate_and_append_values_subcat(agg_fun, data_field_dt, grouped_values, show_progress)
   } else{
     aggregate_and_append_values_simple(agg_fun, data_field_dt, grouped_values)

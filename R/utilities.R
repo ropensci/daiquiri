@@ -495,23 +495,17 @@ testfn_params_type <- function(df,
   )
 }
 
-#' Helper function for testing aggregate_and_append_values()
+#' Helper function for preparing test data()
 #'
 #' @param testvalues vector containing alternate values for timepoint and field value
 #' @param field_type field_type of field value
-#' @param aggregation_function aggregation_function being tested
-#' @param aggregation_timeunit aggregation_timeunit
-#' @param field_offset add 1/2 to return values from duplicates/allfields calculated fields
 #' @param add_uid_field add a uid field so that the rows don't get deduped
 #'
-#' @return grouped_values data.table
+#' @return source_data
 #' @noRd
-aggregate_and_append_values_testhelper <- function(
+prepare_data_testhelper <- function(
     testvalues,
     field_type,
-    aggregation_function,
-    aggregation_timeunit,
-    field_offset = 0,
     add_uid_field = FALSE
 ){
 
@@ -532,14 +526,40 @@ aggregate_and_append_values_testhelper <- function(
       col_uid = ft_simple(),
       col_values = field_type
     )
-    field_offset = field_offset + 1
   }
 
+  prepare_data(
+    df,
+    field_types = fts,
+    show_progress = FALSE
+  )
+}
+
+#' Helper function for testing aggregate_and_append_values()
+#'
+#' @param testvalues vector containing alternate values for timepoint and field value
+#' @param field_type field_type of field value
+#' @param aggregation_function aggregation_function being tested
+#' @param aggregation_timeunit aggregation_timeunit
+#' @param field_offset add 1/2 to return values from duplicates/allfields calculated fields
+#' @param add_uid_field add a uid field so that the rows don't get deduped
+#'
+#' @return grouped_values data.table
+#' @noRd
+aggregate_and_append_values_testhelper <- function(
+    testvalues,
+    field_type,
+    aggregation_function,
+    aggregation_timeunit,
+    field_offset = 0,
+    add_uid_field = FALSE
+){
+
   source_data <-
-    prepare_data(
-      df,
-      field_types = fts,
-      show_progress = FALSE
+    prepare_data_testhelper(
+      testvalues = testvalues,
+      field_type = field_type,
+      add_uid_field = add_uid_field
     )
 
   #--- this part copied from aggregate_data() ---#
@@ -557,7 +577,11 @@ aggregate_and_append_values_testhelper <- function(
   )
   #--- ---#
 
+  if(add_uid_field){
+    field_offset = field_offset + 1
+  }
   data_field <- source_data$data_fields[[2 + field_offset]]
+
   #--- this part copied from aggregate_field() ---#
   # this contains all values present in the original data_field, alongside their timepoint_group
   data_field_dt <-

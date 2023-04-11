@@ -93,7 +93,9 @@ test_that("daiquiri_report() creates report and returns daiquiri object successf
       col_freetext_err = ft_ignore(),
       col_freetext = ft_freetext(),
       col_simple_err = ft_ignore(),
-      col_simple = ft_simple()
+      col_simple = ft_simple(),
+      col_numeric_missing_err = ft_ignore(),
+      col_numeric_missing = ft_numeric()
     ),
     dataset_description = "completetestset",
     aggregation_timeunit = "week",

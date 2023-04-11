@@ -608,7 +608,7 @@ data_field_validation_warnings_n <- function(data_field) {
 data_field_count <- function(data_field) {
   data_vals <- data_field$values[[1]]
 
-  if (is_ft_ignore(data_field$field_type) || all(is.na(data_vals))) {
+  if (is_ft_ignore(data_field$field_type)) {
     NA_integer_
   } else {
     sum(!is.na(data_vals))

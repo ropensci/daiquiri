@@ -50,7 +50,9 @@ test_that("aggregate_data() creates aggregate object correctly", {
         col_freetext_err = ft_ignore(),
         col_freetext = ft_freetext(),
         col_simple_err = ft_ignore(),
-        col_simple = ft_simple()
+        col_simple = ft_simple(),
+        col_numeric_missing_err = ft_ignore(),
+        col_numeric_missing = ft_numeric()
       ),
       dataset_description = "completetestset",
       show_progress = FALSE
@@ -92,6 +94,7 @@ test_that("aggregate_data() creates aggregate object correctly", {
   expect_equal(ncol(testaggregated_data$aggregated_fields$col_freetext$values), 4)
   expect_equal(nrow(testaggregated_data$aggregated_fields$col_simple$values), 43)
   expect_equal(ncol(testaggregated_data$aggregated_fields$col_simple$values), 4)
+  expect_equal(nrow(testaggregated_data$aggregated_fields$col_numeric_missing$values), 43)
   expect_equal(nrow(testaggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 43)
   expect_equal(ncol(testaggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 3)
   expect_equal(nrow(testaggregated_data$aggregated_fields[["[ALL_FIELDS_COMBINED]"]]$values), 43)
@@ -265,56 +268,6 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
   expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_uniqueidentifier$values$min_length)))
   expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_uniqueidentifier$values$max_length)))
   expect_false(any(is.nan(testdata_byday$aggregated_fields$col_uniqueidentifier$values$mean_length)))
-})
-
-test_that("aggregated values contain all NAs when data_field values are all NA (except for 'n' which should be 0)", {
-  testdf <-
-    data.table::data.table(
-      "col_timepoint" = paste0("2022-01-", 10 + c(seq(1, 3), seq(6, 21))),
-      "col_numeric_allna" = "",
-      "col_datetime_allna" = "",
-      "col_uniqueidentifier_allna" = "",
-      "col_categorical_allna" = ""
-    )
-  testsource_data <-
-    prepare_data(
-      testdf,
-      field_types = field_types(
-        col_timepoint = ft_timepoint(),
-        col_numeric_allna = ft_numeric(),
-        col_datetime_allna = ft_datetime(),
-        col_uniqueidentifier_allna = ft_uniqueidentifier(),
-        col_categorical_allna = ft_categorical()
-      ),
-      override_column_names = FALSE,
-      na = c("", "NULL"),
-      show_progress = FALSE
-    )
-  testdata_byday <-
-    aggregate_data(testsource_data,
-      aggregation_timeunit = "day",
-      show_progress = FALSE
-    )
-
-  expect_true(all(testdata_byday$aggregated_fields$col_numeric_allna$values$n == 0))
-
-  fieldstotest <- names(testdata_byday$aggregated_fields)[-1]
-  fieldstotest <- fieldstotest[which(fieldstotest != "[DUPLICATES]")]
-  for (dcol in fieldstotest) {
-    agg_funstotest <- names(testdata_byday$aggregated_fields[[dcol]]$values)[-1]
-    agg_funstotest <- agg_funstotest[which(agg_funstotest != "n")]
-    for (agg_fun in agg_funstotest) {
-      expect_true(all(is.na(testdata_byday$aggregated_fields[[dcol]]$values[[agg_fun]])),
-        label = paste0(dcol, "$", agg_fun, " is all NA")
-      )
-      expect_false(any(is.infinite(testdata_byday$aggregated_fields[[dcol]]$values[[agg_fun]])),
-        label = paste0(dcol, "$", agg_fun, " contains Inf")
-      )
-      expect_false(any(is.nan(testdata_byday$aggregatefields[[dcol]]$values[[agg_fun]])),
-        label = paste0(dcol, "$", agg_fun, " contains NaN")
-      )
-    }
-  }
 })
 
 test_that("agg_fun_subcat_value() retrieves value correctly", {

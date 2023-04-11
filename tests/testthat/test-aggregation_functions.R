@@ -1,6 +1,6 @@
 test_that("aggregate_and_append_values 'n' works as expected", {
   # counts number of values present (including non-conformant ones)
-  # for timepoints with no records, n should be 0
+  # For timepoints with no records, value should show 0
 
   testvalues <- c("2021-06-01", "1",
                   "2021-06-02", "1",
@@ -25,6 +25,35 @@ test_that("aggregate_and_append_values 'n' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 3)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 3)
+})
+
+test_that("aggregate_and_append_values 'n' works as expected when all values are missing", {
+  # counts number of values present (including non-conformant ones)
+  # For timepoints with no records, value should show 0
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "n",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE)
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 0)
 })
 
 test_that("aggregate_and_append_values 'missing_n' works as expected", {
@@ -55,8 +84,37 @@ test_that("aggregate_and_append_values 'missing_n' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 1)
 })
 
-test_that("aggregate_and_append_values 'missing_perc' works as expected", {
+test_that("aggregate_and_append_values 'missing_n' works as expected when all values are missing", {
   # counts number of values missing (excludes non-conformant ones)
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "missing_n",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE)
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 1)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 2)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 3)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 4)
+})
+
+test_that("aggregate_and_append_values 'missing_perc' works as expected", {
+  # percentage of values missing (excludes non-conformant ones) out of number of records
   # For timepoints with no records, value should show NA
 
   testvalues <- c("2021-06-01", "1",
@@ -81,6 +139,35 @@ test_that("aggregate_and_append_values 'missing_perc' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 25)
+})
+
+test_that("aggregate_and_append_values 'missing_perc' works as expected when all values are missing", {
+  # percentage of values missing (excludes non-conformant ones) out of number of records
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "missing_perc",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE)
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 100)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 100)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 100)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 100)
 })
 
 test_that("aggregate_and_append_values 'nonconformant_n' works as expected for numeric fields", {
@@ -143,6 +230,35 @@ test_that("aggregate_and_append_values 'nonconformant_n' works as expected for d
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 1)
 })
 
+test_that("aggregate_and_append_values 'nonconformant_n' works as expected when all values are missing", {
+  # counts number of nonconformant values
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "nonconformant_n",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE)
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 0)
+})
+
 test_that("aggregate_and_append_values 'nonconformant_perc' works as expected for numeric fields", {
   # percentage of nonconformant values out of number of records
   # For timepoints with no records, value should show NA
@@ -201,6 +317,35 @@ test_that("aggregate_and_append_values 'nonconformant_perc' works as expected fo
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 25)
+})
+
+test_that("aggregate_and_append_values 'nonconformant_perc' works as expected when all values are missing", {
+  # percentage of nonconformant values out of number of records
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_numeric(),
+                                           aggregation_function = "nonconformant_perc",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE)
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 0)
 })
 
 test_that("aggregate_and_append_values 'sum' works as expected", {
@@ -288,10 +433,40 @@ test_that("aggregate_and_append_values 'distinct' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 3)
 })
 
+test_that("aggregate_and_append_values 'distinct' works as expected when all values are missing", {
+  # number of distinct values (excluding NAs)
+  # For timepoints with no non-missing values, value should show NA for
+  #   consistency with other fieldtype-specific agg_funs
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "distinct",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
+})
+
 test_that("aggregate_and_append_values 'midnight_n' works as expected", {
   # number of values whose time portion is midnight (used to check for missing time portions)
-  # TODO: if all values are missing, this should probably return NA for
-  # consistency with midnight_perc. Currently returning zero
 
   testvalues <- c("2021-06-01", "2021-06-01",
                   "2021-06-02", "2021-06",
@@ -312,14 +487,43 @@ test_that("aggregate_and_append_values 'midnight_n' works as expected", {
                                            aggregation_timeunit = "day")
 
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 1)
-  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 0)
-  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-06"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-06"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 1)
+})
+
+test_that("aggregate_and_append_values 'midnight_n' works as expected when all values are missing", {
+  # number of values whose time portion is midnight (used to check for missing time portions)
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "midnight_n",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
 
 test_that("aggregate_and_append_values 'midnight_perc' works as expected", {
@@ -354,6 +558,36 @@ test_that("aggregate_and_append_values 'midnight_perc' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 25)
+})
+
+test_that("aggregate_and_append_values 'midnight_perc' works as expected when all values are missing", {
+  # percentage of values whose time portion is midnight (used to check for missing time portions)
+  #   out of number of values present
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "midnight_perc",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
 
 test_that("aggregate_and_append_values 'min' works as expected for numeric fields", {
@@ -423,6 +657,36 @@ test_that("aggregate_and_append_values 'min' works as expected for date fields",
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], as.POSIXct("2021-06-01", tz = "UTC"))
 })
 
+test_that("aggregate_and_append_values 'min' works as expected when all values are missing", {
+  # minimum value
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "min",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
+})
+
 test_that("aggregate_and_append_values 'max' works as expected for numeric fields", {
   # maximum value
   # For timepoints with no records, value should show NA
@@ -488,6 +752,36 @@ test_that("aggregate_and_append_values 'max' works as expected for date fields",
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], as.POSIXct(NA, tz = "UTC"))
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], as.POSIXct(NA, tz = "UTC"))
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], as.POSIXct("2021-06-03", tz = "UTC"))
+})
+
+test_that("aggregate_and_append_values 'max' works as expected when all values are missing", {
+  # maximum value
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "max",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
 
 test_that("aggregate_and_append_values 'mean' works as expected", {
@@ -556,6 +850,37 @@ test_that("aggregate_and_append_values 'median' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 2)
 })
 
+test_that("aggregate_and_append_values 'mean' works as expected when all values are missing", {
+  # mean value
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "mean",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
+})
+
+
 test_that("aggregate_and_append_values 'min_length' works as expected", {
   # minimum character length
   # For timepoints with no records, value should show NA
@@ -586,6 +911,36 @@ test_that("aggregate_and_append_values 'min_length' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 1)
+})
+
+test_that("aggregate_and_append_values 'min_length' works as expected when all values are missing", {
+  # minimum character length
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "min_length",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
 
 test_that("aggregate_and_append_values 'max_length' works as expected", {
@@ -620,6 +975,36 @@ test_that("aggregate_and_append_values 'max_length' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 2)
 })
 
+test_that("aggregate_and_append_values 'max_length' works as expected when all values are missing", {
+  # maximum character length
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "max_length",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
+})
+
 test_that("aggregate_and_append_values 'mean_length' works as expected", {
   # mean character length
   # For timepoints with no records, value should show NA
@@ -650,6 +1035,36 @@ test_that("aggregate_and_append_values 'mean_length' works as expected", {
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-07"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-08"][[2]], NA_real_)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-09"][[2]], 1.5)
+})
+
+test_that("aggregate_and_append_values 'mean_length' works as expected when all values are missing", {
+  # mean character length
+  # For timepoints with no records, value should show NA
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  grouped_values <-
+    aggregate_and_append_values_testhelper(testvalues = testvalues,
+                                           field_type = ft_categorical(),
+                                           aggregation_function = "mean_length",
+                                           aggregation_timeunit = "day",
+                                           add_uid_field = TRUE
+                                           )
+
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], NA_real_)
 })
 
 test_that("aggregate_and_append_values 'subcat_n' works as expected", {

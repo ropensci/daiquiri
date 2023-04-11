@@ -141,7 +141,9 @@ test_that("prepare_data() creates source_data object correctly", {
       col_freetext_err = ft_ignore(),
       col_freetext = ft_freetext(),
       col_simple_err = ft_ignore(),
-      col_simple = ft_simple()
+      col_simple = ft_simple(),
+      col_numeric_missing_err = ft_ignore(),
+      col_numeric_missing = ft_numeric()
     ),
     dataset_description = "completetestset",
     show_progress = FALSE
@@ -154,8 +156,8 @@ test_that("prepare_data() creates source_data object correctly", {
   expect_equal(testsource_data$rows_source_n, 900)
   expect_equal(testsource_data$rows_imported_n, 890)
   expect_equal(testsource_data$rows_duplicates_n, 4)
-  expect_equal(testsource_data$cols_source_n, 24)
-  expect_equal(testsource_data$cols_imported_n, 12)
+  expect_equal(testsource_data$cols_source_n, 26)
+  expect_equal(testsource_data$cols_imported_n, 13)
   expect_equal(testsource_data$dataset_description, "completetestset")
 
   expect_snapshot(testsource_data$validation_warnings)
@@ -352,7 +354,9 @@ test_that("source_data object prints to console ok", {
       col_freetext_err = ft_ignore(),
       col_freetext = ft_freetext(),
       col_simple_err = ft_ignore(),
-      col_simple = ft_simple()
+      col_simple = ft_simple(),
+      col_numeric_missing_err = ft_ignore(),
+      col_numeric_missing = ft_numeric()
     ),
     dataset_description = "completetestset",
     show_progress = FALSE
@@ -415,4 +419,48 @@ test_that("identify_duplicate_rows() identifies all exactly duplicated rows", {
 
   expect_true(all(result[duplicaterows]))
   expect_true(all(!result[-duplicaterows]))
+})
+
+test_that("data_field_count() calculates number of values correctly", {
+
+  testvalues <- c("2021-06-01", "1",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "1",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  source_data <-
+    prepare_data_testhelper(
+      testvalues = testvalues,
+      field_type = ft_numeric(),
+      add_uid_field = TRUE)
+
+  expect_equal(data_field_count(source_data$data_fields[["col_values"]]), 2)
+})
+
+test_that("data_field_count() returns 0 when all values are missing", {
+
+  testvalues <- c("2021-06-01", "",
+                  "2021-06-02", "",
+                  "2021-06-02", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-03", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", "",
+                  "2021-06-05", ""
+                  )
+  source_data <-
+    prepare_data_testhelper(
+      testvalues = testvalues,
+      field_type = ft_numeric(),
+      add_uid_field = TRUE)
+
+  expect_equal(data_field_count(source_data$data_fields[["col_values"]]), 0)
 })
