@@ -60,14 +60,14 @@ test_that("aggregate_and_append_values 'missing_n' works as expected", {
   # counts number of values missing (excludes non-conformant ones)
   # For timepoints with no records, value should show NA
 
-  testvalues <- c("2021-06-01", "1",
+  testvalues <- c("2021-06-01", "",
                   "2021-06-02", "1",
                   "2021-06-02", "2",
                   "2021-06-03", "a",
                   "2021-06-03", "2",
                   "2021-06-03", "3",
                   "2021-06-05", "",
-                  "2021-06-05", "2",
+                  "2021-06-05", "",
                   "2021-06-05", "3",
                   "2021-06-05", "4"
                   )
@@ -77,11 +77,11 @@ test_that("aggregate_and_append_values 'missing_n' works as expected", {
                                            "missing_n",
                                            aggregation_timeunit = "day")
 
-  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 1)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
-  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 1)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-05"][[2]], 2)
 })
 
 test_that("aggregate_and_append_values 'missing_n' works as expected when all values are missing", {
@@ -117,7 +117,7 @@ test_that("aggregate_and_append_values 'missing_perc' works as expected", {
   # percentage of values missing (excludes non-conformant ones) out of number of records
   # For timepoints with no records, value should show NA
 
-  testvalues <- c("2021-06-01", "1",
+  testvalues <- c("2021-06-01", "",
                   "2021-06-02", "1",
                   "2021-06-02", "2",
                   "2021-06-03", "a",
@@ -134,7 +134,7 @@ test_that("aggregate_and_append_values 'missing_perc' works as expected", {
                                            "missing_perc",
                                            aggregation_timeunit = "day")
 
-  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 0)
+  expect_equal(grouped_values[grouped_values[[1]] == "2021-06-01"][[2]], 100)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-02"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-03"][[2]], 0)
   expect_equal(grouped_values[grouped_values[[1]] == "2021-06-04"][[2]], NA_real_)
