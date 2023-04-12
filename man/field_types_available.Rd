@@ -12,19 +12,19 @@
 \alias{ft_ignore}
 \title{Types of data fields available for specification}
 \usage{
-ft_timepoint(includes_time = TRUE, format = "")
+ft_timepoint(includes_time = TRUE, format = "", na = NULL)
 
-ft_uniqueidentifier()
+ft_uniqueidentifier(na = NULL)
 
-ft_categorical(aggregate_by_each_category = FALSE)
+ft_categorical(aggregate_by_each_category = FALSE, na = NULL)
 
-ft_numeric()
+ft_numeric(na = NULL)
 
-ft_datetime(includes_time = TRUE, format = "")
+ft_datetime(includes_time = TRUE, format = "", na = NULL)
 
-ft_freetext()
+ft_freetext(na = NULL)
 
-ft_simple()
+ft_simple(na = NULL)
 
 ft_ignore()
 }
@@ -39,6 +39,9 @@ time portion. Default = \code{TRUE}}
 field level, using \code{\link[readr:parse_datetime]{readr::col_datetime()}} format specifications, e.g.
 \code{format = "\%d/\%m/\%Y"}. When a format is supplied, it must match the
 complete string.}
+
+\item{na}{Column-specific vector of strings that should be interpreted as missing
+values (in addition to those specified at dataset level)}
 
 \item{aggregate_by_each_category}{If \code{TRUE}, aggregated values will be
 generated for each distinct subcategory as well as for the field overall.

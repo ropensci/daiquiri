@@ -38,7 +38,7 @@ The `example_prescriptions` dataset is provided with this package as a csv file,
 * PatientID - A unique identifier for the patient
 * Location - The location of the patient
 
-There are some missing values which are represented by the string 'NULL'. String values that should be treated as missing values can be specified when the data is processed, using the `na` parameter.
+There are some missing values which are represented by the string 'NULL' and some dates with the value '1800-01-01'. String values that should be treated as missing values can be specified  using the `na` parameter, either per column or for the entire dataset. 
 
 ```{r}
 # first, attach the package if you haven't already
@@ -96,7 +96,7 @@ For the `example_prescriptions` dataset above, we will use the PrescriptionDate 
 fts <- field_types(
   PrescriptionID = ft_uniqueidentifier(),
   PrescriptionDate = ft_timepoint(),
-  AdmissionDate = ft_datetime(includes_time = FALSE),
+  AdmissionDate = ft_datetime(includes_time = FALSE, na = "1800-01-01"),
   Drug = ft_freetext(),
   Dose = ft_numeric(),
   DoseUnit = ft_categorical(),

@@ -16,7 +16,8 @@
 #'   `field_types`. The specification must therefore contain the columns in the
 #'   correct order. Default = `FALSE`
 #' @param na vector containing strings that should be interpreted as missing
-#'   values, Default = `c("","NA","NULL")`.
+#'   values. Default = `c("","NA","NULL")`. Additional column-specific values
+#'   can be specified in the [field_types()] object
 #' @param dataset_description Short description of the dataset being checked.
 #'   This will appear on the report. If blank, the name of the data frame object
 #'   will be used
@@ -158,6 +159,16 @@ prepare_data <- function(df,
     # update the dt
     changecols <- names(field_types)[dt_datatypes != "character"]
     dt[, (changecols) := lapply(.SD, as.character), .SDcols = changecols]
+  }
+
+  log_message(paste0("Removing column-specific na values..."), show_progress)
+  # remove column-specific na values before checking for non-conformant values
+  for (i in 1:length(field_types)) {
+    current_field <- field_types[[i]]
+    current_field_name <- names(field_types[i])
+    if(!is.null(current_field$na)){
+       dt[get(current_field_name) %in% current_field$na, (current_field_name) := NA]
+    }
   }
 
   log_message(paste0("Checking data against field_types..."), show_progress)
@@ -404,7 +415,7 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
     timepoint_min = format(data_field_min(timepoint_field)),
     timepoint_max = format(data_field_max(timepoint_field)),
     timepoint_missing_n = format(source_data$timepoint_missing_n),
-    na_values = paste(dQuote(source_data$na_values, q = FALSE), collapse = ",")
+    na_values = summarise_na_values(source_data)
   )
 
   log_message(paste0("  For each column in dataset..."), show_progress)
@@ -468,6 +479,29 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
   )
 }
 
+#' Consolidate all na strings into single summary string
+#'
+#' @param source_data source_data object
+#'
+#' @return string
+#' @noRd
+summarise_na_values <- function(source_data){
+  na_values <-
+    paste(dQuote(source_data$na_values, q = FALSE), collapse = ",")
+
+  for (f in source_data$data_fields) {
+    if (!is.null(data_field_na(f))) {
+      na_values <-
+        paste0(na_values,
+              "\n ",
+              f$column_name,
+              ": ",
+              paste(dQuote(data_field_na(f), q = FALSE), collapse = ","))
+    }
+  }
+
+  na_values
+}
 
 # -----------------------------------------------------------------------------
 #' Constructor for individual data_fields within source_data object
@@ -613,6 +647,15 @@ data_field_count <- function(data_field) {
   } else {
     sum(!is.na(data_vals))
   }
+}
+
+#' Get na strings specific to the data_field
+#'
+#' @param data_field data_field object
+#' @return vector of strings denoting na values
+#' @noRd
+data_field_na <- function(data_field) {
+  data_field$field_type$na
 }
 
 

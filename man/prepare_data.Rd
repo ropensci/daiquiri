@@ -26,7 +26,8 @@ names in the supplied \code{df} will be replaced with the names specified in
 correct order. Default = \code{FALSE}}
 
 \item{na}{vector containing strings that should be interpreted as missing
-values, Default = \code{c("","NA","NULL")}.}
+values. Default = \code{c("","NA","NULL")}. Additional column-specific values
+can be specified in the \code{\link[=field_types]{field_types()}} object}
 
 \item{dataset_description}{Short description of the dataset being checked.
 This will appear on the report. If blank, the name of the data frame object

@@ -175,7 +175,7 @@ summarydf <- data.frame(
     sourcesummary$overall["rows_duplicates_n"],
     sourcesummary$overall["timepoint_missing_n"],
     sourcesummary$overall["rows_imported_n"],
-    sourcesummary$overall["na_values"],
+    gsub("\n", "<br>", sourcesummary$overall["na_values"], fixed = TRUE),
     sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
       sum(is.na(
         sourcesummary$validation_warnings$instances
@@ -202,7 +202,8 @@ reactable::reactable(
     ),
     Value = reactable::colDef(
       name = "",
-      minWidth = 200
+      minWidth = 200,
+      html = TRUE
     )
   )
 )

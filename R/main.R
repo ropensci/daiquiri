@@ -54,7 +54,7 @@
 #'   field_types = field_types(
 #'     PrescriptionID = ft_uniqueidentifier(),
 #'     PrescriptionDate = ft_timepoint(),
-#'     AdmissionDate = ft_datetime(includes_time = FALSE),
+#'     AdmissionDate = ft_datetime(includes_time = FALSE, na = "1800-01-01"),
 #'     Drug = ft_freetext(),
 #'     Dose = ft_numeric(),
 #'     DoseUnit = ft_categorical(),

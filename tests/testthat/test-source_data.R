@@ -464,3 +464,72 @@ test_that("data_field_count() returns 0 when all values are missing", {
 
   expect_equal(data_field_count(source_data$data_fields[["col_values"]]), 0)
 })
+
+test_that("column-specific missing value strings get set to NA", {
+
+  testdf <-
+    data.table::data.table(
+      "col_timepoint" = c(paste0("2022-01-", 10 + c(seq(1, 9))), "1900-01-01"),
+      "col_numeric" = c("", "0", seq(
+        from = 2,
+        to = 3,
+        length.out = 8
+      )),
+      "col_datetime" = c("", "1800-01-01", "1900-01-01", rep("2022-01-01 00:00:00", 7)),
+      "col_uniqueidentifier" = c("", "999", "0", seq(1, 7)),
+      "col_categorical" = c("", "Unknown", seq(1, 8)),
+      "col_freetext" = c("", ".", "Unknown", "Not known", seq(1, 6)),
+      "col_simple" = c("", "Unk", seq(1, 8)),
+      "col_none" = c("", "Unk", seq(1, 8))
+    )
+
+  source_data <-
+    prepare_data(
+      df = testdf,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(na = "1900-01-01", includes_time = FALSE),
+        col_numeric = ft_numeric(na = "0"),
+        col_datetime = ft_datetime(na = "1800-01-01"),
+        col_uniqueidentifier = ft_uniqueidentifier(na = "999"),
+        col_categorical = ft_categorical(na = "Unknown"),
+        col_freetext = ft_freetext(na = c(".", "Unknown", "Not known")),
+        col_simple = ft_simple(na = "Unk"),
+        col_none = ft_simple()
+      ),
+      na = "",
+      show_progress = FALSE)
+
+  expect_equal(nrow(source_data$data_fields[["col_timepoint"]]$values), 9)
+  expect_equal(source_data$timepoint_missing_n, 1)
+
+  expect_true(is.na(source_data$data_fields[["col_numeric"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_numeric"]]$values[2][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_numeric"]]$values[3][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_datetime"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_datetime"]]$values[2][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_datetime"]]$values[3][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_datetime"]]$values[4][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_uniqueidentifier"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_uniqueidentifier"]]$values[2][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_uniqueidentifier"]]$values[3][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_uniqueidentifier"]]$values[4][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_categorical"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_categorical"]]$values[2][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_categorical"]]$values[3][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_freetext"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_freetext"]]$values[2][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_freetext"]]$values[3][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_freetext"]]$values[4][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_freetext"]]$values[5][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_simple"]]$values[1][[1]]))
+  expect_true(is.na(source_data$data_fields[["col_simple"]]$values[2][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_simple"]]$values[3][[1]]))
+
+  expect_true(is.na(source_data$data_fields[["col_none"]]$values[1][[1]]))
+  expect_false(is.na(source_data$data_fields[["col_none"]]$values[2][[1]]))
+})

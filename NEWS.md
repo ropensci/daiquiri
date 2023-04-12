@@ -6,6 +6,8 @@
 
 * When a data field contains all missing values, this now shows correctly in the various tabs (#12)
 
+* Column-specific strings for missing values can now be set in the `field_types()` specification (#13)
+
 # daiquiri 1.0.3 (2022-12-06)
 
 ## Bug fixes and minor improvements
