@@ -4,6 +4,8 @@
 
 * Print method of `daiquiri_object` now displays the location the report was saved to
 
+* When a data field contains all missing values, this now shows correctly in the various tabs (#12)
+
 # daiquiri 1.0.3 (2022-12-06)
 
 ## Bug fixes and minor improvements
