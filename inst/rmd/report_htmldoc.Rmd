@@ -215,6 +215,7 @@ reactable::reactable(
 
 ```{r aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
+stratify <- !is.null(params$aggregated_data$aggregated_fields_stratified)
 ```
 
 
@@ -372,6 +373,36 @@ for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
         plot_timeseries_static(
           agg_field = params$aggregated_data$aggregated_fields[[i]],
           agg_fun = agg_fun
+        )
+      print(p)
+      cat("\n")
+    }
+  }
+}
+```
+
+```{r individual-fields-stratified, results = 'asis'}
+
+if (stratify) {
+  cat("\n## Individual data fields (stratified) {.tabset}")
+  
+  agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
+  for (i in seq_along(names(agg_fields_strat))) {
+    cat(
+      "\n###",
+      names(agg_fields_strat)[i],
+      " {.tabset}\n"
+    )
+    agg_funs <- agg_fields_strat[[i]]$function_list
+    agg_field_colnames <- names(agg_fields_strat[[i]]$values)
+    agg_funs_present <-
+      agg_funs[which(agg_funs %in% agg_field_colnames)]
+    for (agg_fun in agg_funs_present) {
+      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
+      p <-
+        plot_stratified_heatmap_static(
+          agg_field_stratified = agg_fields_strat[[i]],
+          aggregation_function = agg_fun
         )
       print(p)
       cat("\n")

@@ -87,7 +87,8 @@ daiquiri_report <- function(df,
                             save_directory = ".",
                             save_filename = NULL,
                             show_progress = TRUE,
-                            log_directory = NULL) {
+                            log_directory = NULL,
+                            stratify_by = NULL) {
   # if a log directory is supplied, start a new log. Otherwise, close any existing log
   if (!is.null(log_directory)) {
     log_filename <- initialise_log(log_directory)
@@ -112,7 +113,8 @@ daiquiri_report <- function(df,
     save_directory = save_directory,
     save_filename = save_filename,
     show_progress = show_progress,
-    log_directory = log_directory
+    log_directory = log_directory,
+    stratify_by = stratify_by
   )
 
   source_data <-
@@ -128,6 +130,7 @@ daiquiri_report <- function(df,
   aggregated_data <-
     aggregate_data(source_data,
       aggregation_timeunit = aggregation_timeunit,
+      stratify_by = stratify_by,
       show_progress = show_progress
     )
 
@@ -152,6 +155,7 @@ daiquiri_report <- function(df,
       override_column_names = override_column_names,
       na_values = na,
       aggregation_timeunit = aggregation_timeunit,
+      stratified_by = stratify_by,
       report_filename = reportfilename,
       source_data = source_data,
       aggregated_data = aggregated_data,

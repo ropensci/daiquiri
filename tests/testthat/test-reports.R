@@ -136,3 +136,57 @@ test_that("plots still work when all values are missing", {
     "ggplot"
   )
 })
+
+test_that("report_data() creates stratified report correctly", {
+  #TODO: TEST IT WORKS WHEN THERE ARE SPECIAL CHARS IN THE STRATA NAMES
+  testdf <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE1", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  testsource_data <-
+    prepare_data(
+      testdf,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_numeric = ft_numeric(),
+        col_datetime = ft_datetime(includes_time = FALSE),
+        col_uniqueidentifier = ft_uniqueidentifier(),
+        col_categorical = ft_categorical(),
+        col_simple = ft_simple(),
+        col_stratify = ft_categorical()
+      ),
+      na = c("", "NULL"),
+      show_progress = FALSE
+    )
+  testaggregated_data <-
+    aggregate_data(
+      source_data = testsource_data,
+      aggregation_timeunit = "day",
+      stratify_by = "col_stratify",
+      show_progress = FALSE
+    )
+
+  testreportpath <-
+    report_data(
+      testsource_data,
+      testaggregated_data,
+      report_title = "Stratified Test Set",
+      save_directory = tempdir(),
+      save_filename = "daiquiri_testthatreport",
+      show_progress = FALSE
+    )
+
+  # clean up
+  expect_true(file.remove(testreportpath))
+})
+

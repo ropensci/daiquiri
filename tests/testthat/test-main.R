@@ -229,3 +229,46 @@ test_that("daiquiri_object prints to console ok", {
   # clean up
   expect_true(file.remove(testdaiq_obj$report_filename))
 })
+
+test_that("daiquiri_report() creates stratified report successfully", {
+  testdf <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE1", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  testdaiq_obj <- daiquiri_report(
+    testdf,
+    field_types = field_types(
+      col_timepoint = ft_timepoint(),
+      col_numeric = ft_numeric(),
+      col_datetime = ft_datetime(includes_time = FALSE),
+      col_uniqueidentifier = ft_uniqueidentifier(),
+      col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+      col_simple = ft_simple(),
+      col_stratify = ft_categorical()
+    ),
+    dataset_description = "stratifiedset",
+    aggregation_timeunit = "day",
+    report_title = "Complete Test Set",
+#    save_directory = tempdir(),
+    save_filename = "daiquiri_testthatreport",
+#    log_directory = tempdir(),
+    show_progress = FALSE,
+    stratify_by = "col_stratify"
+  )
+
+  expect_equal(testdaiq_obj$stratified_by, "col_stratify")
+
+  # clean up
+  expect_true(file.remove(testdaiq_obj$report_filename))
+  expect_true(file.remove(testdaiq_obj$log_filename))
+})

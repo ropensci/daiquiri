@@ -492,6 +492,7 @@ agg_fun_from_type <- function(type, ...){
 aggregate_and_append_values <- function(aggregation_function,
                                         data_field_dt,
                                         grouped_values,
+                                        stratify = FALSE,
                                         show_progress = TRUE){
   # initialise known column names to prevent R CMD check notes
   values <- NULL
@@ -501,6 +502,8 @@ aggregate_and_append_values <- function(aggregation_function,
 
   if (aggregation_function %in% c("subcat_n", "subcat_perc")) {
     aggregate_and_append_values_subcat(agg_fun, data_field_dt, grouped_values, show_progress)
+  } else if (stratify) {
+    aggregate_and_append_values_stratified(agg_fun, data_field_dt, grouped_values)
   } else{
     aggregate_and_append_values_simple(agg_fun, data_field_dt, grouped_values)
   }
@@ -576,3 +579,35 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
     }
   }
 }
+
+#' Perform the relevant stratified aggregation and append to grouped_values
+#'
+#' appends two columns,
+#' grouped_values is updated byref
+#' @param agg_fun agg_fun object
+#' @param data_field_dt this contains all values present in the original data_field, alongside their timepoint_group and stratify_by_group
+#' @param grouped_values this will contain the agg_fun values after aggregating (one column per subcat)
+#' @noRd
+aggregate_and_append_values_stratified <- function(agg_fun, data_field_dt, grouped_values){
+  # initialise known column names to prevent R CMD check notes
+  value <- timepoint_group <- NULL
+
+  # aggregate the data_field values before appending to grouped_values in order
+  # to distinguish between missing values and missing records
+  grouped_values[
+    data_field_dt[
+      ,
+      list("value" = eval(agg_fun$function_call)),
+      by = list(timepoint_group, stratify_by_group)
+    ],
+    (agg_fun$type) := value,
+    by = .EACHI
+  ]
+
+  if (!is.na(agg_fun$value_if_no_records)) {
+    # update the column just appended
+    grouped_values[is.na(get(agg_fun$type)), (agg_fun$type) := agg_fun$value_if_no_records]
+  }
+
+}
+

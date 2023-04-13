@@ -50,7 +50,8 @@
 #' @export
 aggregate_data <- function(source_data,
                            aggregation_timeunit = "day",
-                           show_progress = TRUE) {
+                           show_progress = TRUE,
+                           stratify_by = NULL) {
   # TODO: allow user to override existing aggregation_functions?
   # TODO: raise an error/warning if data is less granular than aggregation_timeunit
 
@@ -60,8 +61,11 @@ aggregate_data <- function(source_data,
   validate_params_type(match.call(),
     source_data = source_data,
     aggregation_timeunit = aggregation_timeunit,
-    show_progress = show_progress
+    show_progress = show_progress,
+    stratify_by = stratify_by
   )
+
+  # TODO: validate stratify_by
 
   log_message(
     paste0("Aggregating [", source_data$sourcename, "] by [", aggregation_timeunit, "]..."),
@@ -119,6 +123,30 @@ aggregate_data <- function(source_data,
       "[ALL_FIELDS_COMBINED]"
     )
 
+  ### AGGREGATE STRATIFIED DATASET
+  if (!is.null(stratify_by)) {
+    log_message(paste0("Stratifying dataset by [", stratify_by, "] field..."), show_progress)
+    stratify_by_field_values <- source_data$data_fields[[stratify_by]]$values
+    # load aggregated data into new vector
+    log_message(paste0("Aggregating each data_field in turn..."), show_progress)
+    agg_fields_stratified <- vector("list", source_data$cols_imported_n - 1)
+    for (i in 1:source_data$cols_imported_n) {
+      fieldname <- names(source_data$cols_imported_indexes)[i]
+      if( fieldname != stratify_by){
+        log_message(paste0(i, ": ", names(source_data$cols_imported_indexes)[i]), show_progress)
+        fieldindex <- source_data$cols_imported_indexes[[i]]
+        agg_fields_stratified[[i]] <-
+          aggregate_field_stratified(
+            data_field = source_data$data_fields[[fieldindex]],
+            stratify_by_field_values,
+            timepoint_field_as_timepoint_group,
+            timepoint_group_sequence,
+            show_progress = show_progress
+          )
+          names(agg_fields_stratified)[i] <- fieldname
+        }
+    }
+  }
 
   log_function_end(match.call()[[1]])
 
@@ -129,7 +157,9 @@ aggregate_data <- function(source_data,
       # not sure if this should be set at overall object level or allow it to
       # differ per aggregated_field
       aggregation_timeunit = aggregation_timeunit,
-      dataset_description = source_data$dataset_description
+      dataset_description = source_data$dataset_description,
+      stratified_by = stratify_by,
+      aggregated_fields_stratified = agg_fields_stratified
     ),
     class = "daiquiri_aggregated_data"
   )
@@ -344,6 +374,74 @@ aggregate_field <- function(data_field,
       column_name = data_field$column_name
     ),
     class = "daiquiri_aggregated_field"
+  )
+}
+
+# -----------------------------------------------------------------------------
+#' Constructor for an individual aggregated_field_stratified object
+#'
+#' @param data_field data_field object
+#' @param timepoint_field_as_timepoint_group all values in timepoint field
+#'   transformed to correct timepoint group
+#' @param timepoint_group_sequence complete set of x-axis values
+#' @param show_progress Print progress to console
+#' @return aggregated_field object, including a data.table where the first column
+#'   is the timepoint group, then one column per aggregation function
+#' @noRd
+aggregate_field_stratified <- function(data_field,
+                                        stratify_by_field_values,
+                                        timepoint_field_as_timepoint_group,
+                                        timepoint_group_sequence,
+                                        show_progress = TRUE) {
+
+  log_message(paste0("Preparing..."), show_progress)
+  function_list <- data_field$field_type$aggregation_functions
+
+  log_message(
+    paste0("Aggregating ", data_field_basetype(data_field), " field..."),
+    show_progress
+  )
+
+  # this contains all values present in the original data_field, alongside their timepoint_group and stratify_by group
+  data_field_dt <-
+    data.table::data.table(
+      "timepoint_group" = timepoint_field_as_timepoint_group,
+      "stratify_by_group" = stratify_by_field_values[[1]],
+      "values" = data_field[["values"]][[1]],
+      key = "timepoint_group"
+    )
+  # this will contain the agg_fun values after aggregating (one column per agg_fun)
+  grouped_values <- data.table::CJ(timepoint_group_sequence[[1]],
+                                   stratify_by_field_values[[1]],
+                                   sorted = TRUE,
+                                   unique = TRUE)
+  data.table::setnames(grouped_values,
+                       new = c(names(timepoint_group_sequence),
+                               names(stratify_by_field_values))
+                       )
+
+  # append values for each aggregation function in turn
+  for (i in seq_along(function_list)) {
+    f <- function_list[i]
+    log_message(paste0("  By ", f), show_progress)
+    aggregate_and_append_values(aggregation_function = f,
+                                data_field_dt = data_field_dt,
+                                grouped_values = grouped_values,
+                                stratify = TRUE,
+                                show_progress = show_progress)
+  }
+
+  log_message(paste0("Finished"), show_progress)
+
+  structure(
+    list(
+      values = grouped_values,
+      function_list = function_list,
+      field_type = data_field$field_type,
+      column_name = data_field$column_name,
+      stratify_by_field_name = names(stratify_by_field_values)
+    ),
+    class = "daiquiri_aggregated_field_stratified"
   )
 }
 

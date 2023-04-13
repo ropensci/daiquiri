@@ -527,6 +527,98 @@ plot_subcat_heatmap_static <- function(agg_field,
 
 
 # -----------------------------------------------------------------------------
+#' Create a heatmap showing value across all strata
+#'
+#' @param agg_field_stratified single aggregated_field_stratified object
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
+#' @return ggplot
+#' @noRd
+plot_stratified_heatmap_static <- function(agg_field_stratified,
+                                           aggregation_function) {
+  # initialise known column names to prevent R CMD check notes
+  field_name <- NULL
+
+  timepoint_aggcol_name <- names(agg_field_stratified$values)[1]
+  # TODO: not sure if better to just take the name of the second column
+  stratify_aggcol_name <- agg_field_stratified$stratify_by_field_name
+
+  # get values for the heatmap rows
+  stratum_names <- unique(agg_field_stratified$values[, get(stratify_aggcol_name)])
+
+  data <- agg_field_stratified$values
+  data[, (stratify_aggcol_name) := factor(get(stratify_aggcol_name), levels = stratum_names)]
+
+  # when the only values are zero, make sure the fill colour is white (as
+  # geom_tile uses the 'high' colour)
+  if (all(data[, aggregation_function, with = FALSE] == 0, na.rm = TRUE)) {
+    fill_colour <- "white"
+  }
+
+  # TODO: choose a different fill_colour
+  fill_colour <- "chocolate4"
+
+  g <-
+    ggplot2::ggplot(
+      data,
+      ggplot2::aes(.data[[timepoint_aggcol_name]], get(stratify_aggcol_name), fill = .data[[aggregation_function]])
+    ) +
+    ggplot2::geom_tile() +
+    ggplot2::scale_fill_gradient(
+      "Instances",
+      low = "white",
+      high = fill_colour,
+      na.value = "grey",
+      labels = NULL,
+      limits = c(0, NA)
+    ) +
+    ggplot2::scale_x_date(
+      breaks = scales::breaks_pretty(12),
+      labels = scales::label_date_short(sep = " "),
+      expand = c(0, 0)
+    ) +
+    ggplot2::labs(
+      y = paste0(
+        agg_fun_friendly_name(aggregation_function, "long"),
+        paste0("\n(", agg_field_stratified$column_name, ")")
+        ),
+      x = NULL) +
+    # facet by variable (field name) to create separate bars
+    ggplot2::facet_grid(get(stratify_aggcol_name) ~ ., scales = "free", space = "free") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      # remove grid lines
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank(),
+      # remove facet labels and their background
+      strip.background = ggplot2::element_blank(),
+      strip.text.y = ggplot2::element_blank(),
+      # add borders to the bars
+      panel.border = ggplot2::element_rect(
+        colour = "darkgrey",
+        fill = NA,
+        size = 0.75
+      ),
+      # remove space between facets
+      panel.spacing = ggplot2::unit(0, "lines"),
+      # remove y-axis ticks
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.title = ggplot2::element_text(size = 8),
+      axis.text.x = ggplot2::element_text(
+        angle = 90,
+        vjust = 0.35,
+        hjust = 1,
+        size = 7
+      ),
+      axis.text.y = ggplot2::element_text(size = 7),
+      legend.position = "none",
+    )
+
+  g
+}
+
+
+# -----------------------------------------------------------------------------
 #' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
 #' @param agg_fun aggregation function being plotted (from agg_field
