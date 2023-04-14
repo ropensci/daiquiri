@@ -259,9 +259,9 @@ test_that("daiquiri_report() creates stratified report successfully", {
     dataset_description = "stratifiedset",
     aggregation_timeunit = "day",
     report_title = "Complete Test Set",
-#    save_directory = tempdir(),
+    save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
-#    log_directory = tempdir(),
+    log_directory = tempdir(),
     show_progress = FALSE,
     stratify_by = "col_stratify"
   )

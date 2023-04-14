@@ -124,6 +124,7 @@ aggregate_data <- function(source_data,
     )
 
   ### AGGREGATE STRATIFIED DATASET
+  agg_fields_stratified <- NULL
   if (!is.null(stratify_by)) {
     log_message(paste0("Stratifying dataset by [", stratify_by, "] field..."), show_progress)
     stratify_by_field_values <- source_data$data_fields[[stratify_by]]$values
