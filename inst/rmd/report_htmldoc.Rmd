@@ -215,7 +215,9 @@ reactable::reactable(
 
 ```{r aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
+agg_fields <- params$aggregated_data$aggregated_fields
 stratify <- !is.null(params$aggregated_data$aggregated_fields_stratified)
+agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
 ```
 
 
@@ -224,7 +226,7 @@ stratify <- !is.null(params$aggregated_data$aggregated_fields_stratified)
 ```{r overview-presence}
 
 plot_overview_combo_static(
-  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fields = agg_fields,
   agg_fun = "n",
   lineplot_field_name = params$aggregated_data$timepoint_field_name,
   lineplot_fill_colour = "pink",
@@ -238,7 +240,7 @@ plot_overview_combo_static(
 ```{r overview-missing}
 
 plot_overview_combo_static(
-  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fields = agg_fields,
   agg_fun = "missing_n",
   lineplot_field_name = "[ALL_FIELDS_COMBINED]",
   lineplot_fill_colour = "lightblue",
@@ -255,7 +257,7 @@ plot_overview_combo_static(
 ```{r overview-nonconformant}
 
 plot_overview_combo_static(
-  agg_fields = params$aggregated_data$aggregated_fields,
+  agg_fields = agg_fields,
   agg_fun = "nonconformant_n",
   lineplot_field_name = "[ALL_FIELDS_COMBINED]",
   lineplot_fill_colour = "lightgreen",
@@ -272,7 +274,7 @@ plot_overview_combo_static(
 ```{r overview-duplicates}
 
 plot_overview_totals_static(
-  agg_field = params$aggregated_data$aggregated_fields[["[DUPLICATES]"]],
+  agg_field = agg_fields[["[DUPLICATES]"]],
   agg_fun = "sum",
   fill_colour = "yellow",
   title = paste(
@@ -335,14 +337,16 @@ reactable::reactable(
 ## Individual data fields {.tabset}
 
 ```{r individual-fields, results = 'asis'}
-for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
+for (i in seq_along(names(agg_fields))) {
+  agg_field <- agg_fields[[i]]
+  field_name <- names(agg_fields)[i] 
   cat(
     "\n###",
-    names(params$aggregated_data$aggregated_fields)[i],
+    field_name,
     " {.tabset}\n"
   )
   agg_funs <-
-    params$aggregated_data$aggregated_fields[[i]]$function_list
+    agg_field$function_list
   for (agg_fun in agg_funs) {
     if (startsWith(agg_fun, "subcat")) {
       cat("\n####", agg_fun_friendly_name(agg_fun, "short"), " {.tabset}\n")
@@ -350,18 +354,18 @@ for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
       cat("\n#####", "All\n")
       p <-
         plot_subcat_heatmap_static(
-          agg_field = params$aggregated_data$aggregated_fields[[i]],
+          agg_field = agg_field,
           agg_fun = agg_fun
         )
       print(p)
       cat("\n")
       # following tabs show individual time series
-      agg_cols <- names(params$aggregated_data$aggregated_fields[[i]]$values)
+      agg_cols <- names(agg_field$values)
       for (subcat_col in agg_cols[which(startsWith(agg_cols, agg_fun))]) {
         cat("\n#####", agg_fun_subcat_value(subcat_col), "\n")
         p <-
           plot_timeseries_static(
-            agg_field = params$aggregated_data$aggregated_fields[[i]],
+            agg_field = agg_field,
             agg_fun = subcat_col
           )
         print(p)
@@ -369,45 +373,24 @@ for (i in seq_along(names(params$aggregated_data$aggregated_fields))) {
       }
     } else{
       cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
-      p <-
-        plot_timeseries_static(
-          agg_field = params$aggregated_data$aggregated_fields[[i]],
-          agg_fun = agg_fun
-        )
+      if (stratify && agg_fun %in% names(agg_fields_strat[[field_name]]$values)) {
+        # get corresponding agg_field_strat object
+        agg_field_strat <- agg_fields_strat[[field_name]]
+        p <-
+          plot_stratified_combo_static(
+            agg_field = agg_field,
+            agg_field_strat = agg_field_strat,
+            agg_fun = agg_fun)
+      } else{
+        p <-
+          plot_timeseries_static(
+            agg_field = agg_field,
+            agg_fun = agg_fun
+          )
+      }
       print(p)
       cat("\n")
     }
   }
 }
 ```
-
-```{r individual-fields-stratified, results = 'asis'}
-
-if (stratify) {
-  cat("\n## Individual data fields (stratified) {.tabset}")
-  
-  agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
-  for (i in seq_along(names(agg_fields_strat))) {
-    cat(
-      "\n###",
-      names(agg_fields_strat)[i],
-      " {.tabset}\n"
-    )
-    agg_funs <- agg_fields_strat[[i]]$function_list
-    agg_field_colnames <- names(agg_fields_strat[[i]]$values)
-    agg_funs_present <-
-      agg_funs[which(agg_funs %in% agg_field_colnames)]
-    for (agg_fun in agg_funs_present) {
-      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
-      p <-
-        plot_stratified_heatmap_static(
-          agg_field_stratified = agg_fields_strat[[i]],
-          aggregation_function = agg_fun
-        )
-      print(p)
-      cat("\n")
-    }
-  }
-}
-```
-

@@ -578,10 +578,7 @@ plot_stratified_heatmap_static <- function(agg_field_stratified,
       expand = c(0, 0)
     ) +
     ggplot2::labs(
-      y = paste0(
-        agg_fun_friendly_name(aggregation_function, "long"),
-        paste0("\n(", agg_field_stratified$column_name, ")")
-        ),
+      y = stratify_aggcol_name,
       x = NULL) +
     # facet by variable (field name) to create separate bars
     ggplot2::facet_grid(get(stratify_aggcol_name) ~ ., scales = "free", space = "free") +
@@ -619,6 +616,109 @@ plot_stratified_heatmap_static <- function(agg_field_stratified,
 
 
 # -----------------------------------------------------------------------------
+#' Create a scatter plot to show overall values above stratified heatmap
+#'
+#' @param agg_field aggregated_field object
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
+#' @param title optional title for the plot
+#' @return ggplot
+#' @noRd
+plot_stratified_totals_static <- function(agg_field,
+                                        agg_fun,
+                                        title = NULL) {
+
+  timepoint_aggcol_name <- names(agg_field$values)[1]
+
+  g <-
+    ggplot2::ggplot(
+      agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE],
+      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])) +
+    ggplot2::scale_x_date(
+      breaks = scales::breaks_pretty(12),
+      labels = scales::label_date_short(sep = " "),
+      expand = c(0, 0)
+    ) +
+    ggplot2::labs(y = NULL, x = NULL, title = title) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(
+        angle = 90,
+        vjust = 0.35,
+        hjust = 1,
+        size = 7
+      ),
+      axis.text.y = ggplot2::element_text(size = 7),
+      axis.title = ggplot2::element_text(size = 8),
+      plot.title = ggplot2::element_text(size = 8, face = "bold", hjust = 0.5)
+    ) +
+    ggplot2::labs(x = NULL, y = NULL, title = title)
+
+  # if all values are NA, show a blank plot, otherwise plot the values
+  if (!all(is.na(agg_field$values[[agg_fun]]))) {
+    g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4, size = 0.5)
+
+    # specify y axis scale
+    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
+    min_val <- min(agg_field$values[[agg_fun]], na.rm = TRUE)
+    y_breaks <-
+      yscale_breaks(agg_fun, max_val, min_val, compact = TRUE, agg_field$field_type)
+    g <- g + ggplot2::scale_y_continuous(
+      breaks = y_breaks,
+      limits = c(
+        min(min_val, y_breaks[1]),
+        max(max_val, y_breaks[length(y_breaks)])
+      )
+    )
+  }
+
+  g
+
+}
+
+
+# -----------------------------------------------------------------------------
+#' Combine a scatterplot and heatmap to show a stratified summary for a particular
+#' data field and aggregation function
+#'
+#' @param agg_field aggregated_field to be included
+#' @param agg_field_strat aggregated_field_stratified to be included
+#' @param agg_fun which aggregation function to plot (from agg_field
+#'   column_name)
+#' @param allplot_field_name which aggregated_field to use for the lineplot
+#' @param title optional title for the combined plot
+#' @return cowplot::plot_grid
+#' @noRd
+plot_stratified_combo_static <- function(agg_field,
+                                         agg_field_strat,
+                                         agg_fun) {
+  totals <-
+    plot_stratified_totals_static(
+      agg_field = agg_field,
+      agg_fun = agg_fun,
+      title = paste0(
+        agg_fun_friendly_name(agg_fun, "long"),
+        " (", agg_field_strat$column_name, ")"
+        )
+    )
+
+  heatmap <- plot_stratified_heatmap_static(
+    agg_field_stratified = agg_field_strat,
+    aggregation_function = agg_fun
+  )
+
+
+  cowplot::plot_grid(
+    plotlist = list(totals, heatmap),
+    ncol = 1,
+    align = "v",
+    axis = "lr",
+    rel_heights = c(2, 5)
+  )
+}
+
+
+# -----------------------------------------------------------------------------
 #' Set the breaks for the y-axis depending on the field_type and agg_fun
 #'
 #' @param agg_fun aggregation function being plotted (from agg_field
@@ -626,12 +726,14 @@ plot_stratified_heatmap_static <- function(agg_field_stratified,
 #' @param max_val maximum data value
 #' @param min_val minimum data value
 #' @param field_type field_type object
+#' @param compact return fewer breaks when graph will be small
 #' @return numeric vector containing locations of limits and breaks
 #' @noRd
 yscale_breaks <- function(agg_fun,
                           max_val,
                           min_val = 0,
-                          field_type = NULL) {
+                          field_type = NULL,
+                          compact = FALSE) {
   breaks <- NULL
 
   if (agg_fun %in% c("distinct", "n", "sum", "min_length", "max_length", "mean_length") ||
@@ -639,14 +741,22 @@ yscale_breaks <- function(agg_fun,
     # frequency/length agg_funs should always start at zero and be shown on a
     # range of 0-10 at a minimum
     if (max_val <= 10) {
-      breaks <- seq(0, 10)
+      if (compact){
+        breaks <- seq(0, 10, by = 2)
+      } else{
+        breaks <- seq(0, 10)
+      }
     } else {
       breaks <- pretty(c(0, max_val))
     }
   } else if (endsWith(agg_fun, "_perc") ||
     startsWith(agg_fun, "subcat_perc")) {
     # percentage agg_funs should always be shown on a range of 0-100
-    breaks <- seq(0, 100, by = 10)
+    if (compact){
+      breaks <- seq(0, 100, by = 20)
+    } else{
+      breaks <- seq(0, 100, by = 10)
+    }
   } else {
     if (is_ft_datetime(field_type)) {
       # dates should be left to base
