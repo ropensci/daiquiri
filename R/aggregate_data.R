@@ -160,6 +160,7 @@ aggregate_data <- function(source_data,
       aggregation_timeunit = aggregation_timeunit,
       dataset_description = source_data$dataset_description,
       stratified_by = stratify_by,
+      stratified_by_values = unique(stratify_by_field_values[[1]]),
       aggregated_fields_stratified = agg_fields_stratified
     ),
     class = "daiquiri_aggregated_data"

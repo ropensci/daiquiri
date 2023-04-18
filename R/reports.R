@@ -695,18 +695,20 @@ plot_stratified_combo_static <- function(agg_field,
         )
     )
 
-  heatmap <- plot_stratified_facetgrid_static(
+  stratified <- plot_stratified_facetgrid_static(
     agg_field_stratified = agg_field_strat,
     aggregation_function = agg_fun
   )
 
 
   cowplot::plot_grid(
-    plotlist = list(totals, heatmap),
+    plotlist = list(totals, stratified),
     ncol = 1,
     align = "v",
     axis = "lr",
-    rel_heights = c(2, 5)
+    rel_heights = c(2,
+                    length(unique(agg_field_strat$values[, get(agg_field_strat$stratify_by_field_name)]))
+                  )
   )
 }
 
