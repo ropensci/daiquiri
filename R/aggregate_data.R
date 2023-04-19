@@ -125,16 +125,18 @@ aggregate_data <- function(source_data,
 
   ### AGGREGATE STRATIFIED DATASET
   agg_fields_stratified <- NULL
+  stratified_by_values <- NULL
   if (!is.null(stratify_by)) {
-    log_message(paste0("Stratifying dataset by [", stratify_by, "] field..."), show_progress)
+    log_message(paste0("Stratifying dataset by ", stratify_by, " field..."), show_progress)
     stratify_by_field_values <- source_data$data_fields[[stratify_by]]$values
+    stratified_by_values <- unique(stratify_by_field_values[[1]])
+    stratified_by_values <- stratified_by_values[order(stratified_by_values)]
     # load aggregated data into new vector
     log_message(paste0("Aggregating each data_field in turn..."), show_progress)
-    agg_fields_stratified <- vector("list", source_data$cols_imported_n - 1)
+    agg_fields_stratified <- vector("list", source_data$cols_imported_n + 2)
     for (i in 1:source_data$cols_imported_n) {
       fieldname <- names(source_data$cols_imported_indexes)[i]
-      if( fieldname != stratify_by){
-        log_message(paste0(i, ": ", names(source_data$cols_imported_indexes)[i]), show_progress)
+        log_message(paste0(i, ": ", names(source_data$cols_imported_indexes)[i], " by ", stratify_by, ""), show_progress)
         fieldindex <- source_data$cols_imported_indexes[[i]]
         agg_fields_stratified[[i]] <-
           aggregate_field_stratified(
@@ -145,8 +147,31 @@ aggregate_data <- function(source_data,
             show_progress = show_progress
           )
           names(agg_fields_stratified)[i] <- fieldname
-        }
     }
+    log_message(paste0("Aggregating calculated fields..."), show_progress)
+    log_message(paste0("[DUPLICATES] by ", stratify_by, ":"), show_progress)
+    agg_fields_stratified[[source_data$cols_imported_n + 1]] <-
+      aggregate_field_stratified(
+        source_data$data_fields[[source_data$cols_source_n + 1]],
+        stratify_by_field_values,
+        timepoint_field_as_timepoint_group,
+        timepoint_group_sequence,
+        show_progress = show_progress
+      )
+    log_message(paste0("[ALL_FIELDS_COMBINED] by ", stratify_by, ":"), show_progress)
+    agg_fields_stratified[[source_data$cols_imported_n + 2]] <-
+      aggregate_combined_fields(
+        # TODO: SHOULD THIS INCLUDE THE STRATA FIELD CONTENTS OR NOT? CURRENTLY DOES
+        agg_fields_stratified[1:source_data$cols_imported_n],
+        show_progress = show_progress
+      )
+    names(agg_fields_stratified) <-
+      c(
+        names(source_data$cols_imported_indexes),
+        "[DUPLICATES]",
+        "[ALL_FIELDS_COMBINED]"
+      )
+
   }
 
   log_function_end(match.call()[[1]])
@@ -160,7 +185,7 @@ aggregate_data <- function(source_data,
       aggregation_timeunit = aggregation_timeunit,
       dataset_description = source_data$dataset_description,
       stratified_by = stratify_by,
-      stratified_by_values = unique(stratify_by_field_values[[1]]),
+      stratified_by_values = stratified_by_values,
       aggregated_fields_stratified = agg_fields_stratified
     ),
     class = "daiquiri_aggregated_data"
@@ -463,7 +488,7 @@ is_aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
 #' Uses results from already-aggregated individual fields rather than doing it
 #' all again
 #'
-#' @param agg_fields all aggregated_field objects from data (i.e. excluding
+#' @param agg_fields all aggregated_field or aggregated_field_stratified objects from data (i.e. excluding
 #'   calculated agg_fields)
 #' @param show_progress Print progress to console
 #' @return aggregated_field object, including a data.table where the first column
@@ -480,7 +505,11 @@ aggregate_combined_fields <- function(agg_fields,
   ft <- ft_allfields()
   function_list <- ft$aggregation_functions
 
-  grouped_values <- agg_fields[[1]][["values"]][, 1]
+  if (!is.null(agg_fields[[1]]$stratify_by_field_name)) {
+    grouped_values <- agg_fields[[1]][["values"]][, 1:2]
+  } else {
+    grouped_values <- agg_fields[[1]][["values"]][, 1]
+  }
 
   for (i in seq_along(agg_fields)) {
     for (j in 2:length(names(agg_fields[[i]][["values"]]))) {
@@ -523,7 +552,8 @@ aggregate_combined_fields <- function(agg_fields,
       values = grouped_values,
       function_list = function_list,
       field_type = ft,
-      column_name = "[ALL_FIELDS_COMBINED]"
+      column_name = "[ALL_FIELDS_COMBINED]",
+      stratify_by_field_name = agg_fields[[1]]$stratify_by_field_name
     ),
     class = "daiquiri_aggregated_field"
   )

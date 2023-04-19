@@ -318,7 +318,7 @@ test_that("aggregate_data() stratifies aggregations correctly", {
   # check the basic structure is ok
   expect_setequal(
     names(testdata_byday$aggregated_fields_stratified),
-    names(testsource_data$cols_imported_indexes)[which(names(testsource_data$cols_imported_indexes) != "col_stratify")]
+    names(testdata_byday$aggregated_fields)
   )
 
   # the stratification categories should include NA

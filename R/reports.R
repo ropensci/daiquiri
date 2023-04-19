@@ -222,6 +222,7 @@ plot_timeseries_static <- function(agg_field,
 #'   column_name)
 #' @param fill_colour colour to use below the line
 #' @param title optional title for the plot
+#' @param stratum stratify_by value to optionally filter on
 #' @return ggplot
 #' @noRd
 # TODO: automatically choose to draw a lineplot or barplot depending on number
@@ -229,13 +230,22 @@ plot_timeseries_static <- function(agg_field,
 plot_overview_totals_static <- function(agg_field,
                                         agg_fun,
                                         fill_colour = NA,
-                                        title = NULL) {
+                                        title = NULL,
+                                        stratum = NULL) {
   # initialise known column names to prevent R CMD check notes
   ymin <- NULL
 
   timepoint_aggcol_name <- names(agg_field$values)[1]
-  data <-
-    agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+  if (!is.null(stratum)) {
+    stratify_aggcol_name <- names(agg_field$values)[2]
+    if (is.na(stratum)) {
+      data <- agg_field$values[is.na(get(stratify_aggcol_name)), c(timepoint_aggcol_name, agg_fun), with = FALSE]
+    } else {
+      data <- agg_field$values[get(stratify_aggcol_name) == stratum, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+    }
+  } else {
+    data <- agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+  }
 
   g <-
     ggplot2::ggplot(data, ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])) +
@@ -289,20 +299,25 @@ plot_overview_totals_static <- function(agg_field,
 # -----------------------------------------------------------------------------
 #' Create a heatmap showing a particular agg_fun value across all fields
 #'
-#' @param agg_fields all aggregated_fields object
+#' @param agg_fields all aggregated_fields or aggregated_fields_stratified object
 #' @param agg_fun which aggregation function to plot (from agg_field
 #'   column_name)
 #' @param fill_colour colour to use for the tiles
+#' @param stratum stratify_by value to optionally filter on
 #' @return ggplot
 #' @noRd
 # TODO: Decide whether or not to include the timepoint field in the heatmap
 plot_overview_heatmap_static <- function(agg_fields,
                                          agg_fun,
-                                         fill_colour = "darkred") {
+                                         fill_colour = "darkred",
+                                         stratum = NULL) {
   # initialise known column names to prevent R CMD check notes
   field_name <- NULL
 
   timepoint_aggcol_name <- names(agg_fields[[1]]$values)[1]
+  if (!is.null(stratum)) {
+    stratify_aggcol_name <- names(agg_fields[[1]]$values)[2]
+  }
 
   # get agg_fun values from each data_field
   heatmap_fields <-
@@ -310,12 +325,20 @@ plot_overview_heatmap_static <- function(agg_fields,
   data <- data.table::data.table()
   for (i in seq_along(heatmap_fields)) {
     f <- heatmap_fields[i]
+    if (!is.null(stratum)) {
+      if (is.na(stratum)) {
+        aggdata <- agg_fields[[f]]$values[is.na(get(stratify_aggcol_name))]
+      } else {
+        aggdata <- agg_fields[[f]]$values[get(stratify_aggcol_name) == stratum]
+      }
+    } else {
+      aggdata <- agg_fields[[f]]$values
+    }
     if (agg_fun %in% names(agg_fields[[f]]$values)) {
-      d <-
-        agg_fields[[f]]$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+      d <- aggdata[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
       d[, field_name := f]
     } else {
-      d <- agg_fields[[f]]$values[, timepoint_aggcol_name, with = FALSE]
+      d <- aggdata[, timepoint_aggcol_name, with = FALSE]
       d[, field_name := f]
       d[, (agg_fun) := NA_integer_]
     }
@@ -395,6 +418,7 @@ plot_overview_heatmap_static <- function(agg_fields,
 #' @param lineplot_fill_colour colour to use below the line
 #' @param heatmap_fill_colour colour to use for the tiles
 #' @param title optional title for the combined plot
+#' @param stratum stratify_by value to optionally filter on
 #' @return cowplot::plot_grid
 #' @noRd
 plot_overview_combo_static <- function(agg_fields,
@@ -402,28 +426,34 @@ plot_overview_combo_static <- function(agg_fields,
                                        lineplot_field_name,
                                        lineplot_fill_colour,
                                        heatmap_fill_colour,
-                                       title = NULL) {
+                                       title = NULL,
+                                       stratum = NULL) {
   totals <-
     plot_overview_totals_static(
       agg_field = agg_fields[[lineplot_field_name]],
       agg_fun = agg_fun,
       fill_colour = lineplot_fill_colour,
-      title = title
+      title = title,
+      stratum = stratum
     )
 
   # TODO: Decide whether or not to include the timepoint field in the heatmap
   heatmap <- plot_overview_heatmap_static(
     agg_fields = agg_fields,
     agg_fun = agg_fun,
-    fill_colour = heatmap_fill_colour
+    fill_colour = heatmap_fill_colour,
+    stratum = stratum
   )
 
-  cowplot::plot_grid(
-    plotlist = list(totals, heatmap),
-    ncol = 1,
-    align = "v",
-    axis = "lr",
-    rel_heights = c(1, 3)
+
+  suppressMessages(
+    cowplot::plot_grid(
+      plotlist = list(totals, heatmap),
+      ncol = 1,
+      align = "v",
+      axis = "lr",
+      rel_heights = c(1, 3)
+    )
   )
 }
 
@@ -538,8 +568,7 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
                                            aggregation_function) {
 
   timepoint_aggcol_name <- names(agg_field_stratified$values)[1]
-  # TODO: not sure if better to just take the name of the second column
-  stratify_aggcol_name <- agg_field_stratified$stratify_by_field_name
+  stratify_aggcol_name <- names(agg_field_stratified$values)[2]
 
   # get values for the heatmap rows
   stratum_names <- unique(agg_field_stratified$values[, get(stratify_aggcol_name)])
@@ -550,8 +579,12 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
   # specify shared y axis scale based on min/max values across all strata
   max_val <- max(data[[aggregation_function]], na.rm = TRUE)
   min_val <- min(data[[aggregation_function]], na.rm = TRUE)
-  y_breaks <-
-    yscale_breaks(aggregation_function, max_val, min_val, compact = TRUE, agg_field_stratified$field_type)
+  y_breaks <- yscale_breaks(
+    agg_fun = aggregation_function,
+    max_val = max_val,
+    min_val = min_val,
+    compact = TRUE,
+    field_type = agg_field_stratified$field_type)
 
   # TODO: check this displays correctly when all values are NA (overall or within certain strata)
   g <-

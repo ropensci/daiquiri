@@ -218,55 +218,132 @@ aggsummary <- summarise_aggregated_data(params$aggregated_data)
 agg_fields <- params$aggregated_data$aggregated_fields
 stratify <- !is.null(params$aggregated_data$aggregated_fields_stratified)
 agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
+stratum_names <- params$aggregated_data$stratified_by_values
+
 ```
 
 
-### Values present
+### Values present {.tabset}
 
-```{r overview-presence}
-
-plot_overview_combo_static(
-  agg_fields = agg_fields,
-  agg_fun = "n",
-  lineplot_field_name = params$aggregated_data$timepoint_field_name,
-  lineplot_fill_colour = "pink",
-  heatmap_fill_colour = "darkred",
-  title = paste("Records per", params$aggregated_data$aggregation_timeunit)
-)
-```
-
-### Missing values
-
-```{r overview-missing}
-
-plot_overview_combo_static(
-  agg_fields = agg_fields,
-  agg_fun = "missing_n",
-  lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-  lineplot_fill_colour = "lightblue",
-  heatmap_fill_colour = "darkblue",
-  title = paste(
-    "Total missing values per",
-    params$aggregated_data$aggregation_timeunit
+```{r overview-presence, results = 'asis'}
+p_all <-
+  plot_overview_combo_static(
+    agg_fields = agg_fields,
+    agg_fun = "n",
+    lineplot_field_name = params$aggregated_data$timepoint_field_name,
+    lineplot_fill_colour = "pink",
+    heatmap_fill_colour = "darkred",
+    title = paste("Records per", params$aggregated_data$aggregation_timeunit)
   )
-)
+
+if (!stratify) {
+  print(p_all)
+  cat("\n")
+} else {
+  # first tab covers entire dataset
+  cat("\n####", "All\n")
+  print(p_all)
+  cat("\n")
+  
+  # following tabs show individual strata
+  for (i in seq_along(stratum_names)) {
+    cat("\n####", stratum_names[i], "\n")
+    p <-
+      plot_overview_combo_static(
+        agg_fields = agg_fields_strat,
+        agg_fun = "n",
+        lineplot_field_name = params$aggregated_data$timepoint_field_name,
+        lineplot_fill_colour = "pink",
+        heatmap_fill_colour = "darkred",
+        title = paste("Records per", params$aggregated_data$aggregation_timeunit),
+        stratum = stratum_names[i]
+      )
+    print(p)
+    cat("\n")
+  }
+}
 ```
 
-### Non-conformant values
+### Missing values {.tabset}
 
-```{r overview-nonconformant}
-
-plot_overview_combo_static(
-  agg_fields = agg_fields,
-  agg_fun = "nonconformant_n",
-  lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-  lineplot_fill_colour = "lightgreen",
-  heatmap_fill_colour = "darkgreen",
-  title = paste(
-    "Total nonconformant values per",
-    params$aggregated_data$aggregation_timeunit
+```{r overview-missing, results = 'asis'}
+p_all <-
+  plot_overview_combo_static(
+    agg_fields = agg_fields,
+    agg_fun = "missing_n",
+    lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+    lineplot_fill_colour = "lightblue",
+    heatmap_fill_colour = "darkblue",
+    title = paste("Total missing values per", params$aggregated_data$aggregation_timeunit
+    )
   )
-)
+
+if (!stratify) {
+  print(p_all)
+  cat("\n")
+} else {
+  # first tab covers entire dataset
+  cat("\n####", "All\n")
+  print(p_all)
+  cat("\n")
+  # following tabs show individual strata
+  for (i in seq_along(stratum_names)) {
+    cat("\n####", stratum_names[i], "\n")
+    p <-
+      plot_overview_combo_static(
+        agg_fields = agg_fields_strat,
+        agg_fun = "missing_n",
+        lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+        lineplot_fill_colour = "lightblue",
+        heatmap_fill_colour = "darkblue",
+        title = paste("Total missing values per", params$aggregated_data$aggregation_timeunit),
+        stratum = stratum_names[i]
+      )
+    print(p)
+    cat("\n")
+  }
+}
+```
+
+### Non-conformant values {.tabset}
+
+```{r overview-nonconformant, results = 'asis'}
+p_all <-
+  plot_overview_combo_static(
+    agg_fields = agg_fields,
+    agg_fun = "nonconformant_n",
+    lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+    lineplot_fill_colour = "lightgreen",
+    heatmap_fill_colour = "darkgreen",
+    title = paste("Total nonconformant values per", params$aggregated_data$aggregation_timeunit)
+  )
+
+if (!stratify) {
+  print(p_all)
+  cat("\n")
+} else {
+  # first tab covers entire dataset
+  cat("\n####", "All\n")
+  print(p_all)
+  cat("\n")
+  
+  # following tabs show individual strata
+  for (i in seq_along(stratum_names)) {
+    cat("\n####", stratum_names[i], "\n")
+    p <-
+      plot_overview_combo_static(
+        agg_fields = agg_fields_strat,
+        agg_fun = "nonconformant_n",
+        lineplot_field_name = "[ALL_FIELDS_COMBINED]",
+        lineplot_fill_colour = "lightgreen",
+        heatmap_fill_colour = "darkgreen",
+        title = paste("Total nonconformant values per", params$aggregated_data$aggregation_timeunit),
+        stratum = stratum_names[i]
+      )
+    print(p)
+    cat("\n")
+  }
+}
 ```
 
 ### Duplicate records
@@ -336,7 +413,18 @@ reactable::reactable(
 
 ## Individual data fields {.tabset}
 
-```{r individual-fields, results = 'asis'}
+```{r individual-fields-set-fig-height}
+# TODO: Problem with doing this is that non-combo plots become too tall. Need to stratify duplicates and allfields too.
+# Also need to think about what to have in stratify_by field's tab.
+# (can't modify chunk options within a chunk to get different fig heights (https://github.com/yihui/knitr/issues/841))
+individual_fields_fig_height <- knitr::opts_chunk$get("fig.height")
+
+if (stratify) {
+  individual_fields_fig_height <- 1 + length(params$aggregated_data$stratified_by_values)*0.8
+}
+```
+
+```{r individual-fields, results = 'asis', fig.height = individual_fields_fig_height}
 for (i in seq_along(names(agg_fields))) {
   agg_field <- agg_fields[[i]]
   field_name <- names(agg_fields)[i] 
