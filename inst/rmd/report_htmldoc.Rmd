@@ -224,7 +224,6 @@ reactable::reactable(
 
 ## Aggregated data {.tabset}
 
-
 ```{r aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
 agg_fields <- params$aggregated_data$aggregated_fields
@@ -274,6 +273,7 @@ if (!stratify) {
 }
 ```
 
+
 ### Missing values {.tabset}
 
 ```{r overview-missing, results = 'asis'}
@@ -314,6 +314,7 @@ if (!stratify) {
   }
 }
 ```
+
 
 ### Non-conformant values {.tabset}
 
@@ -356,6 +357,33 @@ if (!stratify) {
 }
 ```
 
+
+```{r overview-strata, results = 'asis'}
+if (stratify) {
+  cat("\n### Strata {.tabset}\n")
+
+  cat("\n#### Number\n")
+    p <-
+      plot_subcat_heatmap_static(
+        agg_field = agg_fields_strat[[params$source_data$strata_field_name]],
+        agg_fun = "subcat_n"
+      )
+    print(p)
+    cat("\n")
+
+  cat("\n#### Percentage\n")
+    p <-
+      plot_subcat_heatmap_static(
+        agg_field = agg_fields_strat[[params$source_data$strata_field_name]],
+        agg_fun = "subcat_perc"
+      )
+    print(p)
+    cat("\n")
+}
+
+```
+
+
 ### Duplicate records
 
 ```{r overview-duplicates}
@@ -370,6 +398,7 @@ plot_overview_totals_static(
   )
 )
 ```
+
 
 ### Summary
 
@@ -421,6 +450,7 @@ reactable::reactable(
 )
 ```
 
+
 ## Individual data fields {.tabset}
 
 ```{r individual-fields-set-fig-height}
@@ -433,44 +463,18 @@ if (stratify) {
 }
 ```
 
+
 ```{r individual-fields, results = 'asis', fig.height = individual_fields_fig_height}
 for (i in seq_along(names(agg_fields))) {
   agg_field <- agg_fields[[i]]
-  field_name <- names(agg_fields)[i] 
-  cat(
-    "\n###",
-    field_name,
-    " {.tabset}\n"
-  )
-  agg_funs <-
-    agg_field$function_list
-  for (agg_fun in agg_funs) {
-    if (startsWith(agg_fun, "subcat")) {
-      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), " {.tabset}\n")
-      # first tab has all subcats in heatmap
-      cat("\n#####", "All\n")
-      p <-
-        plot_subcat_heatmap_static(
-          agg_field = agg_field,
-          agg_fun = agg_fun
-        )
-      print(p)
-      cat("\n")
-      # following tabs show individual time series
-      agg_cols <- names(agg_field$values)
-      for (subcat_col in agg_cols[which(startsWith(agg_cols, agg_fun))]) {
-        cat("\n#####", agg_fun_subcat_value(subcat_col), "\n")
-        p <-
-          plot_timeseries_static(
-            agg_field = agg_field,
-            agg_fun = subcat_col
-          )
-        print(p)
-        cat("\n")
-      }
-    } else{
-      cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
-      if (stratify && agg_fun %in% names(agg_fields_strat[[field_name]]$values)) {
+  field_name <- names(agg_fields)[i]
+  
+  if (stratify) {
+    if (field_name != params$source_data$strata_field_name) {
+      cat("\n###", field_name, " {.tabset}\n")
+      agg_funs <- agg_field$function_list
+      for (agg_fun in agg_funs) {
+        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
         # get corresponding agg_field_strat object
         agg_field_strat <- agg_fields_strat[[field_name]]
         p <-
@@ -478,15 +482,47 @@ for (i in seq_along(names(agg_fields))) {
             agg_field = agg_field,
             agg_field_strat = agg_field_strat,
             agg_fun = agg_fun)
+        print(p)
+        cat("\n")
+      }
+    }
+  } else {
+    cat("\n###", field_name, " {.tabset}\n")
+    agg_funs <- agg_field$function_list
+    for (agg_fun in agg_funs) {
+      if (startsWith(agg_fun, "subcat")) {
+        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), " {.tabset}\n")
+        # first tab has all subcats in heatmap
+        cat("\n#####", "All\n")
+        p <-
+          plot_subcat_heatmap_static(
+            agg_field = agg_field,
+            agg_fun = agg_fun
+          )
+        print(p)
+        cat("\n")
+        # following tabs show individual time series
+        agg_cols <- names(agg_field$values)
+        for (subcat_col in agg_cols[which(startsWith(agg_cols, agg_fun))]) {
+          cat("\n#####", agg_fun_subcat_value(subcat_col), "\n")
+          p <-
+            plot_timeseries_static(
+              agg_field = agg_field,
+              agg_fun = subcat_col
+            )
+          print(p)
+          cat("\n")
+        }
       } else{
+        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
         p <-
           plot_timeseries_static(
             agg_field = agg_field,
             agg_fun = agg_fun
           )
+        print(p)
+        cat("\n")
       }
-      print(p)
-      cat("\n")
     }
   }
 }

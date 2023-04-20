@@ -412,7 +412,7 @@ ft_strata <- function(na = NULL) {
     type = "strata",
     collector = readr::col_character(),
     data_class = "character",
-    aggregation_functions = "n",
+    aggregation_functions = c("n", "subcat_n", "subcat_perc"),
     na = na
   )
 }
