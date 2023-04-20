@@ -18,4 +18,5 @@
     Col_ft	<freetext>
     Col_sim	<simple>
     Col_ign	<ignore>
+    Col_str	<strata>
 

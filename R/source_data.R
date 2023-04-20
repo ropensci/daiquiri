@@ -319,6 +319,15 @@ prepare_data <- function(df,
   )
   names(dfs) <- c(names(field_types), "[DUPLICATES]")
 
+  # get strata info
+  strata_field_name <- field_types_strata_field_name(field_types)
+  if (!is.null(strata_field_name)) {
+    strata_labels <- unique(dfs[[strata_field_name]]$values[[1]])
+    strata_labels <- strata_labels[order(strata_labels)]
+  } else {
+    strata_labels <- NULL
+  }
+
   log_message(paste0("Finished"), show_progress)
 
   log_function_end(match.call()[[1]])
@@ -336,7 +345,9 @@ prepare_data <- function(df,
       cols_imported_indexes = cols_imported_indexes,
       validation_warnings = warnings_summary,
       dataset_description = dataset_description,
-      na_values = na
+      na_values = na,
+      strata_field_name = field_types_strata_field_name(field_types),
+      strata_labels = strata_labels
     ),
     class = "daiquiri_source_data"
   )
@@ -359,6 +370,10 @@ print.daiquiri_source_data <- function(x, ...) {
   cat("Min timepoint value:", summary$overall["timepoint_min"], "\n")
   cat("Max timepoint value:", summary$overall["timepoint_max"], "\n")
   cat("Rows missing timepoint values removed:", summary$overall["timepoint_missing_n"], "\n")
+  if (!is.na(summary$overall["strata_field_name"])) {
+    cat("Column used for strata:", summary$overall["strata_field_name"], "\n")
+    cat("Strata values:", summary$overall["strata_labels"], "\n")
+  }
   cat("Strings interpreted as missing values:", summary$overall["na_values"], "\n")
   cat("Total validation warnings:", sum(summary$validation_warnings$instances), "\n")
   cat("\n")
@@ -415,6 +430,12 @@ summarise_source_data <- function(source_data, show_progress = TRUE) {
     timepoint_min = format(data_field_min(timepoint_field)),
     timepoint_max = format(data_field_max(timepoint_field)),
     timepoint_missing_n = format(source_data$timepoint_missing_n),
+    if (!is.null(source_data$strata_field_name)) {
+      c(
+        strata_field_name = format(source_data$strata_field_name),
+        strata_labels = paste0(format(source_data$strata_labels), collapse = ", ")
+      )
+    },
     na_values = summarise_na_values(source_data)
   )
 

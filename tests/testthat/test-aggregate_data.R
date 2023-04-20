@@ -302,7 +302,7 @@ test_that("aggregate_data() stratifies aggregations correctly", {
         col_uniqueidentifier = ft_uniqueidentifier(),
         col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
         col_simple = ft_simple(),
-        col_stratify = ft_categorical()
+        col_stratify = ft_strata()
       ),
       na = c("", "NULL"),
       show_progress = FALSE
@@ -311,7 +311,6 @@ test_that("aggregate_data() stratifies aggregations correctly", {
     aggregate_data(
       source_data = testsource_data,
       aggregation_timeunit = "day",
-      stratify_by = "col_stratify",
       show_progress = FALSE
     )
 

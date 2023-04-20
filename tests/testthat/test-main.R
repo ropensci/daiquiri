@@ -230,7 +230,7 @@ test_that("daiquiri_object prints to console ok", {
   expect_true(file.remove(testdaiq_obj$report_filename))
 })
 
-test_that("daiquiri_report() creates stratified report successfully", {
+test_that("daiquiri_report() creates stratified report without error", {
   testdf <-
     data.table::data.table(
       "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
@@ -262,11 +262,8 @@ test_that("daiquiri_report() creates stratified report successfully", {
     save_directory = tempdir(),
     save_filename = "daiquiri_testthatreport",
     log_directory = tempdir(),
-    show_progress = FALSE,
-    stratify_by = "col_stratify"
+    show_progress = FALSE
   )
-
-  expect_equal(testdaiq_obj$stratified_by, "col_stratify")
 
   # clean up
   expect_true(file.remove(testdaiq_obj$report_filename))

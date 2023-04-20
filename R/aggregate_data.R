@@ -50,8 +50,7 @@
 #' @export
 aggregate_data <- function(source_data,
                            aggregation_timeunit = "day",
-                           show_progress = TRUE,
-                           stratify_by = NULL) {
+                           show_progress = TRUE) {
   # TODO: allow user to override existing aggregation_functions?
   # TODO: raise an error/warning if data is less granular than aggregation_timeunit
 
@@ -61,11 +60,8 @@ aggregate_data <- function(source_data,
   validate_params_type(match.call(),
     source_data = source_data,
     aggregation_timeunit = aggregation_timeunit,
-    show_progress = show_progress,
-    stratify_by = stratify_by
+    show_progress = show_progress
   )
-
-  # TODO: validate stratify_by
 
   log_message(
     paste0("Aggregating [", source_data$sourcename, "] by [", aggregation_timeunit, "]..."),
@@ -125,18 +121,16 @@ aggregate_data <- function(source_data,
 
   ### AGGREGATE STRATIFIED DATASET
   agg_fields_stratified <- NULL
-  stratified_by_values <- NULL
-  if (!is.null(stratify_by)) {
-    log_message(paste0("Stratifying dataset by ", stratify_by, " field..."), show_progress)
-    stratify_by_field_values <- source_data$data_fields[[stratify_by]]$values
-    stratified_by_values <- unique(stratify_by_field_values[[1]])
-    stratified_by_values <- stratified_by_values[order(stratified_by_values)]
+  strata_field_name <- source_data$strata_field_name
+  if (!is.null(strata_field_name)) {
+    log_message(paste0("Stratifying dataset by ", strata_field_name, " field..."), show_progress)
+    stratify_by_field_values <- source_data$data_fields[[strata_field_name]]$values
     # load aggregated data into new vector
     log_message(paste0("Aggregating each data_field in turn..."), show_progress)
     agg_fields_stratified <- vector("list", source_data$cols_imported_n + 2)
     for (i in 1:source_data$cols_imported_n) {
       fieldname <- names(source_data$cols_imported_indexes)[i]
-        log_message(paste0(i, ": ", names(source_data$cols_imported_indexes)[i], " by ", stratify_by, ""), show_progress)
+        log_message(paste0(i, ": ", names(source_data$cols_imported_indexes)[i], " by ", strata_field_name, ""), show_progress)
         fieldindex <- source_data$cols_imported_indexes[[i]]
         agg_fields_stratified[[i]] <-
           aggregate_field_stratified(
@@ -149,7 +143,7 @@ aggregate_data <- function(source_data,
           names(agg_fields_stratified)[i] <- fieldname
     }
     log_message(paste0("Aggregating calculated fields..."), show_progress)
-    log_message(paste0("[DUPLICATES] by ", stratify_by, ":"), show_progress)
+    log_message(paste0("[DUPLICATES] by ", strata_field_name, ":"), show_progress)
     agg_fields_stratified[[source_data$cols_imported_n + 1]] <-
       aggregate_field_stratified(
         source_data$data_fields[[source_data$cols_source_n + 1]],
@@ -158,7 +152,7 @@ aggregate_data <- function(source_data,
         timepoint_group_sequence,
         show_progress = show_progress
       )
-    log_message(paste0("[ALL_FIELDS_COMBINED] by ", stratify_by, ":"), show_progress)
+    log_message(paste0("[ALL_FIELDS_COMBINED] by ", strata_field_name, ":"), show_progress)
     agg_fields_stratified[[source_data$cols_imported_n + 2]] <-
       aggregate_combined_fields(
         # TODO: SHOULD THIS INCLUDE THE STRATA FIELD CONTENTS OR NOT? CURRENTLY DOES
@@ -184,8 +178,7 @@ aggregate_data <- function(source_data,
       # differ per aggregated_field
       aggregation_timeunit = aggregation_timeunit,
       dataset_description = source_data$dataset_description,
-      stratified_by = stratify_by,
-      stratified_by_values = stratified_by_values,
+      strata_field_name = strata_field_name,
       aggregated_fields_stratified = agg_fields_stratified
     ),
     class = "daiquiri_aggregated_data"

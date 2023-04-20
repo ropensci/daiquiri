@@ -164,6 +164,47 @@ test_that("prepare_data() creates source_data object correctly", {
 })
 
 
+test_that("prepare_data() gets strata info correctly", {
+  #TODO: TEST IT WORKS WHEN THERE ARE SPECIAL CHARS IN THE STRATA NAMES
+  testdf <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE2", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  testsource_data <-
+    prepare_data(
+      testdf,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_numeric = ft_numeric(),
+        col_datetime = ft_datetime(includes_time = FALSE),
+        col_uniqueidentifier = ft_uniqueidentifier(),
+        col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+        col_simple = ft_simple(),
+        col_stratify = ft_strata()
+      ),
+      na = c("", "NULL"),
+      show_progress = FALSE
+    )
+
+  expect_equal(testsource_data$strata_field_name, "col_stratify")
+
+  # the strata labels should be alphabetical with NA last
+  expect_equal(testsource_data$strata_labels,
+               c("SITE1", "SITE2", NA))
+
+})
+
+
 test_that("prepare_data() ignores nonchar columns (since readr::type_convert fails to skip nonchar cols)", {
   testsource_data <- prepare_data(
     df = data.frame(
@@ -364,6 +405,42 @@ test_that("source_data object prints to console ok", {
 
   expect_snapshot_output(print(testsource_data))
 })
+
+
+test_that("source_data object prints to console ok when there is a strata field", {
+  testdf <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE2", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  testsource_data <-
+    prepare_data(
+      testdf,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_numeric = ft_numeric(),
+        col_datetime = ft_datetime(includes_time = FALSE),
+        col_uniqueidentifier = ft_uniqueidentifier(),
+        col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+        col_simple = ft_simple(),
+        col_stratify = ft_strata()
+      ),
+      na = c("", "NULL"),
+      show_progress = FALSE
+    )
+
+  expect_snapshot_output(print(testsource_data))
+})
+
 
 test_that("remove_rows() removes specified rows", {
   numrows <- 2000000

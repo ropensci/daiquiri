@@ -66,6 +66,22 @@ field_types <- function(...) {
         )
       )
   }
+  # TODO: add warning that subcats won't be displayed if there is a strata field specified
+  is_strata <- vapply(fts, is_ft_strata, logical(1))
+  if (sum(is_strata) > 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Only one strata field allowed. Strata fields currently specified in positions: [",
+          paste(which(is_strata), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_strata)], collapse = ", "),
+          "]"
+        )
+      )
+  }
   if (anyDuplicated(names(fts)) > 0) {
     err_validation <-
       append(
@@ -262,6 +278,7 @@ ft_categorical <- function(aggregate_by_each_category = FALSE,
                            na = NULL) {
   # TODO: allow more options for aggregate_by_each_category,
   # e.g. topx (bysize), or accept a vector of values
+  # TODO: replace aggregate_by_each_category with split_by_subcategory and only keep facetted tab?
   agg_fun <- c("n", "missing_n", "missing_perc", "distinct")
   options <- NULL
   if (aggregate_by_each_category) {
@@ -380,6 +397,22 @@ ft_simple <- function(na = NULL) {
     collector = readr::col_character(),
     data_class = "character",
     aggregation_functions = c("n", "missing_n", "missing_perc"),
+    na = na
+  )
+}
+
+#' @section Details: `ft_strata()` - identifies a categorical data field which should
+#'   be used to stratify the rest of the data.
+#' @param na Column-specific vector of strings that should be interpreted as missing
+#'   values (in addition to those specified at dataset level)
+#' @rdname field_types_available
+#' @export
+ft_strata <- function(na = NULL) {
+  field_type(
+    type = "strata",
+    collector = readr::col_character(),
+    data_class = "character",
+    aggregation_functions = "n",
     na = na
   )
 }
@@ -514,6 +547,13 @@ is_ft_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
 #' @noRd
 is_ft_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
+#' Test if object is a strata field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is_ft_strata <- function(x) inherits(x, "daiquiri_field_type_strata")
+
 #' Test if object is a calculated field_type
 #'
 #' @param x object to test
@@ -623,3 +663,21 @@ field_types_to_cols <-
       do.call(readr::cols, lapply(field_types, field_type_collector))
     }
   }
+
+
+# -----------------------------------------------------------------------------
+#' Are any of the fieldtypes ft_strata?
+#'
+#' Used to check if data should be stratified or not
+#'
+#' @param field_types field_types object
+#' @return field_name of ft_strata field if there is one, else NULL
+#' @noRd
+field_types_strata_field_name <- function(field_types) {
+  strata_field_name <- NULL
+  is_strata <- vapply(field_types, is_ft_strata, logical(1))
+  if (any(is_strata)) {
+    strata_field_name <- names(field_types)[is_strata]
+  }
+  strata_field_name
+}

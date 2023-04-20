@@ -200,3 +200,52 @@
     28:         4
         instances
 
+# source_data object prints to console ok when there is a strata field
+
+    Dataset: testdf 
+    
+    Overall:
+    Columns in source: 7 
+    Columns imported: 7 
+    Rows in source: 20 
+    Duplicate rows removed: 0 
+    Rows imported: 20 
+    Column used for timepoint: col_timepoint 
+    Min timepoint value: 2022-01-01 
+    Max timepoint value: 2022-01-05 
+    Rows missing timepoint values removed: 0 
+    Column used for strata: col_stratify 
+    Strata values: SITE1, SITE2, NA    
+    Strings interpreted as missing values: "","NULL" 
+    Total validation warnings: NA 
+    
+    Datafields:
+                field_name       field_type  datatype count  missing        min
+    1 col_timepoint        timepoint        double       20 0 (0%)   2022-01-01
+    2 col_numeric          numeric          double       20 0 (0%)            2
+    3 col_datetime         datetime         double        9 11 (55%) 2022-01-11
+    4 col_uniqueidentifier uniqueidentifier character    20 0 (0%)            1
+    5 col_categorical      categorical      character    20 0 (0%)            a
+    6 col_simple           simple           character    10 10 (50%)          a
+    7 col_stratify         strata           character    18 2 (10%)       SITE1
+             max validation_warnings
+    1 2022-01-05                   0
+    2          3                   1
+    3 2022-01-19                   0
+    4          9                   1
+    5          b                   0
+    6          a                   0
+    7      SITE2                   0
+    
+    Validation warnings:
+    
+                 field_name
+    1:          col_numeric
+    2: col_uniqueidentifier
+                                                                                           message
+    1:  Data supplied as double instead of character, non-conformant values will not be identified
+    2: Data supplied as integer instead of character, non-conformant values will not be identified
+       instances
+    1:        NA
+    2:        NA
+

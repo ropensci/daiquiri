@@ -9,6 +9,7 @@
 \alias{ft_datetime}
 \alias{ft_freetext}
 \alias{ft_simple}
+\alias{ft_strata}
 \alias{ft_ignore}
 \title{Types of data fields available for specification}
 \usage{
@@ -25,6 +26,8 @@ ft_datetime(includes_time = TRUE, format = "", na = NULL)
 ft_freetext(na = NULL)
 
 ft_simple(na = NULL)
+
+ft_strata(na = NULL)
 
 ft_ignore()
 }
@@ -82,6 +85,9 @@ free text values. Only presence/missingness will be evaluated.
  \code{ft_simple()} - identifies data fields where you only
 want presence/missingness to be evaluated (but which are not necessarily
 free text).
+
+ \code{ft_strata()} - identifies a categorical data field which should
+be used to stratify the rest of the data.
 
  \code{ft_ignore()} - identifies data fields which should be
 ignored.  These will not be loaded.

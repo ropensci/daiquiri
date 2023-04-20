@@ -49,6 +49,10 @@ sourcesummary <- summarise_source_data(params$source_data,
 )
 source_data_fields <- sourcesummary$data_fields
 source_data_fields$ordinal_position <- seq.int(nrow(source_data_fields))
+
+stratify <- !is.null(params$source_data$strata_field_name)
+strata_labels <- params$source_data$strata_labels
+
 ```
 
 ### Data fields imported
@@ -162,6 +166,10 @@ summarydf <- data.frame(
     "Duplicate rows",
     "Rows missing timepoint values",
     "Rows imported",
+    if (stratify) {
+      c("Column used for strata",
+        "Strata values")      
+    },
     "Strings interpreted as missing values",
     "Total validation warnings"
   ),
@@ -175,6 +183,10 @@ summarydf <- data.frame(
     sourcesummary$overall["rows_duplicates_n"],
     sourcesummary$overall["timepoint_missing_n"],
     sourcesummary$overall["rows_imported_n"],
+    if (stratify) {
+      c(sourcesummary$overall["strata_field_name"],
+        sourcesummary$overall["strata_labels"])      
+    },
     gsub("\n", "<br>", sourcesummary$overall["na_values"], fixed = TRUE),
     sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
       sum(is.na(
@@ -216,9 +228,7 @@ reactable::reactable(
 ```{r aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
 agg_fields <- params$aggregated_data$aggregated_fields
-stratify <- !is.null(params$aggregated_data$aggregated_fields_stratified)
 agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
-stratum_names <- params$aggregated_data$stratified_by_values
 
 ```
 
@@ -246,8 +256,8 @@ if (!stratify) {
   cat("\n")
   
   # following tabs show individual strata
-  for (i in seq_along(stratum_names)) {
-    cat("\n####", stratum_names[i], "\n")
+  for (i in seq_along(strata_labels)) {
+    cat("\n####", strata_labels[i], "\n")
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
@@ -256,7 +266,7 @@ if (!stratify) {
         lineplot_fill_colour = "pink",
         heatmap_fill_colour = "darkred",
         title = paste("Records per", params$aggregated_data$aggregation_timeunit),
-        stratum = stratum_names[i]
+        stratum = strata_labels[i]
       )
     print(p)
     cat("\n")
@@ -287,8 +297,8 @@ if (!stratify) {
   print(p_all)
   cat("\n")
   # following tabs show individual strata
-  for (i in seq_along(stratum_names)) {
-    cat("\n####", stratum_names[i], "\n")
+  for (i in seq_along(strata_labels)) {
+    cat("\n####", strata_labels[i], "\n")
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
@@ -297,7 +307,7 @@ if (!stratify) {
         lineplot_fill_colour = "lightblue",
         heatmap_fill_colour = "darkblue",
         title = paste("Total missing values per", params$aggregated_data$aggregation_timeunit),
-        stratum = stratum_names[i]
+        stratum = strata_labels[i]
       )
     print(p)
     cat("\n")
@@ -328,8 +338,8 @@ if (!stratify) {
   cat("\n")
   
   # following tabs show individual strata
-  for (i in seq_along(stratum_names)) {
-    cat("\n####", stratum_names[i], "\n")
+  for (i in seq_along(strata_labels)) {
+    cat("\n####", strata_labels[i], "\n")
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
@@ -338,7 +348,7 @@ if (!stratify) {
         lineplot_fill_colour = "lightgreen",
         heatmap_fill_colour = "darkgreen",
         title = paste("Total nonconformant values per", params$aggregated_data$aggregation_timeunit),
-        stratum = stratum_names[i]
+        stratum = strata_labels[i]
       )
     print(p)
     cat("\n")
@@ -414,13 +424,12 @@ reactable::reactable(
 ## Individual data fields {.tabset}
 
 ```{r individual-fields-set-fig-height}
-# TODO: Problem with doing this is that non-combo plots become too tall. Need to stratify duplicates and allfields too.
-# Also need to think about what to have in stratify_by field's tab.
-# (can't modify chunk options within a chunk to get different fig heights (https://github.com/yihui/knitr/issues/841))
+# NOTE: can't modify chunk options within a chunk to get different fig heights
+# (https://github.com/yihui/knitr/issues/841) so have to make plots consistent for all tabs
 individual_fields_fig_height <- knitr::opts_chunk$get("fig.height")
 
 if (stratify) {
-  individual_fields_fig_height <- 1 + length(params$aggregated_data$stratified_by_values)*0.8
+  individual_fields_fig_height <- 1 + length(strata_labels)*0.8
 }
 ```
 
