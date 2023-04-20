@@ -590,7 +590,7 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
 #' @noRd
 aggregate_and_append_values_stratified <- function(agg_fun, data_field_dt, grouped_values){
   # initialise known column names to prevent R CMD check notes
-  value <- timepoint_group <- NULL
+  value <- timepoint_group <- stratify_by_group <- NULL
 
   # aggregate the data_field values before appending to grouped_values in order
   # to distinguish between missing values and missing records
