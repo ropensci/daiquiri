@@ -185,7 +185,7 @@ summarydf <- data.frame(
     sourcesummary$overall["rows_imported_n"],
     if (stratify) {
       c(sourcesummary$overall["strata_field_name"],
-        gsub("\n", "<br>", sourcesummary$overall["strata_labels"], fixed = TRUE))      
+        gsub(", ", "<br>", sourcesummary$overall["strata_labels"], fixed = TRUE))      
     },
     gsub("\n", "<br>", sourcesummary$overall["na_values"], fixed = TRUE),
     sum(sourcesummary$validation_warnings$instances, na.rm = TRUE) +
