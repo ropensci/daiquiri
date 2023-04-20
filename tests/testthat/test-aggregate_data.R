@@ -22,10 +22,10 @@ test_that("aggregate_data() requires aggregation_timeunit param to be one of day
 })
 
 test_that("aggregate_data() creates aggregate object correctly", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsource_data <-
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <-
     prepare_data(
-      testdf,
+      df,
       field_types = field_types(
         col_timepoint_err = ft_ignore(),
         col_timepoint = ft_timepoint(),
@@ -57,48 +57,48 @@ test_that("aggregate_data() creates aggregate object correctly", {
       dataset_description = "completetestset",
       show_progress = FALSE
     )
-  testaggregated_data <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "week",
       show_progress = FALSE
     )
 
-  expect_s3_class(testaggregated_data, "daiquiri_aggregated_data")
+  expect_s3_class(aggregated_data, "daiquiri_aggregated_data")
 
   # check the basic structure is ok
-  expect_equal(testaggregated_data$timepoint_field_name, "col_timepoint")
-  expect_equal(testaggregated_data$aggregation_timeunit, "week")
+  expect_equal(aggregated_data$timepoint_field_name, "col_timepoint")
+  expect_equal(aggregated_data$aggregation_timeunit, "week")
   expect_setequal(
-    names(testaggregated_data$aggregated_fields),
+    names(aggregated_data$aggregated_fields),
     c(
-      names(testsource_data$cols_imported_indexes),
+      names(source_data$cols_imported_indexes),
       "[DUPLICATES]",
       "[ALL_FIELDS_COMBINED]"
     )
   )
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_timepoint$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_timepoint$values), 4)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_date_time$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_date_time$values), 10)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_date_only$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_date_only$values), 8)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_id_num$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_id_num$values), 7)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_timepoint$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_numeric_clean$values), 10)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_categorical_small$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_categorical_small$values), 19)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_categorical_large$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_categorical_large$values), 5)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_freetext$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_freetext$values), 4)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_simple$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields$col_simple$values), 4)
-  expect_equal(nrow(testaggregated_data$aggregated_fields$col_numeric_missing$values), 43)
-  expect_equal(nrow(testaggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 3)
-  expect_equal(nrow(testaggregated_data$aggregated_fields[["[ALL_FIELDS_COMBINED]"]]$values), 43)
-  expect_equal(ncol(testaggregated_data$aggregated_fields[["[ALL_FIELDS_COMBINED]"]]$values), 6)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_timepoint$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_timepoint$values), 4)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_date_time$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_date_time$values), 10)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_date_only$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_date_only$values), 8)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_id_num$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_id_num$values), 7)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_timepoint$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_numeric_clean$values), 10)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_categorical_small$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_categorical_small$values), 19)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_categorical_large$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_categorical_large$values), 5)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_freetext$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_freetext$values), 4)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_simple$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields$col_simple$values), 4)
+  expect_equal(nrow(aggregated_data$aggregated_fields$col_numeric_missing$values), 43)
+  expect_equal(nrow(aggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields[["[DUPLICATES]"]]$values), 3)
+  expect_equal(nrow(aggregated_data$aggregated_fields[["[ALL_FIELDS_COMBINED]"]]$values), 43)
+  expect_equal(ncol(aggregated_data$aggregated_fields[["[ALL_FIELDS_COMBINED]"]]$values), 6)
 })
 
 
@@ -128,7 +128,7 @@ test_that("export_aggregated_data() requires aggregated_data param to be an aggr
 })
 
 test_that("export_aggregated_data() generates csv files", {
-  testsource_data <-
+  source_data <-
     prepare_data(
       data.frame(
         col1 = rep("2022-01-01", 5),
@@ -143,11 +143,11 @@ test_that("export_aggregated_data() generates csv files", {
       dataset_description = "exporttestset",
       show_progress = FALSE
     )
-  testaggregated_data <- aggregate_data(testsource_data,
+  aggregated_data <- aggregate_data(source_data,
     aggregation_timeunit = "day",
     show_progress = FALSE
   )
-  export_aggregated_data(testaggregated_data,
+  export_aggregated_data(aggregated_data,
     save_directory = tempdir(),
     save_file_prefix = "test_"
   )
@@ -168,15 +168,15 @@ test_that("export_aggregated_data() generates csv files", {
 
 
 test_that("aggregate_combined_fields() removes NAs when rowsumming", {
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = paste0("2022-01-", 10 + c(seq(1, 3), seq(6, 21))),
       "col_numeric" = c("", "", rep(1, 17)),
       "col_numeric_missing" = ""
     )
-  testsource_data <-
+  source_data <-
     prepare_data(
-      testdf,
+      df,
       field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric = ft_numeric(),
@@ -187,21 +187,21 @@ test_that("aggregate_combined_fields() removes NAs when rowsumming", {
       na = c("", "NULL"),
       show_progress = FALSE
     )
-  testdata_byday <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
   expect_true(identical(
-    is.na(testdata_byday$aggregated_fields$`[ALL_FIELDS_COMBINED]`$values$missing_n),
+    is.na(aggregated_data$aggregated_fields$`[ALL_FIELDS_COMBINED]`$values$missing_n),
     c(rep(FALSE, 3), rep(TRUE, 2), rep(FALSE, 16))
   ))
 })
 
 
 test_that("aggregated_data object prints to console ok", {
-  testsource_data <-
+  source_data <-
     prepare_data(
       df = data.frame(
         col1 = rep("2022-01-01", 5),
@@ -216,18 +216,18 @@ test_that("aggregated_data object prints to console ok", {
       dataset_description = "completetestset",
       show_progress = FALSE
     )
-  testdata_byday <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
-  expect_snapshot_output(print(testdata_byday))
+  expect_snapshot_output(print(aggregated_data))
 })
 
 
 test_that("aggregated values contain NAs instead of Infs or NaNs", {
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = paste0("2022-01-", 10 + c(seq(1, 3), seq(6, 21))),
       "col_numeric" = c("", "", seq(
@@ -238,9 +238,9 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
       "col_datetime" = c("", "", rep("2022-01-01 00:00:00", 17)),
       "col_uniqueidentifier" = c("", "", seq(1, 17))
     )
-  testsource_data <-
+  source_data <-
     prepare_data(
-      testdf,
+      df,
       field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric = ft_numeric(),
@@ -251,23 +251,23 @@ test_that("aggregated values contain NAs instead of Infs or NaNs", {
       na = c("", "NULL"),
       show_progress = FALSE
     )
-  testdata_byday <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_numeric$values$min)))
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_numeric$values$max)))
-  expect_false(any(is.nan(testdata_byday$aggregated_fields$col_numeric$values$mean)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_numeric$values$min)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_numeric$values$max)))
+  expect_false(any(is.nan(aggregated_data$aggregated_fields$col_numeric$values$mean)))
 
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_datetime$values$min)))
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_datetime$values$max)))
-  expect_false(any(is.nan(testdata_byday$aggregated_fields$col_datetime$values$midnight_perc)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_datetime$values$min)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_datetime$values$max)))
+  expect_false(any(is.nan(aggregated_data$aggregated_fields$col_datetime$values$midnight_perc)))
 
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_uniqueidentifier$values$min_length)))
-  expect_false(any(is.infinite(testdata_byday$aggregated_fields$col_uniqueidentifier$values$max_length)))
-  expect_false(any(is.nan(testdata_byday$aggregated_fields$col_uniqueidentifier$values$mean_length)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_uniqueidentifier$values$min_length)))
+  expect_false(any(is.infinite(aggregated_data$aggregated_fields$col_uniqueidentifier$values$max_length)))
+  expect_false(any(is.nan(aggregated_data$aggregated_fields$col_uniqueidentifier$values$mean_length)))
 })
 
 test_that("agg_fun_subcat_value() retrieves value correctly", {
@@ -278,7 +278,7 @@ test_that("agg_fun_subcat_value() retrieves value correctly", {
 
 test_that("aggregate_data() stratifies aggregations correctly", {
   #TODO: TEST IT WORKS WHEN THERE ARE SPECIAL CHARS IN THE STRATA NAMES
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
       "col_numeric" = seq(
@@ -292,9 +292,9 @@ test_that("aggregate_data() stratifies aggregations correctly", {
       "col_simple" = c(rep("", 10), rep("a", 10)),
       "col_stratify" = c("", "", rep("SITE1", 6), rep(c("SITE1", "SITE2"), 6))
     )
-  testsource_data <-
+  source_data <-
     prepare_data(
-      testdf,
+      df,
       field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric = ft_numeric(),
@@ -307,34 +307,34 @@ test_that("aggregate_data() stratifies aggregations correctly", {
       na = c("", "NULL"),
       show_progress = FALSE
     )
-  testdata_byday <-
+  aggregated_data <-
     aggregate_data(
-      source_data = testsource_data,
+      source_data = source_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
   # check the basic structure is ok
   expect_setequal(
-    names(testdata_byday$aggregated_fields_stratified),
-    names(testdata_byday$aggregated_fields)
+    names(aggregated_data$aggregated_fields_stratified),
+    names(aggregated_data$aggregated_fields)
   )
 
   # the stratification categories should include NA
-  expect_equal(unique(testdata_byday$aggregated_fields_stratified$col_numeric$values$col_stratify),
+  expect_equal(unique(aggregated_data$aggregated_fields_stratified$col_numeric$values$col_stratify),
                c(NA, "SITE1", "SITE2")
   )
 
   # check the stratified values correspond to the overall value
   expect_equal(
-    testdata_byday$aggregated_fields$col_numeric$values$n,
-    testdata_byday$aggregated_fields_stratified$col_numeric$values[, list(n = sum(n)), by = list(col_timepoint_byday)][[2]]
+    aggregated_data$aggregated_fields$col_numeric$values$n,
+    aggregated_data$aggregated_fields_stratified$col_numeric$values[, list(n = sum(n)), by = list(col_timepoint_byday)][[2]]
     )
   # TODO: more tests needed for other agg_funs
   # (when all subvalues are NA the total should be NA, otherwise ignore the NAs)
   # expect_equal(
-  #   testdata_byday$aggregated_fields$col_numeric$values$missing_n,
-  #   testdata_byday$aggregated_fields_stratified$col_numeric$values[, list(missing_n = sum(missing_n, na.rm = TRUE)), by = list(col_timepoint_byday)][[2]]
+  #   aggregated_data$aggregated_fields$col_numeric$values$missing_n,
+  #   aggregated_data$aggregated_fields_stratified$col_numeric$values[, list(missing_n = sum(missing_n, na.rm = TRUE)), by = list(col_timepoint_byday)][[2]]
   #   )
 
 

@@ -1,7 +1,7 @@
 # prepare_data() creates source_data object correctly
 
     Code
-      testsource_data$validation_warnings
+      source_data$validation_warnings
     Output
                    field_name                                            message
        1:       col_timepoint        Missing or invalid value in Timepoint field
@@ -202,7 +202,7 @@
 
 # source_data object prints to console ok when there is a strata field
 
-    Dataset: testdf 
+    Dataset: df 
     
     Overall:
     Columns in source: 7 

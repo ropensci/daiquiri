@@ -66,9 +66,9 @@ test_that("daiquiri_report() requires field_types param to be a field_types obje
 
 
 test_that("daiquiri_report() creates report and returns daiquiri object successfully", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
+  df <- read_data(test_path("testdata", "completetestset.csv"))
   testdaiq_obj <- daiquiri_report(
-    testdf,
+    df,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
@@ -231,7 +231,7 @@ test_that("daiquiri_object prints to console ok", {
 })
 
 test_that("daiquiri_report() creates stratified report without error", {
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
       "col_numeric" = seq(
@@ -246,7 +246,7 @@ test_that("daiquiri_report() creates stratified report without error", {
       "col_stratify" = c("", "", rep("SITE1", 6), rep(c("SITE1", "SITE2"), 6))
     )
   testdaiq_obj <- daiquiri_report(
-    testdf,
+    df,
     field_types = field_types(
       col_timepoint = ft_timepoint(),
       col_numeric = ft_numeric(),
