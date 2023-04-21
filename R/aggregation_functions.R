@@ -566,7 +566,7 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
       log_message(paste0("    ", j, ": ", distinct_categories[j]), show_progress)
       catval <- distinct_categories[j]
       catname <-
-        paste0(agg_fun$type, "_", j, "_", gsub("([[:punct:]])|\\s+", "_", catval))
+        paste0(agg_fun$type, "_", j, "_", catval)
       grouped_values[
         data_field_dt[
           ,
