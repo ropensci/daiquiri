@@ -381,22 +381,6 @@ validate_params_type <- function(call, ...) {
       }
     } else if (params_names[i] %in% c("format", "save_file_type")) {
       # ignore for now as currently dealt with inside function
-    } else if (params_names[i] %in% c("stratify_by")) {
-      # TODO: this should check that it is the name of a categorical field
-      if (!is.null(params_passed[[i]]) &&
-          (length(params_passed[[i]]) != 1 || !is.character(params_passed[[i]]))) {
-        err_validation <- append(
-          err_validation,
-          paste0(
-            params_names[i],
-            ": Expected a character string but found: [ class = ",
-            class(params_passed[[i]]),
-            "; contents = ",
-            substr(toString(params_passed[[i]]), 1, 100),
-            "]"
-          )
-        )
-      }
     }
   }
 
