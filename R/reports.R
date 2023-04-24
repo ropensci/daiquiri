@@ -497,10 +497,14 @@ plot_subcat_heatmap_static <- function(agg_field,
 
   fill_colour <- switch(agg_fun,
                         "subcat_n" = "chocolate4",
-                        "subcat_perc" = "darkorchid4")
+                        "subcat_perc" = "darkorchid4",
+                        "stratum_n" = "chocolate4",
+                        "stratum_perc" = "darkorchid4")
   y_lab_prefix <- switch(agg_fun,
                          "subcat_n" = "No. of values per category",
-                         "subcat_perc" = "Percentage of values per category")
+                         "subcat_perc" = "Percentage of values per category",
+                         "stratum_n" = "No. of values per stratum",
+                         "stratum_perc" = "Percentage of values per stratum")
 
   g <-
     ggplot2::ggplot(

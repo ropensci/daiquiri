@@ -365,8 +365,8 @@ if (stratify) {
   cat("\n#### Number\n")
     p <-
       plot_subcat_heatmap_static(
-        agg_field = agg_fields_strat[[params$source_data$strata_field_name]],
-        agg_fun = "subcat_n"
+        agg_field = agg_fields[[params$source_data$strata_field_name]],
+        agg_fun = "stratum_n"
       )
     print(p)
     cat("\n")
@@ -374,8 +374,8 @@ if (stratify) {
   cat("\n#### Percentage\n")
     p <-
       plot_subcat_heatmap_static(
-        agg_field = agg_fields_strat[[params$source_data$strata_field_name]],
-        agg_fun = "subcat_perc"
+        agg_field = agg_fields[[params$source_data$strata_field_name]],
+        agg_fun = "stratum_perc"
       )
     print(p)
     cat("\n")

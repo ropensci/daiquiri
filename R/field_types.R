@@ -81,10 +81,12 @@ field_types <- function(...) {
         )
       )
   }
-  is_aggregate_by_each_category <- vapply(fts,
-                                          FUN = field_type_has_option,
-                                          FUN.VALUE = logical(1),
-                                          option = "aggregate_by_each_category")
+  is_aggregate_by_each_category <- is_field_type
+  is_aggregate_by_each_category[is_field_type] <-
+    vapply(fts[is_field_type],
+           FUN = field_type_has_option,
+           FUN.VALUE = logical(1),
+           option = "aggregate_by_each_category")
   if (any(is_strata) && any(is_aggregate_by_each_category)) {
     err_validation <-
       append(
@@ -429,7 +431,7 @@ ft_strata <- function(na = NULL) {
     type = "strata",
     collector = readr::col_character(),
     data_class = "character",
-    aggregation_functions = c("n", "subcat_n", "subcat_perc"),
+    aggregation_functions = c("n", "stratum_n", "stratum_perc"),
     na = na
   )
 }

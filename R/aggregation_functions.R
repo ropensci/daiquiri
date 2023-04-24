@@ -447,6 +447,47 @@ agg_fun_subcat_perc <- function(){
 }
 
 
+#' stratum_n
+#'
+#' number of times this particular strata value appears
+#' differs from subcat_n in that it includes NA as a stratum value
+#' @return agg_fun object
+#' @noRd
+agg_fun_stratum_n <- function(){
+  agg_fun(type = "stratum_n",
+          function_call = quote(
+            if (is.na(stratval)) {
+              sum(is.na(values))
+            } else {
+              sum(values == stratval, na.rm = TRUE)
+            }
+          ),
+          friendly_name_short = "stratum_n",
+          friendly_name_long = "No. of records in the stratum"
+          )
+}
+
+#' stratum_perc
+#'
+#' percentage this particular category value appears out of number of records
+#' include all values in denominator, including NA and NaN
+#' @return agg_fun object
+#' @noRd
+agg_fun_stratum_perc <- function(){
+  agg_fun(type = "stratum_perc",
+          function_call = quote(
+            if (is.na(stratval)) {
+              100 * sum(is.na(values)) / length(values)
+            } else {
+              100 * sum(values == stratval, na.rm = TRUE) / length(values)
+            }
+          ),
+          friendly_name_short = "stratum_perc",
+          friendly_name_long = "Percentage of records in the category"
+          )
+}
+
+
 #' Get the correct agg_fun constructor from the string code
 #'
 #' @param type string code for the aggregation_function
@@ -474,6 +515,8 @@ agg_fun_from_type <- function(type, ...){
          "mean_length" = agg_fun_mean_length(),
          "subcat_n" = agg_fun_subcat_n(),
          "subcat_perc" = agg_fun_subcat_perc(),
+         "stratum_n" = agg_fun_stratum_n(),
+         "stratum_perc" = agg_fun_stratum_perc(),
          stop(paste("Unrecognised aggregation type:", type),
               call. = FALSE)
          )
@@ -502,6 +545,8 @@ aggregate_and_append_values <- function(aggregation_function,
 
   if (aggregation_function %in% c("subcat_n", "subcat_perc")) {
     aggregate_and_append_values_subcat(agg_fun, data_field_dt, grouped_values, show_progress)
+  } else if (aggregation_function %in% c("stratum_n", "stratum_perc")) {
+    aggregate_and_append_values_stratum(agg_fun, data_field_dt, grouped_values, show_progress)
   } else if (stratify) {
     aggregate_and_append_values_stratified(agg_fun, data_field_dt, grouped_values)
   } else{
@@ -555,16 +600,16 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
   value <- values <- timepoint_group <- NULL
 
   # need to create a separate column per category value
-  distinct_categories <-
-    sort(data_field_dt[is.na(values) == FALSE, unique(values)])
-  log_message(paste0("    ", length(distinct_categories), " categories found"), show_progress)
+  distinct_strata <-
+    sort(data_field_dt[!is.na(values), unique(values)])
+  log_message(paste0("    ", length(distinct_strata), " categories found"), show_progress)
 
   # If there is only one category, don't bother
-  if (length(distinct_categories) > 1) {
+  if (length(distinct_strata) > 1) {
     # TODO: consider setting a max number of categories
-    for (j in seq_along(distinct_categories)) {
-      log_message(paste0("    ", j, ": ", distinct_categories[j]), show_progress)
-      catval <- distinct_categories[j]
+    for (j in seq_along(distinct_strata)) {
+      log_message(paste0("    ", j, ": ", distinct_strata[j]), show_progress)
+      catval <- distinct_strata[j]
       catname <-
         paste0(agg_fun$type, "_", j, "_", catval)
       grouped_values[
@@ -577,6 +622,42 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
         by = .EACHI
       ]
     }
+  }
+}
+
+#' Perform the relevant stratum aggregation and append to grouped_values
+#'
+#' stratum aggregation functions are similar to subcat ones in that they create
+#' a separate column per category value, but they include NA as a value
+#' grouped_values is updated byref
+#' @param agg_fun agg_fun object
+#' @param data_field_dt this contains all values present in the original data_field, alongside their timepoint_group
+#' @param grouped_values this will contain the agg_fun values after aggregating (one column per stratum)
+#' @param show_progress Print progress to console
+#' @noRd
+aggregate_and_append_values_stratum <- function(agg_fun, data_field_dt, grouped_values, show_progress = TRUE){
+  # initialise known column names to prevent R CMD check notes
+  value <- values <- timepoint_group <- NULL
+
+  # need to create a separate column per stratum value
+  distinct_strata <-
+    sort(data_field_dt[, unique(values)], na.last = TRUE)
+  log_message(paste0("    ", length(distinct_strata), " strata found"), show_progress)
+
+  for (j in seq_along(distinct_strata)) {
+    log_message(paste0("    ", j, ": ", distinct_strata[j]), show_progress)
+    stratval <- distinct_strata[j]
+    stratname <-
+      paste0(agg_fun$type, "_", j, "_",stratval)
+    grouped_values[
+      data_field_dt[
+        ,
+        list("value" = eval(agg_fun$function_call)),
+        by = list(timepoint_group)
+      ],
+      (stratname) := value,
+      by = .EACHI
+    ]
   }
 }
 
