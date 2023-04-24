@@ -165,7 +165,6 @@ test_that("prepare_data() creates source_data object correctly", {
 
 
 test_that("prepare_data() gets strata info correctly", {
-  #TODO: TEST IT WORKS WHEN THERE ARE SPECIAL CHARS IN THE STRATA NAMES
   df <-
     data.table::data.table(
       "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
@@ -188,7 +187,7 @@ test_that("prepare_data() gets strata info correctly", {
         col_numeric = ft_numeric(),
         col_datetime = ft_datetime(includes_time = FALSE),
         col_uniqueidentifier = ft_uniqueidentifier(),
-        col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+        col_categorical = ft_categorical(),
         col_simple = ft_simple(),
         col_stratify = ft_strata()
       ),
@@ -430,7 +429,7 @@ test_that("source_data object prints to console ok when there is a strata field"
         col_numeric = ft_numeric(),
         col_datetime = ft_datetime(includes_time = FALSE),
         col_uniqueidentifier = ft_uniqueidentifier(),
-        col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+        col_categorical = ft_categorical(),
         col_simple = ft_simple(),
         col_stratify = ft_strata()
       ),

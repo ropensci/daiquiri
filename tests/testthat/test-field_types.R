@@ -4,7 +4,7 @@ test_that("Valid field_types can be specified", {
       Col_tp = ft_timepoint(),
       Col_uid = ft_uniqueidentifier(),
       Col_cat = ft_categorical(),
-      Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+      Col_cat2 = ft_categorical(),
       Col_num = ft_numeric(),
       Col_dt = ft_datetime(),
       Col_dt2 = ft_datetime(includes_time = FALSE),
@@ -68,12 +68,23 @@ test_that("field_types object must not contain more than one strata field", {
   )
 })
 
+test_that("field_types object must not use aggregate_by_each_category option if strata field present", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      Col_cat = ft_categorical(),
+      Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+      Col_2 = ft_strata()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
 test_that("field_types_strata_field_name() returns correct strata field name if present", {
   field_types <- field_types(
     Col_tp = ft_timepoint(),
     Col_uid = ft_uniqueidentifier(),
     Col_cat = ft_categorical(),
-    Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
     Col_num = ft_numeric(),
     Col_dt = ft_datetime(),
     Col_dt2 = ft_datetime(includes_time = FALSE),
@@ -151,7 +162,7 @@ test_that("field_types object prints to console ok", {
     Col_tp = ft_timepoint(),
     Col_uid = ft_uniqueidentifier(),
     Col_cat = ft_categorical(),
-    Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+    Col_cat2 = ft_categorical(),
     Col_num = ft_numeric(),
     Col_dt = ft_datetime(),
     Col_dt2 = ft_datetime(includes_time = FALSE),

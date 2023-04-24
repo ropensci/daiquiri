@@ -300,7 +300,7 @@ test_that("aggregate_data() stratifies aggregations correctly", {
         col_numeric = ft_numeric(),
         col_datetime = ft_datetime(includes_time = FALSE),
         col_uniqueidentifier = ft_uniqueidentifier(),
-        col_categorical = ft_categorical(aggregate_by_each_category = TRUE),
+        col_categorical = ft_categorical(),
         col_simple = ft_simple(),
         col_stratify = ft_strata()
       ),
