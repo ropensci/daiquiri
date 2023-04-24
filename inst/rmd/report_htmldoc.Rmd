@@ -240,8 +240,6 @@ p_all <-
     agg_fields = agg_fields,
     aggregation_function = "n",
     lineplot_field_name = params$aggregated_data$timepoint_field_name,
-    lineplot_fill_colour = "pink",
-    heatmap_fill_colour = "darkred",
     title = paste("Records per", params$aggregated_data$aggregation_timeunit)
   )
 
@@ -262,8 +260,6 @@ if (!stratify) {
         agg_fields = agg_fields_strat,
         aggregation_function = "n",
         lineplot_field_name = params$aggregated_data$timepoint_field_name,
-        lineplot_fill_colour = "pink",
-        heatmap_fill_colour = "darkred",
         title = paste("Records per", params$aggregated_data$aggregation_timeunit),
         stratum = strata_labels[i]
       )
@@ -282,8 +278,6 @@ p_all <-
     agg_fields = agg_fields,
     aggregation_function = "missing_n",
     lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-    lineplot_fill_colour = "lightblue",
-    heatmap_fill_colour = "darkblue",
     title = paste("Total missing values per", params$aggregated_data$aggregation_timeunit
     )
   )
@@ -304,8 +298,6 @@ if (!stratify) {
         agg_fields = agg_fields_strat,
         aggregation_function = "missing_n",
         lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-        lineplot_fill_colour = "lightblue",
-        heatmap_fill_colour = "darkblue",
         title = paste("Total missing values per", params$aggregated_data$aggregation_timeunit),
         stratum = strata_labels[i]
       )
@@ -324,8 +316,6 @@ p_all <-
     agg_fields = agg_fields,
     aggregation_function = "nonconformant_n",
     lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-    lineplot_fill_colour = "lightgreen",
-    heatmap_fill_colour = "darkgreen",
     title = paste("Total nonconformant values per", params$aggregated_data$aggregation_timeunit)
   )
 
@@ -346,8 +336,6 @@ if (!stratify) {
         agg_fields = agg_fields_strat,
         aggregation_function = "nonconformant_n",
         lineplot_field_name = "[ALL_FIELDS_COMBINED]",
-        lineplot_fill_colour = "lightgreen",
-        heatmap_fill_colour = "darkgreen",
         title = paste("Total nonconformant values per", params$aggregated_data$aggregation_timeunit),
         stratum = strata_labels[i]
       )
@@ -391,7 +379,6 @@ if (stratify) {
 plot_overview_totals_static(
   agg_field = agg_fields[["[DUPLICATES]"]],
   aggregation_function = "sum",
-  fill_colour = "yellow",
   title = paste(
     "Total duplicate records per",
     params$aggregated_data$aggregation_timeunit

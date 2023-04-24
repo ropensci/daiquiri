@@ -15,14 +15,18 @@ agg_fun <- function(type,
                     function_call,
                     value_if_no_records = NA,
                     friendly_name_short,
-                    friendly_name_long) {
+                    friendly_name_long,
+                    heatmap_fill_colour = NA,
+                    lineplot_fill_colour = NA) {
   structure(
     list(
       type = type,
       function_call = function_call,
       value_if_no_records = value_if_no_records,
       friendly_name_short = friendly_name_short,
-      friendly_name_long = friendly_name_long
+      friendly_name_long = friendly_name_long,
+      heatmap_fill_colour = heatmap_fill_colour,
+      lineplot_fill_colour = lineplot_fill_colour
     )
   )
 }
@@ -43,7 +47,9 @@ agg_fun_n <- function(){
             ),
           value_if_no_records = 0,
           friendly_name_short = "n",
-          friendly_name_long = "No. of values present"
+          friendly_name_long = "No. of values present",
+          heatmap_fill_colour = "darkred",
+          lineplot_fill_colour = "pink"
           )
 }
 
@@ -59,7 +65,9 @@ agg_fun_missing_n <- function(){
             sum(is.na(values) & !is.nan(values))
             ),
           friendly_name_short = "missing_n",
-          friendly_name_long = "No. of missing values"
+          friendly_name_long = "No. of missing values",
+          heatmap_fill_colour = "darkblue",
+          lineplot_fill_colour = "lightblue"
           )
 }
 
@@ -91,7 +99,9 @@ agg_fun_nonconformant_n <- function(){
             sum(is.nan(values))
             ),
           friendly_name_short = "nonconformant_n",
-          friendly_name_long = "No. of nonconformant values"
+          friendly_name_long = "No. of nonconformant values",
+          heatmap_fill_colour = "darkgreen",
+          lineplot_fill_colour = "lightgreen"
           )
 }
 
@@ -126,7 +136,8 @@ agg_fun_sum <- function(){
             sum(values, na.rm = TRUE)
             ),
           friendly_name_short = "sum",
-          friendly_name_long = "No. of duplicate records removed"
+          friendly_name_long = "No. of duplicate records removed",
+          lineplot_fill_colour = "yellow"
           )
 }
 
@@ -426,7 +437,8 @@ agg_fun_subcat_n <- function(){
             sum(values == catval, na.rm = TRUE)
             ),
           friendly_name_short = "subcat_n",
-          friendly_name_long = "No. of values in the category"
+          friendly_name_long = "No. of values in the category",
+          heatmap_fill_colour = "chocolate4"
           )
 }
 
@@ -442,14 +454,15 @@ agg_fun_subcat_perc <- function(){
             100 * sum(values == catval, na.rm = TRUE) / length(values)
             ),
           friendly_name_short = "subcat_perc",
-          friendly_name_long = "Percentage of values in the category"
+          friendly_name_long = "Percentage of values in the category",
+          heatmap_fill_colour = "darkorchid4"
           )
 }
 
 
 #' stratum_n
 #'
-#' number of times this particular strata value appears
+#' number of times this particular stratum value appears
 #' differs from subcat_n in that it includes NA as a stratum value
 #' @return agg_fun object
 #' @noRd
@@ -463,14 +476,16 @@ agg_fun_stratum_n <- function(){
             }
           ),
           friendly_name_short = "stratum_n",
-          friendly_name_long = "No. of records in the stratum"
+          friendly_name_long = "No. of records in the stratum",
+          heatmap_fill_colour = "chocolate4"
           )
 }
 
 #' stratum_perc
 #'
-#' percentage this particular category value appears out of number of records
+#' percentage this particular stratum value appears out of number of records
 #' include all values in denominator, including NA and NaN
+#' differs from subcat_perc in that it includes NA as a stratum value
 #' @return agg_fun object
 #' @noRd
 agg_fun_stratum_perc <- function(){
@@ -483,7 +498,8 @@ agg_fun_stratum_perc <- function(){
             }
           ),
           friendly_name_short = "stratum_perc",
-          friendly_name_long = "Percentage of records in the category"
+          friendly_name_long = "Percentage of records in the stratum",
+          heatmap_fill_colour = "darkorchid4"
           )
 }
 

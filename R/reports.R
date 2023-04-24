@@ -229,7 +229,6 @@ plot_timeseries_static <- function(agg_field,
 # of timepoints (as barplots don't render well with lots of timepoints)
 plot_overview_totals_static <- function(agg_field,
                                         aggregation_function,
-                                        fill_colour = NA,
                                         title = NULL,
                                         stratum = NULL) {
   # initialise known column names to prevent R CMD check notes
@@ -269,6 +268,7 @@ plot_overview_totals_static <- function(agg_field,
     ) +
     ggplot2::labs(x = NULL, y = NULL, title = title)
 
+  fill_colour <- agg_fun_from_type(aggregation_function)$lineplot_fill_colour
   # if all values are NA, show a blank plot, otherwise plot the values
   if (!all(is.na(agg_field$values[[aggregation_function]]))) {
     g <- g + ggplot2::geom_line(na.rm = TRUE) +
@@ -309,7 +309,6 @@ plot_overview_totals_static <- function(agg_field,
 # TODO: Decide whether or not to include the timepoint field in the heatmap
 plot_overview_heatmap_static <- function(agg_fields,
                                          aggregation_function,
-                                         fill_colour = "darkred",
                                          stratum = NULL) {
   # initialise known column names to prevent R CMD check notes
   field_name <- NULL
@@ -346,6 +345,7 @@ plot_overview_heatmap_static <- function(agg_fields,
   }
   data[, field_name := factor(field_name, levels = names(agg_fields))]
 
+  fill_colour <- agg_fun_from_type(aggregation_function)$heatmap_fill_colour
   # when the only values are zero, make sure the fill colour is white (as
   # geom_tile uses the 'high' colour)
   if (all(data[, aggregation_function, with = FALSE] == 0, na.rm = TRUE)) {
@@ -424,15 +424,12 @@ plot_overview_heatmap_static <- function(agg_fields,
 plot_overview_combo_static <- function(agg_fields,
                                        aggregation_function,
                                        lineplot_field_name,
-                                       lineplot_fill_colour,
-                                       heatmap_fill_colour,
                                        title = NULL,
                                        stratum = NULL) {
   totals <-
     plot_overview_totals_static(
       agg_field = agg_fields[[lineplot_field_name]],
       aggregation_function = aggregation_function,
-      fill_colour = lineplot_fill_colour,
       title = title,
       stratum = stratum
     )
@@ -441,7 +438,6 @@ plot_overview_combo_static <- function(agg_fields,
   heatmap <- plot_overview_heatmap_static(
     agg_fields = agg_fields,
     aggregation_function = aggregation_function,
-    fill_colour = heatmap_fill_colour,
     stratum = stratum
   )
 
@@ -467,13 +463,14 @@ plot_overview_combo_static <- function(agg_fields,
 #' @return ggplot
 #' @noRd
 plot_subcat_heatmap_static <- function(agg_field,
-                                         aggregation_function) {
+                                       aggregation_function) {
   # initialise known column names to prevent R CMD check notes
   field_name <- NULL
 
   agg_field_values <- agg_field[1]$values
   agg_field_cols <- names(agg_field_values)
   timepoint_aggcol_name <- agg_field_cols[1]
+  agg_fun <- agg_fun_from_type(aggregation_function)
 
   # get agg_fun values from each subcategory
   heatmap_fields <-
@@ -489,22 +486,12 @@ plot_subcat_heatmap_static <- function(agg_field,
   }
   data[, field_name := factor(field_name, levels = agg_fun_subcat_value(heatmap_fields))]
 
+  fill_colour <- agg_fun$heatmap_fill_colour
   # when the only values are zero, make sure the fill colour is white (as
   # geom_tile uses the 'high' colour)
   if (all(data[, aggregation_function, with = FALSE] == 0, na.rm = TRUE)) {
     fill_colour <- "white"
   }
-
-  fill_colour <- switch(aggregation_function,
-                        "subcat_n" = "chocolate4",
-                        "subcat_perc" = "darkorchid4",
-                        "stratum_n" = "chocolate4",
-                        "stratum_perc" = "darkorchid4")
-  y_lab_prefix <- switch(aggregation_function,
-                         "subcat_n" = "No. of values per category",
-                         "subcat_perc" = "Percentage of values per category",
-                         "stratum_n" = "No. of values per stratum",
-                         "stratum_perc" = "Percentage of values per stratum")
 
   g <-
     ggplot2::ggplot(
@@ -524,7 +511,7 @@ plot_subcat_heatmap_static <- function(agg_field,
       labels = scales::label_date_short(sep = " "),
       expand = c(0, 0)
     ) +
-    ggplot2::labs(y = paste0(y_lab_prefix, "\n(", agg_field$column_name, ")"), x = NULL) +
+    ggplot2::labs(y = paste0(agg_fun$friendly_name_long, "\n(", agg_field$column_name, ")"), x = NULL) +
     # facet by variable (field name) to create separate bars
     ggplot2::facet_grid(field_name ~ ., scales = "free", space = "free") +
     ggplot2::theme_bw() +
@@ -569,7 +556,7 @@ plot_subcat_heatmap_static <- function(agg_field,
 #' @return ggplot
 #' @noRd
 plot_stratified_facetgrid_static <- function(agg_field_stratified,
-                                           aggregation_function) {
+                                             aggregation_function) {
 
   timepoint_aggcol_name <- names(agg_field_stratified$values)[1]
   stratify_aggcol_name <- names(agg_field_stratified$values)[2]
@@ -656,8 +643,8 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
 #' @return ggplot
 #' @noRd
 plot_stratified_totals_static <- function(agg_field,
-                                        aggregation_function,
-                                        title = NULL) {
+                                          aggregation_function,
+                                          title = NULL) {
 
   timepoint_aggcol_name <- names(agg_field$values)[1]
 
