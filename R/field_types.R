@@ -66,7 +66,6 @@ field_types <- function(...) {
         )
       )
   }
-  # TODO: add warning that subcats won't be displayed if there is a strata field specified
   is_strata <- vapply(fts, is_ft_strata, logical(1))
   if (sum(is_strata) > 1) {
     err_validation <-
@@ -78,6 +77,24 @@ field_types <- function(...) {
           "]",
           "names: [",
           paste(names(fts)[which(is_strata)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_aggregate_by_each_category <- vapply(fts,
+                                          FUN = field_type_has_option,
+                                          FUN.VALUE = logical(1),
+                                          option = "aggregate_by_each_category")
+  if (any(is_strata) && any(is_aggregate_by_each_category)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Cannot use aggregate_by_each_category option when there is a strata field. Option currently specified in positions: [",
+          paste(which(is_aggregate_by_each_category), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_aggregate_by_each_category)], collapse = ", "),
           "]"
         )
       )
@@ -680,4 +697,14 @@ field_types_strata_field_name <- function(field_types) {
     strata_field_name <- names(field_types)[is_strata]
   }
   strata_field_name
+}
+
+#' Test if field_type has a particular option set
+#'
+#' @param ft field_type to test
+#' @param option name of option
+#' @return Logical
+#' @noRd
+field_type_has_option <- function(ft, option){
+  option %in% ft$options
 }
