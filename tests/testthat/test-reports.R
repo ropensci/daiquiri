@@ -124,14 +124,14 @@ test_that("plots still work when all values are missing", {
   expect_s3_class(
     plot_timeseries_static(
       agg_field = aggregated_data$aggregatefields$col_numeric_missing,
-      agg_fun = "missing_n"
+      agg_fun_colname = "missing_n"
     ),
     "ggplot"
   )
   expect_s3_class(
     plot_overview_totals_static(
       agg_field = aggregated_data$aggregatefields$col_numeric_missing,
-      agg_fun = "missing_n"
+      aggregation_function = "missing_n"
     ),
     "ggplot"
   )

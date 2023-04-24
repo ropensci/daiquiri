@@ -240,10 +240,10 @@ ft_timepoint <- function(includes_time = TRUE,
                          format = "",
                          na = NULL) {
   # NOTE: nonconformant values appear in validation warnings
-  agg_fun <- c("n")
+  aggregation_functions <- c("n")
   options <- NULL
   if (includes_time) {
-    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
+    aggregation_functions <- c(aggregation_functions, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
@@ -251,7 +251,7 @@ ft_timepoint <- function(includes_time = TRUE,
     type = "timepoint",
     collector = readr::col_datetime(format = format),
     data_class = "POSIXct",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )
@@ -298,10 +298,10 @@ ft_categorical <- function(aggregate_by_each_category = FALSE,
   # TODO: allow more options for aggregate_by_each_category,
   # e.g. topx (bysize), or accept a vector of values
   # TODO: replace aggregate_by_each_category with split_by_subcategory and only keep facetted tab?
-  agg_fun <- c("n", "missing_n", "missing_perc", "distinct")
+  aggregation_functions <- c("n", "missing_n", "missing_perc", "distinct")
   options <- NULL
   if (aggregate_by_each_category) {
-    agg_fun <- c(agg_fun, "subcat_n", "subcat_perc")
+    aggregation_functions <- c(aggregation_functions, "subcat_n", "subcat_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "aggregate_by_each_category"
   }
@@ -309,7 +309,7 @@ ft_categorical <- function(aggregate_by_each_category = FALSE,
     type = "categorical",
     collector = readr::col_character(),
     data_class = "character",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )
@@ -361,7 +361,7 @@ ft_numeric <- function(na = NULL) {
 ft_datetime <- function(includes_time = TRUE,
                         format = "",
                         na = NULL) {
-  agg_fun <-
+  aggregation_functions <-
     c(
       "n",
       "missing_n",
@@ -373,7 +373,7 @@ ft_datetime <- function(includes_time = TRUE,
     )
   options <- NULL
   if (includes_time) {
-    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
+    aggregation_functions <- c(aggregation_functions, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
@@ -381,7 +381,7 @@ ft_datetime <- function(includes_time = TRUE,
     type = "datetime",
     collector = readr::col_datetime(format = format),
     data_class = "POSIXct",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )

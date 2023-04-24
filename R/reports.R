@@ -157,19 +157,19 @@ report_data <- function(source_data,
 #' Create a scatter plot for an individual time series
 #'
 #' @param agg_field aggregated_field object
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param agg_fun_colname which aggregation function to plot (from agg_field
+#'   column_name so can plot individual subcats)
 #' @return ggplot
 #' @noRd
 #' @importFrom ggplot2 .data
 plot_timeseries_static <- function(agg_field,
-                                   agg_fun) {
+                                   agg_fun_colname) {
   timepoint_aggcol_name <- names(agg_field$values)[1]
   # set up universal plot characteristics
   g <-
     ggplot2::ggplot(
-      agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE],
-      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])
+      agg_field$values[, c(timepoint_aggcol_name, agg_fun_colname), with = FALSE],
+      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun_colname]])
     ) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
@@ -182,7 +182,7 @@ plot_timeseries_static <- function(agg_field,
     ggplot2::labs(
       x = NULL,
       y = paste0(
-        agg_fun_friendly_name(agg_fun, "long"),
+        agg_fun_friendly_name(agg_fun_colname, "long"),
         ifelse(
           agg_field$column_name == "[DUPLICATES]",
           "",
@@ -193,14 +193,14 @@ plot_timeseries_static <- function(agg_field,
     )
 
   # if all values are NA, show a blank plot, otherwise plot the values
-  if (!all(is.na(agg_field$values[[agg_fun]]))) {
+  if (!all(is.na(agg_field$values[[agg_fun_colname]]))) {
     g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4)
 
     # specify y axis scale
-    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
-    min_val <- min(agg_field$values[[agg_fun]], na.rm = TRUE)
+    max_val <- max(agg_field$values[[agg_fun_colname]], na.rm = TRUE)
+    min_val <- min(agg_field$values[[agg_fun_colname]], na.rm = TRUE)
     y_breaks <-
-      yscale_breaks(agg_fun, max_val, min_val, agg_field$field_type)
+      yscale_breaks(agg_fun_colname, max_val, min_val, agg_field$field_type)
     g <- g + ggplot2::scale_y_continuous(
       breaks = y_breaks,
       limits = c(
@@ -218,8 +218,8 @@ plot_timeseries_static <- function(agg_field,
 #' Create a filled line plot to show overall numbers per timepoint
 #'
 #' @param agg_field aggregated_field object
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @param fill_colour colour to use below the line
 #' @param title optional title for the plot
 #' @param stratum stratify_by value to optionally filter on
@@ -228,7 +228,7 @@ plot_timeseries_static <- function(agg_field,
 # TODO: automatically choose to draw a lineplot or barplot depending on number
 # of timepoints (as barplots don't render well with lots of timepoints)
 plot_overview_totals_static <- function(agg_field,
-                                        agg_fun,
+                                        aggregation_function,
                                         fill_colour = NA,
                                         title = NULL,
                                         stratum = NULL) {
@@ -239,16 +239,16 @@ plot_overview_totals_static <- function(agg_field,
   if (!is.null(stratum)) {
     stratify_aggcol_name <- names(agg_field$values)[2]
     if (is.na(stratum)) {
-      data <- agg_field$values[is.na(get(stratify_aggcol_name)), c(timepoint_aggcol_name, agg_fun), with = FALSE]
+      data <- agg_field$values[is.na(get(stratify_aggcol_name)), c(timepoint_aggcol_name, aggregation_function), with = FALSE]
     } else {
-      data <- agg_field$values[get(stratify_aggcol_name) == stratum, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+      data <- agg_field$values[get(stratify_aggcol_name) == stratum, c(timepoint_aggcol_name, aggregation_function), with = FALSE]
     }
   } else {
-    data <- agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+    data <- agg_field$values[, c(timepoint_aggcol_name, aggregation_function), with = FALSE]
   }
 
   g <-
-    ggplot2::ggplot(data, ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])) +
+    ggplot2::ggplot(data, ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[aggregation_function]])) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
       labels = scales::label_date_short(sep = " "),
@@ -270,22 +270,22 @@ plot_overview_totals_static <- function(agg_field,
     ggplot2::labs(x = NULL, y = NULL, title = title)
 
   # if all values are NA, show a blank plot, otherwise plot the values
-  if (!all(is.na(agg_field$values[[agg_fun]]))) {
+  if (!all(is.na(agg_field$values[[aggregation_function]]))) {
     g <- g + ggplot2::geom_line(na.rm = TRUE) +
       # use ribbon instead of area so that NAs don't get interpolated
       ggplot2::geom_ribbon(
-        data = data[!is.na(get(agg_fun)), ymin := 0],
+        data = data[!is.na(get(aggregation_function)), ymin := 0],
         ggplot2::aes(
           x = .data[[timepoint_aggcol_name]],
           ymin = ymin,
-          ymax = .data[[agg_fun]]
+          ymax = .data[[aggregation_function]]
         ),
         fill = fill_colour,
         alpha = 0.5
       )
 
     # specify y axis scale
-    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
+    max_val <- max(agg_field$values[[aggregation_function]], na.rm = TRUE)
     g <- g + ggplot2::scale_y_continuous(
       n.breaks = 6,
       limits = c(0, max(max_val, 10))
@@ -297,18 +297,18 @@ plot_overview_totals_static <- function(agg_field,
 
 
 # -----------------------------------------------------------------------------
-#' Create a heatmap showing a particular agg_fun value across all fields
+#' Create a heatmap showing a particular aggregation_function value across all fields
 #'
 #' @param agg_fields all aggregated_fields or aggregated_fields_stratified object
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @param fill_colour colour to use for the tiles
 #' @param stratum stratify_by value to optionally filter on
 #' @return ggplot
 #' @noRd
 # TODO: Decide whether or not to include the timepoint field in the heatmap
 plot_overview_heatmap_static <- function(agg_fields,
-                                         agg_fun,
+                                         aggregation_function,
                                          fill_colour = "darkred",
                                          stratum = NULL) {
   # initialise known column names to prevent R CMD check notes
@@ -334,13 +334,13 @@ plot_overview_heatmap_static <- function(agg_fields,
     } else {
       aggdata <- agg_fields[[f]]$values
     }
-    if (agg_fun %in% names(agg_fields[[f]]$values)) {
-      d <- aggdata[, c(timepoint_aggcol_name, agg_fun), with = FALSE]
+    if (aggregation_function %in% names(agg_fields[[f]]$values)) {
+      d <- aggdata[, c(timepoint_aggcol_name, aggregation_function), with = FALSE]
       d[, field_name := f]
     } else {
       d <- aggdata[, timepoint_aggcol_name, with = FALSE]
       d[, field_name := f]
-      d[, (agg_fun) := NA_integer_]
+      d[, (aggregation_function) := NA_integer_]
     }
     data <- rbind(data, d)
   }
@@ -348,14 +348,14 @@ plot_overview_heatmap_static <- function(agg_fields,
 
   # when the only values are zero, make sure the fill colour is white (as
   # geom_tile uses the 'high' colour)
-  if (all(data[, agg_fun, with = FALSE] == 0, na.rm = TRUE)) {
+  if (all(data[, aggregation_function, with = FALSE] == 0, na.rm = TRUE)) {
     fill_colour <- "white"
   }
 
   g <-
     ggplot2::ggplot(
       data,
-      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[agg_fun]])
+      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[aggregation_function]])
     ) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(
@@ -412,8 +412,8 @@ plot_overview_heatmap_static <- function(agg_fields,
 #' aggregation function
 #'
 #' @param agg_fields all aggregated_fields to be included
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @param lineplot_field_name which aggregated_field to use for the lineplot
 #' @param lineplot_fill_colour colour to use below the line
 #' @param heatmap_fill_colour colour to use for the tiles
@@ -422,7 +422,7 @@ plot_overview_heatmap_static <- function(agg_fields,
 #' @return cowplot::plot_grid
 #' @noRd
 plot_overview_combo_static <- function(agg_fields,
-                                       agg_fun,
+                                       aggregation_function,
                                        lineplot_field_name,
                                        lineplot_fill_colour,
                                        heatmap_fill_colour,
@@ -431,7 +431,7 @@ plot_overview_combo_static <- function(agg_fields,
   totals <-
     plot_overview_totals_static(
       agg_field = agg_fields[[lineplot_field_name]],
-      agg_fun = agg_fun,
+      aggregation_function = aggregation_function,
       fill_colour = lineplot_fill_colour,
       title = title,
       stratum = stratum
@@ -440,7 +440,7 @@ plot_overview_combo_static <- function(agg_fields,
   # TODO: Decide whether or not to include the timepoint field in the heatmap
   heatmap <- plot_overview_heatmap_static(
     agg_fields = agg_fields,
-    agg_fun = agg_fun,
+    aggregation_function = aggregation_function,
     fill_colour = heatmap_fill_colour,
     stratum = stratum
   )
@@ -462,12 +462,12 @@ plot_overview_combo_static <- function(agg_fields,
 #' Create a heatmap showing value across all subcategories
 #'
 #' @param agg_field categorical aggfield object
-#' @param agg_fun which aggregation function to plot (from agg_field
+#' @param aggregation_function which aggregation function to plot (from agg_field
 #'   function_list)
 #' @return ggplot
 #' @noRd
 plot_subcat_heatmap_static <- function(agg_field,
-                                         agg_fun) {
+                                         aggregation_function) {
   # initialise known column names to prevent R CMD check notes
   field_name <- NULL
 
@@ -477,13 +477,13 @@ plot_subcat_heatmap_static <- function(agg_field,
 
   # get agg_fun values from each subcategory
   heatmap_fields <-
-    agg_field_cols[which(startsWith(agg_field_cols, agg_fun))]
+    agg_field_cols[which(startsWith(agg_field_cols, aggregation_function))]
   data <- data.table::data.table()
   for (i in seq_along(heatmap_fields)) {
     f <- heatmap_fields[i]
     d <-
       agg_field_values[, c(timepoint_aggcol_name, f), with = FALSE]
-    names(d)[2] <- agg_fun
+    names(d)[2] <- aggregation_function
     d[, field_name := agg_fun_subcat_value(f)]
     data <- rbind(data, d)
   }
@@ -491,16 +491,16 @@ plot_subcat_heatmap_static <- function(agg_field,
 
   # when the only values are zero, make sure the fill colour is white (as
   # geom_tile uses the 'high' colour)
-  if (all(data[, agg_fun, with = FALSE] == 0, na.rm = TRUE)) {
+  if (all(data[, aggregation_function, with = FALSE] == 0, na.rm = TRUE)) {
     fill_colour <- "white"
   }
 
-  fill_colour <- switch(agg_fun,
+  fill_colour <- switch(aggregation_function,
                         "subcat_n" = "chocolate4",
                         "subcat_perc" = "darkorchid4",
                         "stratum_n" = "chocolate4",
                         "stratum_perc" = "darkorchid4")
-  y_lab_prefix <- switch(agg_fun,
+  y_lab_prefix <- switch(aggregation_function,
                          "subcat_n" = "No. of values per category",
                          "subcat_perc" = "Percentage of values per category",
                          "stratum_n" = "No. of values per stratum",
@@ -509,7 +509,7 @@ plot_subcat_heatmap_static <- function(agg_field,
   g <-
     ggplot2::ggplot(
       data,
-      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[agg_fun]])
+      ggplot2::aes(.data[[timepoint_aggcol_name]], field_name, fill = .data[[aggregation_function]])
     ) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(
@@ -564,8 +564,8 @@ plot_subcat_heatmap_static <- function(agg_field,
 #' Create a grid of scatter plots showing value across all strata
 #'
 #' @param agg_field_stratified single aggregated_field_stratified object
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @return ggplot
 #' @noRd
 plot_stratified_facetgrid_static <- function(agg_field_stratified,
@@ -584,7 +584,7 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
   max_val <- max(data[[aggregation_function]], na.rm = TRUE)
   min_val <- min(data[[aggregation_function]], na.rm = TRUE)
   y_breaks <- yscale_breaks(
-    agg_fun = aggregation_function,
+    agg_fun_colname = aggregation_function,
     max_val = max_val,
     min_val = min_val,
     compact = TRUE,
@@ -650,21 +650,21 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
 #' Create a scatter plot to show overall values above stratified plot
 #'
 #' @param agg_field aggregated_field object
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @param title optional title for the plot
 #' @return ggplot
 #' @noRd
 plot_stratified_totals_static <- function(agg_field,
-                                        agg_fun,
+                                        aggregation_function,
                                         title = NULL) {
 
   timepoint_aggcol_name <- names(agg_field$values)[1]
 
   g <-
     ggplot2::ggplot(
-      agg_field$values[, c(timepoint_aggcol_name, agg_fun), with = FALSE],
-      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun]])) +
+      agg_field$values[, c(timepoint_aggcol_name, aggregation_function), with = FALSE],
+      ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[aggregation_function]])) +
     ggplot2::scale_x_date(
       breaks = scales::breaks_pretty(12),
       labels = scales::label_date_short(sep = " "),
@@ -686,14 +686,14 @@ plot_stratified_totals_static <- function(agg_field,
     ggplot2::labs(x = NULL, y = NULL, title = title)
 
   # if all values are NA, show a blank plot, otherwise plot the values
-  if (!all(is.na(agg_field$values[[agg_fun]]))) {
+  if (!all(is.na(agg_field$values[[aggregation_function]]))) {
     g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4, size = 0.5)
 
     # specify y axis scale
-    max_val <- max(agg_field$values[[agg_fun]], na.rm = TRUE)
-    min_val <- min(agg_field$values[[agg_fun]], na.rm = TRUE)
+    max_val <- max(agg_field$values[[aggregation_function]], na.rm = TRUE)
+    min_val <- min(agg_field$values[[aggregation_function]], na.rm = TRUE)
     y_breaks <-
-      yscale_breaks(agg_fun, max_val, min_val, compact = TRUE, agg_field$field_type)
+      yscale_breaks(aggregation_function, max_val, min_val, compact = TRUE, agg_field$field_type)
     g <- g + ggplot2::scale_y_continuous(
       breaks = y_breaks,
       limits = c(
@@ -714,26 +714,26 @@ plot_stratified_totals_static <- function(agg_field,
 #'
 #' @param agg_field aggregated_field to be included
 #' @param agg_field_strat aggregated_field_stratified to be included
-#' @param agg_fun which aggregation function to plot (from agg_field
-#'   column_name)
+#' @param aggregation_function which aggregation function to plot (from agg_field
+#'   function_list)
 #' @return cowplot::plot_grid
 #' @noRd
 plot_stratified_combo_static <- function(agg_field,
                                          agg_field_strat,
-                                         agg_fun) {
+                                         aggregation_function) {
   totals <-
     plot_stratified_totals_static(
       agg_field = agg_field,
-      agg_fun = agg_fun,
+      aggregation_function = aggregation_function,
       title = paste0(
-        agg_fun_friendly_name(agg_fun, "long"),
+        agg_fun_friendly_name(aggregation_function, "long"),
         " (", agg_field_strat$column_name, ")"
         )
     )
 
   stratified <- plot_stratified_facetgrid_static(
     agg_field_stratified = agg_field_strat,
-    aggregation_function = agg_fun
+    aggregation_function = aggregation_function
   )
 
 
@@ -750,9 +750,9 @@ plot_stratified_combo_static <- function(agg_field,
 
 
 # -----------------------------------------------------------------------------
-#' Set the breaks for the y-axis depending on the field_type and agg_fun
+#' Set the breaks for the y-axis depending on the field_type and agg_fun_colname
 #'
-#' @param agg_fun aggregation function being plotted (from agg_field
+#' @param agg_fun_colname aggregation function being plotted (from agg_field
 #'   column_name)
 #' @param max_val maximum data value
 #' @param min_val minimum data value
@@ -760,15 +760,15 @@ plot_stratified_combo_static <- function(agg_field,
 #' @param compact return fewer breaks when graph will be small
 #' @return numeric vector containing locations of limits and breaks
 #' @noRd
-yscale_breaks <- function(agg_fun,
+yscale_breaks <- function(agg_fun_colname,
                           max_val,
                           min_val = 0,
                           field_type = NULL,
                           compact = FALSE) {
   breaks <- NULL
 
-  if (agg_fun %in% c("distinct", "n", "sum", "min_length", "max_length", "mean_length") ||
-    endsWith(agg_fun, "_n") || startsWith(agg_fun, "subcat_n")) {
+  if (agg_fun_colname %in% c("distinct", "n", "sum", "min_length", "max_length", "mean_length") ||
+    endsWith(agg_fun_colname, "_n") || startsWith(agg_fun_colname, "subcat_n")) {
     # frequency/length agg_funs should always start at zero and be shown on a
     # range of 0-10 at a minimum
     if (max_val <= 10) {
@@ -780,8 +780,8 @@ yscale_breaks <- function(agg_fun,
     } else {
       breaks <- pretty(c(0, max_val))
     }
-  } else if (endsWith(agg_fun, "_perc") ||
-    startsWith(agg_fun, "subcat_perc")) {
+  } else if (endsWith(agg_fun_colname, "_perc") ||
+    startsWith(agg_fun_colname, "subcat_perc")) {
     # percentage agg_funs should always be shown on a range of 0-100
     if (compact){
       breaks <- seq(0, 100, by = 20)

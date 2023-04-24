@@ -238,7 +238,7 @@ agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
-    agg_fun = "n",
+    aggregation_function = "n",
     lineplot_field_name = params$aggregated_data$timepoint_field_name,
     lineplot_fill_colour = "pink",
     heatmap_fill_colour = "darkred",
@@ -260,7 +260,7 @@ if (!stratify) {
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
-        agg_fun = "n",
+        aggregation_function = "n",
         lineplot_field_name = params$aggregated_data$timepoint_field_name,
         lineplot_fill_colour = "pink",
         heatmap_fill_colour = "darkred",
@@ -280,7 +280,7 @@ if (!stratify) {
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
-    agg_fun = "missing_n",
+    aggregation_function = "missing_n",
     lineplot_field_name = "[ALL_FIELDS_COMBINED]",
     lineplot_fill_colour = "lightblue",
     heatmap_fill_colour = "darkblue",
@@ -302,7 +302,7 @@ if (!stratify) {
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
-        agg_fun = "missing_n",
+        aggregation_function = "missing_n",
         lineplot_field_name = "[ALL_FIELDS_COMBINED]",
         lineplot_fill_colour = "lightblue",
         heatmap_fill_colour = "darkblue",
@@ -322,7 +322,7 @@ if (!stratify) {
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
-    agg_fun = "nonconformant_n",
+    aggregation_function = "nonconformant_n",
     lineplot_field_name = "[ALL_FIELDS_COMBINED]",
     lineplot_fill_colour = "lightgreen",
     heatmap_fill_colour = "darkgreen",
@@ -344,7 +344,7 @@ if (!stratify) {
     p <-
       plot_overview_combo_static(
         agg_fields = agg_fields_strat,
-        agg_fun = "nonconformant_n",
+        aggregation_function = "nonconformant_n",
         lineplot_field_name = "[ALL_FIELDS_COMBINED]",
         lineplot_fill_colour = "lightgreen",
         heatmap_fill_colour = "darkgreen",
@@ -366,7 +366,7 @@ if (stratify) {
     p <-
       plot_subcat_heatmap_static(
         agg_field = agg_fields[[params$source_data$strata_field_name]],
-        agg_fun = "stratum_n"
+        aggregation_function = "stratum_n"
       )
     print(p)
     cat("\n")
@@ -375,7 +375,7 @@ if (stratify) {
     p <-
       plot_subcat_heatmap_static(
         agg_field = agg_fields[[params$source_data$strata_field_name]],
-        agg_fun = "stratum_perc"
+        aggregation_function = "stratum_perc"
       )
     print(p)
     cat("\n")
@@ -390,7 +390,7 @@ if (stratify) {
 
 plot_overview_totals_static(
   agg_field = agg_fields[["[DUPLICATES]"]],
-  agg_fun = "sum",
+  aggregation_function = "sum",
   fill_colour = "yellow",
   title = paste(
     "Total duplicate records per",
@@ -472,53 +472,53 @@ for (i in seq_along(names(agg_fields))) {
   if (stratify) {
     if (field_name != params$source_data$strata_field_name) {
       cat("\n###", field_name, " {.tabset}\n")
-      agg_funs <- agg_field$function_list
-      for (agg_fun in agg_funs) {
-        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
+      aggregation_functions <- agg_field$function_list
+      for (aggregation_function in aggregation_functions) {
+        cat("\n####", agg_fun_friendly_name(aggregation_function, "short"), "\n")
         # get corresponding agg_field_strat object
         agg_field_strat <- agg_fields_strat[[field_name]]
         p <-
           plot_stratified_combo_static(
             agg_field = agg_field,
             agg_field_strat = agg_field_strat,
-            agg_fun = agg_fun)
+            aggregation_function = aggregation_function)
         print(p)
         cat("\n")
       }
     }
   } else {
     cat("\n###", field_name, " {.tabset}\n")
-    agg_funs <- agg_field$function_list
-    for (agg_fun in agg_funs) {
-      if (startsWith(agg_fun, "subcat")) {
-        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), " {.tabset}\n")
+    aggregation_functions <- agg_field$function_list
+    for (aggregation_function in aggregation_functions) {
+      if (startsWith(aggregation_function, "subcat")) {
+        cat("\n####", agg_fun_friendly_name(aggregation_function, "short"), " {.tabset}\n")
         # first tab has all subcats in heatmap
         cat("\n#####", "All\n")
         p <-
           plot_subcat_heatmap_static(
             agg_field = agg_field,
-            agg_fun = agg_fun
+            aggregation_function = aggregation_function
           )
         print(p)
         cat("\n")
         # following tabs show individual time series
         agg_cols <- names(agg_field$values)
-        for (subcat_col in agg_cols[which(startsWith(agg_cols, agg_fun))]) {
+        for (subcat_col in agg_cols[which(startsWith(agg_cols, aggregation_function))]) {
           cat("\n#####", agg_fun_subcat_value(subcat_col), "\n")
           p <-
             plot_timeseries_static(
               agg_field = agg_field,
-              agg_fun = subcat_col
+              agg_fun_colname = subcat_col
             )
           print(p)
           cat("\n")
         }
       } else{
-        cat("\n####", agg_fun_friendly_name(agg_fun, "short"), "\n")
+        cat("\n####", agg_fun_friendly_name(aggregation_function, "short"), "\n")
         p <-
           plot_timeseries_static(
             agg_field = agg_field,
-            agg_fun = agg_fun
+            agg_fun_colname = aggregation_function
           )
         print(p)
         cat("\n")
