@@ -586,7 +586,6 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
     compact = TRUE,
     field_type = agg_field_stratified$field_type)
 
-  # TODO: check this displays correctly when all values are NA (overall or within certain strata)
   g <-
     ggplot2::ggplot(
       data,
