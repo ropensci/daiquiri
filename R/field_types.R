@@ -431,7 +431,7 @@ ft_strata <- function(na = NULL) {
     type = "strata",
     collector = readr::col_character(),
     data_class = "character",
-    aggregation_functions = c("n", "stratum_n", "stratum_perc"),
+    aggregation_functions = c("n", "missing_n", "missing_perc", "stratum_n", "stratum_perc"),
     na = na
   )
 }
