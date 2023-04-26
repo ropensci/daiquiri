@@ -26,16 +26,21 @@ p.compact {
 	}
 ```
 
+```{r strata-info, results = 'asis'}
+stratify <- !is.null(params$source_data$strata_field_name)
+strata_labels <- params$source_data$strata_labels
+```
+
 <p class="compact">
 Dataset: **`r encodeString(params$source_data$dataset_description)`**
 </p>
 
 <p class="compact">
-Aggregated by: **`r params$aggregated_data$aggregation_timeunit`**
+Aggregated by: **`r params$aggregated_data$aggregation_timeunit`** `r if (stratify) {paste0("; Stratified by: <strong>", params$source_data$strata_field_name, "</strong>")}`
 </p>
 
 <p class="compact">
-Report created on: `r Sys.time()`; daiquiri version `r utils::packageVersion(utils::packageName())`; `r R.Version()$version.string`
+Report created on: `r Sys.time()` ; daiquiri version `r utils::packageVersion(utils::packageName())` ; `r R.Version()$version.string`
 </p>
 
 # {.tabset .tabset-pills}
