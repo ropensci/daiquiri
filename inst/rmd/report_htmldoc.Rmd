@@ -232,6 +232,32 @@ agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
 ```
 
 
+```{r overview-strata, results = 'asis'}
+if (stratify) {
+  cat("\n### Strata {.tabset}\n")
+
+  cat("\n#### Number\n")
+    p <-
+      plot_subcat_heatmap_static(
+        agg_field = agg_fields[[params$source_data$strata_field_name]],
+        aggregation_function = "stratum_n"
+      )
+    print(p)
+    cat("\n")
+
+  cat("\n#### Percentage\n")
+    p <-
+      plot_subcat_heatmap_static(
+        agg_field = agg_fields[[params$source_data$strata_field_name]],
+        aggregation_function = "stratum_perc"
+      )
+    print(p)
+    cat("\n")
+}
+
+```
+
+
 ### Values present {.tabset}
 
 ```{r overview-presence, results = 'asis'}
@@ -343,32 +369,6 @@ if (!stratify) {
     cat("\n")
   }
 }
-```
-
-
-```{r overview-strata, results = 'asis'}
-if (stratify) {
-  cat("\n### Strata {.tabset}\n")
-
-  cat("\n#### Number\n")
-    p <-
-      plot_subcat_heatmap_static(
-        agg_field = agg_fields[[params$source_data$strata_field_name]],
-        aggregation_function = "stratum_n"
-      )
-    print(p)
-    cat("\n")
-
-  cat("\n#### Percentage\n")
-    p <-
-      plot_subcat_heatmap_static(
-        agg_field = agg_fields[[params$source_data$strata_field_name]],
-        aggregation_function = "stratum_perc"
-      )
-    print(p)
-    cat("\n")
-}
-
 ```
 
 
