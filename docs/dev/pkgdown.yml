@@ -1,0 +1,8 @@
+pandoc: 2.19.2
+pkgdown: 2.0.6
+pkgdown_sha: ~
+articles:
+  example_report: example_report.html
+  daiquiri: daiquiri.html
+last_built: 2023-05-16T11:58Z
+

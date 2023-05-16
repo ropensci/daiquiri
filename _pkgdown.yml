@@ -1,6 +1,8 @@
 url: ~
 template:
   bootstrap: 5
+development:
+  mode: auto
 
 navbar:
   structure:
