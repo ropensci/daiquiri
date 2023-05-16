@@ -26,8 +26,12 @@ log file is created."><meta name="robots" content="noindex"><!-- mathjax --><scr
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../articles/example_report.html">Example report</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-example-reports">Example reports</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-example-reports">
+    <a class="dropdown-item" href="../articles/example_report.html">Standard report</a>
+    <a class="dropdown-item" href="../articles/example_report_stratified.html">Stratified report</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -82,10 +86,10 @@ file</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">log_name</span> <span class="op">&lt;-</span> <span class="fu">initialise_log</span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">log_name</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\dev\\reference\\daiquiri_20230516_130039.log"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\dev\\reference\\daiquiri_20230516_153200.log"</span>
 <span class="r-in"><span><span class="co"># \dontshow{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="close_log.html">close_log</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\dev\\reference\\daiquiri_20230516_130039.log"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "C:\\Users\\pquan\\Documents\\Rworkspace\\daiquiri\\docs\\dev\\reference\\daiquiri_20230516_153200.log"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">log_name</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

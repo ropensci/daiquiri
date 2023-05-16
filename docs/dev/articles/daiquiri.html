@@ -42,8 +42,12 @@
 <li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../articles/example_report.html">Example report</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-example-reports">Example reports</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-example-reports">
+    <a class="dropdown-item" href="../articles/example_report.html">Standard report</a>
+    <a class="dropdown-item" href="../articles/example_report_stratified.html">Stratified report</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -145,8 +149,8 @@ dataset.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 6000           2021-01-01 00:00:00 2020-1… Ceft… 500   mg      4993679 SITE3  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 6001           NULL                2020-1… Fluc… 1000  mg      819452  SITE1  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 6002           NULL                2020-1… Teic… 400   mg      275597  SITE2  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:00 2020-1… Fluc… 1000  NULL    819452  SITE2  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:00 2020-1… Fluc… 1000  NULL    528071  SITE1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:00 1800-0… Fluc… 1000  NULL    819452  SITE2  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:00 1800-0… Fluc… 1000  NULL    528071  SITE1  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 6005           2021-01-01 03:00:00 2020-1… Co-a… 1.2   g       1001434 SITE3  </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># … with abbreviated variable names ¹​AdmissionDate, ²​DoseUnit, ³​PatientID,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   ⁴​Location</span></span></span></code></pre></div>
@@ -349,8 +353,65 @@ where these values are not applicable are coloured in grey.</p>
 <p>This contains two levels of child tabs. The first level consists of
 one tab per data field in the dataset. Within each data field tab, there
 is a further set of child tabs displaying a plot for each time series
-created</p>
+created.</p>
 <p><img src="../reference/figures/example_prescriptions_allfields_missing_perc.png" width="500"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="creating-a-stratified-report">Creating a stratified report<a class="anchor" aria-label="anchor" href="#creating-a-stratified-report"></a>
+</h2>
+<p>When the data consists of records from a number of distinct sources
+(e.g. different hospital sites), or can be partitioned in another
+meaningful way (e.g. elective versus emergency hospital admissions), you
+can create a stratified report which allows you to inspect the data
+within each of the subcategories alongside each other.</p>
+<p><strong>Example:</strong></p>
+<p>For the same <code>example_prescriptions</code> dataset above, we can
+specify that we want to stratify the report according to hospital site,
+by setting the Location field to the <code><a href="../reference/field_types_available.html">ft_strata()</a></code> field
+type:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/field_types.html">field_types</a></span><span class="op">(</span></span>
+<span>  PrescriptionID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_uniqueidentifier</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  PrescriptionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_timepoint</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  AdmissionDate <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_datetime</a></span><span class="op">(</span>includes_time <span class="op">=</span> <span class="cn">FALSE</span>, na <span class="op">=</span> <span class="st">"1800-01-01"</span><span class="op">)</span>,</span>
+<span>  Drug <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_freetext</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  Dose <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_numeric</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  DoseUnit <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_categorical</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  PatientID <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_ignore</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  Location <span class="op">=</span> <span class="fu"><a href="../reference/field_types_available.html">ft_strata</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Then we can create a report the same way as usual.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">daiq_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daiquiri_report.html">daiquiri_report</a></span><span class="op">(</span></span>
+<span>  df <span class="op">=</span> <span class="va">example_prescriptions</span>,</span>
+<span>  field_types <span class="op">=</span> <span class="va">fts</span>,</span>
+<span>  override_column_names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NULL"</span><span class="op">)</span>,</span>
+<span>  dataset_description <span class="op">=</span> <span class="st">"Example prescription data"</span>,</span>
+<span>  aggregation_timeunit <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span>  report_title <span class="op">=</span> <span class="st">"daiquiri data quality report - stratified"</span>,</span>
+<span>  save_directory <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  save_filename <span class="op">=</span> <span class="st">"example_prescriptions_report_stratified"</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  log_directory <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="aggregated-data-1">Aggregated data<a class="anchor" aria-label="anchor" href="#aggregated-data-1"></a>
+</h3>
+<p>In the Strata tab, you can see the number and the percentage of
+records belonging to each stratum over time. Also, the tabs for Values
+present, Missing values, and Non-conformant values, are further split
+into child tabs - one covering the whole dataset plus one for each
+stratum.</p>
+<p><img src="../reference/figures/example_prescriptions_stratified_strata.png" width="500"></p>
+</div>
+<div class="section level3">
+<h3 id="individual-data-fields-1">Individual data fields<a class="anchor" aria-label="anchor" href="#individual-data-fields-1"></a>
+</h3>
+<p>These tabs now show multiple time series aligned into a single plot,
+one time series covering all the records plus one for each stratum.</p>
+<p><img src="../reference/figures/example_prescriptions_stratified_midnight_perc.png" width="500"></p>
 </div>
 </div>
 <div class="section level2">
@@ -365,7 +426,7 @@ time, you may prefer to do this in stages. Here is an example of how to
 use the intermediate functions and objects to achieve this. NOTE: if you
 want to change the <code><a href="../reference/field_types.html">field_types()</a></code> specification then the
 data will need to be re-loaded.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load your dataset into a source_data object</span></span>
 <span><span class="va">prescriptions_source_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_data.html">prepare_data</a></span><span class="op">(</span></span>
 <span>  <span class="va">example_prescriptions</span>,</span>

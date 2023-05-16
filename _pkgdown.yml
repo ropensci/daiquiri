@@ -10,8 +10,12 @@ navbar:
     right: [search, github]
   components:
     example-report:
-      text: Example report
-      href: articles/example_report.html
+      text: Example reports
+      menu:
+      - text: Standard report
+        href: articles/example_report.html
+      - text: Stratified report
+        href: articles/example_report_stratified.html
 
 reference:
 - title: Basic usage

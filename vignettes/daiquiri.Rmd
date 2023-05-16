@@ -179,9 +179,63 @@ This contains child tabs which display plots showing overall numbers of records,
 
 ### Individual data fields
 
-This contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created
+This contains two levels of child tabs. The first level consists of one tab per data field in the dataset. Within each data field tab, there is a further set of child tabs displaying a plot for each time series created.
 
 <img src="../man/figures/example_prescriptions_allfields_missing_perc.png" width="500" />
+
+
+## Creating a stratified report
+
+When the data consists of records from a number of distinct sources (e.g. different hospital sites), or can be partitioned in another meaningful way (e.g. elective versus emergency hospital admissions), you can create a stratified report which allows you to inspect the data within each of the subcategories alongside each other.
+
+**Example:**
+
+For the same `example_prescriptions` dataset above, we can specify that we want to stratify the report according to hospital site, by setting the Location field to the `ft_strata()` field type:
+
+```{r}
+fts <- field_types(
+  PrescriptionID = ft_uniqueidentifier(),
+  PrescriptionDate = ft_timepoint(),
+  AdmissionDate = ft_datetime(includes_time = FALSE, na = "1800-01-01"),
+  Drug = ft_freetext(),
+  Dose = ft_numeric(),
+  DoseUnit = ft_categorical(),
+  PatientID = ft_ignore(),
+  Location = ft_strata()
+)
+```
+
+Then we can create a report the same way as usual.
+
+```{r, eval=FALSE}
+daiq_obj <- daiquiri_report(
+  df = example_prescriptions,
+  field_types = fts,
+  override_column_names = FALSE,
+  na = c("", "NULL"),
+  dataset_description = "Example prescription data",
+  aggregation_timeunit = "day",
+  report_title = "daiquiri data quality report - stratified",
+  save_directory = ".",
+  save_filename = "example_prescriptions_report_stratified",
+  show_progress = TRUE,
+  log_directory = NULL
+)
+```
+
+
+### Aggregated data
+
+In the Strata tab, you can see the number and the percentage of records belonging to each stratum over time. Also, the tabs for Values present, Missing values, and Non-conformant values, are further split into child tabs - one covering the whole dataset plus one for each stratum.
+
+<img src="../man/figures/example_prescriptions_stratified_strata.png" width="500" />
+
+### Individual data fields
+
+These tabs now show multiple time series aligned into a single plot, one time series covering all the records plus one for each stratum.
+
+<img src="../man/figures/example_prescriptions_stratified_midnight_perc.png" width="500" />
+
 
 ## Advanced usage details
 

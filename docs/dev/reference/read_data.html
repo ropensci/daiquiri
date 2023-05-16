@@ -30,8 +30,12 @@ compatibility with daiquiri's features."><meta name="robots" content="noindex"><
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../articles/example_report.html">Example report</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-example-reports">Example reports</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-example-reports">
+    <a class="dropdown-item" href="../articles/example_report.html">Standard report</a>
+    <a class="dropdown-item" href="../articles/example_report_stratified.html">Stratified report</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -160,8 +164,8 @@ directly, ensure you set the following parameters: <code>col_types = readr::cols
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 6000           2021-01-01 00:00:00 2020-1… Ceft… 500   mg      4993679 SITE3  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 6001           NULL                2020-1… Fluc… 1000  mg      819452  SITE1  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 6002           NULL                2020-1… Teic… 400   mg      275597  SITE2  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:00 2020-1… Fluc… 1000  NULL    819452  SITE2  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:00 2020-1… Fluc… 1000  NULL    528071  SITE1  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 6003           2021-01-01 01:00:00 1800-0… Fluc… 1000  NULL    819452  SITE2  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 6004           2021-01-01 02:00:00 1800-0… Fluc… 1000  NULL    528071  SITE1  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 6005           2021-01-01 03:00:00 2020-1… Co-a… 1.2   g       1001434 SITE3  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​AdmissionDate, ²​DoseUnit, ³​PatientID,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁴​Location</span></span>

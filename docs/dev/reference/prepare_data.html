@@ -26,8 +26,12 @@ for aggregation."><meta name="robots" content="noindex"><!-- mathjax --><script 
 <li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../articles/example_report.html">Example report</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-example-reports">Example reports</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-example-reports">
+    <a class="dropdown-item" href="../articles/example_report.html">Standard report</a>
+    <a class="dropdown-item" href="../articles/example_report_stratified.html">Stratified report</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -180,9 +184,9 @@ will be used</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Overall:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Columns in source: 8 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Columns imported: 7 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows in source: 9168 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows in source: 8996 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Duplicate rows removed: 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows imported: 9165 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows imported: 8993 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Column used for timepoint: PrescriptionDate </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Min timepoint value: 2021-01-01 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Max timepoint value: 2021-12-31 23:00:00 </span>
@@ -192,18 +196,18 @@ will be used</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Datafields:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         field_name       field_type  datatype count    missing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 PrescriptionID   uniqueidentifier character  9165 0 (0%)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 PrescriptionDate timepoint        double     9165 0 (0%)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 AdmissionDate    datetime         double     5163 4002 (44%)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Drug             freetext         character  9165 0 (0%)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Dose             numeric          double     9156 9 (0.1%)  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 DoseUnit         categorical      character  9136 29 (0.3%) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 PrescriptionID   uniqueidentifier character  8993 0 (0%)    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 PrescriptionDate timepoint        double     8993 0 (0%)    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 AdmissionDate    datetime         double     4991 4002 (45%)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 Drug             freetext         character  8993 0 (0%)    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 Dose             numeric          double     8984 9 (0.1%)  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 DoseUnit         categorical      character  8964 29 (0.3%) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 PatientID        ignore           NA           NA NA        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Location         categorical      character  9156 9 (0.1%)  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Location         categorical      character  8993 0 (0%)    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     min                 max validation_warnings</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                 10000                9999                   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2            2021-01-01 2021-12-31 23:00:00                   2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3            2020-07-01          2021-12-30                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3            1800-01-01          2021-12-31                   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 Abacavir + lamiVUDine          vancomycin                   0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5                   0.2               7e+05                   5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6              MegaUnit             unit(s)                   0</span>
