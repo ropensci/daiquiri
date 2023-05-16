@@ -42,9 +42,9 @@ test_that("report_data() requires aggregated_data param to be an aggregated_data
 })
 
 test_that("report_data() creates report and returns path successfully", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsource_data <- prepare_data(
-    testdf,
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
@@ -76,36 +76,36 @@ test_that("report_data() creates report and returns path successfully", {
     dataset_description = "completetestset",
     show_progress = FALSE
   )
-  testaggregated_data <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "week",
       show_progress = FALSE
     )
-  testreportpath <-
+  reportpath <-
     report_data(
-      testsource_data,
-      testaggregated_data,
+      source_data,
+      aggregated_data,
       report_title = "Complete Test Set",
       save_directory = tempdir(),
       save_filename = "daiquiri_testthatreport",
       show_progress = FALSE
     )
 
-  expect_type(testreportpath, "character")
+  expect_type(reportpath, "character")
 
   # clean up
-  expect_true(file.remove(testreportpath))
+  expect_true(file.remove(reportpath))
 })
 
 test_that("plots still work when all values are missing", {
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = paste0("2022-01-", seq(10, 31)),
       "col_numeric_missing" = ""
     )
-  testsource_data <-
+  source_data <-
     prepare_data(
-      testdf,
+      df,
       field_types = field_types(
         col_timepoint = ft_timepoint(),
         col_numeric_missing = ft_numeric()
@@ -115,24 +115,25 @@ test_that("plots still work when all values are missing", {
       na = c("", "NULL"),
       show_progress = FALSE
     )
-  testdata_byday <-
-    aggregate_data(testsource_data,
+  aggregated_data <-
+    aggregate_data(source_data,
       aggregation_timeunit = "day",
       show_progress = FALSE
     )
 
   expect_s3_class(
     plot_timeseries_static(
-      agg_field = testdata_byday$aggregatefields$col_numeric_missing,
-      agg_fun = "missing_n"
+      agg_field = aggregated_data$aggregatefields$col_numeric_missing,
+      agg_fun_colname = "missing_n"
     ),
     "ggplot"
   )
   expect_s3_class(
     plot_overview_totals_static(
-      agg_field = testdata_byday$aggregatefields$col_numeric_missing,
-      agg_fun = "missing_n"
+      agg_field = aggregated_data$aggregatefields$col_numeric_missing,
+      aggregation_function = "missing_n"
     ),
     "ggplot"
   )
 })
+

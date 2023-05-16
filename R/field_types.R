@@ -66,6 +66,41 @@ field_types <- function(...) {
         )
       )
   }
+  is_strata <- vapply(fts, is_ft_strata, logical(1))
+  if (sum(is_strata) > 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Only one strata field allowed. Strata fields currently specified in positions: [",
+          paste(which(is_strata), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_strata)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_aggregate_by_each_category <- is_field_type
+  is_aggregate_by_each_category[is_field_type] <-
+    vapply(fts[is_field_type],
+           FUN = field_type_has_option,
+           FUN.VALUE = logical(1),
+           option = "aggregate_by_each_category")
+  if (any(is_strata) && any(is_aggregate_by_each_category)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Cannot use aggregate_by_each_category option when there is a strata field. Option currently specified in positions: [",
+          paste(which(is_aggregate_by_each_category), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_aggregate_by_each_category)], collapse = ", "),
+          "]"
+        )
+      )
+  }
   if (anyDuplicated(names(fts)) > 0) {
     err_validation <-
       append(
@@ -205,10 +240,10 @@ ft_timepoint <- function(includes_time = TRUE,
                          format = "",
                          na = NULL) {
   # NOTE: nonconformant values appear in validation warnings
-  agg_fun <- c("n")
+  aggregation_functions <- c("n")
   options <- NULL
   if (includes_time) {
-    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
+    aggregation_functions <- c(aggregation_functions, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
@@ -216,7 +251,7 @@ ft_timepoint <- function(includes_time = TRUE,
     type = "timepoint",
     collector = readr::col_datetime(format = format),
     data_class = "POSIXct",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )
@@ -262,10 +297,11 @@ ft_categorical <- function(aggregate_by_each_category = FALSE,
                            na = NULL) {
   # TODO: allow more options for aggregate_by_each_category,
   # e.g. topx (bysize), or accept a vector of values
-  agg_fun <- c("n", "missing_n", "missing_perc", "distinct")
+  # TODO: replace aggregate_by_each_category with split_by_subcategory and only keep facetted tab?
+  aggregation_functions <- c("n", "missing_n", "missing_perc", "distinct")
   options <- NULL
   if (aggregate_by_each_category) {
-    agg_fun <- c(agg_fun, "subcat_n", "subcat_perc")
+    aggregation_functions <- c(aggregation_functions, "subcat_n", "subcat_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "aggregate_by_each_category"
   }
@@ -273,7 +309,7 @@ ft_categorical <- function(aggregate_by_each_category = FALSE,
     type = "categorical",
     collector = readr::col_character(),
     data_class = "character",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )
@@ -325,7 +361,7 @@ ft_numeric <- function(na = NULL) {
 ft_datetime <- function(includes_time = TRUE,
                         format = "",
                         na = NULL) {
-  agg_fun <-
+  aggregation_functions <-
     c(
       "n",
       "missing_n",
@@ -337,7 +373,7 @@ ft_datetime <- function(includes_time = TRUE,
     )
   options <- NULL
   if (includes_time) {
-    agg_fun <- c(agg_fun, "midnight_n", "midnight_perc")
+    aggregation_functions <- c(aggregation_functions, "midnight_n", "midnight_perc")
     # TODO: can probably do something more sophisticated here with match.call()
     options <- "includes_time"
   }
@@ -345,7 +381,7 @@ ft_datetime <- function(includes_time = TRUE,
     type = "datetime",
     collector = readr::col_datetime(format = format),
     data_class = "POSIXct",
-    aggregation_functions = agg_fun,
+    aggregation_functions = aggregation_functions,
     na = na,
     options = options
   )
@@ -380,6 +416,22 @@ ft_simple <- function(na = NULL) {
     collector = readr::col_character(),
     data_class = "character",
     aggregation_functions = c("n", "missing_n", "missing_perc"),
+    na = na
+  )
+}
+
+#' @section Details: `ft_strata()` - identifies a categorical data field which should
+#'   be used to stratify the rest of the data.
+#' @param na Column-specific vector of strings that should be interpreted as missing
+#'   values (in addition to those specified at dataset level)
+#' @rdname field_types_available
+#' @export
+ft_strata <- function(na = NULL) {
+  field_type(
+    type = "strata",
+    collector = readr::col_character(),
+    data_class = "character",
+    aggregation_functions = c("n", "missing_n", "missing_perc", "stratum_n", "stratum_perc"),
     na = na
   )
 }
@@ -514,6 +566,13 @@ is_ft_datetime <- function(x) inherits(x, "daiquiri_field_type_datetime")
 #' @noRd
 is_ft_numeric <- function(x) inherits(x, "daiquiri_field_type_numeric")
 
+#' Test if object is a strata field_type
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is_ft_strata <- function(x) inherits(x, "daiquiri_field_type_strata")
+
 #' Test if object is a calculated field_type
 #'
 #' @param x object to test
@@ -623,3 +682,31 @@ field_types_to_cols <-
       do.call(readr::cols, lapply(field_types, field_type_collector))
     }
   }
+
+
+# -----------------------------------------------------------------------------
+#' Are any of the fieldtypes ft_strata?
+#'
+#' Used to check if data should be stratified or not
+#'
+#' @param field_types field_types object
+#' @return field_name of ft_strata field if there is one, else NULL
+#' @noRd
+field_types_strata_field_name <- function(field_types) {
+  strata_field_name <- NULL
+  is_strata <- vapply(field_types, is_ft_strata, logical(1))
+  if (any(is_strata)) {
+    strata_field_name <- names(field_types)[is_strata]
+  }
+  strata_field_name
+}
+
+#' Test if field_type has a particular option set
+#'
+#' @param ft field_type to test
+#' @param option name of option
+#' @return Logical
+#' @noRd
+field_type_has_option <- function(ft, option){
+  option %in% ft$options
+}

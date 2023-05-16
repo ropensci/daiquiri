@@ -66,9 +66,9 @@ test_that("daiquiri_report() requires field_types param to be a field_types obje
 
 
 test_that("daiquiri_report() creates report and returns daiquiri object successfully", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
+  df <- read_data(test_path("testdata", "completetestset.csv"))
   testdaiq_obj <- daiquiri_report(
-    testdf,
+    df,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
@@ -229,3 +229,130 @@ test_that("daiquiri_object prints to console ok", {
   # clean up
   expect_true(file.remove(testdaiq_obj$report_filename))
 })
+
+
+test_that("daiquiri_report() creates stratified report without error", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5),
+                          rep("2022-01-02", 5),
+                          rep("2022-01-04", 5),
+                          rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE1", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  testdaiq_obj <- daiquiri_report(
+    df,
+    field_types = field_types(
+      col_timepoint = ft_timepoint(),
+      col_numeric = ft_numeric(),
+      col_datetime = ft_datetime(includes_time = FALSE),
+      col_uniqueidentifier = ft_uniqueidentifier(),
+      col_categorical = ft_categorical(),
+      col_simple = ft_simple(),
+      col_stratify = ft_strata()
+    ),
+    dataset_description = "stratifiedset",
+    aggregation_timeunit = "day",
+    report_title = "Stratified Test Set",
+    save_directory = tempdir(),
+    save_filename = "daiquiri_testthatreport",
+    log_directory = tempdir(),
+    show_progress = FALSE
+  )
+
+  # clean up
+  expect_true(file.remove(testdaiq_obj$report_filename))
+  expect_true(file.remove(testdaiq_obj$log_filename))
+})
+
+
+test_that("daiquiri_report() creates stratified report without error when strata contain special chars", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5),
+                          rep("2022-01-02", 5),
+                          rep("2022-01-04", 11),
+                          rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 26
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 17)),
+      "col_uniqueidentifier" = c(seq(1, 26)),
+      "col_categorical" = c(rep(c("a", "b"), 11), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 16)),
+      "col_missing" = rep("", 26),
+      "col_stratify -.!%&\"'[]()" = c("", "",
+                                      rep("SITE 1", 4),
+                                      rep(paste0("SITE",
+                                                 seq(2, 11),
+                                                 c(" ", "-", ".", "!", "%", "&", "\"", "'", "[]", "()")), 2))
+      )
+  testdaiq_obj <- daiquiri_report(
+    df,
+    field_types = field_types(
+      col_timepoint = ft_timepoint(),
+      col_numeric = ft_numeric(),
+      col_datetime = ft_datetime(includes_time = FALSE),
+      col_uniqueidentifier = ft_uniqueidentifier(),
+      col_categorical = ft_categorical(),
+      col_simple = ft_simple(),
+      col_missing = ft_simple(),
+      `col_stratify -.!%&\"'[]()` = ft_strata()
+    ),
+    dataset_description = "stratifiedset",
+    aggregation_timeunit = "day",
+    report_title = "Stratified Test Set",
+    save_directory = tempdir(),
+    save_filename = "daiquiri_testthatreport",
+    log_directory = tempdir(),
+    show_progress = FALSE
+  )
+
+  # clean up
+  expect_true(file.remove(testdaiq_obj$report_filename))
+  expect_true(file.remove(testdaiq_obj$log_filename))
+})
+
+
+test_that("daiquiri_report() creates report without error when subcats contain special chars", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5),
+                          rep("2022-01-02", 5),
+                          rep("2022-01-04", 11),
+                          rep("2022-01-05", 5)),
+      "col_categorical" = c("", "",
+                            rep("SITE 1", 4),
+                            rep(paste0("SITE",
+                                       seq(2, 11),
+                                       c(" ", "-", ".", "!", "%", "&", "\"", "'", "[]", "()")), 2))
+    )
+  testdaiq_obj <- daiquiri_report(
+    df,
+    field_types = field_types(
+      col_timepoint = ft_timepoint(),
+      col_categorical = ft_categorical(aggregate_by_each_category = TRUE)
+    ),
+    dataset_description = "stratifiedset",
+    aggregation_timeunit = "day",
+    report_title = "Stratified Test Set",
+    save_directory = tempdir(),
+    save_filename = "daiquiri_testthatreport",
+    show_progress = FALSE
+  )
+
+  # clean up
+  expect_true(file.remove(testdaiq_obj$report_filename))
+})
+

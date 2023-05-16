@@ -15,14 +15,18 @@ agg_fun <- function(type,
                     function_call,
                     value_if_no_records = NA,
                     friendly_name_short,
-                    friendly_name_long) {
+                    friendly_name_long,
+                    heatmap_fill_colour = NA,
+                    lineplot_fill_colour = NA) {
   structure(
     list(
       type = type,
       function_call = function_call,
       value_if_no_records = value_if_no_records,
       friendly_name_short = friendly_name_short,
-      friendly_name_long = friendly_name_long
+      friendly_name_long = friendly_name_long,
+      heatmap_fill_colour = heatmap_fill_colour,
+      lineplot_fill_colour = lineplot_fill_colour
     )
   )
 }
@@ -43,7 +47,9 @@ agg_fun_n <- function(){
             ),
           value_if_no_records = 0,
           friendly_name_short = "n",
-          friendly_name_long = "No. of values present"
+          friendly_name_long = "No. of values present",
+          heatmap_fill_colour = "darkred",
+          lineplot_fill_colour = "pink"
           )
 }
 
@@ -59,7 +65,9 @@ agg_fun_missing_n <- function(){
             sum(is.na(values) & !is.nan(values))
             ),
           friendly_name_short = "missing_n",
-          friendly_name_long = "No. of missing values"
+          friendly_name_long = "No. of missing values",
+          heatmap_fill_colour = "darkblue",
+          lineplot_fill_colour = "lightblue"
           )
 }
 
@@ -91,7 +99,9 @@ agg_fun_nonconformant_n <- function(){
             sum(is.nan(values))
             ),
           friendly_name_short = "nonconformant_n",
-          friendly_name_long = "No. of nonconformant values"
+          friendly_name_long = "No. of nonconformant values",
+          heatmap_fill_colour = "darkgreen",
+          lineplot_fill_colour = "lightgreen"
           )
 }
 
@@ -126,7 +136,8 @@ agg_fun_sum <- function(){
             sum(values, na.rm = TRUE)
             ),
           friendly_name_short = "sum",
-          friendly_name_long = "No. of duplicate records removed"
+          friendly_name_long = "No. of duplicate records removed",
+          lineplot_fill_colour = "yellow"
           )
 }
 
@@ -426,7 +437,8 @@ agg_fun_subcat_n <- function(){
             sum(values == catval, na.rm = TRUE)
             ),
           friendly_name_short = "subcat_n",
-          friendly_name_long = "No. of values in the category"
+          friendly_name_long = "No. of values in the category",
+          heatmap_fill_colour = "chocolate4"
           )
 }
 
@@ -442,7 +454,52 @@ agg_fun_subcat_perc <- function(){
             100 * sum(values == catval, na.rm = TRUE) / length(values)
             ),
           friendly_name_short = "subcat_perc",
-          friendly_name_long = "Percentage of values in the category"
+          friendly_name_long = "Percentage of values in the category",
+          heatmap_fill_colour = "darkorchid4"
+          )
+}
+
+
+#' stratum_n
+#'
+#' number of times this particular stratum value appears
+#' differs from subcat_n in that it includes NA as a stratum value
+#' @return agg_fun object
+#' @noRd
+agg_fun_stratum_n <- function(){
+  agg_fun(type = "stratum_n",
+          function_call = quote(
+            if (is.na(stratval)) {
+              sum(is.na(values))
+            } else {
+              sum(values == stratval, na.rm = TRUE)
+            }
+          ),
+          friendly_name_short = "stratum_n",
+          friendly_name_long = "No. of records in the stratum",
+          heatmap_fill_colour = "chocolate4"
+          )
+}
+
+#' stratum_perc
+#'
+#' percentage this particular stratum value appears out of number of records
+#' include all values in denominator, including NA and NaN
+#' differs from subcat_perc in that it includes NA as a stratum value
+#' @return agg_fun object
+#' @noRd
+agg_fun_stratum_perc <- function(){
+  agg_fun(type = "stratum_perc",
+          function_call = quote(
+            if (is.na(stratval)) {
+              100 * sum(is.na(values)) / length(values)
+            } else {
+              100 * sum(values == stratval, na.rm = TRUE) / length(values)
+            }
+          ),
+          friendly_name_short = "stratum_perc",
+          friendly_name_long = "Percentage of records in the stratum",
+          heatmap_fill_colour = "darkorchid4"
           )
 }
 
@@ -474,6 +531,8 @@ agg_fun_from_type <- function(type, ...){
          "mean_length" = agg_fun_mean_length(),
          "subcat_n" = agg_fun_subcat_n(),
          "subcat_perc" = agg_fun_subcat_perc(),
+         "stratum_n" = agg_fun_stratum_n(),
+         "stratum_perc" = agg_fun_stratum_perc(),
          stop(paste("Unrecognised aggregation type:", type),
               call. = FALSE)
          )
@@ -492,6 +551,7 @@ agg_fun_from_type <- function(type, ...){
 aggregate_and_append_values <- function(aggregation_function,
                                         data_field_dt,
                                         grouped_values,
+                                        stratify = FALSE,
                                         show_progress = TRUE){
   # initialise known column names to prevent R CMD check notes
   values <- NULL
@@ -501,6 +561,10 @@ aggregate_and_append_values <- function(aggregation_function,
 
   if (aggregation_function %in% c("subcat_n", "subcat_perc")) {
     aggregate_and_append_values_subcat(agg_fun, data_field_dt, grouped_values, show_progress)
+  } else if (aggregation_function %in% c("stratum_n", "stratum_perc")) {
+    aggregate_and_append_values_stratum(agg_fun, data_field_dt, grouped_values, show_progress)
+  } else if (stratify) {
+    aggregate_and_append_values_stratified(agg_fun, data_field_dt, grouped_values)
   } else{
     aggregate_and_append_values_simple(agg_fun, data_field_dt, grouped_values)
   }
@@ -552,18 +616,18 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
   value <- values <- timepoint_group <- NULL
 
   # need to create a separate column per category value
-  distinct_categories <-
-    sort(data_field_dt[is.na(values) == FALSE, unique(values)])
-  log_message(paste0("    ", length(distinct_categories), " categories found"), show_progress)
+  distinct_strata <-
+    sort(data_field_dt[!is.na(values), unique(values)])
+  log_message(paste0("    ", length(distinct_strata), " categories found"), show_progress)
 
   # If there is only one category, don't bother
-  if (length(distinct_categories) > 1) {
+  if (length(distinct_strata) > 1) {
     # TODO: consider setting a max number of categories
-    for (j in seq_along(distinct_categories)) {
-      log_message(paste0("    ", j, ": ", distinct_categories[j]), show_progress)
-      catval <- distinct_categories[j]
+    for (j in seq_along(distinct_strata)) {
+      log_message(paste0("    ", j, ": ", distinct_strata[j]), show_progress)
+      catval <- distinct_strata[j]
       catname <-
-        paste0(agg_fun$type, "_", j, "_", gsub("([[:punct:]])|\\s+", "_", catval))
+        paste0(agg_fun$type, "_", j, "_", catval)
       grouped_values[
         data_field_dt[
           ,
@@ -576,3 +640,71 @@ aggregate_and_append_values_subcat <- function(agg_fun, data_field_dt, grouped_v
     }
   }
 }
+
+#' Perform the relevant stratum aggregation and append to grouped_values
+#'
+#' stratum aggregation functions are similar to subcat ones in that they create
+#' a separate column per category value, but they include NA as a value
+#' grouped_values is updated byref
+#' @param agg_fun agg_fun object
+#' @param data_field_dt this contains all values present in the original data_field, alongside their timepoint_group
+#' @param grouped_values this will contain the agg_fun values after aggregating (one column per stratum)
+#' @param show_progress Print progress to console
+#' @noRd
+aggregate_and_append_values_stratum <- function(agg_fun, data_field_dt, grouped_values, show_progress = TRUE){
+  # initialise known column names to prevent R CMD check notes
+  value <- values <- timepoint_group <- NULL
+
+  # need to create a separate column per stratum value
+  distinct_strata <-
+    sort(data_field_dt[, unique(values)], na.last = TRUE)
+  log_message(paste0("    ", length(distinct_strata), " strata found"), show_progress)
+
+  for (j in seq_along(distinct_strata)) {
+    log_message(paste0("    ", j, ": ", distinct_strata[j]), show_progress)
+    stratval <- distinct_strata[j]
+    stratname <-
+      paste0(agg_fun$type, "_", j, "_",stratval)
+    grouped_values[
+      data_field_dt[
+        ,
+        list("value" = eval(agg_fun$function_call)),
+        by = list(timepoint_group)
+      ],
+      (stratname) := value,
+      by = .EACHI
+    ]
+  }
+}
+
+#' Perform the relevant stratified aggregation and append to grouped_values
+#'
+#' appends two columns,
+#' grouped_values is updated byref
+#' @param agg_fun agg_fun object
+#' @param data_field_dt this contains all values present in the original data_field, alongside their timepoint_group and stratify_by_group
+#' @param grouped_values this will contain the agg_fun values after aggregating (one column per subcat)
+#' @noRd
+aggregate_and_append_values_stratified <- function(agg_fun, data_field_dt, grouped_values){
+  # initialise known column names to prevent R CMD check notes
+  value <- timepoint_group <- stratify_by_group <- NULL
+
+  # aggregate the data_field values before appending to grouped_values in order
+  # to distinguish between missing values and missing records
+  grouped_values[
+    data_field_dt[
+      ,
+      list("value" = eval(agg_fun$function_call)),
+      by = list(timepoint_group, stratify_by_group)
+    ],
+    (agg_fun$type) := value,
+    by = .EACHI
+  ]
+
+  if (!is.na(agg_fun$value_if_no_records)) {
+    # update the column just appended
+    grouped_values[is.na(get(agg_fun$type)), (agg_fun$type) := agg_fun$value_if_no_records]
+  }
+
+}
+

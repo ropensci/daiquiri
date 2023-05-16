@@ -114,9 +114,9 @@ test_that("prepare_data() checks that at least one valid timepoint value is pres
 
 
 test_that("prepare_data() creates source_data object correctly", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsource_data <- prepare_data(
-    testdf,
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
@@ -149,23 +149,63 @@ test_that("prepare_data() creates source_data object correctly", {
     show_progress = FALSE
   )
 
-  expect_s3_class(testsource_data, "daiquiri_source_data")
+  expect_s3_class(source_data, "daiquiri_source_data")
 
-  expect_equal(testsource_data$timepoint_field_name, "col_timepoint")
-  expect_equal(testsource_data$timepoint_missing_n, 6)
-  expect_equal(testsource_data$rows_source_n, 900)
-  expect_equal(testsource_data$rows_imported_n, 890)
-  expect_equal(testsource_data$rows_duplicates_n, 4)
-  expect_equal(testsource_data$cols_source_n, 26)
-  expect_equal(testsource_data$cols_imported_n, 13)
-  expect_equal(testsource_data$dataset_description, "completetestset")
+  expect_equal(source_data$timepoint_field_name, "col_timepoint")
+  expect_equal(source_data$timepoint_missing_n, 6)
+  expect_equal(source_data$rows_source_n, 900)
+  expect_equal(source_data$rows_imported_n, 890)
+  expect_equal(source_data$rows_duplicates_n, 4)
+  expect_equal(source_data$cols_source_n, 26)
+  expect_equal(source_data$cols_imported_n, 13)
+  expect_equal(source_data$dataset_description, "completetestset")
 
-  expect_snapshot(testsource_data$validation_warnings)
+  expect_snapshot(source_data$validation_warnings)
+})
+
+
+test_that("prepare_data() gets strata info correctly", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE2", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  source_data <-
+    prepare_data(
+      df,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_numeric = ft_numeric(),
+        col_datetime = ft_datetime(includes_time = FALSE),
+        col_uniqueidentifier = ft_uniqueidentifier(),
+        col_categorical = ft_categorical(),
+        col_simple = ft_simple(),
+        col_stratify = ft_strata()
+      ),
+      na = c("", "NULL"),
+      show_progress = FALSE
+    )
+
+  expect_equal(source_data$strata_field_name, "col_stratify")
+
+  # the strata labels should be alphabetical with NA last
+  expect_equal(source_data$strata_labels,
+               c("SITE1", "SITE2", NA))
+
 })
 
 
 test_that("prepare_data() ignores nonchar columns (since readr::type_convert fails to skip nonchar cols)", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
@@ -180,12 +220,12 @@ test_that("prepare_data() ignores nonchar columns (since readr::type_convert fai
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$cols_imported_n, 2)
+  expect_equal(source_data$cols_imported_n, 2)
 })
 
 
 test_that("prepare_data() generates a validation warning when nonchar columns are provided", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = 1:5
@@ -198,13 +238,13 @@ test_that("prepare_data() generates a validation warning when nonchar columns ar
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$validation_warnings$field_name, "col2")
-  expect_match(testsource_data$validation_warnings$message, "instead of character")
+  expect_equal(source_data$validation_warnings$field_name, "col2")
+  expect_match(source_data$validation_warnings$message, "instead of character")
 })
 
 
 test_that("prepare_data() matches nonchar validation warnings to column names correctly when fieldtypes are supplied in different order to df columns", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = 1:5,
@@ -221,13 +261,13 @@ test_that("prepare_data() matches nonchar validation warnings to column names co
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$validation_warnings$field_name, c("col2", "col4"))
-  expect_match(testsource_data$validation_warnings$message, "instead of character")
+  expect_equal(source_data$validation_warnings$field_name, c("col2", "col4"))
+  expect_match(source_data$validation_warnings$message, "instead of character")
 })
 
 
 test_that("prepare_data() matches type_convert() validation warnings to column names correctly when fieldtypes are supplied in different order to df columns", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col_tp = rep("2022-01-01", 5),
       col_ign = as.character(1:5),
@@ -244,13 +284,13 @@ test_that("prepare_data() matches type_convert() validation warnings to column n
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$validation_warnings$field_name, "col_num")
-  expect_match(testsource_data$validation_warnings$message, "expected a double")
+  expect_equal(source_data$validation_warnings$field_name, "col_num")
+  expect_match(source_data$validation_warnings$message, "expected a double")
 })
 
 
 test_that("prepare_data() overrides column names correctly", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep("1", 5)
@@ -264,12 +304,12 @@ test_that("prepare_data() overrides column names correctly", {
     show_progress = FALSE
   )
 
-  expect_equal(names(testsource_data$data_fields)[1:2], c("cola", "colb"))
+  expect_equal(names(source_data$data_fields)[1:2], c("cola", "colb"))
 })
 
 
 test_that("prepare_data() can accept a data.table with nonchar cols without error", {
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.table::data.table(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5)
@@ -283,7 +323,7 @@ test_that("prepare_data() can accept a data.table with nonchar cols without erro
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$cols_imported_n, 2)
+  expect_equal(source_data$cols_imported_n, 2)
 })
 
 
@@ -293,7 +333,7 @@ test_that("prepare_data() gets dataset_description from call if NULL (default) p
     col2 = rep(1, 5),
     col3 = 1:5
   )
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = dfobj,
     field_types = field_types(
       col1 = ft_timepoint(),
@@ -303,9 +343,9 @@ test_that("prepare_data() gets dataset_description from call if NULL (default) p
     show_progress = FALSE
   )
 
-  expect_equal(testsource_data$dataset_description, "dfobj")
+  expect_equal(source_data$dataset_description, "dfobj")
 
-  testsource_data <- prepare_data(
+  source_data <- prepare_data(
     df = data.frame(
       col1 = rep("2022-01-01", 5),
       col2 = rep(1, 5),
@@ -320,16 +360,16 @@ test_that("prepare_data() gets dataset_description from call if NULL (default) p
   )
 
   expect_equal(
-    testsource_data$dataset_description,
+    source_data$dataset_description,
     "data.frame(col1 = rep(\"2022-01-01\", 5), col2 = rep(1, 5), col3 = 1:5)"
   )
 })
 
 
 test_that("source_data object prints to console ok", {
-  testdf <- read_data(test_path("testdata", "completetestset.csv"))
-  testsource_data <- prepare_data(
-    testdf,
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
     field_types = field_types(
       col_timepoint_err = ft_ignore(),
       col_timepoint = ft_timepoint(),
@@ -362,8 +402,44 @@ test_that("source_data object prints to console ok", {
     show_progress = FALSE
   )
 
-  expect_snapshot_output(print(testsource_data))
+  expect_snapshot_output(print(source_data))
 })
+
+
+test_that("source_data object prints to console ok when there is a strata field", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = c(rep("2022-01-01", 5), rep("2022-01-02", 5), rep("2022-01-04", 5), rep("2022-01-05", 5)),
+      "col_numeric" = seq(
+        from = 2,
+        to = 3,
+        length.out = 20
+      ),
+      "col_datetime" = c(paste0("2022-01-", 10 + c(seq(1, 9))), rep("", 11)),
+      "col_uniqueidentifier" = c(seq(1, 20)),
+      "col_categorical" = c(rep(c("a", "b"), 8), rep("a", 4)),
+      "col_simple" = c(rep("", 10), rep("a", 10)),
+      "col_stratify" = c("", "", rep("SITE2", 6), rep(c("SITE1", "SITE2"), 6))
+    )
+  source_data <-
+    prepare_data(
+      df,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_numeric = ft_numeric(),
+        col_datetime = ft_datetime(includes_time = FALSE),
+        col_uniqueidentifier = ft_uniqueidentifier(),
+        col_categorical = ft_categorical(),
+        col_simple = ft_simple(),
+        col_stratify = ft_strata()
+      ),
+      na = c("", "NULL"),
+      show_progress = FALSE
+    )
+
+  expect_snapshot_output(print(source_data))
+})
+
 
 test_that("remove_rows() removes specified rows", {
   numrows <- 2000000
@@ -467,7 +543,7 @@ test_that("data_field_count() returns 0 when all values are missing", {
 
 test_that("column-specific missing value strings get set to NA", {
 
-  testdf <-
+  df <-
     data.table::data.table(
       "col_timepoint" = c(paste0("2022-01-", 10 + c(seq(1, 9))), "1900-01-01"),
       "col_numeric" = c("", "0", seq(
@@ -485,7 +561,7 @@ test_that("column-specific missing value strings get set to NA", {
 
   source_data <-
     prepare_data(
-      df = testdf,
+      df = df,
       field_types = field_types(
         col_timepoint = ft_timepoint(na = "1900-01-01", includes_time = FALSE),
         col_numeric = ft_numeric(na = "0"),

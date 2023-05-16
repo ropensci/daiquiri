@@ -1,12 +1,18 @@
 # daiquiri (development version)
 
-* Categorical data fields now show a heatmap plot as well as the individual time series plots
+## New features
+
+* New `ft_strata()` field type, which when specified, produces a report where the aggregated data and individual data fields plots are stratified by the `ft_strata()` column's distinct values 
+
+* Column-specific strings for missing values can now be set in the `field_types()` specification (#13)
+
+## Bug fixes and minor improvements
+
+* Categorical data fields now show a heatmap plot as well as the individual time series plots when `aggregate_by_each_category` option is set to `TRUE`
 
 * Print method of `daiquiri_object` now displays the location the report was saved to
 
 * When a data field contains all missing values, this now shows correctly in the various tabs (#12)
-
-* Column-specific strings for missing values can now be set in the `field_types()` specification (#13)
 
 # daiquiri 1.0.3 (2022-12-06)
 

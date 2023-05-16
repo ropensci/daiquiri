@@ -4,13 +4,14 @@ test_that("Valid field_types can be specified", {
       Col_tp = ft_timepoint(),
       Col_uid = ft_uniqueidentifier(),
       Col_cat = ft_categorical(),
-      Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+      Col_cat2 = ft_categorical(),
       Col_num = ft_numeric(),
       Col_dt = ft_datetime(),
       Col_dt2 = ft_datetime(includes_time = FALSE),
       Col_ft = ft_freetext(),
       Col_sim = ft_simple(),
-      Col_ign = ft_ignore()
+      Col_ign = ft_ignore(),
+      Col_str = ft_strata()
     ),
     "daiquiri_field_types"
   )
@@ -54,6 +55,55 @@ test_that("field_types object must not contain more than one timepoint field", {
     ),
     class = "invalid_field_types"
   )
+})
+
+test_that("field_types object must not contain more than one strata field", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      Col_1 = ft_strata(),
+      Col_2 = ft_strata()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
+test_that("field_types object must not use aggregate_by_each_category option if strata field present", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      Col_cat = ft_categorical(),
+      Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+      Col_2 = ft_strata()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
+test_that("field_types_strata_field_name() returns correct strata field name if present", {
+  field_types <- field_types(
+    Col_tp = ft_timepoint(),
+    Col_uid = ft_uniqueidentifier(),
+    Col_cat = ft_categorical(),
+    Col_num = ft_numeric(),
+    Col_dt = ft_datetime(),
+    Col_dt2 = ft_datetime(includes_time = FALSE),
+    Col_ft = ft_freetext(),
+    Col_sim = ft_simple(),
+    Col_ign = ft_ignore(),
+    Col_str = ft_strata()
+  )
+
+  expect_equal(field_types_strata_field_name(field_types), "Col_str")
+})
+
+test_that("field_types_strata_field_name() returns NULL if no strata field present", {
+  field_types <- field_types(
+    Col_tp = ft_timepoint(),
+    Col_uid = ft_uniqueidentifier()
+  )
+
+  expect_null(field_types_strata_field_name(field_types))
 })
 
 test_that("[DUPLICATES] cannot be used as a field_type colname as it is a reserved word", {
@@ -112,13 +162,14 @@ test_that("field_types object prints to console ok", {
     Col_tp = ft_timepoint(),
     Col_uid = ft_uniqueidentifier(),
     Col_cat = ft_categorical(),
-    Col_cat2 = ft_categorical(aggregate_by_each_category = TRUE),
+    Col_cat2 = ft_categorical(),
     Col_num = ft_numeric(),
     Col_dt = ft_datetime(),
     Col_dt2 = ft_datetime(includes_time = FALSE),
     Col_ft = ft_freetext(),
     Col_sim = ft_simple(),
-    Col_ign = ft_ignore()
+    Col_ign = ft_ignore(),
+    Col_str = ft_strata()
   )
 
   expect_snapshot_output(print(testfield_types))
