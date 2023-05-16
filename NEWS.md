@@ -8,7 +8,7 @@
 
 ## Bug fixes and minor improvements
 
-* Categorical data fields now show a heatmap plot as well as the individual time series plots
+* Categorical data fields now show a heatmap plot as well as the individual time series plots when `aggregate_by_each_category` option is set to `TRUE`
 
 * Print method of `daiquiri_object` now displays the location the report was saved to
 
