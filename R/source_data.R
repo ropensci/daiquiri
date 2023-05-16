@@ -163,7 +163,7 @@ prepare_data <- function(df,
 
   log_message(paste0("Removing column-specific na values..."), show_progress)
   # remove column-specific na values before checking for non-conformant values
-  for (i in 1:length(field_types)) {
+  for (i in seq_along(field_types)) {
     current_field <- field_types[[i]]
     current_field_name <- names(field_types[i])
     if(!is.null(current_field$na)){

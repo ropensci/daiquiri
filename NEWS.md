@@ -10,6 +10,8 @@
 
 * Categorical data fields now show a heatmap plot as well as the individual time series plots when `aggregate_by_each_category` option is set to `TRUE`
 
+* Categorical data fields now retain special characters in labels when `aggregate_by_each_category` option is set to `TRUE`
+
 * Print method of `daiquiri_object` now displays the location the report was saved to
 
 * When a data field contains all missing values, this now shows correctly in the various tabs (#12)

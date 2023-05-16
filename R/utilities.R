@@ -514,14 +514,14 @@ prepare_data_testhelper <- function(
       "col_timepoint" = testvalues[seq(from = 1, to = length(testvalues) - 1, by = 2)],
       "col_values" = testvalues[seq(from = 2, to = length(testvalues), by = 2)]
     )
-  fts = field_types(
+  fts <- field_types(
     col_timepoint = ft_timepoint(),
     col_values = field_type
   )
 
   if(add_uid_field){
     df[, "col_uid" := seq_along(df$col_timepoint)]
-    fts = field_types(
+    fts <- field_types(
       col_timepoint = ft_timepoint(),
       col_uid = ft_simple(),
       col_values = field_type
@@ -578,7 +578,7 @@ aggregate_and_append_values_testhelper <- function(
   #--- ---#
 
   if(add_uid_field){
-    field_offset = field_offset + 1
+    field_offset <- field_offset + 1
   }
   data_field <- source_data$data_fields[[2 + field_offset]]
 

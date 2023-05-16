@@ -237,7 +237,7 @@ agg_fun_midnight_perc <- function(){
 #' @noRd
 agg_fun_min <- function(data_class = ""){
   if("POSIXct" %in% data_class){
-    function_call = quote(
+    function_call <- quote(
       if(all(is.na(values))){
           as.POSIXct(NA, tz = "UTC")
         } else{
@@ -245,7 +245,7 @@ agg_fun_min <- function(data_class = ""){
         }
       )
   } else{
-    function_call = quote(
+    function_call <- quote(
       if(all(is.na(values))){
           NA_real_
         } else{
@@ -275,7 +275,7 @@ agg_fun_min <- function(data_class = ""){
 #' @noRd
 agg_fun_max <- function(data_class = ""){
   if("POSIXct" %in% data_class){
-    function_call = quote(
+    function_call <- quote(
       if(all(is.na(values))){
           as.POSIXct(NA, tz = "UTC")
         } else{
@@ -283,7 +283,7 @@ agg_fun_max <- function(data_class = ""){
         }
       )
   } else{
-    function_call = quote(
+    function_call <- quote(
       if(all(is.na(values))){
           NA_real_
         } else{
