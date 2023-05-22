@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# daiquiri
+# daiquiri <img src="man/figures/logo.png" align="right" height="134"/>
 
 <!-- badges: start -->
 [![CRAN Status](https://www.r-pkg.org/badges/version/daiquiri)](https://cran.r-project.org/package=daiquiri)

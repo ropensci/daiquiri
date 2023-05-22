@@ -31,6 +31,13 @@ stratify <- !is.null(params$source_data$strata_field_name)
 strata_labels <- params$source_data$strata_labels
 ```
 
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src="`r xfun::base64_uri(system.file("help/figures/logo.png", package = "daiquiri"))`" style="float: right; width: 100px;"/>')
+   });
+</script>
+
 <p class="compact">
 Dataset: **`r encodeString(params$source_data$dataset_description)`**
 </p>

@@ -34,7 +34,8 @@ Imports:
     rmarkdown,
     reactable (>= 0.2.3),
     utils,
-    stats
+    stats,
+    xfun
 RoxygenNote: 7.2.0
 Suggests:
     covr,

@@ -604,7 +604,7 @@ aggregate_and_append_values_testhelper <- function(
 }
 
 # -----------------------------------------------------------------------------
-#' Dummy function set up purely for R CMD Check Namespace bug
+#' Dummy functions set up purely for R CMD Check Namespace bug
 #'
 #' Addresses R CMD Check NOTE: Namespace in Imports field not imported from: ‘reactable’
 #' In some situations the check misses the fact that reactable is used in the Rmd file in ./inst/rmd
@@ -612,4 +612,10 @@ aggregate_and_append_values_testhelper <- function(
 #' @noRd
 dummy_reactable_call <- function() {
   x <- reactable::colDef()
+}
+
+#' Similarly for xfun
+#' @noRd
+dummy_xfun_call <- function() {
+  x <- xfun::base64_uri(system.file("help/figures/logo.png", package = "daiquiri"))
 }
