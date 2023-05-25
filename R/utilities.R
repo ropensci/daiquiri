@@ -606,16 +606,11 @@ aggregate_and_append_values_testhelper <- function(
 # -----------------------------------------------------------------------------
 #' Dummy functions set up purely for R CMD Check Namespace bug
 #'
-#' Addresses R CMD Check NOTE: Namespace in Imports field not imported from: ‘reactable’
-#' In some situations the check misses the fact that reactable is used in the Rmd file in ./inst/rmd
+#' Addresses R CMD Check NOTE: Namespace in Imports field not imported from: ‘package’
+#' In some situations the check misses the fact that the 'package' is used in the Rmd file in ./inst/rmd
 #' Call it here to stop the NOTE
 #' @noRd
-dummy_reactable_call <- function() {
-  x <- reactable::colDef()
-}
-
-#' Similarly for xfun
-#' @noRd
-dummy_xfun_call <- function() {
-  x <- xfun::base64_uri(system.file("help/figures/logo.png", package = "daiquiri"))
+dummy_package_call <- function() {
+  reactable::colDef
+  xfun::base64_uri
 }
