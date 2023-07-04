@@ -10,13 +10,13 @@ params:
 ---
 
 
-```{r setup, include=FALSE}
+```{r daiquiri-setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(comment = NA)
 knitr::opts_chunk$set(rownames.print = FALSE)
 ```
 
-```{css, echo=FALSE}
+```{css daiquiri-styles, echo=FALSE}
 h1.title {
 	font-size: 28px;
 	}
@@ -26,7 +26,7 @@ p.compact {
 	}
 ```
 
-```{r strata-info, results = 'asis'}
+```{r daiquiri-strata-info, results = 'asis'}
 stratify <- !is.null(params$source_data$strata_field_name)
 strata_labels <- params$source_data$strata_labels
 ```
@@ -55,7 +55,7 @@ Report created on: `r Sys.time()` ; daiquiri version `r utils::packageVersion(ut
 ## Source data {.tabset}
 
 
-```{r source-data}
+```{r daiquiri-source-data}
 sourcesummary <- summarise_source_data(params$source_data,
   show_progress = FALSE
 )
@@ -69,7 +69,7 @@ strata_labels <- params$source_data$strata_labels
 
 ### Data fields imported
 
-```{r fields-imported}
+```{r daiquiri-fields-imported}
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
@@ -103,7 +103,7 @@ reactable::reactable(
 
 ### Data fields ignored
 
-```{r fields-ignored}
+```{r daiquiri-fields-ignored}
 
 reactable::reactable(
   # NOTE: trimws() needed as summarise_source_data() is optimised for console printout
@@ -135,7 +135,7 @@ reactable::reactable(
 
 ### Validation warnings
 
-```{r validation-warnings}
+```{r daiquiri-validation-warnings}
 
 reactable::reactable(
   sourcesummary$validation_warnings,
@@ -165,7 +165,7 @@ reactable::reactable(
 
 ### Summary
 
-```{r source-data-summary}
+```{r daiquiri-source-data-summary}
 
 summarydf <- data.frame(
   "Item" = c(
@@ -236,7 +236,7 @@ reactable::reactable(
 
 ## Aggregated data {.tabset}
 
-```{r aggregated-data}
+```{r daiquiri-aggregated-data}
 aggsummary <- summarise_aggregated_data(params$aggregated_data)
 agg_fields <- params$aggregated_data$aggregated_fields
 agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
@@ -244,7 +244,7 @@ agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
 ```
 
 
-```{r overview-strata, results = 'asis'}
+```{r daiquiri-overview-strata, results = 'asis'}
 if (stratify) {
   cat("\n### Strata {.tabset}\n")
 
@@ -272,7 +272,7 @@ if (stratify) {
 
 ### Values present {.tabset}
 
-```{r overview-presence, results = 'asis'}
+```{r daiquiri-overview-presence, results = 'asis'}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
@@ -310,7 +310,7 @@ if (!stratify) {
 
 ### Missing values {.tabset}
 
-```{r overview-missing, results = 'asis'}
+```{r daiquiri-overview-missing, results = 'asis'}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
@@ -348,7 +348,7 @@ if (!stratify) {
 
 ### Non-conformant values {.tabset}
 
-```{r overview-nonconformant, results = 'asis'}
+```{r daiquiri-overview-nonconformant, results = 'asis'}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
@@ -386,7 +386,7 @@ if (!stratify) {
 
 ### Duplicate records
 
-```{r overview-duplicates}
+```{r daiquiri-overview-duplicates}
 
 plot_overview_totals_static(
   agg_field = agg_fields[["[DUPLICATES]"]],
@@ -401,7 +401,7 @@ plot_overview_totals_static(
 
 ### Summary
 
-```{r aggregated-data-summary}
+```{r daiquiri-aggregated-data-summary}
 
 aggsummarydf <- data.frame(
   "Item" = c(
@@ -452,7 +452,7 @@ reactable::reactable(
 
 ## Individual data fields {.tabset}
 
-```{r individual-fields-set-fig-height}
+```{r daiquiri-individual-fields-set-fig-height}
 # NOTE: can't modify chunk options within a chunk to get different fig heights
 # (https://github.com/yihui/knitr/issues/841) so have to make plots consistent for all tabs
 individual_fields_fig_height <- knitr::opts_chunk$get("fig.height")
@@ -463,7 +463,7 @@ if (stratify) {
 ```
 
 
-```{r individual-fields, results = 'asis', fig.height = individual_fields_fig_height}
+```{r daiquiri-individual-fields, results = 'asis', fig.height = individual_fields_fig_height}
 for (i in seq_along(names(agg_fields))) {
   agg_field <- agg_fields[[i]]
   field_name <- names(agg_fields)[i]
