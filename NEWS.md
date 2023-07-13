@@ -1,4 +1,4 @@
-# daiquiri (development version)
+# daiquiri 1.1.0 (2023-07-11)
 
 ## New features
 
@@ -15,6 +15,10 @@
 * Print method of `daiquiri_object` now displays the location the report was saved to
 
 * When a data field contains all missing values, this now shows correctly in the various tabs (#12)
+
+* When running package from within rmarkdown/quarto (rmd/qmd) files, the parent file can now contain a chunk labelled `setup` without causing an error. (#7)
+
+* Hex logo now appears on reports, adding dependency to `xfun`
 
 # daiquiri 1.0.3 (2022-12-06)
 
