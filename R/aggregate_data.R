@@ -15,6 +15,12 @@
 #' @param show_progress Print progress to console. Default = `TRUE`
 #' @return A `daiquiri_aggregated_data` object
 #' @examples
+#' \dontshow{
+#'   # restrict threads for CRAN compliance
+#'   dt_threads <- data.table::getDTthreads()
+#'   data.table::setDTthreads(1)
+#' }
+#'
 #' # load example data into a data.frame
 #' raw_data <- read_data(
 #'   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
@@ -46,6 +52,11 @@
 #' )
 #'
 #' aggregated_data
+#' \dontshow{
+#'   # restore thread setting
+#'   data.table::setDTthreads(dt_threads)
+#' }
+#'
 #' @seealso [prepare_data()], [report_data()]
 #' @export
 aggregate_data <- function(source_data,

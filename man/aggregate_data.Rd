@@ -24,6 +24,12 @@ Aggregates a \code{daiquiri_source_data} object based on the \code{\link[=field_
 Default time period for aggregation is a calendar day
 }
 \examples{
+\dontshow{
+  # restrict threads for CRAN compliance
+  dt_threads <- data.table::getDTthreads()
+  data.table::setDTthreads(1)
+}
+
 # load example data into a data.frame
 raw_data <- read_data(
   system.file("extdata", "example_prescriptions.csv", package = "daiquiri"),
@@ -55,6 +61,11 @@ aggregated_data <- aggregate_data(
 )
 
 aggregated_data
+\dontshow{
+  # restore thread setting
+  data.table::setDTthreads(dt_threads)
+}
+
 }
 \seealso{
 \code{\link[=prepare_data]{prepare_data()}}, \code{\link[=report_data]{report_data()}}
