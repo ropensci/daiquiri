@@ -12,6 +12,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+# show all columns when printing tibbles
+options(tibble.width = Inf)
 ```
 
 This vignette demonstrates how to use this package to generate an html report that allows you to quickly review any changes in a temporal dataset’s values over time.
