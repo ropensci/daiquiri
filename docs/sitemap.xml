@@ -10,7 +10,13 @@
     <loc>/articles/example_prescriptions.html</loc>
   </url>
   <url>
+    <loc>/articles/example_prescriptions_stratified.html</loc>
+  </url>
+  <url>
     <loc>/articles/example_report.html</loc>
+  </url>
+  <url>
+    <loc>/articles/example_report_stratified.html</loc>
   </url>
   <url>
     <loc>/articles/index.html</loc>
