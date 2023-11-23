@@ -96,6 +96,13 @@ prepare_data <- function(df,
     }
   }
 
+  if(is_field_types_minimal(field_types)){
+    field_types <-
+      default_field_types(df = df,
+                          timepoint_field_name = field_types$timepoint_field_name,
+                          default_field_type = field_types$default_field_type)
+  }
+
   log_message(
     paste0("field_types supplied:\n", field_types_to_string(field_types)),
     show_progress

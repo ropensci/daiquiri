@@ -204,3 +204,14 @@ cat(template_field_types_string(df, timepoint_field_name = timepoint_field_name)
 cat(template_field_types_string(df))
 
 default_field_types(df, timepoint_field_name = timepoint_field_name)
+
+
+daiqobj <- daiquiri_report(df,
+													field_types = field_types_minimal(timepoint_field_name = "AdmissionDate"),
+													override_column_names = FALSE,
+													na = c("","NULL"),
+													aggregation_timeunit = "day",
+													save_directory = "./devtesting/testoutput",
+													save_filename = NULL,
+													show_progress = TRUE,
+													log_directory = "./devtesting/testoutput")

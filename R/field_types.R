@@ -264,6 +264,46 @@ default_field_types <- function(df, timepoint_field_name, default_field_type = f
 
 }
 
+#' Create a field_types_minimal() specification with all columns one field_type
+#'
+#' Helper function to generate a [field_types()] specification automatically,
+#' based on the supplied data frame. All fields (columns) in the specification
+#' will be defined using the `default_field_type`, except for the `timepoint_field_name`.
+#'
+#' @param timepoint_field_name Name of the timepoint column in the supplied df.
+#' @param default_field_type `field_type` to be used for each column. Default =
+#'   [ft_ignore()]. See  [field_types_available()]
+#' @seealso [field_types()]
+#' @examples
+#' df <- data.frame(
+#'   col1 = rep("2022-01-01", 5),
+#'   col2 = rep(1, 5),
+#'   col3 = 1:5,
+#'   col4 = rnorm(5)
+#' )
+#'
+#' fts <-
+#'   field_types_minimal(timepoint_field_name = "col1", default_field_type = ft_numeric())
+#'
+#' fts
+#' @return `field_types_minimal()` object
+#' @export
+field_types_minimal <- function(timepoint_field_name, default_field_type = ft_simple()) {
+  validate_params_required(match.call())
+  validate_params_type(match.call(),
+    timepoint_field_name = timepoint_field_name,
+    default_field_type = default_field_type
+  )
+
+  structure(
+    list(
+      timepoint_field_name = timepoint_field_name,
+      default_field_type = default_field_type
+    ),
+    class = c("daiquiri_field_types", "daiquiri_field_types_minimal")
+  )
+}
+
 # -----------------------------------------------------------------------------
 #' Types of data fields available for specification
 #'
@@ -558,6 +598,13 @@ ft_duplicates <- function() {
 #' @return Logical
 #' @noRd
 is_field_types <- function(x) inherits(x, "daiquiri_field_types")
+
+#' Test if object is a field_types_minimal object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is_field_types_minimal <- function(x) inherits(x, "daiquiri_field_types_minimal")
 
 
 # -----------------------------------------------------------------------------
