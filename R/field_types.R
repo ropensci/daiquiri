@@ -176,26 +176,93 @@ template_field_types <- function(df, default_field_type = ft_ignore()) {
     default_field_type = default_field_type
   )
 
-  field_names <- names(df)
   template_string <-
-    paste0(
-      "field_types(\n  ",
-      paste0(
-        "\"",
-        field_names,
-        "\"",
-        " = ft_",
-        default_field_type$type,
-        "()",
-        ifelse(field_names == rev(field_names)[1], "", ","),
-        collapse = "\n  "
-      ),
-      "\n)"
-    )
+    template_field_types_string(df = df,
+                                default_field_type = default_field_type)
   cat(template_string)
   invisible(template_string)
 }
 
+#' Create a string field_types() specification with all columns one field_type
+#'
+#' Helper function to generate template code for a [field_types()] specification,
+#' based on the supplied data frame. All fields (columns) in the specification
+#' will be defined using the `default_field_type`, except for the `timepoint_field_name` (if supplied)
+#'
+#' @param df data frame including the column names for the template
+#'   specification
+#' @param default_field_type `field_type` to be used for each column. Default =
+#'   [ft_ignore()]. See  [field_types_available()]
+#' @param timepoint_field_name Name of the timepoint column in the supplied df. Optional.
+#' @seealso [field_types()]
+#' @return String
+#' @noRd
+template_field_types_string <- function(df, default_field_type = ft_ignore(), timepoint_field_name = "") {
+
+  field_names <- names(df)
+
+  template_string <-
+  paste0(
+    "field_types(\n  ",
+    paste0(
+      "\"",
+      field_names,
+      "\"",
+      ifelse(field_names == timepoint_field_name,
+             " = ft_timepoint()",
+             paste0(" = ft_", default_field_type$type, "()")),
+      ifelse(field_names == rev(field_names)[1], "", ","),
+      collapse = "\n  "
+    ),
+    "\n)"
+  )
+
+  template_string
+
+}
+
+#' Create a field_types() specification with all columns one field_type
+#'
+#' Helper function to generate a [field_types()] specification automatically,
+#' based on the supplied data frame. All fields (columns) in the specification
+#' will be defined using the `default_field_type`, except for the `timepoint_field_name`.
+#'
+#' @param df data frame including the column names for the template
+#'   specification
+#' @param timepoint_field_name Name of the timepoint column in the supplied df.
+#' @param default_field_type `field_type` to be used for each column. Default =
+#'   [ft_ignore()]. See  [field_types_available()]
+#' @seealso [field_types()]
+#' @examples
+#' df <- data.frame(
+#'   col1 = rep("2022-01-01", 5),
+#'   col2 = rep(1, 5),
+#'   col3 = 1:5,
+#'   col4 = rnorm(5)
+#' )
+#'
+#' fts <-
+#'   default_field_types(df, timepoint_field_name = "col1", default_field_type = ft_numeric())
+#'
+#' fts
+#' @return `field_types()` object
+#' @export
+default_field_types <- function(df, timepoint_field_name, default_field_type = ft_simple()) {
+  validate_params_required(match.call())
+  validate_params_type(match.call(),
+    df = df,
+    timepoint_field_name = timepoint_field_name,
+    default_field_type = default_field_type
+  )
+
+  template_string <-
+    template_field_types_string(df = df,
+                                default_field_type = default_field_type,
+                                timepoint_field_name = timepoint_field_name)
+
+  eval(parse(text = template_string))
+
+}
 
 # -----------------------------------------------------------------------------
 #' Types of data fields available for specification

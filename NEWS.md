@@ -1,3 +1,8 @@
+# daiquiri (development version)
+
+* New `default_field_types()` function, which creates a `field_types()` specification based on an existing dataframe, and only needing to specify the timepoint field
+TODO: ACTUALLY, MAYBE THIS WOULD BE BETTER IF IT WERE INTEGRATED INTO `field_types()` ITSELF, WITH A "DEFAULT" OPTION?
+
 # daiquiri 1.1.1 (2023-07-18)
 
 ## New features

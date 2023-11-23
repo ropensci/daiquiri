@@ -174,3 +174,57 @@ test_that("field_types object prints to console ok", {
 
   expect_snapshot_output(print(testfield_types))
 })
+
+test_that("default_field_types() requires a df param", {
+  expect_error(default_field_types(timepoint_field_name = "Fieldname"),
+    class = "invalid_param_missing"
+  )
+})
+
+test_that("default_field_types() requires a timepoint_field_name param", {
+  expect_error(default_field_types(df = c("Fieldname", 123)),
+    class = "invalid_param_missing"
+  )
+})
+
+test_that("default_field_types() requires df param to be a data frame", {
+  expect_error(default_field_types(df = c("Fieldname", 123),
+                                   timepoint_field_name = "Fieldname"),
+    class = "invalid_param_type"
+  )
+})
+
+test_that("default_field_types() requires default_field_type param to be a field_type", {
+  expect_error(
+    default_field_types(
+      df = data.frame("Fieldname" = 123),
+      timepoint_field_name = "Fieldname",
+      default_field_type = TRUE
+    ),
+    class = "invalid_param_type"
+  )
+})
+
+test_that("default_field_types() requires timepoint_field_name param to be a string", {
+  expect_error(
+    default_field_types(
+      df = data.frame("Fieldname" = 123),
+      timepoint_field_name = TRUE
+    ),
+    class = "invalid_param_type"
+  )
+})
+
+test_that("default_field_types() generates a field_types object", {
+  expect_s3_class(
+    default_field_types(
+      df = data.frame("Timepoint" = "2023-01-01",
+                      "Value" = 123),
+      timepoint_field_name = "Timepoint"
+    ),
+    "daiquiri_field_types"
+  )
+})
+
+
+

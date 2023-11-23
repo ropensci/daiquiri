@@ -349,7 +349,7 @@ validate_params_type <- function(call, ...) {
           )
         )
       }
-    } else if (params_names[i] %in% c("dataset_description", "report_title")) {
+    } else if (params_names[i] %in% c("dataset_description", "report_title", "timepoint_field_name")) {
       if (!is.null(params_passed[[i]]) &&
         (!is.character(params_passed[[i]]) ||
           length(params_passed[[i]]) != 1)) {
