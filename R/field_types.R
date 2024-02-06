@@ -31,7 +31,7 @@
 #' fts
 #' @seealso [field_types_available()], [template_field_types()]
 #' @export
-field_types <- function(...) {
+field_types <- function(..., default_field_type = NULL) {
   fts <- list(...)
 
   # validate - collect all errors together and return only once
@@ -123,6 +123,19 @@ field_types <- function(...) {
         )
       )
   }
+  if (!is_field_type(default_field_type)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Unrecognised default_field_type: [ class =",
+            class(default_field_type),
+            "; contents =",
+            substr(toString(default_field_type), 1, 100),
+            "]"
+        )
+      )
+  }
   if (length(err_validation) > 0) {
     stop_custom(
       .subclass = "invalid_field_types",
@@ -133,7 +146,12 @@ field_types <- function(...) {
     )
   }
 
-  structure(fts, class = "daiquiri_field_types")
+  structure(
+    list(
+      named_fields = fts,
+      default_field_type = default_field_type
+      ),
+    class = "daiquiri_field_types")
 }
 
 
@@ -701,6 +719,7 @@ field_types_strata_field_name <- function(field_types) {
   strata_field_name
 }
 
+# -----------------------------------------------------------------------------
 #' Test if field_type has a particular option set
 #'
 #' @param ft field_type to test
@@ -710,3 +729,22 @@ field_types_strata_field_name <- function(field_types) {
 field_type_has_option <- function(ft, option){
   option %in% ft$options
 }
+
+
+# -----------------------------------------------------------------------------
+#' Fill in default field_types to create a fully-named specification
+#'
+#' @param df_names field names in the supplied df
+#' @param field_types field_types object with default_field_type specified
+#' @return A `field_types` object
+#' @noRd
+complete_field_types <- function(df_names, field_types){
+
+  field_types_complete <- list(length(df_name))
+  unnamed_fields <- setdiff(df_names, names(field_types$named_fields))
+
+  field_types_complete <- list(field_types$named_fields, vapply(unnamed_fields, )
+
+  eval(parse(text = template_string))
+}
+

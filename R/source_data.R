@@ -107,9 +107,20 @@ prepare_data <- function(df,
     show_progress
   )
   validate_column_names(names(df),
-    names(field_types),
-    check_length_only = override_column_names
+    names(field_types$named_fields),
+    check_length_only = override_column_names,
+    check_all_names_present = is.null(field_types$default_field_type)
   )
+
+  if (is.null(field_types$default_field_type)) {
+    field_types_complete <- field_types$named_fields
+  } else{
+    field_types_complete <- complete_field_types(names(df), field_types)
+    log_message(
+      paste0("field_types to use:\n", field_types_to_string(field_types_complete)),
+      show_progress
+    )
+  }
 
   log_message(
     paste0("Importing source data [", dataset_description, "]..."),
@@ -694,7 +705,8 @@ data_field_na <- function(data_field) {
 #' @noRd
 validate_column_names <- function(source_names,
                                   spec_names,
-                                  check_length_only = FALSE) {
+                                  check_length_only = FALSE,
+                                  check_all_names_present = TRUE) {
   # validate - collect all errors together and return only once
   err_validation <- character()
 
@@ -725,9 +737,8 @@ validate_column_names <- function(source_names,
           )
         )
     }
-    # names must be identical
     # TODO: do we want to allow names to be in a different order? Need to consider downstream effects.
-    if (length(setdiff(source_names, spec_names)) > 0) {
+    if (check_all_names_present && length(setdiff(source_names, spec_names)) > 0) {
       err_validation <-
         append(
           err_validation,

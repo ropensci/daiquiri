@@ -92,3 +92,8 @@ class(df)
 tracemem(df)
 class(res)
 tracemem(res)
+
+# test default fieldtypes specification
+testfile_fieldtypes <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
+																	,.default_field_type = ft_simple())
+testfile_fieldtypes <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE))
