@@ -94,6 +94,29 @@ class(res)
 tracemem(res)
 
 # test default fieldtypes specification
-testfile_fieldtypes <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
+df <- data.frame(
+      AdmissionDate = rep("2022-01-01", 5),
+      col2 = rep(1, 5),
+      col3 = 1:5
+    )
+
+field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE))
+field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
 																	,.default_field_type = ft_simple())
-testfile_fieldtypes <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE))
+df_names <- names(df)
+
+testfile_fieldtypes <- field_types(PrescriptionDate = ft_timepoint()
+																	,.default_field_type = ft_simple())
+
+daiqobj <- daiquiri_report(testdf,
+													field_types = testfile_fieldtypes,
+													override_column_names = FALSE,
+													na = c("","NULL"),
+													aggregation_timeunit = "day",
+													save_directory = "./devtesting/testoutput",
+													save_filename = NULL,
+													show_progress = TRUE,
+													log_directory = "./devtesting/testoutput")
+
+testsourcedata <- prepare_data(df = testdf, field_types = testfile_fieldtypes, na=c("","NULL"), show_progress=TRUE)
+

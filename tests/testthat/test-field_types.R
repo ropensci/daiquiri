@@ -174,3 +174,15 @@ test_that("field_types object prints to console ok", {
 
   expect_snapshot_output(print(testfield_types))
 })
+
+test_that(".default_field_type must be a valid field_type", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      .default_field_type = readr::col_character()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
+

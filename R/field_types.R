@@ -16,6 +16,7 @@
 #' important because the data in each field will be aggregated in different
 #' ways, depending on its `field_type`.  See [field_types_available]
 #' @param ... names and types of fields (columns) in source data.
+#' @param .default_field_type names and types of fields (columns) in source data.
 #' @return A `field_types` object
 #' @examples fts <- field_types(
 #'   PatientID = ft_uniqueidentifier(),
@@ -31,8 +32,11 @@
 #' fts
 #' @seealso [field_types_available()], [template_field_types()]
 #' @export
-field_types <- function(..., default_field_type = NULL) {
+field_types <- function(..., .default_field_type = NULL) {
   fts <- list(...)
+  if (!is.null(.default_field_type)) {
+    fts[[".default_field_type"]] <- .default_field_type
+  }
 
   # validate - collect all errors together and return only once
   err_validation <- character()
@@ -123,16 +127,13 @@ field_types <- function(..., default_field_type = NULL) {
         )
       )
   }
-  if (!is_field_type(default_field_type)) {
+  if (!is.null(.default_field_type) &&
+      (is_ft_timepoint(.default_field_type) || is_ft_strata(.default_field_type))) {
     err_validation <-
       append(
         err_validation,
         paste(
-          "Unrecognised default_field_type: [ class =",
-            class(default_field_type),
-            "; contents =",
-            substr(toString(default_field_type), 1, 100),
-            "]"
+          ".default_field_type cannot be a timepoint nor strata field_type"
         )
       )
   }
@@ -146,12 +147,9 @@ field_types <- function(..., default_field_type = NULL) {
     )
   }
 
-  structure(
-    list(
-      named_fields = fts,
-      default_field_type = default_field_type
-      ),
-    class = "daiquiri_field_types")
+  # TODO: MAYBE SHOULD CREATE AN ADDITIONAL CLASS IDENTIFYING IF THE SPECIFICATION IS COMPLETE OR NOT?
+  # RATHER THAN CHECKING ON PRESENCE OF .default_field_type
+  structure(fts, class = "daiquiri_field_types")
 }
 
 
@@ -732,7 +730,7 @@ field_type_has_option <- function(ft, option){
 
 
 # -----------------------------------------------------------------------------
-#' Fill in default field_types to create a fully-named specification
+#' Fill in default field_types (if any) to create a fully-named specification
 #'
 #' @param df_names field names in the supplied df
 #' @param field_types field_types object with default_field_type specified
@@ -740,11 +738,44 @@ field_type_has_option <- function(ft, option){
 #' @noRd
 complete_field_types <- function(df_names, field_types){
 
-  field_types_complete <- list(length(df_name))
-  unnamed_fields <- setdiff(df_names, names(field_types$named_fields))
+  if (!".default_field_type" %in% names(field_types)) {
+    fts <- field_types
+  } else{
+    fts <- list()
+    for (i in seq_along(df_names)) {
+      if (df_names[i] %in% names(field_types)) {
+        fts[[df_names[i]]] <- field_types[[df_names[i]]]
+      } else{
+        fts[[df_names[i]]] <-
+          field_types[[".default_field_type"]]
+      }
 
-  field_types_complete <- list(field_types$named_fields, vapply(unnamed_fields, )
+    # template_string <- "field_types(\n  "
+    # for(fname in df_names){
+    #   template_string <-
+    #     paste0(template_string,
+    #            "\"",
+    #            fname,
+    #            "\" = ft_",
+    #            ifelse(fname %in% names(field_types),
+    #                   field_type_type(field_types[fname]),
+    #                   field_type_type(field_types[".default_field_type"])),
+    #            "()",
+    #            ifelse(fname == rev(df_names)[1], "", ","),
+    #            "\n")
+    # }
+    # template_string <-
+    #   paste0(template_string, ")")
+    #
+    # field_types_complete <- eval(parse(text = template_string))
+    }
 
-  eval(parse(text = template_string))
+        # TODO: CAN THIS BE DONE VECTOR-WISE?
+
+  }
+
+  # TODO: MAYBE SHOULD CREATE AN ADDITIONAL CLASS IDENTIFYING IF THE SPECIFICATION IS COMPLETE OR NOT?
+  structure(fts, class = "daiquiri_field_types")
+
 }
 

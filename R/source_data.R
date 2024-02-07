@@ -107,20 +107,17 @@ prepare_data <- function(df,
     show_progress
   )
   validate_column_names(names(df),
-    names(field_types$named_fields),
-    check_length_only = override_column_names,
-    check_all_names_present = is.null(field_types$default_field_type)
+    names(field_types),
+    check_length_only = override_column_names
   )
 
-  if (is.null(field_types$default_field_type)) {
-    field_types_complete <- field_types$named_fields
-  } else{
-    field_types_complete <- complete_field_types(names(df), field_types)
-    log_message(
-      paste0("field_types to use:\n", field_types_to_string(field_types_complete)),
-      show_progress
-    )
-  }
+  # fill in any missing field_types with default field_type if supplied
+  field_types <- complete_field_types(names(df), field_types)
+
+  log_message(
+    paste0("field_types to use:\n", field_types_to_string(field_types)),
+    show_progress
+  )
 
   log_message(
     paste0("Importing source data [", dataset_description, "]..."),
@@ -705,8 +702,16 @@ data_field_na <- function(data_field) {
 #' @noRd
 validate_column_names <- function(source_names,
                                   spec_names,
-                                  check_length_only = FALSE,
-                                  check_all_names_present = TRUE) {
+                                  check_length_only = FALSE) {
+
+  check_all_names_present <- TRUE
+
+  # remove .default_field_type from spec_names if present
+  if(".default_field_type" %in% spec_names){
+    check_all_names_present <- FALSE
+    spec_names <- spec_names[which(spec_names != ".default_field_type")]
+  }
+
   # validate - collect all errors together and return only once
   err_validation <- character()
 
