@@ -103,6 +103,10 @@ df <- data.frame(
 field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE))
 field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
 																	,.default_field_type = ft_simple())
+field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
+																	,.default_field_type = ft_datetime(includes_time = FALSE, na = "1800-01-01"))
+
+
 df_names <- names(df)
 
 testfile_fieldtypes <- field_types(PrescriptionDate = ft_timepoint()

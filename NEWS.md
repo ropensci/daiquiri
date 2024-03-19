@@ -1,3 +1,10 @@
+# daiquiri (development version)
+
+## New features
+
+* New optional `.default_field_type` parameter in `field_types()`. When supplied, only a subset of the columns in the source df need to be named explicitly in `field_types()` specification (#16)  
+
+
 # daiquiri 1.1.1 (2023-07-18)
 
 ## New features
@@ -19,6 +26,7 @@
 * When running package from within rmarkdown/quarto (rmd/qmd) files, the parent file can now contain a chunk labelled `setup` without causing an error. (#7)
 
 * Hex logo now appears on reports, adding dependency to `xfun`
+
 
 # daiquiri 1.0.3 (2022-12-06)
 

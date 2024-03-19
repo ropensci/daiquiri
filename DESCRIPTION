@@ -1,7 +1,7 @@
 Package: daiquiri
 Type: Package
 Title: Data Quality Reporting for Temporal Datasets
-Version: 1.1.1
+Version: 1.1.1.9000
 Authors@R: c(
     person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
@@ -36,7 +36,7 @@ Imports:
     utils,
     stats,
     xfun (>= 0.15)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
 Suggests:
     covr,
     knitr,

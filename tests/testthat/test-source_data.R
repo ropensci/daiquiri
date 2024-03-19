@@ -60,6 +60,36 @@ test_that("validate_column_names() checks that column names in field_types but n
   )
 })
 
+test_that("validate_column_names() checks that cannot have override_column_names and .default_field_type", {
+  expect_error(
+    validate_column_names(
+      c("nonsense", "set", "of", "stuff"),
+      c("nonsense", "set", "of", ".default_field_type"),
+      check_length_only = TRUE
+    ),
+    class = "invalid_column_names"
+  )
+})
+
+test_that("validate_column_names() allows unnecessary .default_field_type", {
+  expect_silent(
+    validate_column_names(
+      c("nonsense", "set", "of"),
+      c("nonsense", "set", "of", ".default_field_type"),
+      check_length_only = FALSE
+      )
+    )
+})
+
+test_that("validate_column_names() allows specnames to be subset of sourcenames if .default_field_type present", {
+  expect_silent(
+    validate_column_names(
+      c("nonsense", "set", "of"),
+      c("nonsense", ".default_field_type"),
+      check_length_only = FALSE
+    )
+  )
+})
 
 
 test_that("prepare_data() requires a df param", {

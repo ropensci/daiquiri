@@ -16,17 +16,29 @@
 #' important because the data in each field will be aggregated in different
 #' ways, depending on its `field_type`.  See [field_types_available]
 #' @param ... names and types of fields (columns) in source data.
-#' @param .default_field_type names and types of fields (columns) in source data.
+#' @param .default_field_type `field_type` to use for any remaining fields (columns) in source
+#'   data. Note, this means there can not be a field in the data named `.default_field_type`
 #' @return A `field_types` object
-#' @examples fts <- field_types(
-#'   PatientID = ft_uniqueidentifier(),
-#'   TestID = ft_ignore(),
-#'   TestDate = ft_timepoint(),
-#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
-#'   TestResult = ft_numeric(),
-#'   ResultDate = ft_datetime(),
-#'   ResultComment = ft_freetext(),
-#'   Location = ft_categorical()
+#' @examples
+#' # specify all fields explicitly
+#' fts <- field_types(
+#'   PrescriptionID = ft_uniqueidentifier(),
+#'   PrescriptionDate = ft_timepoint(),
+#'   AdmissionDate = ft_datetime(includes_time = FALSE),
+#'   Drug = ft_freetext(),
+#'   Dose = ft_numeric(),
+#'   DoseUnit = ft_categorical(),
+#'   PatientID = ft_ignore(),
+#'   Location = ft_categorical(aggregate_by_each_category = TRUE)
+#' )
+#'
+#' fts
+#'
+#' # specify only a subset of fields
+#' fts <- field_types(
+#'   PrescriptionDate = ft_timepoint(),
+#'   PatientID = ft_ignore(),
+#'   .default_field_type = ft_simple()
 #' )
 #'
 #' fts
@@ -147,8 +159,6 @@ field_types <- function(..., .default_field_type = NULL) {
     )
   }
 
-  # TODO: MAYBE SHOULD CREATE AN ADDITIONAL CLASS IDENTIFYING IF THE SPECIFICATION IS COMPLETE OR NOT?
-  # RATHER THAN CHECKING ON PRESENCE OF .default_field_type
   structure(fts, class = "daiquiri_field_types")
 }
 
@@ -733,7 +743,7 @@ field_type_has_option <- function(ft, option){
 #' Fill in default field_types (if any) to create a fully-named specification
 #'
 #' @param df_names field names in the supplied df
-#' @param field_types field_types object with default_field_type specified
+#' @param field_types field_types object with or without .default_field_type specified
 #' @return A `field_types` object
 #' @noRd
 complete_field_types <- function(df_names, field_types){
@@ -749,33 +759,9 @@ complete_field_types <- function(df_names, field_types){
         fts[[df_names[i]]] <-
           field_types[[".default_field_type"]]
       }
-
-    # template_string <- "field_types(\n  "
-    # for(fname in df_names){
-    #   template_string <-
-    #     paste0(template_string,
-    #            "\"",
-    #            fname,
-    #            "\" = ft_",
-    #            ifelse(fname %in% names(field_types),
-    #                   field_type_type(field_types[fname]),
-    #                   field_type_type(field_types[".default_field_type"])),
-    #            "()",
-    #            ifelse(fname == rev(df_names)[1], "", ","),
-    #            "\n")
-    # }
-    # template_string <-
-    #   paste0(template_string, ")")
-    #
-    # field_types_complete <- eval(parse(text = template_string))
     }
-
-        # TODO: CAN THIS BE DONE VECTOR-WISE?
-
   }
 
-  # TODO: MAYBE SHOULD CREATE AN ADDITIONAL CLASS IDENTIFYING IF THE SPECIFICATION IS COMPLETE OR NOT?
   structure(fts, class = "daiquiri_field_types")
-
 }
 

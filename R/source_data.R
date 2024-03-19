@@ -106,7 +106,8 @@ prepare_data <- function(df,
     paste0("Checking column names against field_types..."),
     show_progress
   )
-  validate_column_names(names(df),
+  validate_column_names(
+    names(df),
     names(field_types),
     check_length_only = override_column_names
   )
@@ -705,10 +706,12 @@ validate_column_names <- function(source_names,
                                   check_length_only = FALSE) {
 
   check_all_names_present <- TRUE
+  default_field_type_present <- FALSE
 
   # remove .default_field_type from spec_names if present
   if(".default_field_type" %in% spec_names){
     check_all_names_present <- FALSE
+    default_field_type_present <- TRUE
     spec_names <- spec_names[which(spec_names != ".default_field_type")]
   }
 
@@ -716,6 +719,15 @@ validate_column_names <- function(source_names,
   err_validation <- character()
 
   if (check_length_only == TRUE) {
+    if (default_field_type_present) {
+      err_validation <-
+        append(
+          err_validation,
+          paste0(
+            "If override_column_names is TRUE, .default_field_type argument is not allowed in field_types()"
+          )
+        )
+    }
     if (length(source_names) != length(spec_names)) {
       err_validation <-
         append(
