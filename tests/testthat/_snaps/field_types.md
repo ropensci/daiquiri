@@ -20,3 +20,17 @@
     Col_ign	<ignore>
     Col_str	<strata>
 
+# field_types_advanced object prints to console ok
+
+    Col_tp	<timepoint>	options: includes_time
+    Col_uid	<uniqueidentifier>
+    Col_cat	<categorical>
+    Col_cat2	<categorical>
+    Col_num	<numeric>
+    Col_dt	<datetime>	options: includes_time
+    Col_dt2	<datetime>
+    Col_ft	<freetext>
+    Col_sim	<simple>
+    Col_ign	<ignore>
+    Col_str	<strata>
+

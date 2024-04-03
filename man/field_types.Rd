@@ -4,13 +4,10 @@
 \alias{field_types}
 \title{Create field_types specification}
 \usage{
-field_types(..., .default_field_type = NULL)
+field_types(...)
 }
 \arguments{
 \item{...}{names and types of fields (columns) in source data.}
-
-\item{.default_field_type}{\code{field_type} to use for any remaining fields (columns) in source
-data. Note, this means there can not be a field in the data named \code{.default_field_type}}
 }
 \value{
 A \code{field_types} object
@@ -21,25 +18,15 @@ important because the data in each field will be aggregated in different
 ways, depending on its \code{field_type}.  See \link{field_types_available}
 }
 \examples{
-# specify all fields explicitly
 fts <- field_types(
-  PrescriptionID = ft_uniqueidentifier(),
-  PrescriptionDate = ft_timepoint(),
-  AdmissionDate = ft_datetime(includes_time = FALSE),
-  Drug = ft_freetext(),
-  Dose = ft_numeric(),
-  DoseUnit = ft_categorical(),
-  PatientID = ft_ignore(),
-  Location = ft_categorical(aggregate_by_each_category = TRUE)
-)
-
-fts
-
-# specify only a subset of fields
-fts <- field_types(
-  PrescriptionDate = ft_timepoint(),
-  PatientID = ft_ignore(),
-  .default_field_type = ft_simple()
+  PatientID = ft_uniqueidentifier(),
+  TestID = ft_ignore(),
+  TestDate = ft_timepoint(),
+  TestName = ft_categorical(aggregate_by_each_category = FALSE),
+  TestResult = ft_numeric(),
+  ResultDate = ft_datetime(),
+  ResultComment = ft_freetext(),
+  Location = ft_categorical()
 )
 
 fts

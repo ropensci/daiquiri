@@ -112,13 +112,15 @@ prepare_data <- function(df,
     check_length_only = override_column_names
   )
 
-  # fill in any missing field_types with default field_type if supplied
-  field_types <- complete_field_types(names(df), field_types)
+  if(is_field_types_advanced(field_types)){
+    # fill in any missing field_types with default field_type if supplied
+    field_types <- complete_field_types(names(df), field_types)
 
-  log_message(
-    paste0("field_types to use:\n", field_types_to_string(field_types)),
-    show_progress
-  )
+    log_message(
+      paste0("field_types to use:\n", field_types_to_string(field_types)),
+      show_progress
+    )
+  }
 
   log_message(
     paste0("Importing source data [", dataset_description, "]..."),

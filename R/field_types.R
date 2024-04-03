@@ -16,139 +16,26 @@
 #' important because the data in each field will be aggregated in different
 #' ways, depending on its `field_type`.  See [field_types_available]
 #' @param ... names and types of fields (columns) in source data.
-#' @param .default_field_type `field_type` to use for any remaining fields (columns) in source
-#'   data. Note, this means there can not be a field in the data named `.default_field_type`
 #' @return A `field_types` object
-#' @examples
-#' # specify all fields explicitly
-#' fts <- field_types(
-#'   PrescriptionID = ft_uniqueidentifier(),
-#'   PrescriptionDate = ft_timepoint(),
-#'   AdmissionDate = ft_datetime(includes_time = FALSE),
-#'   Drug = ft_freetext(),
-#'   Dose = ft_numeric(),
-#'   DoseUnit = ft_categorical(),
-#'   PatientID = ft_ignore(),
-#'   Location = ft_categorical(aggregate_by_each_category = TRUE)
-#' )
-#'
-#' fts
-#'
-#' # specify only a subset of fields
-#' fts <- field_types(
-#'   PrescriptionDate = ft_timepoint(),
-#'   PatientID = ft_ignore(),
-#'   .default_field_type = ft_simple()
+#' @examples fts <- field_types(
+#'   PatientID = ft_uniqueidentifier(),
+#'   TestID = ft_ignore(),
+#'   TestDate = ft_timepoint(),
+#'   TestName = ft_categorical(aggregate_by_each_category = FALSE),
+#'   TestResult = ft_numeric(),
+#'   ResultDate = ft_datetime(),
+#'   ResultComment = ft_freetext(),
+#'   Location = ft_categorical()
 #' )
 #'
 #' fts
 #' @seealso [field_types_available()], [template_field_types()]
 #' @export
-field_types <- function(..., .default_field_type = NULL) {
+field_types <- function(...) {
   fts <- list(...)
-  if (!is.null(.default_field_type)) {
-    fts[[".default_field_type"]] <- .default_field_type
-  }
 
-  # validate - collect all errors together and return only once
-  err_validation <- character()
-  is_field_type <- vapply(fts, is_field_type, logical(1))
-  if (any(!is_field_type)) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Unrecognised field_type(s) in positions: [",
-          paste(which(!is_field_type), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(!is_field_type)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  is_timepoint <- vapply(fts, is_ft_timepoint, logical(1))
-  if (sum(is_timepoint) != 1) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Must specify one and only one timepoint field. Timepoints currently in positions: [",
-          paste(which(is_timepoint), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(is_timepoint)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  is_strata <- vapply(fts, is_ft_strata, logical(1))
-  if (sum(is_strata) > 1) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Only one strata field allowed. Strata fields currently specified in positions: [",
-          paste(which(is_strata), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(is_strata)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  is_aggregate_by_each_category <- is_field_type
-  is_aggregate_by_each_category[is_field_type] <-
-    vapply(fts[is_field_type],
-           FUN = field_type_has_option,
-           FUN.VALUE = logical(1),
-           option = "aggregate_by_each_category")
-  if (any(is_strata) && any(is_aggregate_by_each_category)) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Cannot use aggregate_by_each_category option when there is a strata field. Option currently specified in positions: [",
-          paste(which(is_aggregate_by_each_category), collapse = ", "),
-          "]",
-          "names: [",
-          paste(names(fts)[which(is_aggregate_by_each_category)], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  if (anyDuplicated(names(fts)) > 0) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "Duplicate column names not allowed: [",
-          paste(names(fts)[duplicated(names(fts))], collapse = ", "),
-          "]"
-        )
-      )
-  }
-  # check for reserved names
-  if (any(names(fts) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          "'[DUPLICATES]' and '[ALL_FIELDS_COMBINED]' are names reserved for calculated columns.
-					Please rename these columns in your data."
-        )
-      )
-  }
-  if (!is.null(.default_field_type) &&
-      (is_ft_timepoint(.default_field_type) || is_ft_strata(.default_field_type))) {
-    err_validation <-
-      append(
-        err_validation,
-        paste(
-          ".default_field_type cannot be a timepoint nor strata field_type"
-        )
-      )
-  }
+  err_validation <- field_types_problems(fts)
+
   if (length(err_validation) > 0) {
     stop_custom(
       .subclass = "invalid_field_types",
@@ -160,6 +47,39 @@ field_types <- function(..., .default_field_type = NULL) {
   }
 
   structure(fts, class = "daiquiri_field_types")
+}
+
+
+# -----------------------------------------------------------------------------
+#' Create field_types specification (for advanced users)
+#'
+#' Specify only a subset of the names and types of fields in the source data frame. The remaining
+#' fields will be given the same 'default' type.
+#'
+#' @param ... names and types of fields (columns) in source data.
+#' @param .default_field_type `field_type` to use for any remaining fields (columns) in source
+#'   data. Note, this means there can not be a field in the data named `.default_field_type`
+#' @return A `field_types` object
+#' @examples
+#' # specify only a subset of fields
+#' fts <- field_types(
+#'   PrescriptionDate = ft_timepoint(),
+#'   PatientID = ft_ignore(),
+#'   .default_field_type = ft_simple()
+#' )
+#'
+#' fts
+#' @seealso [field_types()], [field_types_available()], [template_field_types()]
+#' @export
+field_types_advanced <- function(..., .default_field_type = NULL) {
+  if (is.null(.default_field_type)) {
+    fts <- field_types(...)
+  } else{
+    fts <- field_types(..., .default_field_type)
+    class(fts) <- c(class(fts), "daiquiri_field_types_advanced")
+  }
+
+  fts
 }
 
 
@@ -520,6 +440,15 @@ is_field_types <- function(x) inherits(x, "daiquiri_field_types")
 
 
 # -----------------------------------------------------------------------------
+#' Test if object is a field_types_advanced object
+#'
+#' @param x object to test
+#' @return Logical
+#' @noRd
+is_field_types_advanced <- function(x) inherits(x, "daiquiri_field_types_advanced")
+
+
+# -----------------------------------------------------------------------------
 #' Constructor for individual field_type object
 #'
 #' @param type string denoting the field_type
@@ -736,6 +665,119 @@ field_types_strata_field_name <- function(field_types) {
 #' @noRd
 field_type_has_option <- function(ft, option){
   option %in% ft$options
+}
+
+
+# -----------------------------------------------------------------------------
+#' Validate list of (standard) field_types
+#'
+#' @param fts list of individual `field_type`s
+#' @return A character vector of error messages (if any)
+#'
+#' @noRd
+field_types_problems <- function(fts) {
+  # validate - collect all errors together and return only once
+  err_validation <- character()
+  is_field_type <- vapply(fts, is_field_type, logical(1))
+  if (any(!is_field_type)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Unrecognised field_type(s) in positions: [",
+          paste(which(!is_field_type), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(!is_field_type)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_timepoint <- vapply(fts, is_ft_timepoint, logical(1))
+  if (sum(is_timepoint) != 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Must specify one and only one timepoint field. Timepoints currently in positions: [",
+          paste(which(is_timepoint), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_timepoint)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_strata <- vapply(fts, is_ft_strata, logical(1))
+  if (sum(is_strata) > 1) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Only one strata field allowed. Strata fields currently specified in positions: [",
+          paste(which(is_strata), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_strata)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  is_aggregate_by_each_category <- is_field_type
+  is_aggregate_by_each_category[is_field_type] <-
+    vapply(fts[is_field_type],
+           FUN = field_type_has_option,
+           FUN.VALUE = logical(1),
+           option = "aggregate_by_each_category")
+  if (any(is_strata) && any(is_aggregate_by_each_category)) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Cannot use aggregate_by_each_category option when there is a strata field. Option currently specified in positions: [",
+          paste(which(is_aggregate_by_each_category), collapse = ", "),
+          "]",
+          "names: [",
+          paste(names(fts)[which(is_aggregate_by_each_category)], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  if (anyDuplicated(names(fts)) > 0) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "Duplicate column names not allowed: [",
+          paste(names(fts)[duplicated(names(fts))], collapse = ", "),
+          "]"
+        )
+      )
+  }
+  # check for reserved names
+  if (any(names(fts) %in% c("[DUPLICATES]", "[ALL_FIELDS_COMBINED]"))) {
+    err_validation <-
+      append(
+        err_validation,
+        paste(
+          "'[DUPLICATES]' and '[ALL_FIELDS_COMBINED]' are names reserved for calculated columns.
+					Please rename these columns in your data."
+        )
+      )
+  }
+  # additional validation for .default_field_type
+  if (".default_field_type" %in% names(fts) &&
+    (is_ft_timepoint(fts[[".default_field_type"]]) || is_ft_strata(fts[[".default_field_type"]]))) {
+  err_validation <-
+    append(
+      err_validation,
+      paste(
+        ".default_field_type cannot be a timepoint nor strata field_type"
+      )
+    )
+  }
+
+  err_validation
 }
 
 
