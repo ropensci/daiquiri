@@ -174,3 +174,63 @@ test_that("field_types object prints to console ok", {
 
   expect_snapshot_output(print(testfield_types))
 })
+
+test_that("field_types_advanced object prints to console ok", {
+  testfield_types <- field_types_advanced(
+    Col_tp = ft_timepoint(),
+    Col_uid = ft_uniqueidentifier(),
+    .default_field_type = ft_simple()
+    )
+
+  expect_snapshot_output(print(testfield_types))
+})
+
+
+test_that(".default_field_type must be a valid field_type", {
+  expect_error(
+    field_types_advanced(
+      Col_tp1 = ft_timepoint(),
+      .default_field_type = readr::col_character()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
+test_that(".default_field_type cannot be a timepoint or strata field_type", {
+  expect_error(
+    field_types_advanced(
+      Col_tp1 = ft_numeric(),
+      .default_field_type = ft_timepoint()
+    ),
+    class = "invalid_field_types"
+  )
+
+  expect_error(
+    field_types_advanced(
+      Col_tp1 = ft_timepoint(),
+      .default_field_type = ft_strata()
+    ),
+    class = "invalid_field_types"
+  )
+
+})
+
+test_that(".default_field_type cannot be the only field_type", {
+  expect_error(
+    field_types_advanced(
+      .default_field_type = ft_simple()
+    ),
+    class = "invalid_field_types"
+  )
+})
+
+test_that(".default_field_type cannot be supplied to field_types()", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      .default_field_type = ft_simple()
+    ),
+    class = "invalid_field_types"
+  )
+})
+

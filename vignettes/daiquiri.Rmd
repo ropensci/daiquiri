@@ -114,7 +114,7 @@ fts <- field_types(
 
 This is just one of many different possible choices, for example another option could be to use the AdmissionDate as the timepoint field instead, and set the Drug column to be categorical. It is up to you to decide which set of time series you want to be created for each column.
 
-TIP: If you have a lot of columns in your dataset you can use the `template_field_types()` function to print a template specification to the console that you can copy and edit.
+TIP: If you have a lot of columns in your dataset you can use the `template_field_types()` function to print a template specification to the console that you can copy and edit. Alternatively, if your columns are almost all of the same type you can use the `field_types_advanced()` function and supply a default `field_type` for any columns not explicitly specified.
 
 
 ## Generating a data quality report

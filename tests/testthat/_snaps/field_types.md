@@ -20,3 +20,9 @@
     Col_ign	<ignore>
     Col_str	<strata>
 
+# field_types_advanced object prints to console ok
+
+    Col_tp	<timepoint>	options: includes_time
+    Col_uid	<uniqueidentifier>
+    .default_field_type	<simple>
+

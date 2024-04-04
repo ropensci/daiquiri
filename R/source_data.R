@@ -106,10 +106,21 @@ prepare_data <- function(df,
     paste0("Checking column names against field_types..."),
     show_progress
   )
-  validate_column_names(names(df),
+  validate_column_names(
+    names(df),
     names(field_types),
     check_length_only = override_column_names
   )
+
+  if(is_field_types_advanced(field_types)){
+    # fill in any missing field_types with default field_type
+    field_types <- complete_field_types(names(df), field_types)
+
+    log_message(
+      paste0("field_types to use:\n", field_types_to_string(field_types)),
+      show_progress
+    )
+  }
 
   log_message(
     paste0("Importing source data [", dataset_description, "]..."),
@@ -695,10 +706,30 @@ data_field_na <- function(data_field) {
 validate_column_names <- function(source_names,
                                   spec_names,
                                   check_length_only = FALSE) {
+
+  check_all_names_present <- TRUE
+  default_field_type_present <- FALSE
+
+  # remove .default_field_type from spec_names if present
+  if(".default_field_type" %in% spec_names){
+    check_all_names_present <- FALSE
+    default_field_type_present <- TRUE
+    spec_names <- spec_names[which(spec_names != ".default_field_type")]
+  }
+
   # validate - collect all errors together and return only once
   err_validation <- character()
 
   if (check_length_only == TRUE) {
+    if (default_field_type_present) {
+      err_validation <-
+        append(
+          err_validation,
+          paste0(
+            "If override_column_names is TRUE, .default_field_type argument is not allowed in field_types()"
+          )
+        )
+    }
     if (length(source_names) != length(spec_names)) {
       err_validation <-
         append(
@@ -725,9 +756,8 @@ validate_column_names <- function(source_names,
           )
         )
     }
-    # names must be identical
     # TODO: do we want to allow names to be in a different order? Need to consider downstream effects.
-    if (length(setdiff(source_names, spec_names)) > 0) {
+    if (check_all_names_present && length(setdiff(source_names, spec_names)) > 0) {
       err_validation <-
         append(
           err_validation,

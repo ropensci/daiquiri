@@ -4,6 +4,7 @@
       source_data$validation_warnings
     Output
                    field_name                                            message
+                       <char>                                             <char>
        1:       col_timepoint        Missing or invalid value in Timepoint field
        2:       col_timepoint          expected valid date, but got '2021-06-31'
        3:       col_timepoint expected valid date, but got '2021-06-01 33:00:00'
@@ -34,6 +35,7 @@
       28: col_numeric_missing          expected a double, but got 'not a number'
                    field_name                                            message
           instances
+              <int>
        1:         6
        2:         1
        3:         1
@@ -140,6 +142,7 @@
     Validation warnings:
     
                  field_name                                            message
+                     <char>                                             <char>
      1:       col_timepoint        Missing or invalid value in Timepoint field
      2:       col_timepoint          expected valid date, but got '2021-06-31'
      3:       col_timepoint expected valid date, but got '2021-06-01 33:00:00'
@@ -170,6 +173,7 @@
     28: col_numeric_missing          expected a double, but got 'not a number'
                  field_name                                            message
         instances
+            <int>
      1:         6
      2:         1
      3:         1
@@ -240,12 +244,15 @@
     Validation warnings:
     
                  field_name
+                     <char>
     1:          col_numeric
     2: col_uniqueidentifier
                                                                                            message
+                                                                                            <char>
     1:  Data supplied as double instead of character, non-conformant values will not be identified
     2: Data supplied as integer instead of character, non-conformant values will not be identified
        instances
+           <int>
     1:        NA
     2:        NA
 

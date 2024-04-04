@@ -60,6 +60,36 @@ test_that("validate_column_names() checks that column names in field_types but n
   )
 })
 
+test_that("validate_column_names() checks that cannot have override_column_names and .default_field_type", {
+  expect_error(
+    validate_column_names(
+      c("nonsense", "set", "of", "stuff"),
+      c("nonsense", "set", "of", ".default_field_type"),
+      check_length_only = TRUE
+    ),
+    class = "invalid_column_names"
+  )
+})
+
+test_that("validate_column_names() allows unnecessary .default_field_type", {
+  expect_silent(
+    validate_column_names(
+      c("nonsense", "set", "of"),
+      c("nonsense", "set", "of", ".default_field_type"),
+      check_length_only = FALSE
+      )
+    )
+})
+
+test_that("validate_column_names() allows specnames to be subset of sourcenames if .default_field_type present", {
+  expect_silent(
+    validate_column_names(
+      c("nonsense", "set", "of"),
+      c("nonsense", ".default_field_type"),
+      check_length_only = FALSE
+    )
+  )
+})
 
 
 test_that("prepare_data() requires a df param", {
@@ -609,3 +639,35 @@ test_that("column-specific missing value strings get set to NA", {
   expect_true(is.na(source_data$data_fields[["col_none"]]$values[1][[1]]))
   expect_false(is.na(source_data$data_fields[["col_none"]]$values[2][[1]]))
 })
+
+test_that("prepare_data() creates source_data object correctly when using field_types_advanced()", {
+  source_data <- prepare_data(
+    df = data.frame(
+      col1 = rep("2022-01-01", 5),
+      col2 = rep("1", 5),
+      col3 = rep("hello", 5),
+      col4 = rep("1", 5),
+      col5 = 1:5
+    ),
+    field_types = field_types_advanced(
+      col1 = ft_timepoint(),
+      col4 = ft_numeric(),
+      .default_field_type = ft_simple()
+    ),
+    show_progress = FALSE
+  )
+
+  expect_s3_class(source_data, "daiquiri_source_data")
+
+  expect_equal(source_data$timepoint_field_name, "col1")
+  expect_equal(source_data$rows_source_n, 5)
+  expect_equal(source_data$rows_imported_n, 5)
+  expect_equal(source_data$cols_source_n, 5)
+  expect_equal(source_data$cols_imported_n, 5)
+  expect_equal(source_data$data_fields[["col1"]]$field_type$type, "timepoint")
+  expect_equal(source_data$data_fields[["col2"]]$field_type$type, "simple")
+  expect_equal(source_data$data_fields[["col3"]]$field_type$type, "simple")
+  expect_equal(source_data$data_fields[["col4"]]$field_type$type, "numeric")
+  expect_equal(source_data$data_fields[["col5"]]$field_type$type, "simple")
+})
+
