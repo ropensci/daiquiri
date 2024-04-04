@@ -61,7 +61,7 @@ field_types <- function(...) {
 
 
 # -----------------------------------------------------------------------------
-#' Create field_types specification (for advanced users)
+#' Create field_types_advanced specification
 #'
 #' Specify only a subset of the names and types of fields in the source data frame. The remaining
 #' fields will be given the same 'default' type.
@@ -82,8 +82,7 @@ field_types <- function(...) {
 #' @export
 field_types_advanced <- function(..., .default_field_type = ft_simple()) {
 
-  fts <- list(...)
-  fts[[".default_field_type"]] <- .default_field_type
+  fts <- list(..., ".default_field_type" = .default_field_type)
 
   err_validation <- field_types_problems(fts)
 

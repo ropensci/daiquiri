@@ -2,7 +2,7 @@
 % Please edit documentation in R/field_types.R
 \name{field_types_advanced}
 \alias{field_types_advanced}
-\title{Create field_types specification (for advanced users)}
+\title{Create field_types_advanced specification}
 \usage{
 field_types_advanced(..., .default_field_type = ft_simple())
 }
