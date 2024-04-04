@@ -224,3 +224,13 @@ test_that(".default_field_type cannot be the only field_type", {
   )
 })
 
+test_that(".default_field_type cannot be supplied to field_types()", {
+  expect_error(
+    field_types(
+      Col_tp1 = ft_timepoint(),
+      .default_field_type = ft_simple()
+    ),
+    class = "invalid_field_types"
+  )
+})
+

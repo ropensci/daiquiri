@@ -12,7 +12,7 @@ log_initialise("./devtesting/testoutput")
 testfile <- "./inst/extdata/example_prescriptions.csv"
 testdf <- read_data(testfile)
 
-testfile_fieldtypes <- field_types(PrescriptionID = ft_uniqueidentifier()
+field_types <- field_types(PrescriptionID = ft_uniqueidentifier()
 																	,PrescriptionDate = ft_timepoint()
 																	,AdmissionDate = ft_datetime(includes_time = FALSE)
 																	,Drug = ft_freetext()
@@ -22,7 +22,7 @@ testfile_fieldtypes <- field_types(PrescriptionID = ft_uniqueidentifier()
 																	,Location = ft_categorical(aggregate_by_each_category=TRUE))
 
 daiqobj <- daiquiri_report(testdf,
-													field_types = testfile_fieldtypes,
+													field_types = field_types,
 													override_column_names = FALSE,
 													na = c("","NULL"),
 													aggregation_timeunit = "day",
@@ -31,7 +31,7 @@ daiqobj <- daiquiri_report(testdf,
 													show_progress = TRUE,
 													log_directory = "./devtesting/testoutput")
 
-testsourcedata <- prepare_data(testdf, field_types = testfile_fieldtypes, na=c("","NULL"), show_progress=TRUE)
+testsourcedata <- prepare_data(testdf, field_types = field_types, na=c("","NULL"), show_progress=TRUE)
 testdata_byday <- aggregate_data(testsourcedata, aggregation_timeunit = "day", show_progress = TRUE)
 report_data(testsourcedata, testdata_byday)
 
@@ -105,15 +105,20 @@ field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
 																	,.default_field_type = ft_simple())
 field_types <- field_types(AdmissionDate = ft_timepoint(includes_time = FALSE)
 																	,.default_field_type = ft_datetime(includes_time = FALSE, na = "1800-01-01"))
+field_types <- field_types_advanced(AdmissionDate = ft_timepoint(includes_time = FALSE)
+                           ,.default_field_type = ft_simple())
 
 
 df_names <- names(df)
 
-testfile_fieldtypes <- field_types(PrescriptionDate = ft_timepoint()
+field_types <- field_types(PrescriptionDate = ft_timepoint()
 																	,.default_field_type = ft_simple())
+field_types <- field_types_advanced(PrescriptionDate = ft_timepoint()
+                                   ,.default_field_type = ft_simple())
+field_types <- field_types_advanced(PrescriptionDate = ft_timepoint())
 
 daiqobj <- daiquiri_report(testdf,
-													field_types = testfile_fieldtypes,
+													field_types = field_types,
 													override_column_names = FALSE,
 													na = c("","NULL"),
 													aggregation_timeunit = "day",
@@ -122,5 +127,5 @@ daiqobj <- daiquiri_report(testdf,
 													show_progress = TRUE,
 													log_directory = "./devtesting/testoutput")
 
-testsourcedata <- prepare_data(df = testdf, field_types = testfile_fieldtypes, na=c("","NULL"), show_progress=TRUE)
+testsourcedata <- prepare_data(df = testdf, field_types = field_types, na=c("","NULL"), show_progress=TRUE)
 

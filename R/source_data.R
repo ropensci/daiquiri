@@ -113,7 +113,7 @@ prepare_data <- function(df,
   )
 
   if(is_field_types_advanced(field_types)){
-    # fill in any missing field_types with default field_type if supplied
+    # fill in any missing field_types with default field_type
     field_types <- complete_field_types(names(df), field_types)
 
     log_message(

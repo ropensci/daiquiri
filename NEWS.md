@@ -2,7 +2,7 @@
 
 ## New features
 
-* New `field_types_advanced()` function. When the `.default_field_type` parameter is supplied, only a subset of the columns in the source df need to be named explicitly in the specification (#16)  
+* New `field_types_advanced()` function. Allows just a subset of the columns in the source df to be named explicitly in the specification, with the remaining columns set to the `.default_field_type` parameter. (#16)  
 
 
 # daiquiri 1.1.1 (2023-07-18)

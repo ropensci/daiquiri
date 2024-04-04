@@ -4,7 +4,7 @@
 \alias{field_types_advanced}
 \title{Create field_types specification (for advanced users)}
 \usage{
-field_types_advanced(..., .default_field_type = NULL)
+field_types_advanced(..., .default_field_type = ft_simple())
 }
 \arguments{
 \item{...}{names and types of fields (columns) in source data.}
@@ -20,8 +20,7 @@ Specify only a subset of the names and types of fields in the source data frame.
 fields will be given the same 'default' type.
 }
 \examples{
-# specify only a subset of fields
-fts <- field_types(
+fts <- field_types_advanced(
   PrescriptionDate = ft_timepoint(),
   PatientID = ft_ignore(),
   .default_field_type = ft_simple()

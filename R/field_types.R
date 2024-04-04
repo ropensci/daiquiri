@@ -36,6 +36,16 @@ field_types <- function(...) {
 
   err_validation <- field_types_problems(fts)
 
+  # additional validation for .default_field_type reserved name
+  if (".default_field_type" %in% names(fts)) {
+    err_validation <-
+      append(
+        err_validation,
+        ".default_field_type is a reserved name and cannot be one of the field names in the data.
+        Did you mean to use the field_types_advanced() function instead?"
+      )
+  }
+
   if (length(err_validation) > 0) {
     stop_custom(
       .subclass = "invalid_field_types",
@@ -61,8 +71,7 @@ field_types <- function(...) {
 #'   data. Note, this means there can not be a field in the data named `.default_field_type`
 #' @return A `field_types` object
 #' @examples
-#' # specify only a subset of fields
-#' fts <- field_types(
+#' fts <- field_types_advanced(
 #'   PrescriptionDate = ft_timepoint(),
 #'   PatientID = ft_ignore(),
 #'   .default_field_type = ft_simple()
@@ -71,15 +80,31 @@ field_types <- function(...) {
 #' fts
 #' @seealso [field_types()], [field_types_available()], [template_field_types()]
 #' @export
-field_types_advanced <- function(..., .default_field_type = NULL) {
-  if (is.null(.default_field_type)) {
-    fts <- field_types(...)
-  } else{
-    fts <- field_types(..., .default_field_type)
-    class(fts) <- c(class(fts), "daiquiri_field_types_advanced")
+field_types_advanced <- function(..., .default_field_type = ft_simple()) {
+
+  fts <- list(...)
+  fts[[".default_field_type"]] <- .default_field_type
+
+  err_validation <- field_types_problems(fts)
+
+  # additional validation for .default_field_type
+  if (is_ft_timepoint(.default_field_type) || is_ft_strata(.default_field_type)) {
+    err_validation <-
+      append(err_validation,
+             ".default_field_type cannot be a timepoint nor strata field_type")
   }
 
-  fts
+  if (length(err_validation) > 0) {
+    stop_custom(
+      .subclass = "invalid_field_types",
+      message = paste0(
+        "Invalid `field_types' specification.\n",
+        paste(err_validation, collapse = "\n")
+      )
+    )
+  }
+
+  structure(fts, class = c("daiquiri_field_types", "daiquiri_field_types_advanced"))
 }
 
 
@@ -765,17 +790,6 @@ field_types_problems <- function(fts) {
         )
       )
   }
-  # additional validation for .default_field_type
-  if (".default_field_type" %in% names(fts) &&
-    (is_ft_timepoint(fts[[".default_field_type"]]) || is_ft_strata(fts[[".default_field_type"]]))) {
-  err_validation <-
-    append(
-      err_validation,
-      paste(
-        ".default_field_type cannot be a timepoint nor strata field_type"
-      )
-    )
-  }
 
   err_validation
 }
@@ -790,7 +804,7 @@ field_types_problems <- function(fts) {
 #' @noRd
 complete_field_types <- function(df_names, field_types){
 
-  if (!".default_field_type" %in% names(field_types)) {
+  if (!is_field_types_advanced(field_types)) {
     fts <- field_types
   } else{
     fts <- list()
