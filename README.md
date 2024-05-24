@@ -7,7 +7,7 @@
 
 [![CRAN
 Status](https://www.r-pkg.org/badges/version/daiquiri)](https://cran.r-project.org/package=daiquiri)
-[![R-CMD-check](https://github.com/ropensci/daiquiri/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/daiquiri/actions)
+[![R-CMD-check](https://github.com/ropensci/daiquiri/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ropensci/daiquiri/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/ropensci/daiquiri/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ropensci/daiquiri?branch=master)
 [![Project Status: Active – The project has reached a stable, usable
