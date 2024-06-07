@@ -448,7 +448,7 @@ plot_overview_combo_static <- function(agg_fields,
       ncol = 1,
       align = "v",
       axis = "lr",
-      rel_heights = c(1, 3)
+      rel_heights = c(1.4, (length(agg_fields) - ifelse(!is.null(stratum), 1, 0))*0.4)
     )
   )
 }

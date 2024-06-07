@@ -4,6 +4,9 @@
 
 * New `field_types_advanced()` function. Allows just a subset of the columns in the source df to be named explicitly in the specification, with the remaining columns set to the `.default_field_type` parameter. (#16)  
 
+## Bug fixes and minor improvements
+
+* Improved scaling of heatmaps when there are lots of fields. (#17)
 
 # daiquiri 1.1.1 (2023-07-18)
 

@@ -243,8 +243,22 @@ agg_fields_strat <- params$aggregated_data$aggregated_fields_stratified
 
 ```
 
+```{r daiquiri-aggregated-data-set-fig-height}
+# NOTE: can't modify chunk options within a chunk to get different fig heights
+# (https://github.com/yihui/knitr/issues/841) so have to make plots consistent for all tabs
 
-```{r daiquiri-overview-strata, results = 'asis'}
+overview_values_fig_height <-
+  1.4 + (length(agg_fields) - ifelse(stratify, 1, 0)) * 0.4
+
+overview_strata_fig_height <-
+  ifelse(stratify,
+         (length(strata_labels) + 2) * 0.4,
+         knitr::opts_chunk$get("fig.height"))
+
+```
+
+
+```{r daiquiri-overview-strata, results = 'asis', fig.height=overview_strata_fig_height}
 if (stratify) {
   cat("\n### Strata {.tabset}\n")
 
@@ -272,7 +286,7 @@ if (stratify) {
 
 ### Values present {.tabset}
 
-```{r daiquiri-overview-presence, results = 'asis'}
+```{r daiquiri-overview-presence, results = 'asis', fig.height=overview_values_fig_height}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
@@ -310,7 +324,7 @@ if (!stratify) {
 
 ### Missing values {.tabset}
 
-```{r daiquiri-overview-missing, results = 'asis'}
+```{r daiquiri-overview-missing, results = 'asis', fig.height=overview_values_fig_height}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,
@@ -348,7 +362,7 @@ if (!stratify) {
 
 ### Non-conformant values {.tabset}
 
-```{r daiquiri-overview-nonconformant, results = 'asis'}
+```{r daiquiri-overview-nonconformant, results = 'asis', fig.height=overview_values_fig_height}
 p_all <-
   plot_overview_combo_static(
     agg_fields = agg_fields,

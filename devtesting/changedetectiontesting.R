@@ -39,7 +39,7 @@ report_data(testsourcedata, testdata_byday)
 # complete test set
 testdf <- read_data(test_path("testdata", "completetestset.csv"))
 testsourcedata <- prepare_data(testdf,
-															 fieldtypes = fieldtypes( col_timepoint_err = ft_ignore(),
+															 field_types = field_types( col_timepoint_err = ft_ignore(),
 															 												 col_timepoint = ft_timepoint(),
 															 												 col_date_time_err = ft_ignore(),
 															 												 col_date_time = ft_datetime(),
@@ -64,7 +64,7 @@ testsourcedata <- prepare_data(testdf,
 															 												 col_simple_err = ft_ignore(),
 															 												 col_simple = ft_simple()),
 															 dataset_description = "completetestset",
-															 showprogress = FALSE
+															 show_progress = FALSE
 )
 
 
@@ -93,7 +93,7 @@ tracemem(df)
 class(res)
 tracemem(res)
 
-# test default fieldtypes specification
+# test default field_types specification
 df <- data.frame(
       AdmissionDate = rep("2022-01-01", 5),
       col2 = rep(1, 5),
@@ -129,3 +129,106 @@ daiqobj <- daiquiri_report(testdf,
 
 testsourcedata <- prepare_data(df = testdf, field_types = field_types, na=c("","NULL"), show_progress=TRUE)
 
+
+# many fields
+# complete test set
+testdf <- read_data(test_path("testdata", "completetestset.csv"))
+
+source_data <- daiquiri::prepare_data(testdf,
+                                     field_types = field_types( col_timepoint_err = ft_simple(),
+                                                                col_timepoint = ft_timepoint(),
+                                                                col_date_time_err = ft_simple(),
+                                                                col_date_time = ft_datetime(),
+                                                                col_date_only_err = ft_simple(),
+                                                                col_date_only = ft_datetime(includes_time = FALSE),
+                                                                col_date_uk_err = ft_simple(),
+                                                                col_date_uk = ft_datetime(includes_time = FALSE, format = "%d/%m/%Y"),
+                                                                col_id_num_err = ft_simple(),
+                                                                col_id_num = ft_uniqueidentifier(),
+                                                                col_id_string_err = ft_simple(),
+                                                                col_id_string = ft_uniqueidentifier(),
+                                                                col_numeric_clean_err = ft_simple(),
+                                                                col_numeric_clean = ft_numeric(),
+                                                                col_numeric_dirty_err = ft_simple(),
+                                                                col_numeric_dirty = ft_numeric(),
+                                                                col_numeric_missing_err = ft_simple(),
+                                                                col_numeric_missing = ft_numeric(),
+                                                                col_categorical_small_err = ft_simple(),
+                                                                col_categorical_small = ft_categorical(),
+                                                                col_categorical_large_err = ft_simple(),
+                                                                col_categorical_large = ft_categorical(),
+                                                                col_freetext_err = ft_simple(),
+                                                                col_freetext = ft_freetext(),
+                                                                col_simple_err = ft_simple(),
+                                                                col_simple = ft_ignore()),
+                                     override_column_names = FALSE,
+                                     na = c("","NULL","NA"))
+
+aggregated_data <- daiquiri::aggregate_data(source_data,
+                                     aggregation_timeunit = "day")
+
+source_data2 <- daiquiri::prepare_data(testdf,
+                                      field_types = field_types( col_timepoint_err = ft_simple(),
+                                                                 col_timepoint = ft_timepoint(),
+                                                                 col_date_time_err = ft_simple(),
+                                                                 col_date_time = ft_datetime(),
+                                                                 col_date_only_err = ft_simple(),
+                                                                 col_date_only = ft_datetime(includes_time = FALSE),
+                                                                 col_date_uk_err = ft_simple(),
+                                                                 col_date_uk = ft_datetime(includes_time = FALSE, format = "%d/%m/%Y"),
+                                                                 col_id_num_err = ft_simple(),
+                                                                 col_id_num = ft_uniqueidentifier(),
+                                                                 col_id_string_err = ft_simple(),
+                                                                 col_id_string = ft_uniqueidentifier(),
+                                                                 col_numeric_clean_err = ft_simple(),
+                                                                 col_numeric_clean = ft_numeric(),
+                                                                 col_numeric_dirty_err = ft_simple(),
+                                                                 col_numeric_dirty = ft_numeric(),
+                                                                 col_numeric_missing_err = ft_simple(),
+                                                                 col_numeric_missing = ft_numeric(),
+                                                                 col_categorical_small_err = ft_simple(),
+                                                                 col_categorical_small = ft_strata(),
+                                                                 col_categorical_large_err = ft_simple(),
+                                                                 col_categorical_large = ft_categorical(),
+                                                                 col_freetext_err = ft_simple(),
+                                                                 col_freetext = ft_freetext(),
+                                                                 col_simple_err = ft_simple(),
+                                                                 col_simple = ft_ignore()),
+                                      override_column_names = FALSE,
+                                      na = c("","NULL","NA"))
+
+aggregated_data2 <- daiquiri::aggregate_data(source_data2,
+                                            aggregation_timeunit = "day")
+
+report_data(
+  source_data,
+  aggregated_data,
+  save_directory = "./devtesting/testoutput",
+  save_filename = NULL,
+  show_progress = TRUE
+)
+
+report_data(
+  source_data2,
+  aggregated_data2,
+  save_directory = "./devtesting/testoutput",
+  save_filename = NULL,
+  show_progress = TRUE
+)
+
+
+daiquiri_report(testdf,
+               field_types = field_types(PrescriptionID = ft_uniqueidentifier()
+                                         ,PrescriptionDate = ft_timepoint()
+                                         ,AdmissionDate = ft_datetime(includes_time = FALSE)
+                                         ,Drug = ft_freetext()
+                                         ,Dose = ft_numeric()
+                                         ,DoseUnit = ft_categorical()
+                                         ,PatientID = ft_ignore()
+                                         ,Location = ft_strata()),
+               override_column_names = FALSE,
+               na = c("","NULL"),
+               aggregation_timeunit = "day",
+               save_directory = "./devtesting/testoutput",
+               save_filename = NULL,
+               show_progress = TRUE)
