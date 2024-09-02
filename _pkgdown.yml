@@ -29,6 +29,7 @@ reference:
   - field_types_available
   - field_types
   - template_field_types
+  - field_types_advanced
 
 - title: Advanced usage
   contents:
