@@ -197,8 +197,8 @@ plot_timeseries_static <- function(agg_field,
     g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4)
 
     # specify y axis scale
-    max_val <- max(agg_field$values[[agg_fun_colname]], na.rm = TRUE)
-    min_val <- min(agg_field$values[[agg_fun_colname]], na.rm = TRUE)
+    max_val <- as.numeric(max(agg_field$values[[agg_fun_colname]], na.rm = TRUE))
+    min_val <- as.numeric(min(agg_field$values[[agg_fun_colname]], na.rm = TRUE))
     y_breaks <-
       yscale_breaks(agg_fun_colname, max_val, min_val, agg_field$field_type)
     g <- g + ggplot2::scale_y_continuous(
@@ -275,6 +275,7 @@ plot_overview_totals_static <- function(agg_field,
       # use ribbon instead of area so that NAs don't get interpolated
       ggplot2::geom_ribbon(
         data = data[!is.na(get(aggregation_function)), ymin := 0],
+        na.rm = TRUE,
         ggplot2::aes(
           x = .data[[timepoint_aggcol_name]],
           ymin = ymin,
@@ -568,8 +569,8 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
   data[, (stratify_aggcol_name) := factor(get(stratify_aggcol_name), levels = stratum_names)]
 
   # specify shared y axis scale based on min/max values across all strata
-  max_val <- max(data[[aggregation_function]], na.rm = TRUE)
-  min_val <- min(data[[aggregation_function]], na.rm = TRUE)
+  max_val <- as.numeric(max(data[[aggregation_function]], na.rm = TRUE))
+  min_val <- as.numeric(min(data[[aggregation_function]], na.rm = TRUE))
   y_breaks <- yscale_breaks(
     agg_fun_colname = aggregation_function,
     max_val = max_val,
@@ -677,8 +678,8 @@ plot_stratified_totals_static <- function(agg_field,
     g <- g + ggplot2::geom_point(na.rm = TRUE, shape = 4, size = 0.5)
 
     # specify y axis scale
-    max_val <- max(agg_field$values[[aggregation_function]], na.rm = TRUE)
-    min_val <- min(agg_field$values[[aggregation_function]], na.rm = TRUE)
+    max_val <- as.numeric(max(agg_field$values[[aggregation_function]], na.rm = TRUE))
+    min_val <- as.numeric(min(agg_field$values[[aggregation_function]], na.rm = TRUE))
     y_breaks <-
       yscale_breaks(aggregation_function, max_val, min_val, compact = TRUE, agg_field$field_type)
     g <- g + ggplot2::scale_y_continuous(
