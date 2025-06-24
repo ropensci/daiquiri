@@ -1,4 +1,4 @@
-url: ~
+url: https://ropensci.github.io/daiquiri
 template:
   bootstrap: 5
 development:

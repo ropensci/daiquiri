@@ -1,78 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/articles/daiquiri.html</loc>
-  </url>
-  <url>
-    <loc>/articles/example_prescriptions.html</loc>
-  </url>
-  <url>
-    <loc>/articles/example_prescriptions_stratified.html</loc>
-  </url>
-  <url>
-    <loc>/articles/example_report.html</loc>
-  </url>
-  <url>
-    <loc>/articles/example_report_stratified.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/aggregate_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/close_log.html</loc>
-  </url>
-  <url>
-    <loc>/reference/daiquiri-package.html</loc>
-  </url>
-  <url>
-    <loc>/reference/daiquiri_report.html</loc>
-  </url>
-  <url>
-    <loc>/reference/export_aggregated_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/field_types.html</loc>
-  </url>
-  <url>
-    <loc>/reference/field_types_available.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/initialise_log.html</loc>
-  </url>
-  <url>
-    <loc>/reference/prepare_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/read_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/report_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/template_field_types.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ropensci.github.io/daiquiri/404.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/daiquiri.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/example_prescriptions.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/example_prescriptions_stratified.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/example_report.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/example_report_stratified.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/articles/index.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/authors.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/CONTRIBUTING.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/index.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/LICENSE.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/news/index.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/aggregate_data.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/close_log.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/daiquiri-package.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/daiquiri_report.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/export_aggregated_data.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/field_types.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/field_types_advanced.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/field_types_available.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/index.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/initialise_log.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/prepare_data.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/read_data.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/report_data.html</loc></url>
+<url><loc>https://ropensci.github.io/daiquiri/reference/template_field_types.html</loc></url>
 </urlset>
+
