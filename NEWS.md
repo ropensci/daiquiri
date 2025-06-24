@@ -1,4 +1,4 @@
-# daiquiri (development version)
+# daiquiri 1.2.0 (2025-06-24)
 
 ## New features
 
@@ -7,6 +7,7 @@
 ## Bug fixes and minor improvements
 
 * Improved scaling of heatmaps when there are lots of fields. (#17)
+
 
 # daiquiri 1.1.1 (2023-07-18)
 
