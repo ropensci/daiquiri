@@ -34,7 +34,7 @@ strata_labels <- params$source_data$strata_labels
 <script>
    $(document).ready(function() {
      $head = $('#header');
-     $head.prepend('<img src="`r xfun::base64_uri(system.file("help/figures/logo.png", package = "daiquiri"))`" style="float: right; width: 100px;"/>')
+     $head.prepend('<img src="`r xfun::base64_uri(system.file("rmd/logo.png", package = "daiquiri"))`" style="float: right; width: 100px;"/>')
    });
 </script>
 
