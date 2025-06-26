@@ -387,7 +387,7 @@ plot_overview_heatmap_static <- function(agg_fields,
       panel.border = ggplot2::element_rect(
         colour = "darkgrey",
         fill = NA,
-        size = 0.75
+        linewidth = 0.75
       ),
       # remove space between facets
       panel.spacing = ggplot2::unit(0, "lines"),
@@ -527,7 +527,7 @@ plot_subcat_heatmap_static <- function(agg_field,
       panel.border = ggplot2::element_rect(
         colour = "darkgrey",
         fill = NA,
-        size = 0.75
+        linewidth = 0.75
       ),
       # remove space between facets
       panel.spacing = ggplot2::unit(0, "lines"),
@@ -614,7 +614,7 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
       panel.border = ggplot2::element_rect(
         colour = "darkgrey",
         fill = NA,
-        size = 0.75
+        linewidth = 0.75
       ),
       # set space between facets
       panel.spacing = ggplot2::unit(0.5, "lines"),
