@@ -15,32 +15,39 @@ library(daiquiri)
 ```
 
 ```{r generate-report}
-raw_data <- read_data(
-  system.file("extdata", "example_prescriptions.csv",
-              package = "daiquiri"),
-  show_progress = FALSE
-)
-
-fts <- field_types(
-  PrescriptionID = ft_uniqueidentifier(),
-  PrescriptionDate = ft_timepoint(),
-  AdmissionDate = ft_datetime(includes_time = FALSE, na = "1800-01-01"),
-  Drug = ft_freetext(),
-  Dose = ft_numeric(),
-  DoseUnit = ft_categorical(),
-  PatientID = ft_ignore(),
-  Location = ft_strata()
-)
-
-daiqobj <- daiquiri_report(
-  raw_data,
-  field_types = fts,
-  dataset_description = "Example prescription data",
-  save_directory = "../../docs/articles",
-  save_filename = "example_prescriptions_stratified",
-  show_progress = FALSE
-)
-
+if (
+  length(unlist(strsplit(
+    as.character(utils::packageVersion("daiquiri")),
+    "[.]"
+  ))) <
+    4
+) {
+  raw_data <- read_data(
+    system.file("extdata", "example_prescriptions.csv",
+                package = "daiquiri"),
+    show_progress = FALSE
+  )
+  
+  fts <- field_types(
+    PrescriptionID = ft_uniqueidentifier(),
+    PrescriptionDate = ft_timepoint(),
+    AdmissionDate = ft_datetime(includes_time = FALSE, na = "1800-01-01"),
+    Drug = ft_freetext(),
+    Dose = ft_numeric(),
+    DoseUnit = ft_categorical(),
+    PatientID = ft_ignore(),
+    Location = ft_strata()
+  )
+  
+  daiqobj <- daiquiri_report(
+    raw_data,
+    field_types = fts,
+    dataset_description = "Example prescription data",
+    save_directory = "../../docs/articles",
+    save_filename = "example_prescriptions_stratified",
+    show_progress = FALSE
+  )
+}
 ```
 
 ```{css hide-header-logo, echo=FALSE}
