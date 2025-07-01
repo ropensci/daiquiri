@@ -241,6 +241,10 @@ test_that("plot_overview_heatmap_static() looks how it should", {
 
 
 test_that("plot_overview_combo_static() looks how it should", {
+
+  # fails on CI for macos due to precision issue see https://github.com/r-lib/vdiffr/issues/119
+  skip_on_os("mac")
+
   df <- read_data(test_path("testdata", "completetestset.csv"))
   source_data <- prepare_data(
     df,
@@ -381,6 +385,10 @@ test_that("plot_stratified_totals_static() looks how it should", {
 
 
 test_that("plot_stratified_combo_static() looks how it should", {
+
+  # fails on CI for macos due to precision issue see https://github.com/r-lib/vdiffr/issues/119
+  skip_on_os("mac")
+
   df <- read_data(test_path("testdata", "completetestset.csv"))
   source_data <- prepare_data(
     df,
