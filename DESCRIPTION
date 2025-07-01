@@ -41,7 +41,8 @@ Suggests:
     covr,
     knitr,
     testthat (>= 3.0.0),
-    codemetar
+    codemetar,
+    vdiffr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)

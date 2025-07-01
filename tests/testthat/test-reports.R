@@ -121,19 +121,296 @@ test_that("plots still work when all values are missing", {
       show_progress = FALSE
     )
 
-  expect_s3_class(
+  p <-
     plot_timeseries_static(
-      agg_field = aggregated_data$aggregatefields$col_numeric_missing,
-      agg_fun_colname = "missing_n"
-    ),
-    "ggplot"
+      agg_field = aggregated_data$aggregated_fields$col_numeric_missing,
+      agg_fun_colname = "min"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_timeseries_static_empty",
+    fig = p
   )
-  expect_s3_class(
+
+  p <-
     plot_overview_totals_static(
-      agg_field = aggregated_data$aggregatefields$col_numeric_missing,
-      aggregation_function = "missing_n"
+      agg_field = aggregated_data$aggregated_fields$col_numeric_missing,
+      aggregation_function = "min"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_overview_totals_static_empty",
+    fig = p
+  )
+})
+
+
+test_that("plot_timeseries_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      .default_field_type = ft_ignore()
     ),
-    "ggplot"
+    dataset_description = "completetestset_subset",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_timeseries_static(
+      agg_field = aggregated_data$aggregated_fields$col_numeric_clean,
+      agg_fun_colname = "n"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_timeseries_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_overview_totals_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_overview_totals_static(
+      agg_field = aggregated_data$aggregated_fields$col_numeric_clean,
+      aggregation_function = "n",
+      title = "plot_overview_totals_static",
+      stratum = NULL
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_overview_totals_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_overview_heatmap_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_categorical(aggregate_by_each_category = TRUE),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_overview_heatmap_static(
+      agg_fields = aggregated_data$aggregated_fields,
+      aggregation_function = "n",
+      stratum = NULL
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_overview_heatmap_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_overview_combo_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_categorical(aggregate_by_each_category = TRUE),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_overview_combo_static(
+      agg_fields = aggregated_data$aggregated_fields,
+      aggregation_function = "n",
+      lineplot_field_name = "col_timepoint",
+      title = "plot_overview_combo_static",
+      stratum = NULL
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_overview_combo_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_subcat_heatmap_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_categorical(aggregate_by_each_category = TRUE),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_subcat_heatmap_static(
+      agg_field = aggregated_data$aggregated_fields$col_categorical_small,
+      aggregation_function = "subcat_n"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_subcat_heatmap_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_stratified_facetgrid_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_strata(),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset_stratified",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_stratified_facetgrid_static(
+      agg_field = aggregated_data$aggregated_fields_stratified$col_numeric_clean,
+      aggregation_function = "n"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_stratified_facetgrid_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_stratified_totals_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_strata(),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset_stratified",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_stratified_totals_static(
+      agg_field = aggregated_data$aggregated_fields$col_numeric_clean,
+      aggregation_function = "n",
+      title = "plot_stratified_totals_static"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_stratified_totals_static",
+    fig = p
+  )
+})
+
+
+test_that("plot_stratified_combo_static() looks how it should", {
+  df <- read_data(test_path("testdata", "completetestset.csv"))
+  source_data <- prepare_data(
+    df,
+    field_types = field_types_advanced(
+      col_timepoint = ft_timepoint(),
+      col_numeric_clean = ft_numeric(),
+      col_date_only = ft_datetime(includes_time = FALSE),
+      col_id_string = ft_uniqueidentifier(),
+      col_categorical_small = ft_strata(),
+      col_numeric_missing = ft_numeric(),
+      .default_field_type = ft_ignore()
+    ),
+    dataset_description = "completetestset_subset_stratified",
+    show_progress = FALSE
+  )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "week",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_stratified_combo_static(
+      agg_field = aggregated_data$aggregated_fields$col_numeric_clean,
+      agg_field_strat = aggregated_data$aggregated_fields_stratified$col_numeric_clean,
+      aggregation_function = "n"
+    )
+  vdiffr::expect_doppelganger(
+    title = "plot_stratified_combo_static",
+    fig = p
   )
 })
 
