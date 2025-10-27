@@ -1,11 +1,11 @@
-pandoc: '3.4'
+pandoc: 3.6.3
 pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   daiquiri: daiquiri.html
   articles/example_report: example_report.html
   articles/example_report_stratified: example_report_stratified.html
-last_built: 2025-06-24T15:17Z
+last_built: 2025-10-27T12:37Z
 urls:
   reference: https://ropensci.github.io/daiquiri/reference
   article: https://ropensci.github.io/daiquiri/articles

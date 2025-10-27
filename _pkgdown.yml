@@ -42,6 +42,6 @@ reference:
 
 authors:
   footer:
-    roles: [cre, cph]
+    roles: [cre]
   sidebar:
-    roles: [cre, cph]
+    roles: [cre]
