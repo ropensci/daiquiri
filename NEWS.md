@@ -1,4 +1,6 @@
-# daiquiri (development version)
+# daiquiri 1.2.1 (2025-10-27)
+
+No User-facing changes
 
 
 # daiquiri 1.2.0 (2025-06-24)
