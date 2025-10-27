@@ -400,7 +400,10 @@ plot_overview_heatmap_static <- function(agg_fields,
         hjust = 1,
         size = 7
       ),
-      axis.text.y = ggplot2::element_text(size = 7),
+      axis.text.y = ggplot2::element_text(
+        size = 7,
+        margin = ggplot2::margin(r = 5)
+      ),
       legend.position = "none",
     )
 
@@ -540,7 +543,10 @@ plot_subcat_heatmap_static <- function(agg_field,
         hjust = 1,
         size = 7
       ),
-      axis.text.y = ggplot2::element_text(size = 7),
+      axis.text.y = ggplot2::element_text(
+        size = 7,
+        margin = ggplot2::margin(r = 5)
+      ),
       legend.position = "none",
     )
 
@@ -625,7 +631,10 @@ plot_stratified_facetgrid_static <- function(agg_field_stratified,
         hjust = 1,
         size = 7
       ),
-      axis.text.y = ggplot2::element_text(size = 7),
+      axis.text.y = ggplot2::element_text(
+        size = 7,
+        margin = ggplot2::margin(r = 5)
+      ),
       plot.title = ggplot2::element_text(size = 8, face = "bold", hjust = 0.5),
       legend.position = "none",
     )

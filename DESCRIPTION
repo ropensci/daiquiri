@@ -36,13 +36,15 @@ Imports:
     utils,
     stats,
     xfun (>= 0.15)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests:
     covr,
     knitr,
     testthat (>= 3.0.0),
     codemetar,
-    vdiffr
+    vdiffr,
+    shiny,
+    diffviewer
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
