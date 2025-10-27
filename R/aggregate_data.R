@@ -487,7 +487,7 @@ is_aggregated_field <- function(x) inherits(x, "daiquiri_aggregated_field")
 
 
 # -----------------------------------------------------------------------------
-#' Constructor for the [ALL_FIELDS_COMBINED] aggregated_field object
+#' Constructor for the \[ALL_FIELDS_COMBINED\] aggregated_field object
 #'
 #' Uses results from already-aggregated individual fields rather than doing it
 #' all again
