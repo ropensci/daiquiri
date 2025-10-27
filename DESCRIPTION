@@ -3,7 +3,7 @@ Type: Package
 Title: Data Quality Reporting for Temporal Datasets
 Version: 1.2.0.9000
 Authors@R: c(
-    person(c("T.", "Phuong"), "Quan", email = "phuong.quan@ndm.ox.ac.uk",
+    person(c("T.", "Phuong"), "Quan", email = "phuongquan567@outlook.com",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8566-1817")),
     person("Jack", "Cregan", role = "ctb"),
     person(family = "University of Oxford", role = "cph"),

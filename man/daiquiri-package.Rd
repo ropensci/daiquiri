@@ -20,7 +20,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: T. Phuong Quan \email{phuong.quan@ndm.ox.ac.uk} (\href{https://orcid.org/0000-0001-8566-1817}{ORCID})
+\strong{Maintainer}: T. Phuong Quan \email{phuongquan567@outlook.com} (\href{https://orcid.org/0000-0001-8566-1817}{ORCID})
 
 Other contributors:
 \itemize{
