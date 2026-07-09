@@ -142,6 +142,51 @@ test_that("plots still work when all values are missing", {
   )
 })
 
+test_that("report works when all datetime values are missing", {
+  df <-
+    data.table::data.table(
+      "col_timepoint" = paste0("2022-01-", seq(10, 12)),
+      "col_datetime_missing" = ""
+    )
+  source_data <-
+    prepare_data(
+      df,
+      field_types = field_types(
+        col_timepoint = ft_timepoint(),
+        col_datetime_missing = ft_datetime()
+      ),
+      dataset_description = "blankdatetimetest",
+      override_column_names = FALSE,
+      na = c(""),
+      show_progress = FALSE
+    )
+  aggregated_data <-
+    aggregate_data(source_data,
+      aggregation_timeunit = "day",
+      show_progress = FALSE
+    )
+
+  p <-
+    plot_timeseries_static(
+      agg_field = aggregated_data$aggregated_fields$col_datetime_missing,
+      agg_fun_colname = "min"
+    )
+  expect_error(print(p), NA)
+
+  reportpath <-
+    report_data(
+      source_data,
+      aggregated_data,
+      report_title = "Blank Datetime Test",
+      save_directory = tempdir(),
+      save_filename = "daiquiri_blank_datetime_testthatreport",
+      show_progress = FALSE
+    )
+
+  expect_type(reportpath, "character")
+  expect_true(file.remove(reportpath))
+})
+
 
 test_that("plot_timeseries_static() looks how it should", {
   df <- read_data(test_path("testdata", "completetestset.csv"))
@@ -421,4 +466,3 @@ test_that("plot_stratified_combo_static() looks how it should", {
     fig = p
   )
 })
-
