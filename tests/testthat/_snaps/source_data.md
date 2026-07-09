@@ -34,6 +34,7 @@
       27:   col_numeric_dirty               expected a double, but got '`12.11''
       28: col_numeric_missing          expected a double, but got 'not a number'
                    field_name                                            message
+                       <char>                                             <char>
           instances
               <int>
        1:         6
@@ -65,6 +66,7 @@
       27:         1
       28:         4
           instances
+              <int>
 
 # source_data object prints to console ok
 
@@ -172,6 +174,7 @@
     27:   col_numeric_dirty               expected a double, but got '`12.11''
     28: col_numeric_missing          expected a double, but got 'not a number'
                  field_name                                            message
+                     <char>                                             <char>
         instances
             <int>
      1:         6
@@ -203,6 +206,7 @@
     27:         1
     28:         4
         instances
+            <int>
 
 # source_data object prints to console ok when there is a strata field
 
