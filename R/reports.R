@@ -170,6 +170,7 @@ plot_timeseries_static <- function(agg_field,
 
   if (is_ft_datetime(agg_field$field_type) &&
       all(is.na(plot_values[[agg_fun_colname]]))) {
+    # Avoid POSIXct scale break errors when the plotted range is all missing.
     plot_values[[agg_fun_colname]] <- as.numeric(plot_values[[agg_fun_colname]])
   }
 
