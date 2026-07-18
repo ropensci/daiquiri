@@ -165,10 +165,19 @@ report_data <- function(source_data,
 plot_timeseries_static <- function(agg_field,
                                    agg_fun_colname) {
   timepoint_aggcol_name <- names(agg_field$values)[1]
+  plot_values <-
+    agg_field$values[, c(timepoint_aggcol_name, agg_fun_colname), with = FALSE]
+
+  if (is_ft_datetime(agg_field$field_type) &&
+      all(is.na(plot_values[[agg_fun_colname]]))) {
+    # Avoid POSIXct scale break errors when the plotted range is all missing.
+    plot_values[[agg_fun_colname]] <- as.numeric(plot_values[[agg_fun_colname]])
+  }
+
   # set up universal plot characteristics
   g <-
     ggplot2::ggplot(
-      agg_field$values[, c(timepoint_aggcol_name, agg_fun_colname), with = FALSE],
+      plot_values,
       ggplot2::aes(.data[[timepoint_aggcol_name]], .data[[agg_fun_colname]])
     ) +
     ggplot2::scale_x_date(
