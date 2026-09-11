@@ -92,7 +92,7 @@ report_data <- function(source_data,
     format = format
   )
 
-  timestamp_string <- format(Sys.time(), "%Y%m%d%_%H%M%S")
+  timestamp_string <- daiquiri_timestamp()
 
   if (is.null(save_filename)) {
     save_filename <-

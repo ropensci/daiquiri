@@ -28,7 +28,7 @@ initialise_log <- function(log_directory) {
   file_and_path <-
     file.path(
       log_directory,
-      paste0(utils::packageName(), "_", format(Sys.time(), "%Y%m%d%_%H%M%S"), ".log")
+      paste0(utils::packageName(), "_", daiquiri_timestamp(), ".log")
     )
 
   if (file.create(file_and_path)) {
@@ -46,6 +46,17 @@ initialise_log <- function(log_directory) {
   }
 
   package_environment$log_name
+}
+
+
+# -----------------------------------------------------------------------------
+#' Format a timestamp for generated filenames
+#'
+#' @param time POSIXct-compatible time value
+#' @return Character timestamp with only filename-safe digits and underscore
+#' @noRd
+daiquiri_timestamp <- function(time = Sys.time()) {
+  format(time, "%Y%m%d_%H%M%S")
 }
 
 
