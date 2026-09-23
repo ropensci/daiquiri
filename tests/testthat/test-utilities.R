@@ -194,6 +194,14 @@ test_that("initialise_log() creates a file", {
   expect_true(file.remove(log_filename))
 })
 
+test_that("daiquiri_timestamp() uses a filename-safe separator", {
+  timestamp <-
+    daiquiri_timestamp(as.POSIXct("2025-07-24 12:38:27", tz = "UTC"))
+
+  expect_equal(timestamp, "20250724_123827")
+  expect_false(grepl("%", timestamp, fixed = TRUE))
+})
+
 test_that("log_message() writes to log", {
   log_filename <- initialise_log(log_directory = tempdir())
   expect_silent(log_message("test message", show_progress = FALSE))
